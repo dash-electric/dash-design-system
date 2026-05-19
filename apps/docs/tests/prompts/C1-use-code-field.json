@@ -1,0 +1,18 @@
+{
+  "prompt": "Form daftar mitra baru. Field: nomor mitra, nama, level. Nomor mitra harus pake field code Dash. Submit lewat ts-delivery endpoint.",
+  "category": "C",
+  "expectedSignals": [
+    "@dash/input-otp",
+    "@dash/form",
+    "@dash/field",
+    "zod",
+    "@hookform/resolvers"
+  ],
+  "antiSignals": [
+    "<input type=\"text\"",
+    "useState<string>('')",
+    "raw <form>",
+    "antd",
+    "Joi"
+  ]
+}

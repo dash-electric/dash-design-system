@@ -1,0 +1,15 @@
+{
+  "prompt": "Gimana cara install Dash DS di repo baru Next.js? Step-by-step dari nol.",
+  "category": "A",
+  "expectedSignals": [
+    "dash init",
+    "dash add",
+    "DASH_REGISTRY_TOKEN",
+    "components.json"
+  ],
+  "antiSignals": [
+    "npx shadcn",
+    "npm install @dash/ui",
+    "yarn add @dash"
+  ]
+}

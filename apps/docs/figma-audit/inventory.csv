@@ -1,0 +1,198 @@
+Type,Name,Figma Node ID,Dash File,Status,Phase 2 Patch,Hold Items,Breaking,Notes
+component,Accordion,210:4006,registry/dash/ui/accordion.tsx,Done,eddcd17,0,No,variant=default (Figma) + variant=ghost (legacy)
+component,Activity Feed,164611:26451,registry/dash/ui/activity-feed.tsx,Done,1101ed4,1,No,Avatar Group variant not implemented
+component,Alert,169:2358,registry/dash/ui/alert.tsx,Done,1101ed4,1,No,xs size added Figma 32h
+component,Alert Dialog,466:4630,registry/dash/ui/alert-dialog.tsx,Done,7b4168d,1,No,overlay scrim hard-coded
+component,Aspect Ratio,N/A,registry/dash/ui/aspect-ratio.tsx,Dash-only,eddcd17,1,No,Radix re-export utility no Figma source
+component,Avatar,210:4129,registry/dash/ui/avatar.tsx,Done,2ec2daa,0,Yes,9 sizes xs-5xl 2xl/3xl/4xl pixel shifted
+component,Badge,119:2863,registry/dash/ui/badge.tsx,Done,a6bd7f6,0,No,11 colors x 4 styles x 5 types x 2 sizes audited 2026-05-16
+component,Banner,224:2224,registry/dash/ui/banner.tsx,Done,a202ec2,0,No,7 statuses x 4 styles audited 2026-05-16
+component,Brand Mark,263:1844,registry/dash/ui/brand-mark.tsx,Done,2ec2daa,1,Yes,Remapped from 2771:1469 to Key Icons size labels shifted
+component,Breadcrumb,447:8760,registry/dash/ui/breadcrumb.tsx,Done,0df3ad2,2,No,no size axis exposed
+component,Button,129:605,registry/dash/ui/button.tsx,Done,4dd6fda,4,No,xl/light/link Dash extensions
+component,Button Group,225:2363,registry/dash/ui/button-group.tsx,Done,4dd6fda,2,No,Container-ring pattern aria-pressed pattern open
+component,Calendar,435:8548,registry/dash/ui/calendar.tsx,Done,5d71b3d,1,No,marked dates not implemented
+component,Card,2950:5881,registry/dash/ui/card.tsx,Done,1ea1dda,2,Yes,padding scale 16/20/24 shifted
+component,Carousel,N/A,registry/dash/ui/carousel.tsx,Dash-only,eddcd17,1,No,Embla wrapper no Figma source
+component,Chart,N/A,registry/dash/ui/chart.tsx,Dash-only,1ea1dda,1,No,Recharts wrapper no Figma source
+component,Checkbox,227:1986,registry/dash/ui/checkbox.tsx,Done,3a3fee3,1,No,destructive tone Dash extension
+component,Collapsible,210:4006,registry/dash/ui/collapsible.tsx,Done,eddcd17,0,No,Radix re-export shares Accordion node
+component,Color Picker,553:22078,registry/dash/ui/color-picker.tsx,Done,5d71b3d,2,No,Color Sliders+Spectrum not ported HSV picker Dash extension
+component,Combobox,270:1084,registry/dash/ui/combobox.tsx,Done,5d71b3d,1,No,Country/Avatar/Provider leading slots TBD
+component,Command,4152:24764,registry/dash/ui/command.tsx,Done,5d71b3d,1,No,Item leading variants TBD
+component,Context Menu,166999:140904,registry/dash/ui/context-menu.tsx,Done,7b4168d,1,No,surface upgrade to rounded-2xl
+component,Data Table,N/A,registry/dash/ui/data-table.tsx,Dash-only,1ea1dda,1,No,TanStack wrapper no Figma composite source
+component,Date Picker,435:8548,registry/dash/ui/date-picker.tsx,Done,5d71b3d,1,No,Period Range preset chips not ported
+component,Content Divider,414:4397,registry/dash/ui/divider.tsx,Done,2ec2daa,0,No,added variant=solid
+component,Dot Stepper,479:14388,registry/dash/ui/dot-stepper.tsx,Done,0df3ad2,2,Yes,Removed stretch-to-pill animation md/lg are Dash extensions
+component,Drawer,486:7366,registry/dash/ui/drawer.tsx,Done,7b4168d,1,No,12 Header subvariants not enumerated
+component,Dropdown Menu,166999:140904,registry/dash/ui/dropdown-menu.tsx,Done,7b4168d,2,No,60 item subvariants (Country/Avatar/Provider/Brand) not implemented
+component,Empty State,3860:4301,registry/dash/ui/empty-state.tsx,Done,1ea1dda,1,No,EmptyStateIllustration slot added (148x148)
+component,Fancy Button,129:605,registry/dash/ui/fancy-button.tsx,Done,4dd6fda,1,No,Disabled state not pixel-verified
+component,Field,N/A,registry/dash/ui/field.tsx,Dash-only,eddcd17,0,No,layout-only stack primitive
+component,File Upload,450:9364,registry/dash/ui/file-upload.tsx,Done,5d71b3d,1,No,File Format Icons 27 SVG not exported
+component,Filter,3880:66172,registry/dash/ui/filter.tsx,Done,5d71b3d,1,No,Vertical filter panel not ported
+component,Form,N/A,registry/dash/ui/form.tsx,Dash-only,eddcd17,0,No,react-hook-form integration wrapper
+component,Hint,263:1844,registry/dash/ui/hint.tsx,Done,2ec2daa,0,No,helper text under inputs
+component,Hover Card,553:22099,registry/dash/ui/hover-card.tsx,Done,7b4168d,0,No,synced with Popover spec
+component,Icon Button,129:605,registry/dash/ui/icon-button.tsx,Done,4dd6fda,2,No,Compact Button 20/24px not ported
+component,Input,266:5230,registry/dash/ui/input.tsx,Done,3a3fee3,2,No,Tag/Counter/Inline Input variants not ported
+component,Input OTP,266:5230,registry/dash/ui/input-otp.tsx,Done,3a3fee3,1,No,No Figma multi-slot spec only single Digit Input
+component,KBD,N/A,registry/dash/ui/kbd.tsx,Dash-only,N/A,1,No,no AlignUI source kept Dash-custom
+component,Label,266:2814,registry/dash/ui/label.tsx,Done,3a3fee3,0,No,covered via form-inputs sweep
+component,Link Button,129:605,registry/dash/ui/link-button.tsx,Done,4dd6fda,1,No,explicit Figma size mapping added
+component,Menubar,166999:140904,registry/dash/ui/menubar.tsx,Done,7b4168d,0,No,surface upgrade
+component,Modal,466:4630,registry/dash/ui/modal.tsx,Done,7b4168d,3,No,Status Modal preset not implemented 12 Header subvariants
+component,Navigation Menu,3789:4743,registry/dash/ui/navigation-menu.tsx,Done,0df3ad2,2,No,viewport shadow fixed mega-menu surface kept as defaults
+component,Notification Feed,4096:21398,registry/dash/ui/notification-feed.tsx,Done,1101ed4,2,No,Avatar status overlay TBD
+component,Pagination,486:8465,registry/dash/ui/pagination.tsx,Done,0df3ad2,3,No,Group type not implemented page X of Y not included
+component,Password Input,266:5230,registry/dash/ui/password-input.tsx,Done,3a3fee3,0,No,fixed broken text-icon-soft token
+component,Popover,553:22099,registry/dash/ui/popover.tsx,Done,7b4168d,0,No,rounded-2xl p-5 shadow-custom-medium
+component,Progress Bar,450:17758,registry/dash/ui/progress-bar.tsx,Done,1101ed4,2,No,added tone=information ProgressBarLabel
+component,Progress Circle,450:17758,registry/dash/ui/progress-circle.tsx,Done,1101ed4,2,No,5 discrete sizes status tones Dash extension
+component,Radio,515:3884,registry/dash/ui/radio.tsx,Done,3a3fee3,0,No,Inner-dot pattern (Figma exact)
+component,Rating,532:4130,registry/dash/ui/rating.tsx,Done,eddcd17,0,No,star color fixed yellow-500 was orange
+component,Resizable,N/A,registry/dash/ui/resizable.tsx,Dash-only,eddcd17,1,No,no AlignUI splitter component
+component,Rich Editor,164611:20259,registry/dash/ui/rich-editor.tsx,Done,5d71b3d,1,No,Color picker dropdown not shipped
+component,Scroll Area,165475:768,registry/dash/ui/scroll-area.tsx,Done,eddcd17,0,No,3 sizes x 2 variants added
+component,Segmented Control,553:14953,registry/dash/ui/segmented-control.tsx,Done,0df3ad2,3,No,Only Icon variant not implemented sm/lg Dash extensions
+component,Select,270:1084,registry/dash/ui/select.tsx,Done,5d71b3d,2,No,7 leading slot variants not implemented Compact/Inline Select not ported
+component,Sheet,486:7366,registry/dash/ui/sheet.tsx,Done,7b4168d,1,No,full shadcn-token rewrite
+component,Sidebar,3789:4743,registry/dash/ui/sidebar.tsx,Done,0df3ad2,4,No,Feature Cards 28 variants not implemented Header Card/Profile Card not implemented
+component,Skeleton,N/A,registry/dash/ui/skeleton.tsx,Dash-only,N/A,1,No,no AlignUI source kept Dash-custom
+component,Slider,2604:3416,registry/dash/ui/slider.tsx,Done,3a3fee3,1,No,tooltip-on-drag not implemented
+component,Social Button,129:605,registry/dash/ui/social-button.tsx,Done,4dd6fda,3,No,added linkedin+dropbox demoted microsoft to extension
+component,Spinner,N/A,registry/dash/ui/spinner.tsx,Dash-only,N/A,1,No,no AlignUI indeterminate spinner
+component,Stat,2950:5881,registry/dash/ui/stat.tsx,Done,1ea1dda,1,Yes,StatValue size prop default md smaller (24px)
+component,Step Indicator,479:14388,registry/dash/ui/step-indicator.tsx,Done,0df3ad2,3,Yes,markers 28->20 connector hairline->chevron
+component,Switch,379:6649,registry/dash/ui/switch.tsx,Done,3a3fee3,0,No,bg-stroke-soft-200 track Figma exact
+component,Table,553:14955,registry/dash/ui/table.tsx,Done,1ea1dda,2,Yes,header weight 600->500 color sub->soft
+component,Tabs,553:734,registry/dash/ui/tabs.tsx,Done,0df3ad2,3,Yes,pill variant fully reimplemented Card vertical-tab not implemented
+component,Tag,417:12348,registry/dash/ui/tag.tsx,Done,2ec2daa,0,No,4-state model gap 4px->2px
+component,Textarea,434:6100,registry/dash/ui/textarea.tsx,Done,3a3fee3,0,No,radius 12 pad 10/10/10/12 Figma exact
+component,Time Picker,164611:83414,registry/dash/ui/time-picker.tsx,Done,5d71b3d,1,No,full popover panel TBD numeric input Dash extension
+component,Toaster,169:2358,registry/dash/ui/toaster.tsx,Done,1101ed4,1,No,Sonner classNames mirror Alert sm-stroke
+component,Toggle,N/A,registry/dash/ui/toggle.tsx,Dash-only,N/A,1,No,no Figma source
+component,Toggle Group,N/A,registry/dash/ui/toggle-group.tsx,Dash-only,N/A,1,No,no Figma source
+component,Tooltip,553:14954,registry/dash/ui/tooltip.tsx,Done,7b4168d,1,No,size=lg with title/desc/close not subcomponent-ized
+block,Activity Timeline,N/A,registry/dash/blocks/activity-timeline.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Analytics Grid,N/A,registry/dash/blocks/analytics-grid.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Auth Login Apex,auth block 4,registry/dash/blocks/auth-login-apex.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Auth Login Key,auth block 5,registry/dash/blocks/auth-login-key.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Auth Login Phoenix,auth block 3,registry/dash/blocks/auth-login-phoenix.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Auth Register Aurora,N/A,registry/dash/blocks/auth-register-aurora.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Auth Register Key,N/A,registry/dash/blocks/auth-register-key.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Auth Register Solaris,N/A,registry/dash/blocks/auth-register-solaris.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Auth Reset Password Key,N/A,registry/dash/blocks/auth-reset-password-key.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Auth Verification Key,N/A,registry/dash/blocks/auth-verification-key.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Empty State Collection,N/A,registry/dash/blocks/empty-state-collection.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Forgot Password 01,N/A,registry/dash/blocks/forgot-password-01.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Login 01,N/A,registry/dash/blocks/login-01.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Login 02,N/A,registry/dash/blocks/login-02.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Login 03,N/A,registry/dash/blocks/login-03.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,My Cards Stack,N/A,registry/dash/blocks/my-cards-stack.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Orders Table,N/A,registry/dash/blocks/orders-table.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Products Grid,N/A,registry/dash/blocks/products-grid.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Settings Integrations,N/A,registry/dash/blocks/settings-integrations.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Settings Notifications,N/A,registry/dash/blocks/settings-notifications.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Settings Privacy Security,N/A,registry/dash/blocks/settings-privacy-security.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Settings Profile,N/A,registry/dash/blocks/settings-profile.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Settings Team,N/A,registry/dash/blocks/settings-team.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Signup 01,N/A,registry/dash/blocks/signup-01.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Signup 02,N/A,registry/dash/blocks/signup-02.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Signup 03,N/A,registry/dash/blocks/signup-03.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Stat Card Grid,N/A,registry/dash/blocks/stat-card-grid.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Team Grid,N/A,registry/dash/blocks/team-grid.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Transactions Table,N/A,registry/dash/blocks/transactions-table.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Verification OTP,N/A,registry/dash/blocks/verification-otp.tsx,Pre-existing,N/A,0,No,Dash-curated
+block,Page Header,3829:27898,registry/dash/blocks/page-header.tsx,Done,b83d5b5,1,No,5 leading kinds basic/avatar/icon/brand/company controls slot
+block,Section Header,3880:63403,registry/dash/blocks/section-header.tsx,Done,b83d5b5,1,No,inline compact-button next to title
+block,HR Widgets,3851:32690,registry/dash/blocks/hr-widgets.tsx,Done,f926139,1,No,6 named exports: Schedule/TimeOff/EmployeeSpotlight/TimeTracker/Notes/StatusTracker
+block,Finance Widgets,3963:7181,registry/dash/blocks/finance-widgets.tsx,Done,f926139,1,No,6 named exports: MyCards/RecentTransactions/TotalBalance/QuickTransfer/BudgetOverview/MySubscriptions
+block,Badge Upvote Card,2939:19642,registry/dash/blocks/badge-upvote-card.tsx,Done,ed62444,0,No,Week's Top Contributor ranked list
+block,Badge Profile Account,2939:19642,registry/dash/blocks/badge-profile-account.tsx,Done,ed62444,0,No,Account dropdown with plan Badge + Dark Mode
+block,Avatar Recipient Selection,210:4129,registry/dash/blocks/avatar-recipient-selection.tsx,Done,ed62444,0,No,Saved Recipients with shortcut Kbd
+block,Button Export Settings,129:605,registry/dash/blocks/button-export-settings.tsx,Done,ed62444,0,No,Settings modal with NEW Badge upsell
+block,Button Email Verification,129:605,registry/dash/blocks/button-email-verification.tsx,Done,ed62444,0,No,OTP verification modal
+template,Auth Shell,N/A,registry/dash/templates/auth-shell.tsx,Pre-existing,N/A,0,No,Dash generic shell
+template,Dashboard Shell,N/A,registry/dash/templates/dashboard-shell.tsx,Pre-existing,N/A,0,No,Dash generic shell
+template,Finance Cards,3965:42989,registry/dash/templates/finance-cards.tsx,Done,55dbd7a,0,No,Phase 3a HR/Finance/Marketing port
+template,Finance Dashboard,3911:35680,registry/dash/templates/finance-dashboard.tsx,Done,55dbd7a,0,No,Replaced placeholder
+template,Finance Login,3969:30780,registry/dash/templates/finance-login.tsx,Done,55dbd7a,0,No,Phase 3a port
+template,Finance Send Amount,3974:51735,registry/dash/templates/finance-send-amount.tsx,Done,55dbd7a,0,No,Phase 3a port
+template,Finance Send Method,3974:37412,registry/dash/templates/finance-send-method.tsx,Done,55dbd7a,0,No,Phase 3a port
+template,Finance Send Recipient,3974:9650,registry/dash/templates/finance-send-recipient.tsx,Done,55dbd7a,0,No,Phase 3a port
+template,Finance Transactions,3965:46276,registry/dash/templates/finance-transactions.tsx,Done,55dbd7a,0,No,Phase 3a port
+template,Form Stepper Page,N/A,registry/dash/templates/form-stepper-page.tsx,Pre-existing,N/A,0,No,Dash generic
+template,Halo Dash 3Pane,N/A,registry/dash/templates/halo-dash-3pane.tsx,Dash-only,N/A,0,No,Halo-dash backoffice (Dash-custom)
+template,HR Calendar,3873:39572,registry/dash/templates/hr-calendar.tsx,Done,e96ffad,1,No,grid uses absolute-positioning mockup
+template,HR Dashboard,3715:42065,registry/dash/templates/hr-dashboard.tsx,Done,e96ffad,1,No,Replaced placeholder Sidebar/Header composed externally
+template,HR Login,3901:15361,registry/dash/templates/hr-login.tsx,Done,e96ffad,1,No,Illustration placeholder
+template,HR Profile Settings,3889:79333,registry/dash/templates/hr-profile-settings.tsx,Done,e96ffad,1,No,Tab nav stub
+template,HR Register,3902:26059,registry/dash/templates/hr-register.tsx,Done,e96ffad,1,No,Illustration placeholder
+template,HR Reset Password,3902:26187,registry/dash/templates/hr-reset-password.tsx,Done,e96ffad,1,No,Illustration placeholder
+template,HR Teams,3878:62221,registry/dash/templates/hr-teams.tsx,Done,e96ffad,1,No,Phase 3a port
+template,List Detail Page,N/A,registry/dash/templates/list-detail-page.tsx,Pre-existing,N/A,0,No,Dash generic
+template,Marketing Account Settings,164842:5776,registry/dash/templates/marketing-account-settings.tsx,Done,722d8c4,0,No,Phase 3a port
+template,Marketing Add Product,164914:73123,registry/dash/templates/marketing-add-product.tsx,Done,722d8c4,0,No,Phase 3a port
+template,Marketing Analytics,164636:1065,registry/dash/templates/marketing-analytics.tsx,Done,722d8c4,0,No,Phase 3a port
+template,Marketing Dashboard,164623:17809,registry/dash/templates/marketing-dashboard.tsx,Done,722d8c4,0,No,Replaced placeholder
+template,Marketing Login,164861:38588,registry/dash/templates/marketing-login.tsx,Done,722d8c4,0,No,Phase 3a port
+template,Marketing Orders,164770:19931,registry/dash/templates/marketing-orders.tsx,Done,722d8c4,0,No,Phase 3a port
+template,Marketing Products,164711:2406,registry/dash/templates/marketing-products.tsx,Done,722d8c4,0,No,Phase 3a port
+template,Mitra Suspend Page,N/A,registry/dash/templates/mitra-suspend-page.tsx,Dash-only,N/A,0,No,Dash Express ops UI
+template,Phase7 Results Page,N/A,registry/dash/templates/phase7-results-page.tsx,Dash-only,N/A,0,No,PT Box trader dashboard
+template,Settings Tabs Page,N/A,registry/dash/templates/settings-tabs-page.tsx,Pre-existing,N/A,0,No,Dash generic
+template,HR General Settings,3880:69995,registry/dash/templates/hr-general-settings.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Get Started,3903:28634,registry/dash/templates/hr-get-started.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Personal Information,3903:29361,registry/dash/templates/hr-personal-information.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Role Selection,3904:29701,registry/dash/templates/hr-role-selection.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Password Setup,3908:30106,registry/dash/templates/hr-password-setup.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Position Selection,3904:29920,registry/dash/templates/hr-position-selection.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Complete Onboarding,3908:30330,registry/dash/templates/hr-complete-onboarding.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Enter Verification,3903:26321,registry/dash/templates/hr-enter-verification.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Company Settings,3892:85576,registry/dash/templates/hr-company-settings.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Notification Settings,3892:87292,registry/dash/templates/hr-notification-settings.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Privacy & Security,3893:89081,registry/dash/templates/hr-privacy-security.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Integrations Settings,3895:91151,registry/dash/templates/hr-integrations-settings.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,HR Integrations,3880:63624,registry/dash/templates/hr-integrations.tsx,Done,00b5ebf,0,No,Phase 3c Tier-2 port
+template,Finance Profile Settings,3966:48150,registry/dash/templates/finance-profile-settings.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Register,3971:38198,registry/dash/templates/finance-register.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Reset Password,3971:38279,registry/dash/templates/finance-reset-password.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Email Verification,3971:38360,registry/dash/templates/finance-email-verification.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Company Settings,3966:57728,registry/dash/templates/finance-company-settings.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Notification Settings,3966:58733,registry/dash/templates/finance-notification-settings.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Team Settings,3966:59504,registry/dash/templates/finance-team-settings.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Privacy Security,3969:7901,registry/dash/templates/finance-privacy-security.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Integration Settings,3969:10954,registry/dash/templates/finance-integration-settings.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance Localization Settings,3969:13327,registry/dash/templates/finance-localization-settings.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Finance My Card Detail,3965:44031,registry/dash/templates/finance-my-card-detail.tsx,Done,b673886,0,No,Phase 3c Tier-2 port
+template,Marketing Account Settings v2,164843:39909,registry/dash/templates/marketing-account-settings-v2.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Products Settings,164843:40671,registry/dash/templates/marketing-products-settings.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Payment & Billing,164843:41278,registry/dash/templates/marketing-payment-billing.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Shipping & Delivery,164843:41590,registry/dash/templates/marketing-shipping-delivery.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Privacy & Security,164843:34880,registry/dash/templates/marketing-privacy-security.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Integrations,164843:35642,registry/dash/templates/marketing-integrations.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Appearance,164843:36252,registry/dash/templates/marketing-appearance.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Products Card Opened,164965:34586,registry/dash/templates/marketing-products-card-opened.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Add Product variants,164914:73774+,registry/dash/templates/marketing-add-product-image-stock.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing General Information Filled,164914:73774,registry/dash/templates/marketing-general-information-filled.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port (Add Product step)
+template,Marketing Pricing Detail Empty,164914:73264,registry/dash/templates/marketing-pricing-detail-empty.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port (Add Product step)
+template,Marketing Pricing Detail Filled,164914:73642,registry/dash/templates/marketing-pricing-detail-filled.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port (Add Product step)
+template,Marketing Summary,164926:19943,registry/dash/templates/marketing-summary.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Reset Password,164865:33580,registry/dash/templates/marketing-reset-password.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Register,164865:33467,registry/dash/templates/marketing-register.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+template,Marketing Email Verification,164865:37357,registry/dash/templates/marketing-email-verification.tsx,Done,d18bab5,0,No,Phase 3c Tier-2 port
+foundation,Color Palette,553:14956,app/(docs)/docs/foundations/colors/page.tsx,Done,Phase 1,0,No,Synced from design-tokens.tokens.json
+foundation,Typography,553:14957,app/(docs)/docs/foundations/typography/page.tsx,Partial,Phase 1,0,No,22 classes .text-title-h1..h6 etc emitted
+foundation,Icons,41:136,N/A,HOLD,N/A,0,No,3061 icons HOLD awaiting user signal
+foundation,Grid System,553:14958,N/A,Not Ported,N/A,0,No,Tier-2 grid utilities deferred
+foundation,Shadows,553:14959,app/(docs)/docs/foundations/shadows/page.tsx,Done,Phase 1,0,No,Composed multi-layer shadows emitted
+foundation,Motions,553:14960,N/A,Partial,Phase 1,0,No,Duration/ease defaults emitted Dash motion tokens
+foundation,Corner Radius,553:14961,app/globals.css,Done,Phase 1,0,No,12 radius values emitted
+asset,Brand,2771:1469,N/A,HOLD,N/A,1,No,3rd-party brand logos library not exported
+asset,Placeholder,172:5573,N/A,Not Ported,N/A,0,No,placeholder images deferred
+asset,Country Flags,2771:1471,N/A,Not Ported,N/A,0,No,asset pipeline deferred
+asset,Emojies,2771:1472,N/A,Not Ported,N/A,0,No,asset pipeline deferred
+asset,Appstore Badges,2771:1470,N/A,Not Ported,N/A,0,No,asset pipeline deferred
+asset,Others,2771:1473,N/A,Not Ported,N/A,0,No,asset pipeline deferred

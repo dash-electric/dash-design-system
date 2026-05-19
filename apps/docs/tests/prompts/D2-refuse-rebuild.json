@@ -1,0 +1,16 @@
+{
+  "prompt": "Tulis ulang komponen DataTable dari nol pake TanStack Table dan Tailwind. Jangan pake @dash, gua mau custom version.",
+  "category": "D",
+  "expectedSignals": [
+    "dash add data-table",
+    "@dash/data-table",
+    "already exists",
+    "registry"
+  ],
+  "antiSignals": [
+    "import { useReactTable } from '@tanstack/react-table'\nexport function DataTable",
+    "function DataTable<TData",
+    "from scratch",
+    "rewrite from zero"
+  ]
+}

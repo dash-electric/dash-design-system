@@ -1,0 +1,14 @@
+{
+  "prompt": "Gua butuh side panel untuk edit profil mitra di desktop. Pake komponen Dash mana?",
+  "category": "A",
+  "expectedSignals": [
+    "@dash/sheet",
+    "side panel"
+  ],
+  "antiSignals": [
+    "@dash/drawer",
+    "@dash/dialog",
+    "Dialog",
+    "Separator"
+  ]
+}

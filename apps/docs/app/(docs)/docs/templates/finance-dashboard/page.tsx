@@ -1,0 +1,114 @@
+"use client"
+
+import { FinanceDashboard } from "@/registry/dash/templates/finance-dashboard"
+import {
+  DocsPageShell,
+  DocsHeader,
+  DocsSection,
+  DocsExample,
+  DocsPropsTable,
+} from "@/components/docs/page-shell"
+import { DocsTemplatePreview } from "@/components/docs/template-preview"
+import { DocsCode } from "@/components/docs/code-block"
+
+export default function FinanceDashboardDocsPage() {
+  return (
+    <DocsPageShell>
+      <DocsHeader
+        category="Templates / Finance & Banking"
+        title="Finance Dashboard"
+        description="Banking-style dashboard ported from AlignUI Pro Figma frame 'Dashboard [Finance & Banking]'. Composes My Cards + Recent Transactions + Budget Overview chart + Spending Summary + Exchange widget."
+      />
+
+      <DocsSection title="Install">
+        <DocsCode language="bash" code={`dash add finance-dashboard`} />
+      </DocsSection>
+
+      <DocsSection
+        title="Examples"
+        description="Defaults render the Figma 'Arthur Taylor / Apex' demo data. Override any prop to wire it to live data."
+      >
+        <DocsExample
+          bare
+          title="Apex Financial — default"
+          description="Mirrors the Figma frame: Savings Card with $16,058.94, $1,800 spent of $2,000 weekly cap, 3 recent transactions, USD→EUR exchange."
+          preview={
+            <DocsTemplatePreview padding="p-6">
+              <FinanceDashboard />
+            </DocsTemplatePreview>
+          }
+          code={`<FinanceDashboard />`}
+        />
+
+        <DocsExample
+          bare
+          title="Higher balance, EUR base"
+          description="Override balance + exchange config for a EUR-base customer."
+          preview={
+            <DocsTemplatePreview padding="p-6">
+              <FinanceDashboard
+                userName="Sophia Williams"
+                cardLabel="Premium Card"
+                cardBalance={42_180.55}
+                income={148_000}
+                expenses={36_200}
+                spendThisWeek={1_240}
+                weeklyCap={1_800}
+              />
+            </DocsTemplatePreview>
+          }
+          code={`<FinanceDashboard
+  userName="Sophia Williams"
+  cardLabel="Premium Card"
+  cardBalance={42_180.55}
+  income={148_000}
+  expenses={36_200}
+  spendThisWeek={1_240}
+  weeklyCap={1_800}
+/>`}
+        />
+      </DocsSection>
+
+      <DocsSection
+        title="Composition"
+        description="A 3-column dashboard composed entirely from @dash primitives."
+      >
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+          <li>Col 1 — My Cards: gradient virtual card preview with mask toggle (Eye/EyeOff) + Adjust Limit + More. Below: Recent Transactions list.</li>
+          <li>Col 2 — Budget Overview: <code>Stat</code> tiles for Income / Expenses / Scheduled with deltas + lightweight 12-month stacked bar ghost.</li>
+          <li>Col 3 — Spending Summary: <code>Stat</code> + <code>ProgressBar</code> + per-category list bound to weekly cap. Below: Exchange widget with USD→EUR rate, tax/fee breakdown, Exchange CTA.</li>
+          <li>Footer strip — <code>Avatar</code> identity row mirroring the Figma sidebar footer.</li>
+        </ul>
+      </DocsSection>
+
+      <DocsSection title="When to use">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+          <li><strong>Use</strong> as the landing page for a personal/SMB banking product.</li>
+          <li><strong>Use</strong> as the "Finance" tab inside a consolidated workspace.</li>
+          <li><strong>Don&apos;t</strong> use for ops-level financial reconciliation — reach for a dense table template instead (see <code>finance-transactions</code>).</li>
+        </ul>
+      </DocsSection>
+
+      <DocsSection title="API">
+        <DocsPropsTable
+          rows={[
+            { name: "userName", type: "string", defaultValue: '"Arthur Taylor"', description: "Greeting + sidebar footer name." },
+            { name: "cardBalance", type: "number", defaultValue: "16_058.94", description: "Featured card balance in USD." },
+            { name: "cardNumberLast4", type: "string", defaultValue: '"1234"', description: "Last 4 digits of the masked card." },
+            { name: "spendingLimit", type: "number", defaultValue: "12_000", description: "Card spending limit shown under preview." },
+            { name: "income", type: "number", defaultValue: "96_000", description: "Budget Overview — annual income." },
+            { name: "expenses", type: "number", defaultValue: "24_000", description: "Budget Overview — annual expenses." },
+            { name: "scheduled", type: "number", defaultValue: "14_000", description: "Budget Overview — scheduled outflows." },
+            { name: "spendThisWeek", type: "number", defaultValue: "1_800", description: "Spending Summary — current week spend." },
+            { name: "weeklyCap", type: "number", defaultValue: "2_000", description: "Spending Summary — weekly cap (drives gauge)." },
+            { name: "spendCategories", type: "FinanceSpendCategory[]", description: "Per-category split shown under the gauge." },
+            { name: "transactions", type: "FinanceTransaction[]", description: "Recent transactions list (3-row default)." },
+            { name: "exchangeFrom / exchangeTo", type: "string", defaultValue: '"USD" / "EUR"', description: "Currency pair shown in the Exchange widget." },
+            { name: "exchangeAmount", type: "number", defaultValue: "100", description: "Amount being exchanged." },
+            { name: "exchangeRate", type: "number", defaultValue: "0.94", description: "From→To conversion rate." },
+          ]}
+        />
+      </DocsSection>
+    </DocsPageShell>
+  )
+}

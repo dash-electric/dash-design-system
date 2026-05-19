@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ds.dash.com/schema/components.json",
+  "style": "dash",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/registry/dash",
+    "utils": "@/registry/dash/lib/utils",
+    "ui": "@/registry/dash/ui",
+    "lib": "@/registry/dash/lib",
+    "hooks": "@/registry/dash/hooks"
+  },
+  "registries": {
+    "@dash": {
+      "url": "http://localhost:3000/api/registry/{name}",
+      "headers": {
+        "Authorization": "Bearer ${DASH_REGISTRY_TOKEN}"
+      }
+    }
+  }
+}

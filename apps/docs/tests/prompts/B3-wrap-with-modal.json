@@ -1,0 +1,16 @@
+{
+  "prompt": "Wrap form edit profil mitra ini dalam modal yang trigger dari tombol \"Edit\". Pake komponen Dash.",
+  "category": "B",
+  "expectedSignals": [
+    "@dash/modal",
+    "Modal",
+    "ModalTrigger",
+    "ModalContent"
+  ],
+  "antiSignals": [
+    "@dash/dialog",
+    "Dialog",
+    "@radix-ui/react-dialog",
+    "shadcn"
+  ]
+}

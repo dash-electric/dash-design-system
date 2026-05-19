@@ -1,0 +1,17 @@
+{
+  "prompt": "Tampilin status mitra di row table (Active, Suspended, Pending, Banned). Pake komponen Dash yang sesuai dengan brand.",
+  "category": "C",
+  "expectedSignals": [
+    "@dash/badge",
+    "Badge",
+    "status=",
+    "appearance="
+  ],
+  "antiSignals": [
+    "style=",
+    "variant=\"destructive\"",
+    "<span className=\"bg-red",
+    "bg-red-500",
+    "bg-green-500"
+  ]
+}

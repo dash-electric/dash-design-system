@@ -1,0 +1,22 @@
+{
+  "name": "dash-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter @dash/docs dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "registry:build": "pnpm --filter @dash/docs registry:build",
+    "smoke": "pnpm --filter @dash/docs smoke"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "tsx": "^4"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

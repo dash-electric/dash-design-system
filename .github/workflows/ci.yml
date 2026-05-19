@@ -1,0 +1,203 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate (typecheck + lint + registry build + Next build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript check (all packages)
+        run: pnpm -r typecheck
+
+      - name: Lint docs
+        run: pnpm --filter @dash/docs lint
+
+      - name: Build registry
+        run: pnpm --filter @dash/docs registry:build
+
+      - name: Next.js build
+        run: pnpm --filter @dash/docs build
+        env:
+          DASH_REGISTRY_TOKEN: ci-dummy-token-not-used-in-build
+
+  cli-tests:
+    name: CLI tests (vitest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm --filter dash build
+
+      - name: Run CLI tests
+        run: pnpm --filter dash test
+
+  docs-unit:
+    name: Docs unit tests (vitest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run docs unit tests
+        run: pnpm --filter @dash/docs test:unit
+
+  visual:
+    name: Visual regression (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @dash/docs exec playwright install --with-deps chromium
+
+      - name: Run visual regression
+        run: pnpm --filter @dash/docs test:visual
+        env:
+          DASH_REGISTRY_TOKEN: ci-dummy-token-not-used-in-build
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/docs/playwright-report/
+          retention-days: 30
+
+  smoke:
+    name: Smoke (localhost)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: validate
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build registry
+        run: pnpm --filter @dash/docs registry:build
+
+      - name: Boot Next dev in background
+        run: |
+          nohup pnpm --filter @dash/docs dev > /tmp/next-dev.log 2>&1 &
+          echo $! > /tmp/next-dev.pid
+        env:
+          DASH_REGISTRY_TOKEN: ci-smoke-token
+
+      - name: Wait for localhost:3000
+        run: |
+          for i in {1..40}; do
+            if curl -sf http://localhost:3000/api/health > /dev/null; then
+              echo "Server up after ${i} tries"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Server failed to start" >&2
+          tail -n 200 /tmp/next-dev.log >&2 || true
+          exit 1
+
+      - name: Run smoke probes
+        run: bash apps/docs/scripts/smoke.sh http://localhost:3000 "$DASH_REGISTRY_TOKEN"
+        env:
+          DASH_REGISTRY_TOKEN: ci-smoke-token
+
+      - name: Tear down dev server
+        if: always()
+        run: |
+          if [ -f /tmp/next-dev.pid ]; then
+            kill "$(cat /tmp/next-dev.pid)" 2>/dev/null || true
+          fi

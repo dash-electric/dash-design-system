@@ -1,0 +1,24 @@
+{
+  "$schema": "https://claude.com/schemas/skill-manifest/v1.json",
+  "name": "dash-design-system",
+  "version": "0.0.1",
+  "status": "scaffold",
+  "phase": 2,
+  "description": "Auto-activates in repositories configured with the @dash registry. Injects Dash Design System context (installed components, framework, aliases, domain glossary, anti-patterns) into the AI's working memory at session start.",
+  "entry": "SKILL.md",
+  "activation": {
+    "kind": "auto",
+    "predicates": [
+      { "type": "file_exists", "path": "components.json", "match": "registries[\"@dash\"]" },
+      { "type": "dir_exists", "path": ".dash" }
+    ],
+    "manual": "/dash-skill"
+  },
+  "requires": {
+    "dash-cli": ">=0.2.0"
+  },
+  "owners": [
+    "Dash Design System team"
+  ],
+  "notes": "SCAFFOLD ONLY — Phase 2 work (post-pilot, week 3). Runtime injection not implemented yet."
+}

@@ -1,0 +1,18 @@
+{
+  "prompt": "Apa saja komponen yang tersedia di Dash Design System? Kasih kategori dan jumlah per kategori.",
+  "category": "A",
+  "expectedSignals": [
+    "@dash",
+    "data-table",
+    "button",
+    "form",
+    "templates",
+    "blocks"
+  ],
+  "antiSignals": [
+    "shadcn/ui",
+    "from 'antd'",
+    "import { Dialog }",
+    "MUI"
+  ]
+}

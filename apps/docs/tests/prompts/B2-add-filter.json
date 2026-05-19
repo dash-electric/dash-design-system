@@ -1,0 +1,17 @@
+{
+  "prompt": "Tabel transaksi existing di halaman ini perlu nambahin multi-choice filter di header (status, payment method, date range). Pake @dash.",
+  "category": "B",
+  "expectedSignals": [
+    "@dash/filter",
+    "@dash/date-picker",
+    "Popover",
+    "Command"
+  ],
+  "antiSignals": [
+    "<select multiple",
+    "useState<string[]>([])",
+    "antd",
+    "MUI",
+    "@radix-ui/react-select"
+  ]
+}

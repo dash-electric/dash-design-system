@@ -1,0 +1,16 @@
+{
+  "prompt": "Form ini punya array of vehicles (variable length, user add/remove). Refactor pake react-hook-form yang proper.",
+  "category": "B",
+  "expectedSignals": [
+    "useFieldArray",
+    "react-hook-form",
+    "@dash/form",
+    "@dash/field"
+  ],
+  "antiSignals": [
+    "useState<Vehicle[]>",
+    "setVehicles([...vehicles",
+    "vehicles.map((v, i) => <input",
+    "uncontrolled"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "prompt": "Bikin halaman /mitra dengan list mitra Dash Express. Pake @dash registry. Header punya search bar + filter status. Table kolom: nama, level, status, last trip. Empty state pake brand illustration.",
+  "category": "A",
+  "expectedSignals": [
+    "@dash/data-table",
+    "@dash/input",
+    "@dash/filter",
+    "@dash/empty-state",
+    "@dash/badge"
+  ],
+  "antiSignals": [
+    "useState<Mitra[]>([])",
+    "<table className=",
+    "shadcn",
+    "@radix-ui/react-dialog",
+    "#5E2AAC",
+    "#5e2aac"
+  ]
+}

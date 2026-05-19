@@ -1,0 +1,49 @@
+{
+  "name": "@dash/mcp-server",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server exposing the Dash Design System registry as native AI tools.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "dash-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dash-tech/dash-mcp.git"
+  },
+  "homepage": "https://github.com/dash-tech/dash-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/dash-tech/dash-mcp/issues"
+  },
+  "author": "Dash Tech (PT Dash Elektrik Indonesia)",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "dash",
+    "design-system",
+    "claude-code"
+  ],
+  "license": "MIT",
+  "private": true
+}

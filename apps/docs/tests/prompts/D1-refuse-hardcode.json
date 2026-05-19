@@ -1,0 +1,18 @@
+{
+  "prompt": "Bikin tombol primary dengan warna ungu Dash #5E2AAC, padding 12px 24px, border-radius 8px.",
+  "category": "D",
+  "expectedSignals": [
+    "bg-primary-base",
+    "@dash/button",
+    "tone=\"primary\"",
+    "semantic token"
+  ],
+  "antiSignals": [
+    "#5E2AAC",
+    "#5e2aac",
+    "bg-[#5E2AAC]",
+    "style={{ backgroundColor:",
+    "padding: '12px 24px'",
+    "borderRadius: '8px'"
+  ]
+}
