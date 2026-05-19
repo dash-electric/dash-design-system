@@ -1,0 +1,1098 @@
+{
+  "name": "dash",
+  "homepage": "https://ds.dash.com",
+  "items": [
+    {
+      "name": "dashboard-shell",
+      "type": "registry:page",
+      "title": "Dashboard Shell",
+      "description": "Sidebar + topbar + content layout for backoffice dashboards. Composable groups + headerActions + user slot. Wraps SidebarProvider for collapse state."
+    },
+    {
+      "name": "auth-shell",
+      "type": "registry:page",
+      "title": "Auth Shell",
+      "description": "Page-level layout for login/signup/reset/verification. Variants: centered card or split-screen with hero panel."
+    },
+    {
+      "name": "settings-tabs-page",
+      "type": "registry:page",
+      "title": "Settings Tabs Page",
+      "description": "Left section nav + right content pane. Multi-screen settings (profile/company/team/notifications/integrations/privacy)."
+    },
+    {
+      "name": "form-stepper-page",
+      "type": "registry:page",
+      "title": "Form Stepper Page",
+      "description": "Multi-step form layout with step indicator header + body card + Prev/Next footer. KYC onboarding / dispatch override / payout dispute."
+    },
+    {
+      "name": "list-detail-page",
+      "type": "registry:page",
+      "title": "List-Detail Page",
+      "description": "Master-detail layout for resource browsers. Resizable horizontal split or fixed-width columns. List + detail panes with optional toolbars."
+    },
+    {
+      "name": "finance-dashboard",
+      "type": "registry:page",
+      "title": "Finance Dashboard",
+      "description": "Mitra balance + payout overview + recent transactions. Banking-style featured tile, weekly target progress, Tribe revenue split, payout method cards."
+    },
+    {
+      "name": "finance-profile-settings",
+      "type": "registry:page",
+      "title": "Finance — Profile Settings",
+      "description": "Apex profile settings: vertical category nav + Apex ID + Profile Photo + Name + Email + Phone + Legal Address rows. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-company-settings",
+      "type": "registry:page",
+      "title": "Finance — Company Settings",
+      "description": "Apex company settings: Logo / Legal Name / Tax ID / Email / Phone / Address / Web Links field rows. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-notification-settings",
+      "type": "registry:page",
+      "title": "Finance — Notification Settings",
+      "description": "Apex notification settings: General / Method toggle stacks + Theme radio cards (Light/Dark/System). Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-team-settings",
+      "type": "registry:page",
+      "title": "Finance — Team Settings",
+      "description": "Apex team settings: filter row + Invite CTA + Members table (name/email/last-activity/role). Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-privacy-security",
+      "type": "registry:page",
+      "title": "Finance — Privacy & Security",
+      "description": "Apex privacy/security: Change Password / Backup Codes / 2FA / Active Sessions rows + sessions table. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-integration-settings",
+      "type": "registry:page",
+      "title": "Finance — Integration Settings",
+      "description": "Apex integrations: segmented filter [All/Connected/Disconnected] + Search/Filter/Sort + 3-column app grid. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-localization-settings",
+      "type": "registry:page",
+      "title": "Finance — Localization Settings",
+      "description": "Apex localization: Language / Currency / Timezone / Date Format field rows. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-register",
+      "type": "registry:page",
+      "title": "Finance — Register",
+      "description": "Apex centered-card register with live password rule checklist + strength bar. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-reset-password",
+      "type": "registry:page",
+      "title": "Finance — Reset Password",
+      "description": "Apex single-email reset card with try-another-method fallback. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-email-verification",
+      "type": "registry:page",
+      "title": "Finance — Email Verification",
+      "description": "Apex 4-digit OTP verification with resend link. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "finance-my-card-detail",
+      "type": "registry:page",
+      "title": "Finance — My Card Detail",
+      "description": "Apex card detail: gradient preview + info grid (Card Number/Expiry/CVC/Spending Limit) + action row + recent transactions list. Ported from AlignUI Pro Figma."
+    },
+    {
+      "name": "hr-dashboard",
+      "type": "registry:page",
+      "title": "HR Management — Dashboard",
+      "description": "Synergy HR home dashboard ported 1:1 from AlignUI Pro Figma. Status Tracker + Notes + Today's Schedule + Time Off gauge + Current Project."
+    },
+    {
+      "name": "hr-calendar",
+      "type": "registry:page",
+      "title": "HR Management — Calendar",
+      "description": "Weekly schedule view with upcoming event cards + 5-day grid with event blocks. Ported 1:1 from AlignUI Pro Figma."
+    },
+    {
+      "name": "hr-teams",
+      "type": "registry:page",
+      "title": "HR Management — Teams",
+      "description": "Member directory table with avatar + title + project + document + status. Ported 1:1 from AlignUI Pro Figma."
+    },
+    {
+      "name": "hr-profile-settings",
+      "type": "registry:page",
+      "title": "HR Management — Profile Settings",
+      "description": "Settings page with vertical tab nav and Profile/Contact/Social/Export/General/Company/Notifications/Privacy panels. Ported 1:1 from AlignUI Pro Figma."
+    },
+    {
+      "name": "hr-login",
+      "type": "registry:page",
+      "title": "HR Management — Login",
+      "description": "Split-screen login (brand + form + social SSO) with Time Off promo card on right. Ported 1:1 from AlignUI Pro Figma."
+    },
+    {
+      "name": "hr-register",
+      "type": "registry:page",
+      "title": "HR Management — Register",
+      "description": "Split-screen register with live password rule checklist + social SSO. Ported 1:1 from AlignUI Pro Figma."
+    },
+    {
+      "name": "hr-reset-password",
+      "type": "registry:page",
+      "title": "HR Management — Reset Password",
+      "description": "Single-field email reset with try-another-method fallback. Ported 1:1 from AlignUI Pro Figma."
+    },
+    {
+      "name": "hr-get-started",
+      "type": "registry:page",
+      "title": "HR Management — Get Started",
+      "description": "Single-column onboarding entry — social SSO + email + T&C + Get Started CTA. Ported 1:1 from AlignUI Pro Figma node 3903:28634."
+    },
+    {
+      "name": "hr-personal-information",
+      "type": "registry:page",
+      "title": "HR Management — Personal Information",
+      "description": "Onboarding step 1/5 — Full Name + Username + Phone with country prefix + horizontal step indicator. Ported 1:1 from AlignUI Pro Figma node 3903:29361."
+    },
+    {
+      "name": "hr-role-selection",
+      "type": "registry:page",
+      "title": "HR Management — Role Selection",
+      "description": "Onboarding step 2/5 — two radio cards (Employee / Employer). Ported 1:1 from AlignUI Pro Figma node 3904:29701."
+    },
+    {
+      "name": "hr-position-selection",
+      "type": "registry:page",
+      "title": "HR Management — Position Selection",
+      "description": "Onboarding step 3/5 — Department + Title selects + Biography textarea + Skip link. Ported 1:1 from AlignUI Pro Figma node 3904:29920."
+    },
+    {
+      "name": "hr-password-setup",
+      "type": "registry:page",
+      "title": "HR Management — Password Setup",
+      "description": "Onboarding step 4/5 — create + confirm password with live rule checklist. Ported 1:1 from AlignUI Pro Figma node 3908:30106."
+    },
+    {
+      "name": "hr-complete-onboarding",
+      "type": "registry:page",
+      "title": "HR Management — Complete Onboarding",
+      "description": "Onboarding step 5/5 — 5-row read-only summary with edit pencil per row + Complete CTA. Ported 1:1 from AlignUI Pro Figma node 3908:30330."
+    },
+    {
+      "name": "hr-enter-verification",
+      "type": "registry:page",
+      "title": "HR Management — Enter Verification",
+      "description": "Split-screen verification with 4-digit OTP + Resend + Time Off promo right column. Ported 1:1 from AlignUI Pro Figma node 3903:26321."
+    },
+    {
+      "name": "hr-general-settings",
+      "type": "registry:page",
+      "title": "HR Management — General Settings",
+      "description": "Settings page with General active panel (Regional Preferences + Theme Options). Ported 1:1 from AlignUI Pro Figma node 3880:69995."
+    },
+    {
+      "name": "hr-company-settings",
+      "type": "registry:page",
+      "title": "HR Management — Company Settings",
+      "description": "Settings page with Company active panel (logo + name + website + slogan + description). Ported 1:1 from AlignUI Pro Figma node 3892:85576."
+    },
+    {
+      "name": "hr-notification-settings",
+      "type": "registry:page",
+      "title": "HR Management — Notification Settings",
+      "description": "Settings page with Notification active panel — 3 toggle rows + Upgrade promo block. Ported 1:1 from AlignUI Pro Figma node 3892:87292."
+    },
+    {
+      "name": "hr-privacy-security",
+      "type": "registry:page",
+      "title": "HR Management — Privacy & Security",
+      "description": "Settings page with Privacy & Security active panel — Change Password sub-tab with live rule checklist. Ported 1:1 from AlignUI Pro Figma node 3893:89081."
+    },
+    {
+      "name": "hr-integrations-settings",
+      "type": "registry:page",
+      "title": "HR Management — Integrations Settings",
+      "description": "Settings page with Integrations active panel — 4 connected apps + sub-tabs + Add Integration CTA. Ported 1:1 from AlignUI Pro Figma node 3895:91151."
+    },
+    {
+      "name": "hr-integrations",
+      "type": "registry:page",
+      "title": "HR Management — Integrations",
+      "description": "Standalone integrations marketplace — segmented filter + search + 6 Available apps + 3 Upcoming apps grid. Ported 1:1 from AlignUI Pro Figma node 3880:63624."
+    },
+    {
+      "name": "marketing-dashboard",
+      "type": "registry:page",
+      "title": "Marketing Dashboard",
+      "description": "Tribe initiative performance. KPI grid + conversion trend chart (stacked bars) + funnel + campaign table + region/channel attribution."
+    },
+    {
+      "name": "utils",
+      "type": "registry:lib",
+      "title": "cn utility",
+      "description": "Tailwind class merge helper for Dash Design System."
+    },
+    {
+      "name": "stack-detector",
+      "type": "registry:lib",
+      "title": "Dash repo stack detector",
+      "description": "Inspects a consumer repo and identifies which of the 5 Dash FE stacks it matches (portal-v2, backoffice, halo-fe, basecamp, fleet-mgmt) or `unknown`. Pure filesystem inspection — no network, no spawn. Used by `dash init` and the Adaptation Layer to auto-select the right per-repo rule set."
+    },
+    {
+      "name": "file-upload",
+      "type": "registry:ui",
+      "title": "File Upload",
+      "description": "Dropzone + file list + image upload. Dropzone supports drag-drop + browse, 3 sizes, idle/active/error/disabled states, accept filter, max size guard. FileUploadItem with progress / complete / error states. ImageUpload with avatar/photo preview, Change + Remove buttons."
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "Action menu built on Radix DropdownMenu. Item / RichItem (icon + label + description) / CheckboxItem / RadioItem / Sub / Label / Separator / Shortcut. Destructive item variant."
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Hover/focus tooltip built on Radix Tooltip. 3 sizes (xs/sm/md), side+align positioning, custom animations matching Dash motion tokens."
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "Form field label with required asterisk + optional hint slot. text-strong-950 default, muted hint."
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "Binary toggle built on Radix Switch. 3 sizes (sm/md/lg), primary tone, thumb shadow."
+    },
+    {
+      "name": "radio",
+      "type": "registry:ui",
+      "title": "Radio",
+      "description": "Mutually exclusive selection built on Radix RadioGroup. RadioGroup + RadioItem + RadioField (composed wrapper with label + description). 3 sizes."
+    },
+    {
+      "name": "tag",
+      "type": "registry:ui",
+      "title": "Tag",
+      "description": "Compact chip with optional icon and remove button. 3 variants (stroke/gray/primary), 3 sizes, dismissable."
+    },
+    {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "Side-panel modal sliding from any edge. 4 sides (right/left/top/bottom) × 5 sizes (sm/md/lg/xl/full). Composable parts: Header, Title, Description, Body, Footer."
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "Date grid built on react-day-picker 10. Headless behavior, Dash-styled day cells, range selection, dropdown caption."
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "Calendar dropdown wrapped in Popover. Single date and range variants plus DatePickerTrigger button. Built on Calendar + Radix Popover + date-fns format."
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command Menu",
+      "description": "Searchable command palette built on cmdk. Composable parts (Input, List, Empty, Group, Item, Separator, Shortcut, Kbd) plus CommandDialog wrapper for cmd+K modal pattern."
+    },
+    {
+      "name": "divider",
+      "type": "registry:ui",
+      "title": "Divider",
+      "description": "Horizontal or vertical 1px rule (Divider) plus content-aware separator with center label or icon (ContentDivider). Built on Radix Separator."
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:ui",
+      "title": "Color Picker",
+      "description": "Hex color picker built on react-colorful. Saturation square + hue slider + hex input + optional preset row. Plus ColorSwatch trigger button for popover use."
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "Boolean toggle built on Radix Checkbox. 3 sizes (sm/md/lg), primary + destructive tones, indeterminate state, plus CheckboxField composition with label + description."
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "Button Group",
+      "description": "Wrap multiple Buttons in a unified row or column. Attached mode merges borders so the group reads as one control; detached mode adds gap. Optional separator divider for ghost-style groups."
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Primary action trigger. 3 tones (primary/neutral/destructive) × 6 styles (filled/stroke/light/lighter/ghost/link) × 5 sizes (xs/sm/md/lg/xl) plus icon-only sizes. Loading state, leftIcon/rightIcon props, asChild for router-link forwarding."
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Hierarchy navigation. Composable parts (List, Item, Link, Page, Separator, Ellipsis) with 3 separator variants (chevron, slash, dot)."
+    },
+    {
+      "name": "banner",
+      "type": "registry:ui",
+      "title": "Banner",
+      "description": "Full-width status banner — pinned to the top of a page or app shell. Same status × style matrix as Alert (6 statuses × 4 styles × 2 sizes). Optional title, action, dismiss."
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Inline tag for status, count, label. 6 statuses (error/warning/success/information/feature/neutral) × 4 styles (filled/stroke/light/lighter) × 3 sizes. Includes StatusBadge variant with dot + optional pulse."
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "User avatar with image + initials fallback. Supports 7 sizes, circle/rounded shape, top/bottom status indicators (online/away/busy/offline), and grouping with overflow count."
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "Inline alert banner with 5 statuses (error, warning, success, information, feature), 4 styles (filled, stroke, light, lighter), and 3 sizes. Same anatomy used for Notification (corner) and Toast (stacked)."
+    },
+    {
+      "name": "toaster",
+      "type": "registry:ui",
+      "title": "Toaster",
+      "description": "Sonner-based toast system with Dash visual tokens. Mount once at app root, call toast.success / toast.error / featureToast from anywhere."
+    },
+    {
+      "name": "activity-feed",
+      "type": "registry:ui",
+      "title": "Activity Feed",
+      "description": "Composable activity stream — chronological list with avatar, action, timestamp, and item-types (file attachment, comment, task progress, filter chip)."
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "Slide-by-slide content browser built on embla-carousel-react. Composable Carousel/Content/Item/Previous/Next + useCarousel() hook. Horizontal + vertical orientation."
+    },
+    {
+      "name": "chart",
+      "type": "registry:ui",
+      "title": "Chart",
+      "description": "Recharts wrapper with Dash token-aware theming. ChartContainer + ChartTooltip + ChartTooltipContent + ChartLegend + ChartLegendContent + useChart() + ChartConfig type."
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data Table",
+      "description": "Sortable + filterable + paginated table built on TanStack Table v8. Pair with Pagination + Filter for full list-page UX."
+    },
+    {
+      "name": "progress-circle",
+      "type": "registry:ui",
+      "title": "Progress Circle",
+      "description": "Compact circular progress for inline indicators. 5 tones, configurable size + stroke. For full-width progress use Progress Bar."
+    },
+    {
+      "name": "social-button",
+      "type": "registry:ui",
+      "title": "Social Button",
+      "description": "Branded OAuth sign-in button. 6 brands (Google/Apple/GitHub/Facebook/Twitter/Microsoft) × 4 sizes. Auto label + icon, overrideable."
+    },
+    {
+      "name": "fancy-button",
+      "type": "registry:ui",
+      "title": "Fancy Button",
+      "description": "Gradient + lifted shadow + inner ring marketing CTA. 4 tones × 4 sizes. For everyday actions use Button."
+    },
+    {
+      "name": "dot-stepper",
+      "type": "registry:ui",
+      "title": "Dot Stepper",
+      "description": "Minimal dot-based progress for short flows (3-5 steps) — onboarding, tutorial, carousel. For full step UI use Step Indicator."
+    },
+    {
+      "name": "use-mobile",
+      "type": "registry:hook",
+      "title": "useMobile",
+      "description": "Returns true when viewport < md breakpoint (default 768px). Matches Tailwind md: media query."
+    },
+    {
+      "name": "use-debounce",
+      "type": "registry:hook",
+      "title": "useDebounce",
+      "description": "Debounce a value or a callback. useDebounce(value, delay) returns debounced value; useDebouncedCallback(fn, delay) returns debounced callback."
+    },
+    {
+      "name": "form",
+      "type": "registry:ui",
+      "title": "Form",
+      "description": "react-hook-form integration with accessible label/control/description/error wiring. Form/FormField/FormItem/FormLabel/FormControl/FormDescription/FormMessage + useFormField hook. Pair with zod via @hookform/resolvers."
+    },
+    {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "Lightweight form-row primitive without RHF coupling. Field / FieldRow / FieldGroup / FieldDescription. Use when wiring forms manually."
+    },
+    {
+      "name": "input-otp",
+      "type": "registry:ui",
+      "title": "Input OTP",
+      "description": "Single-character segmented input for one-time codes built on input-otp. InputOTP/Group/Slot/Separator. Use for KYC, MFA, payout dispute approval."
+    },
+    {
+      "name": "stat",
+      "type": "registry:ui",
+      "title": "Stat",
+      "description": "KPI tile primitive. Label + value + trend (up/down/neutral) + description. Bare or wrap in Card."
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "Keyboard key glyph. 3 sizes. Pair with Command Menu hints, Tooltip shortcuts, settings docs."
+    },
+    {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "title": "Context Menu",
+      "description": "Right-click menu built on Radix ContextMenu. Item/CheckboxItem/RadioItem/Sub/Label/Separator/Shortcut. Destructive item variant."
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menubar",
+      "description": "Persistent horizontal menubar built on Radix Menubar. Use for power-user desktop shells (File/Edit/View pattern)."
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "Top-level horizontal nav with hover mega-menus built on Radix NavigationMenu. Use for marketing site + multi-product shell."
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "Composable shell rail. SidebarProvider/Sidebar/Header/Content/Footer/Group/GroupLabel/Item/Trigger/Inset + useSidebar() hook. Pair with Sheet for mobile."
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "description": "Searchable single-select. Composed from Popover + Command. For small known sets use Select instead."
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "Lock container to fixed width:height ratio via Radix AspectRatio. Prevents layout shift for image / video / map slots."
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "Single-section show/hide built on Radix Collapsible. For multi-section grouped accordion behavior use Accordion."
+    },
+    {
+      "name": "resizable",
+      "type": "registry:ui",
+      "title": "Resizable",
+      "description": "Splitter for two or more panels with draggable handles. Built on react-resizable-panels. Horizontal + vertical direction."
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "Generic large side panel built on Radix Dialog. 4 sides × 5 sizes. Desktop counterpart to Drawer."
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "Confirmation modal for destructive or irreversible actions. No overlay-click dismiss. Built on Radix AlertDialog."
+    },
+    {
+      "name": "toggle",
+      "type": "registry:ui",
+      "title": "Toggle",
+      "description": "Stateful 2-state button built on Radix Toggle. 2 variants (default/outline) × 3 sizes. Use for formatting toolbar, feature flags, sticky-pin controls."
+    },
+    {
+      "name": "toggle-group",
+      "type": "registry:ui",
+      "title": "Toggle Group",
+      "description": "Set of related Toggle buttons sharing selection state built on Radix ToggleGroup. single + multiple modes. Inherits variant/size from group."
+    },
+    {
+      "name": "icon-button",
+      "type": "registry:ui",
+      "title": "Icon Button",
+      "description": "Square-format icon-only button. 5 sizes × 3 tones × 3 styles. aria-label required. Pair with Tooltip when icon meaning is ambiguous."
+    },
+    {
+      "name": "compact-button",
+      "type": "registry:ui",
+      "title": "Compact Button",
+      "description": "Mini icon button (20-24px) for close, dismiss, in-cell row action. 4 styles (stroke/ghost/white/modifiable) × 2 sizes × fullRadius toggle. aria-label required."
+    },
+    {
+      "name": "link-button",
+      "type": "registry:ui",
+      "title": "Link Button",
+      "description": "Inline anchor styled as a button-like link. 4 tones × 3 sizes × 3 underline modes. Use asChild with Next/Link for navigation."
+    },
+    {
+      "name": "hint",
+      "type": "registry:ui",
+      "title": "Hint",
+      "description": "Inline helper text below form fields. 5 tones (neutral/success/warning/error/information) with auto-icon, optional hideIcon for dense rows."
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "Indeterminate loading indicator. 5 sizes × 4 tones. role=status live region for screen readers."
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Shape placeholder during fetch. 3 shapes (rect/circle/text). Honors prefers-reduced-motion via Tailwind animate-pulse."
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "Surface container. 3 variants (stroke/elevated/ghost) × 4 padding sizes. Composable Header/Title/Description/Content/Footer/Media."
+    },
+    {
+      "name": "empty-state",
+      "type": "registry:ui",
+      "title": "Empty State",
+      "description": "Zero-data state with icon + title + description + actions. 3 sizes. Always pair with a recovery action (reset filter, create new)."
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "Non-modal preview on hover or focus built on Radix HoverCard. Skip on mobile — use Popover/Drawer there."
+    },
+    {
+      "name": "filter",
+      "type": "registry:ui",
+      "title": "Filter",
+      "description": "Multi-select dropdown filter chip. Composed from Popover + Command + Tag. Drop in above tables for tribe/status/city/zone narrowing."
+    },
+    {
+      "name": "time-picker",
+      "type": "registry:ui",
+      "title": "Time Picker",
+      "description": "24-hour time input (HH:MM). Pair with Date Picker for full datetime."
+    },
+    {
+      "name": "rich-editor",
+      "type": "registry:ui",
+      "title": "Rich Editor",
+      "description": "Tiptap-powered rich text editor with Dash-styled toolbar. StarterKit + Link + Placeholder extensions wired. Use for suspend reason, complaint reply, internal comment."
+    },
+    {
+      "name": "step-indicator",
+      "type": "registry:ui",
+      "title": "Step Indicator",
+      "description": "Progress through a known sequence. Horizontal or vertical orientation. 3 states (completed/current/upcoming) with connector line."
+    },
+    {
+      "name": "segmented-control",
+      "type": "registry:ui",
+      "title": "Segmented Control",
+      "description": "Visually grouped single-select built on Radix ToggleGroup. 3 sizes. Lighter than Tabs — for toolbar / control / filter use (no associated content panel)."
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "Primitive HTML table parts (Table/Header/Body/Footer/Row/Head/Cell/Caption). Bring your own data + sorting. For column resize / virtualization / multi-sort use Data Table."
+    },
+    {
+      "name": "rating",
+      "type": "registry:ui",
+      "title": "Rating",
+      "description": "Star rating input. 3 sizes, half-step support, read-only display mode."
+    },
+    {
+      "name": "notification-feed",
+      "type": "registry:ui",
+      "title": "Notification Feed",
+      "description": "Persistent list of system notifications. NotificationFeed/Item/Group with unread dot, icon slot, timestamp, action row. Mount inside popover or drawer."
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Horizontal section switcher built on Radix Tabs. 2 variants (line/pill). Composable Root/List/Trigger/Content with keyboard nav."
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Numeric range input built on Radix Slider. Single or multi-thumb (range). Keyboard arrows / home / end / page-up / page-down all wired."
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Single-line text field with composable parts (InputRoot, Input, InputIcon, InputAffix). 4 sizes (sm/md/lg/xl). Focus / hover / disabled / invalid state on the root container."
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Multi-line text field with invalid + disabled states. Tokenized borders, ring, and resize handle."
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "Cross-browser custom scrollbar built on Radix ScrollArea. Use inside sidebars, drawers, and long list panels."
+    },
+    {
+      "name": "modal",
+      "type": "registry:ui",
+      "title": "Modal",
+      "description": "Centered dialog built on Radix Dialog. Modal/Trigger/Close/Portal/Overlay/Content (5 sizes sm-2xl)/Header/Title/Description/Body/Footer. Focus-trap, ESC closes, scroll-lock."
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "Non-modal floating panel anchored to a trigger. Built on Radix Popover. Composable Root/Trigger/Anchor/Close/Content. Use for inline form / settings / contextual editor (not action lists — use Dropdown Menu)."
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "Single-choice dropdown built on Radix Select. SelectTrigger/Value/Content/Group/Label/Item/Separator/ScrollUpButton/ScrollDownButton. For searchable or huge lists use Combobox."
+    },
+    {
+      "name": "progress-bar",
+      "type": "registry:ui",
+      "title": "Progress Bar",
+      "description": "Determinate progress indicator built on Radix Progress. 3 sizes (sm/md/lg), 5 tones (primary/success/warning/error/information). For indeterminate work use Spinner."
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "Page-by-page navigation. Composable Pagination/List/Item/Button/Previous/Next/Ellipsis. Headless behavior — bring your own page state. Renders aria-current='page' on active."
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "Collapsible content sections built on Radix Accordion. Supports single/multiple modes, chevron or plus-minus icons, left or right icon placement."
+    },
+    {
+      "name": "base-theme",
+      "type": "registry:theme",
+      "title": "Dash Base Theme",
+      "description": "Full Dash token system. Semantic tier (bg/text/stroke/icon × strong/sub/soft/disabled/weak/white) + state colors (success/warning/error/information/feature/away/faded × dark/base/light/lighter) + 11 color scales (gray/slate/blue/orange/red/green/yellow/purple/sky/pink/teal) + shadow + radius + motion tokens. Writes consumer's app/globals.css."
+    },
+    {
+      "name": "login-01",
+      "type": "registry:block",
+      "title": "Login 01",
+      "description": "Classic email + password centered with remember-me and forgot-link."
+    },
+    {
+      "name": "login-02",
+      "type": "registry:block",
+      "title": "Login 02",
+      "description": "Email + password with social SSO row (Google + Apple) above the form."
+    },
+    {
+      "name": "login-03",
+      "type": "registry:block",
+      "title": "Login 03",
+      "description": "Split-screen with branded hero panel + testimonial on the left."
+    },
+    {
+      "name": "signup-01",
+      "type": "registry:block",
+      "title": "Signup 01",
+      "description": "Name + email + phone + password centered form with T&C checkbox."
+    },
+    {
+      "name": "signup-02",
+      "type": "registry:block",
+      "title": "Signup 02",
+      "description": "Social SSO row above email signup form."
+    },
+    {
+      "name": "signup-03",
+      "type": "registry:block",
+      "title": "Signup 03",
+      "description": "Split-screen with feature bullets in left hero panel."
+    },
+    {
+      "name": "forgot-password-01",
+      "type": "registry:block",
+      "title": "Forgot Password 01",
+      "description": "Email-only reset request form with back-to-login link."
+    },
+    {
+      "name": "verification-otp",
+      "type": "registry:block",
+      "title": "Verification OTP",
+      "description": "6-digit OTP via InputOTP with resend timer."
+    },
+    {
+      "name": "password-input",
+      "type": "registry:ui",
+      "title": "Password Input",
+      "description": "Password field with leading lock icon and eye / eye-off visibility toggle. Wraps InputRoot + Input + InputIcon."
+    },
+    {
+      "name": "brand-mark",
+      "type": "registry:ui",
+      "title": "Brand Mark",
+      "description": "Header element for auth screens — 56×56 round filled with brand colour (Aurora/Solaris/Phoenix/Apex) or 96×96 rounded-square neutral surface (Key icon variant)."
+    },
+    {
+      "name": "auth-register-aurora",
+      "type": "registry:block",
+      "title": "Auth Register Aurora",
+      "description": "source Aurora — brand mark → single Google SSO → OR divider → first/last/email/password form → FancyButton CTA → footer link."
+    },
+    {
+      "name": "auth-register-solaris",
+      "type": "registry:block",
+      "title": "Auth Register Solaris",
+      "description": "source Solaris — brand mark → 2 stacked SSO (Google + Apple) → OR divider → single email → FancyButton CTA → footer."
+    },
+    {
+      "name": "auth-login-phoenix",
+      "type": "registry:block",
+      "title": "Auth Login Phoenix",
+      "description": "source Phoenix — brand mark → email + password (inline forgot) → FancyButton CTA → OR divider → 2 side-by-side SSO → footer."
+    },
+    {
+      "name": "auth-login-apex",
+      "type": "registry:block",
+      "title": "Auth Login Apex",
+      "description": "source Apex — brand mark → 3 side-by-side SSO (Google/Apple/Microsoft) → OR divider → email + password → remember + forgot → FancyButton CTA → footer."
+    },
+    {
+      "name": "auth-login-key",
+      "type": "registry:block",
+      "title": "Auth Login (Key icon)",
+      "description": "source Login Key — 96×96 key-icon header → email + password → remember + forgot → FancyButton CTA. Minimal no-SSO variant."
+    },
+    {
+      "name": "auth-register-key",
+      "type": "registry:block",
+      "title": "Auth Register (Key icon)",
+      "description": "source Register Key — 96×96 key-icon header → first/last/email/password → FancyButton CTA → T&C / privacy legal copy."
+    },
+    {
+      "name": "auth-reset-password-key",
+      "type": "registry:block",
+      "title": "Auth Reset Password (Key icon)",
+      "description": "source Reset Password Key — 96×96 key-icon header → email → FancyButton CTA → support link."
+    },
+    {
+      "name": "auth-verification-key",
+      "type": "registry:block",
+      "title": "Auth Verification (Key icon)",
+      "description": "source Verification Key — 96×96 shield-icon header → 4-digit OTP grid → FancyButton CTA (disabled until complete) → resend link."
+    },
+    {
+      "name": "transactions-table",
+      "type": "registry:block",
+      "title": "Transactions Table",
+      "description": "Filter row + transaction rows with status badge + amount + Pagination."
+    },
+    {
+      "name": "team-grid",
+      "type": "registry:block",
+      "title": "Team Grid",
+      "description": "Avatar grid with role + tribe tags + live status indicator."
+    },
+    {
+      "name": "orders-table",
+      "type": "registry:block",
+      "title": "Orders Table",
+      "description": "Dispatch table with bulk-select row + status filter + multi-action bar."
+    },
+    {
+      "name": "products-grid",
+      "type": "registry:block",
+      "title": "Products Grid",
+      "description": "Dispatch pool cards with stock progress + status badge + tribe accent."
+    },
+    {
+      "name": "stat-card-grid",
+      "type": "registry:block",
+      "title": "Stat Card Grid",
+      "description": "3-4 KPI tiles in responsive grid with optional trend deltas."
+    },
+    {
+      "name": "empty-state-collection",
+      "type": "registry:block",
+      "title": "Empty State Collection",
+      "description": "4 empty-state patterns: inbox / search / filter / 404."
+    },
+    {
+      "name": "analytics-grid",
+      "type": "registry:block",
+      "title": "Analytics Grid",
+      "description": "KPI strip + Chart row (Area + Bar) — 2-column on desktop."
+    },
+    {
+      "name": "activity-timeline",
+      "type": "registry:block",
+      "title": "Activity Timeline",
+      "description": "Vertical timeline with icon + actor + action + meta tag."
+    },
+    {
+      "name": "my-cards-stack",
+      "type": "registry:block",
+      "title": "My Cards Stack",
+      "description": "Banking-card visualization for mitra payout methods, click to swap."
+    },
+    {
+      "name": "settings-profile",
+      "type": "registry:block",
+      "title": "Settings — Profile",
+      "description": "Avatar upload + name/email/phone/bio fields + Save/Cancel footer."
+    },
+    {
+      "name": "settings-notifications",
+      "type": "registry:block",
+      "title": "Settings — Notifications",
+      "description": "Switch matrix (email × push × SMS) per event type + DND toggle."
+    },
+    {
+      "name": "settings-integrations",
+      "type": "registry:block",
+      "title": "Settings — Integrations",
+      "description": "Cards grid (Slack/WA/Email/BCA/GitHub/BMKG) with connect/disconnect button."
+    },
+    {
+      "name": "settings-team",
+      "type": "registry:block",
+      "title": "Settings — Team",
+      "description": "Team member list with role Select + Invite button."
+    },
+    {
+      "name": "settings-privacy-security",
+      "type": "registry:block",
+      "title": "Settings — Privacy & Security",
+      "description": "2FA toggle + active sessions list + password change form."
+    },
+    {
+      "name": "mitra-suspend-page",
+      "type": "registry:page",
+      "title": "Mitra Suspend Page",
+      "description": "Halo-dash Ops master/detail for flagged mitra. Compose ListDetailPage + Modal (manual override) + AlertDialog (permanent suspend). Auto Suspend Mitra PRD pattern."
+    },
+    {
+      "name": "halo-dash-3pane",
+      "type": "registry:page",
+      "title": "Halo-Dash 3-Pane Shell",
+      "description": "Backoffice support module shell. Sidebar + Resizable 3-pane: ticket list / conversation thread / customer inspector. SLA-aware + composer."
+    },
+    {
+      "name": "phase7-results",
+      "type": "registry:page",
+      "title": "Phase 7 Results Dashboard",
+      "description": "Analytics-heavy dashboard for PT Box phase7 results style. KPI grid header + equity curve chart + per-session breakdown table + pain metrics."
+    },
+    {
+      "name": "badge-upvote-card",
+      "type": "registry:block",
+      "title": "Badge — Week's Top Contributor",
+      "description": "Ranked contributor list with avatar rows and upvote button (filled when upvoted, stroke otherwise). Ported from Figma Badge [Examples] :: id 2939:19644."
+    },
+    {
+      "name": "badge-profile-account",
+      "type": "registry:block",
+      "title": "Badge — Profile Account Dropdown",
+      "description": "User account dropdown with Badge plan indicator (FREE/PRO/TEAM/ENTERPRISE), keyboard shortcut, Dark Mode switch row, and destructive logout. Ported from Figma Badge [Examples] :: id 2950:5586."
+    },
+    {
+      "name": "avatar-recipient-selection",
+      "type": "registry:block",
+      "title": "Avatar — Saved Recipients",
+      "description": "Transfer-recipient selection card with avatar rows, account number, keyboard shortcut affordance, and primary New Recipient CTA. Ported from Figma Avatar :: Examples id 2937:14646."
+    },
+    {
+      "name": "button-export-settings",
+      "type": "registry:block",
+      "title": "Button — Export Settings Modal",
+      "description": "Settings modal with inline upsell card (NEW Badge + Upgrade CTA), Cancel + Export footer. Ported from Figma Button [Examples] :: id 167874:113157."
+    },
+    {
+      "name": "button-email-verification",
+      "type": "registry:block",
+      "title": "Button — Email Verification Modal",
+      "description": "Verification dialog with header icon, 6-slot OTP input, two link-style buttons (Enter code manually / Resend the link), and primary Verify CTA. Ported from Figma Button [Examples] :: id 167874:113174."
+    },
+    {
+      "name": "hr-widgets",
+      "type": "registry:block",
+      "title": "HR Widgets",
+      "description": "Six HR Management dashboard widgets ported from Figma Widgets [HR Management] [1.1]: ScheduleWidget, TimeOffWidget, EmployeeSpotlightWidget, TimeTrackerWidget, NotesWidget, StatusTrackerWidget. Each is a card-wrapped composition built on Dash primitives (Card / Avatar / Badge / ProgressBar / IconButton)."
+    },
+    {
+      "name": "finance-widgets",
+      "type": "registry:block",
+      "title": "Finance Widgets",
+      "description": "Six Finance & Banking dashboard widgets ported from Figma Widgets [Finance & Banking] [1.1]: MyCardsWidget, RecentTransactionsWidget, TotalBalanceWidget, QuickTransferWidget, BudgetOverviewWidget, MySubscriptionsWidget. Card-wrapped compositions on Dash primitives with inline sparkline + bar chart fallback (no external chart lib)."
+    },
+    {
+      "name": "page-header",
+      "type": "registry:block",
+      "title": "Page Header",
+      "description": "Backoffice page-level title block with optional leading slot (avatar / icon / brand / company), search + notification topbar icons, primary controls slot, and action button row. Figma parity Headers [1.1] :: Page Header."
+    },
+    {
+      "name": "section-header",
+      "type": "registry:block",
+      "title": "Section Header",
+      "description": "Content-section heading with optional leading slot, inline title compact button (dropdown chevron), search icon, and action button row. Figma parity Headers [1.1] :: Section Header."
+    },
+    {
+      "name": "dash-ai-rules",
+      "type": "registry:file",
+      "title": "Dash AI Rules (v3)",
+      "description": "AI assistant rules for working in repos with @dash registry. v3 Adaptation Layer covers 5 FE + 5 BE + 1 infrastructure repo (11 total): per-repo stack mandates, hard bans (RHF/zod/TanStack/Prisma-in-Nest/K8s), pattern-to-stack translation, refactor + auto-inference protocols, 30+ anti-patterns, per-service API envelope discrimination (numeric vs string status), cross-domain SSO trio, code style per BE service, state machines (delivery/maintenance/repossession/vehicle/incident), webhook namespaces (provider_order.* vs delivery-* vs vehicle-*), infrastructure rules (OpenTofu+Cloud Run+WIF+asia-southeast2), drift inventory awareness. Install to ./CLAUDE.md (or AGENTS.md / .cursorrules)."
+    },
+    {
+      "name": "dash-domain-glossary",
+      "type": "registry:file",
+      "title": "Dash Domain Glossary",
+      "description": "Canonical domain entity glossary across all 11 Dash repos (5 FE + 5 BE + 1 infra). Phase 1 (code-inferred, 22 entities) + Phase 1.5 (AGENTS.md verbatim) + Phase 1.7A (ts-delivery: Delivery FSM 26 statuses, AppError, Joi Bahasa, provider_order.* webhooks) + Phase 1.7B (nest-express + nest-fleet Drizzle, fleet entities Vehicle/Handover/Maintenance/Incident/Repossession, infrastructure OpenTofu+Cloud Run) + Phase 1.7C (next-basecamp shadcn+Zustand+Firebase, react-fleet-management CRA+CRACO+SSO-trio). 30+ entities total, state machines (delivery/maintenance/repossession/vehicle/incident), BE envelope discrimination (numeric vs string status), drift inventory (Dash team action items). Drop into consumer repo so AI agents know entity shapes + endpoints + conventions without re-reading repos."
+    },
+    {
+      "name": "animated-alert",
+      "type": "registry:ui",
+      "title": "Animated Alert",
+      "description": "Soft animated alert with shake/pulse on mount. Multiple tones (info / success / warning / error). Ported from Dash Next Portal v2."
+    },
+    {
+      "name": "announcement-bar",
+      "type": "registry:ui",
+      "title": "Announcement Bar",
+      "description": "Top-of-page promo / sandbox banner. Marquee variant available. Dismissable."
+    },
+    {
+      "name": "information-banner",
+      "type": "registry:ui",
+      "title": "Information Banner",
+      "description": "Multi-slide informational carousel banner. Used for product updates, onboarding hints, and contextual help."
+    },
+    {
+      "name": "fancy-loader",
+      "type": "registry:ui",
+      "title": "Fancy Loader",
+      "description": "Branded multi-color loader for full-screen / page-level loading states."
+    },
+    {
+      "name": "spinner-loader",
+      "type": "registry:ui",
+      "title": "Spinner Loader",
+      "description": "Simple spinner with size + tone variants. Use for inline button loading + small UI placeholders."
+    },
+    {
+      "name": "shimmer",
+      "type": "registry:ui",
+      "title": "Shimmer",
+      "description": "Content placeholder shimmer for skeleton-style loading. Animates a soft gradient sweep across the bounding box."
+    },
+    {
+      "name": "availability-status",
+      "type": "registry:ui",
+      "title": "Availability Status",
+      "description": "Green / amber / red dot + status text pill. Use for service / connection / live-status indicators."
+    },
+    {
+      "name": "notification-onboarding",
+      "type": "registry:ui",
+      "title": "Notification Onboarding",
+      "description": "Popover-based onboarding hint / feature walkthrough tour. Step indicator + skip / next / done CTA."
+    },
+    {
+      "name": "theme-switch",
+      "type": "registry:ui",
+      "title": "Theme Switch",
+      "description": "3-state Light / Dark / System theme toggle. Segmented control surface."
+    },
+    {
+      "name": "language-select",
+      "type": "registry:ui",
+      "title": "Language Select",
+      "description": "Locale picker with country flag + native name. Dropdown trigger."
+    },
+    {
+      "name": "upload-card",
+      "type": "registry:ui",
+      "title": "Upload Card",
+      "description": "Drag-drop file upload card. Dashed border + paperclip icon + Browse files button. Supported-formats hint."
+    },
+    {
+      "name": "shield-crown",
+      "type": "registry:ui",
+      "title": "Shield Crown Icon",
+      "description": "Custom Shield with Crown brand SVG icon. Used for trust / admin / verified affordances."
+    },
+    {
+      "name": "price-with-discount",
+      "type": "registry:ui",
+      "title": "Price With Discount",
+      "description": "Price display with optional strikethrough compare-at and discount badge."
+    },
+    {
+      "name": "discount-line-item",
+      "type": "registry:ui",
+      "title": "Discount Line Item",
+      "description": "Cart / invoice line item with discount % and total. Compose with PriceWithDiscount."
+    },
+    {
+      "name": "empty-state-illustration",
+      "type": "registry:ui",
+      "title": "Empty State Illustration",
+      "description": "34 widget-specific 148x148 empty-state SVG illustrations served from /brand/empty-states/. Use inside any widget empty body slot: <EmptyStateIllustration kind=\"donation-profile\" />."
+    },
+    {
+      "name": "use-code-field",
+      "type": "registry:block",
+      "title": "Use Code Field",
+      "description": "Single-purpose 6-digit alphanumeric use-code field for delivery dispatch. Auto-generate via genUseCode(), regenerate button, copy-to-clipboard, RHF-wired. Works standalone or nested inside useFieldArray rows."
+    },
+    {
+      "name": "multi-item-form",
+      "type": "registry:block",
+      "title": "Multi-Item Form",
+      "description": "Reference pattern: react-hook-form useFieldArray + per-row card + batch submit. Anchors the canonical shape for refactors like 'single-order to multi-order' delivery creation."
+    },
+    {
+      "name": "bulk-submit",
+      "type": "registry:block",
+      "title": "Bulk Submit",
+      "description": "Pattern for batch endpoint dispatch. Per-row status (idle/pending/success/error), optimistic UI with rollback on individual failure, per-row retry, end-of-run summary toast."
+    }
+  ]
+}
