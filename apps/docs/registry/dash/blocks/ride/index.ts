@@ -12,11 +12,17 @@
 
 export * from "../mitra-dispute-flow"
 export * from "../repossession-action-sheet"
+export * from "./surge-multiplier-card"
+export * from "./driver-assignment-board"
+export * from "./polygon-shift-map"
 
 /** Block names in this theme — useful for filtering against registry.json. */
 export const RIDE_BLOCK_NAMES = [
   "mitra-dispute-flow",
   "repossession-action-sheet",
+  "surge-multiplier-card",
+  "driver-assignment-board",
+  "polygon-shift-map",
 ] as const
 
 export type RideBlockName = (typeof RIDE_BLOCK_NAMES)[number]
