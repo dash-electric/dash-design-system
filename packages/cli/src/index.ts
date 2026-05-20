@@ -123,17 +123,22 @@ program
   })
 
 program
-  .command("sync")
+  .command("sync [names...]")
   .description("Sync installed @dash items against latest registry versions")
   .option("--all", "Auto-update all drifted items without prompting")
+  .option("--check", "Report drift only — do not install or prompt")
+  .option("--auto-upgrade", "Only apply patch bumps (skip minor + major)")
   .option("--dry-run", "Preview changes without writing")
   .option("--json", "Emit machine-readable JSON (no prompts, no writes)")
   .option("--registry-url <url>", "Override registry URL")
   .option("--token <token>", "Bearer token")
   .option("--no-cache", "Bypass disk cache (force fresh fetch)")
-  .action(async (opts) => {
+  .action(async (names: string[], opts) => {
     await runSync({
+      names: names?.length ? names : undefined,
       all: opts.all,
+      check: opts.check,
+      autoUpgrade: opts.autoUpgrade,
       dryRun: opts.dryRun,
       json: opts.json,
       registryUrl: opts.registryUrl,

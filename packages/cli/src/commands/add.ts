@@ -17,7 +17,12 @@ import {
   mergeCssVars,
 } from "../lib/file-writer.js"
 import { dedupeDeps, installDeps } from "../lib/deps-installer.js"
-import type { RegistryItem } from "../lib/schema.js"
+import {
+  buildDashHeader,
+  hasDashHeader,
+  injectDashHeader,
+} from "../lib/component-version.js"
+import type { RegistryItem, RegistryFile } from "../lib/schema.js"
 
 export type AddOpts = {
   names: string[]
@@ -81,11 +86,17 @@ export async function runAdd(opts: AddOpts): Promise<void> {
   let skipped = 0
   for (const item of ordered) {
     if (!item.files?.length) continue
+    const itemVersion =
+      (item.meta?.version as string | undefined) ?? "1.0.0"
     for (const f of item.files) {
       const baseTarget = opts.path
         ? path.join(cwd, opts.path, path.basename(f.target ?? f.path))
         : resolveTargetPath(f, config, cwd)
-      const result = await writeRegistryFile(f, baseTarget, {
+      // Inject `@dash version` header on first install of a JS/TS source file
+      // so `dash sync` can classify bump severity later. Idempotent: skipped
+      // if header already present.
+      const stamped = stampDashHeader(f, item.name, itemVersion)
+      const result = await writeRegistryFile(stamped, baseTarget, {
         cwd,
         yes: opts.yes,
         overwrite: opts.overwrite,
@@ -130,4 +141,26 @@ export async function runAdd(opts: AddOpts): Promise<void> {
 
 export function ensureWorkingDir(cwd: string): void {
   if (!fs.existsSync(cwd)) throw new Error(`cwd does not exist: ${cwd}`)
+}
+
+/**
+ * Return a copy of `file` with a `@dash version` header injected into its
+ * content. No-op for non-JS/TS files (css, mdx, json, etc.) and for files
+ * that already declare a `@dash version` header.
+ */
+export function stampDashHeader(
+  file: RegistryFile,
+  itemName: string,
+  version: string,
+): RegistryFile {
+  const content = file.content ?? ""
+  if (!content) return file
+  const ext = path.extname(file.path).toLowerCase()
+  if (![".ts", ".tsx", ".js", ".jsx"].includes(ext)) return file
+  if (hasDashHeader(content)) return file
+  const header = buildDashHeader({
+    version,
+    source: file.path,
+  })
+  return { ...file, content: injectDashHeader(content, header) }
 }
