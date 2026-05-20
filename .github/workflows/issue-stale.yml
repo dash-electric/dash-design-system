@@ -1,0 +1,36 @@
+name: Close stale issues
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  stale:
+    name: Mark + close stale issues
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-issue-stale: 60
+          days-before-issue-close: 30
+          days-before-pr-stale: 60
+          days-before-pr-close: 30
+          stale-issue-label: "stale"
+          stale-pr-label: "stale"
+          exempt-issue-labels: "pinned,security,blocked,roadmap"
+          exempt-pr-labels: "pinned,security,blocked"
+          stale-issue-message: |
+            This issue has had no activity for 60 days. It will be closed in 30 days unless commented on or labeled.
+          stale-pr-message: |
+            This PR has had no activity for 60 days. It will be closed in 30 days unless updated.
+          close-issue-message: |
+            Closed automatically after 90 days inactivity. Reopen if still relevant.
+          close-pr-message: |
+            Closed automatically after 90 days inactivity. Reopen if still relevant.
+          operations-per-run: 100

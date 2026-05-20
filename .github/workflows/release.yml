@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build registry (validate registry.json)
+        run: pnpm registry:build
+
+      - name: Build packages
+        run: pnpm -r build
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+
+      - name: Publish dash CLI to npm (if package present)
+        run: |
+          if [ -f packages/cli/package.json ]; then
+            pnpm --filter dash publish --access public --no-git-checks
+          else
+            echo "No CLI package — skipping npm publish."
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true
+
+      - name: Publish mcp-server to npm (if package present)
+        run: |
+          if [ -f packages/mcp-server/package.json ]; then
+            pnpm --filter "@dash/mcp-server" publish --access public --no-git-checks
+          else
+            echo "No MCP server package — skipping npm publish."
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true

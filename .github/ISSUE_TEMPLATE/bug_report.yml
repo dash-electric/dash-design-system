@@ -1,0 +1,102 @@
+name: Bug report
+description: Report a bug in dash-ds (CLI, registry, docs, or a component)
+title: "bug: "
+labels: ["bug", "triage"]
+assignees:
+  - irfanprimaputra
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill in as much detail as you can so we can reproduce quickly.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area is affected?
+      multiple: false
+      options:
+        - CLI (`dash` command)
+        - Registry (`@dash/*` packages)
+        - Docs site
+        - MCP server
+        - Components (visual / behavior)
+        - Build / tooling
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: dash-version
+    attributes:
+      label: dash CLI version
+      description: Output of `dash --version` (or N/A if not CLI-related)
+      placeholder: "0.x.x"
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node version
+      placeholder: "v20.x.x"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "macOS 14.5 / Ubuntu 22.04 / Windows 11"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps. Number them.
+      placeholder: |
+        1. Run `dash add button`
+        2. Open `apps/web/components/ui/button.tsx`
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / error output
+      description: Paste any terminal output, stack traces, or browser console errors. Will be auto-formatted.
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (if UI-related)
+      description: Drag images directly into this textarea.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirmation
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I can provide a minimal reproduction if requested.
+          required: false

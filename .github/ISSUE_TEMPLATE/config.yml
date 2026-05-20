@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Dash internal Slack
+    url: https://dash-id.slack.com
+    about: For Dash team members — quick questions, design discussion, or async help. Issues are for tracked bugs and features only.
+  - name: Design system docs
+    url: https://dash-ds.vercel.app
+    about: Read the docs before filing — many "bugs" are intended behavior.
+  - name: Security disclosure
+    url: https://github.com/irfanprimaputra/dash-ds/security/advisories/new
+    about: Report a vulnerability privately. Do not open a public issue for security problems.

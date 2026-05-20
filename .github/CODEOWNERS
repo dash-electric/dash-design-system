@@ -1,0 +1,31 @@
+# Code owners for dash-ds
+#
+# Syntax: https://docs.github.com/articles/about-code-owners
+# Order matters: last matching pattern wins.
+#
+# TODO: Add a deputy maintainer. Current sole maintainer = bus-factor 1.
+
+# Default owner for everything in the repo
+*                       @irfanprimaputra
+
+# Critical infra — keep tight
+/.github/               @irfanprimaputra
+/.changeset/            @irfanprimaputra
+/CHANGELOG.md           @irfanprimaputra
+/package.json           @irfanprimaputra
+/pnpm-lock.yaml         @irfanprimaputra
+/pnpm-workspace.yaml    @irfanprimaputra
+
+# CLI + registry — load-bearing
+/packages/cli/          @irfanprimaputra
+/packages/mcp-server/   @irfanprimaputra
+/apps/docs/public/r/    @irfanprimaputra
+
+# Docs site
+/apps/docs/             @irfanprimaputra
+
+# Governance docs
+/CONTRIBUTING.md        @irfanprimaputra
+/AGENTS.md              @irfanprimaputra
+/CLAUDE.md              @irfanprimaputra
+/SECURITY.md            @irfanprimaputra

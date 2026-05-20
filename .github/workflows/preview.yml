@@ -1,0 +1,70 @@
+name: Deploy Preview
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: preview-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Build + smoke Vercel preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel preview config
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Vercel preview
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy preview
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview URL on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = "${{ steps.deploy.outputs.url }}"
+            const body = `Vercel preview: ${url}\n\nSmoke probes run automatically against this URL — see job logs.`
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            })
+
+      - name: Smoke against preview
+        run: bash apps/docs/scripts/smoke.sh "${{ steps.deploy.outputs.url }}" "${{ secrets.DASH_REGISTRY_TOKEN }}"
+        continue-on-error: true
