@@ -1,0 +1,10 @@
+/*
+ * Dash DS — Theme: logistic — typography overrides (optional).
+ *
+ * Logistic keeps Layer 0 type. Monospace numerics are already enabled
+ * via tabular-nums utility on counters; no display-font override needed.
+ */
+
+:root {
+  /* No overrides — inherits from globals.css */
+}

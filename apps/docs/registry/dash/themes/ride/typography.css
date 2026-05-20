@@ -1,0 +1,12 @@
+/*
+ * Dash DS — Theme: ride — typography overrides (optional).
+ *
+ * Ride keeps Layer 0 typography untouched (Inter body + display).
+ * No display-font override — driver/dispatcher UIs prioritise legibility
+ * over personality. File present as a placeholder so theme structure
+ * stays uniform across themes.
+ */
+
+:root {
+  /* No overrides — inherits --font-display and --font-body from globals.css */
+}

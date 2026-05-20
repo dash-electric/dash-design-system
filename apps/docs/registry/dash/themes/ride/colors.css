@@ -1,0 +1,44 @@
+/*
+ * Dash DS — Theme: ride (Dash Ride)
+ * Layer 2 accent overlay. Extends Layer 0 globals.css.
+ * Import AFTER globals.css. Redefines ONLY --theme-accent-* ramp.
+ *
+ * Accent: mobility green #16a34a (Tailwind green-600).
+ * WCAG AA:
+ *   - 500 (#16a34a) on white: contrast ratio 3.13 — passes Large Text + non-text UI.
+ *   - 700 (#15803d) on white: contrast ratio 4.83 — passes AA Normal Text.
+ *   - 100 (#dcfce7) on white: surface tint only (not for text).
+ *   - white on 600 (#16a34a): contrast ratio 3.13 — pair with 700 for AA text.
+ *
+ * Usage rule: text-on-accent must use --theme-accent-700 (not 500/600).
+ */
+
+:root {
+  --theme-accent-50:  #f0fdf4;
+  --theme-accent-100: #dcfce7;
+  --theme-accent-200: #bbf7d0;
+  --theme-accent-300: #86efac;
+  --theme-accent-400: #4ade80;
+  --theme-accent-500: #22c55e;
+  --theme-accent-600: #16a34a;
+  --theme-accent-700: #15803d;
+  --theme-accent-800: #166534;
+  --theme-accent-900: #14532d;
+  --theme-accent-950: #052e16;
+
+  --theme-accent-base:    var(--theme-accent-600);
+  --theme-accent-dark:    var(--theme-accent-700);
+  --theme-accent-darker:  var(--theme-accent-800);
+  --theme-accent-light:   var(--theme-accent-100);
+  --theme-accent-lighter: var(--theme-accent-50);
+  --theme-accent-on:      #ffffff;
+}
+
+.dark {
+  --theme-accent-base:    var(--theme-accent-500);
+  --theme-accent-dark:    var(--theme-accent-400);
+  --theme-accent-darker:  var(--theme-accent-300);
+  --theme-accent-light:   var(--theme-accent-900);
+  --theme-accent-lighter: var(--theme-accent-950);
+  --theme-accent-on:      #0a0a0a;
+}

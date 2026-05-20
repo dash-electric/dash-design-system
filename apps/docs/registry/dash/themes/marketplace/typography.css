@@ -1,0 +1,10 @@
+/*
+ * Dash DS — Theme: marketplace — typography overrides (optional).
+ *
+ * Marketplace keeps Layer 0 type. Price displays use tabular-nums utility
+ * already available; no display-font override.
+ */
+
+:root {
+  /* No overrides — inherits from globals.css */
+}

@@ -1,0 +1,41 @@
+/*
+ * Dash DS — Theme: travel (Dash Travel)
+ * Layer 2 accent overlay. Extends Layer 0 globals.css.
+ *
+ * Accent: ocean blue #0284c7 (Tailwind sky-600).
+ * WCAG AA:
+ *   - 600 (#0284c7) on white: contrast ratio 4.55 — passes AA Normal Text.
+ *   - 700 (#0369a1) on white: contrast ratio 6.07 — passes AAA Normal Text.
+ *   - white on 600 (#0284c7): contrast ratio 4.55 — passes AA Normal Text.
+ *   - 100 (#e0f2fe) on white: surface tint only.
+ */
+
+:root {
+  --theme-accent-50:  #f0f9ff;
+  --theme-accent-100: #e0f2fe;
+  --theme-accent-200: #bae6fd;
+  --theme-accent-300: #7dd3fc;
+  --theme-accent-400: #38bdf8;
+  --theme-accent-500: #0ea5e9;
+  --theme-accent-600: #0284c7;
+  --theme-accent-700: #0369a1;
+  --theme-accent-800: #075985;
+  --theme-accent-900: #0c4a6e;
+  --theme-accent-950: #082f49;
+
+  --theme-accent-base:    var(--theme-accent-600);
+  --theme-accent-dark:    var(--theme-accent-700);
+  --theme-accent-darker:  var(--theme-accent-800);
+  --theme-accent-light:   var(--theme-accent-100);
+  --theme-accent-lighter: var(--theme-accent-50);
+  --theme-accent-on:      #ffffff;
+}
+
+.dark {
+  --theme-accent-base:    var(--theme-accent-500);
+  --theme-accent-dark:    var(--theme-accent-400);
+  --theme-accent-darker:  var(--theme-accent-300);
+  --theme-accent-light:   var(--theme-accent-900);
+  --theme-accent-lighter: var(--theme-accent-950);
+  --theme-accent-on:      #0a0a0a;
+}

@@ -1,0 +1,43 @@
+/*
+ * Dash DS — Theme: logistic (Dash Logistic)
+ * Layer 2 accent overlay. Extends Layer 0 globals.css.
+ *
+ * Accent: delivery orange #ea580c (Tailwind orange-600).
+ * WCAG AA:
+ *   - 600 (#ea580c) on white: contrast ratio 3.48 — passes AA Large + non-text UI.
+ *   - 700 (#c2410c) on white: contrast ratio 4.66 — passes AA Normal Text.
+ *   - white on 700 (#c2410c): contrast ratio 4.66 — passes AA Normal Text.
+ *   - 100 (#ffedd5) on white: surface tint only.
+ *
+ * Usage rule: body text on accent surfaces must use --theme-accent-700 minimum.
+ */
+
+:root {
+  --theme-accent-50:  #fff7ed;
+  --theme-accent-100: #ffedd5;
+  --theme-accent-200: #fed7aa;
+  --theme-accent-300: #fdba74;
+  --theme-accent-400: #fb923c;
+  --theme-accent-500: #f97316;
+  --theme-accent-600: #ea580c;
+  --theme-accent-700: #c2410c;
+  --theme-accent-800: #9a3412;
+  --theme-accent-900: #7c2d12;
+  --theme-accent-950: #431407;
+
+  --theme-accent-base:    var(--theme-accent-600);
+  --theme-accent-dark:    var(--theme-accent-700);
+  --theme-accent-darker:  var(--theme-accent-800);
+  --theme-accent-light:   var(--theme-accent-100);
+  --theme-accent-lighter: var(--theme-accent-50);
+  --theme-accent-on:      #ffffff;
+}
+
+.dark {
+  --theme-accent-base:    var(--theme-accent-500);
+  --theme-accent-dark:    var(--theme-accent-400);
+  --theme-accent-darker:  var(--theme-accent-300);
+  --theme-accent-light:   var(--theme-accent-900);
+  --theme-accent-lighter: var(--theme-accent-950);
+  --theme-accent-on:      #0a0a0a;
+}

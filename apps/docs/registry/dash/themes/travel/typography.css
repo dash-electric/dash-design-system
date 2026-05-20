@@ -1,0 +1,15 @@
+/*
+ * Dash DS — Theme: travel — typography overrides (optional).
+ *
+ * Travel may opt into a slightly more personality-forward display face
+ * for hero/itinerary headlines. Default falls back to globals.css.
+ * Enable by setting --font-display-travel via consumer next/font import.
+ */
+
+:root {
+  /* Optional: override --font-display in consumer layout via next/font.
+     Example (consumer side):
+       const display = Fraunces({ subsets: ["latin"], variable: "--font-display" });
+     This file intentionally does NOT hardcode a font URL — keeps theme
+     dependency-free. */
+}

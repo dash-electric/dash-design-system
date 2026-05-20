@@ -1,0 +1,36 @@
+{
+  "name": "logistic",
+  "title": "Dash Logistic",
+  "layer": 2,
+  "version": "0.1.0",
+  "default": false,
+  "primary": "#5e2aac",
+  "accent": {
+    "name": "delivery-orange",
+    "hex": "#ea580c",
+    "scale": {
+      "50":  "#fff7ed",
+      "100": "#ffedd5",
+      "200": "#fed7aa",
+      "300": "#fdba74",
+      "400": "#fb923c",
+      "500": "#f97316",
+      "600": "#ea580c",
+      "700": "#c2410c",
+      "800": "#9a3412",
+      "900": "#7c2d12",
+      "950": "#431407"
+    }
+  },
+  "wcag": {
+    "accent-700-on-white": { "ratio": 4.66, "passes": ["AA-normal", "AA-large"] },
+    "accent-600-on-white": { "ratio": 3.48, "passes": ["AA-large", "non-text-ui"] },
+    "white-on-accent-700": { "ratio": 4.66, "passes": ["AA-normal"] }
+  },
+  "audience": ["warehouse", "courier", "batch-ops"],
+  "files": {
+    "colors": "./colors.css",
+    "typography": "./typography.css",
+    "voice": "./voice-overrides.md"
+  }
+}

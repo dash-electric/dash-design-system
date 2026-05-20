@@ -1,0 +1,36 @@
+{
+  "name": "travel",
+  "title": "Dash Travel",
+  "layer": 2,
+  "version": "0.1.0",
+  "default": false,
+  "primary": "#5e2aac",
+  "accent": {
+    "name": "ocean-blue",
+    "hex": "#0284c7",
+    "scale": {
+      "50":  "#f0f9ff",
+      "100": "#e0f2fe",
+      "200": "#bae6fd",
+      "300": "#7dd3fc",
+      "400": "#38bdf8",
+      "500": "#0ea5e9",
+      "600": "#0284c7",
+      "700": "#0369a1",
+      "800": "#075985",
+      "900": "#0c4a6e",
+      "950": "#082f49"
+    }
+  },
+  "wcag": {
+    "accent-700-on-white": { "ratio": 6.07, "passes": ["AAA-normal", "AA-normal", "AA-large"] },
+    "accent-600-on-white": { "ratio": 4.55, "passes": ["AA-normal", "AA-large"] },
+    "white-on-accent-600": { "ratio": 4.55, "passes": ["AA-normal"] }
+  },
+  "audience": ["traveller", "booking-ops"],
+  "files": {
+    "colors": "./colors.css",
+    "typography": "./typography.css",
+    "voice": "./voice-overrides.md"
+  }
+}

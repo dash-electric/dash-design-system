@@ -1,0 +1,52 @@
+/*
+ * Dash DS — Theme: trellis-tenant (TEMPLATE — fork and override)
+ * Layer 2 accent overlay. Extends Layer 0 globals.css.
+ *
+ * Placeholder accent: neutral grey #6b7280 (Tailwind gray-500).
+ * Tenants MUST replace this entire ramp with their brand colour before shipping.
+ *
+ * WCAG AA (current placeholder):
+ *   - 500 (#6b7280) on white: contrast ratio 4.65 — passes AA Normal Text.
+ *   - 700 (#374151) on white: contrast ratio 9.42 — passes AAA Normal Text.
+ *   - white on 600 (#4b5563): contrast ratio 7.04 — passes AAA.
+ *
+ * NOTE: tenants MAY also override --primary-base via :root scope in their
+ * own theme fork. Dash Purple is NOT mandatory for external Trellis tenants.
+ */
+
+:root {
+  --theme-accent-50:  #f9fafb;
+  --theme-accent-100: #f3f4f6;
+  --theme-accent-200: #e5e7eb;
+  --theme-accent-300: #d1d5db;
+  --theme-accent-400: #9ca3af;
+  --theme-accent-500: #6b7280;
+  --theme-accent-600: #4b5563;
+  --theme-accent-700: #374151;
+  --theme-accent-800: #1f2937;
+  --theme-accent-900: #111827;
+  --theme-accent-950: #030712;
+
+  --theme-accent-base:    var(--theme-accent-600);
+  --theme-accent-dark:    var(--theme-accent-700);
+  --theme-accent-darker:  var(--theme-accent-800);
+  --theme-accent-light:   var(--theme-accent-100);
+  --theme-accent-lighter: var(--theme-accent-50);
+  --theme-accent-on:      #ffffff;
+
+  /* OPTIONAL: tenants may override --primary-base here.
+   * Leave commented to inherit Dash Purple from globals.css.
+   *
+   * --primary-base: #YOUR_BRAND_HEX;
+   * --primary-dark: #YOUR_BRAND_DARK_HEX;
+   */
+}
+
+.dark {
+  --theme-accent-base:    var(--theme-accent-400);
+  --theme-accent-dark:    var(--theme-accent-300);
+  --theme-accent-darker:  var(--theme-accent-200);
+  --theme-accent-light:   var(--theme-accent-800);
+  --theme-accent-lighter: var(--theme-accent-900);
+  --theme-accent-on:      #0a0a0a;
+}

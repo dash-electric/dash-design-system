@@ -1,0 +1,54 @@
+{
+  "$schema": "https://dash-ds.dev/schemas/themes.manifest.json",
+  "version": "0.1.0",
+  "layer": 2,
+  "primaryBrand": "#5e2aac",
+  "themes": [
+    {
+      "name": "ride",
+      "title": "Dash Ride",
+      "accent": "#16a34a",
+      "accentName": "mobility-green",
+      "default": true,
+      "audience": ["driver", "dispatcher", "ride-ops"],
+      "path": "./ride"
+    },
+    {
+      "name": "logistic",
+      "title": "Dash Logistic",
+      "accent": "#ea580c",
+      "accentName": "delivery-orange",
+      "default": false,
+      "audience": ["warehouse", "courier", "batch-ops"],
+      "path": "./logistic"
+    },
+    {
+      "name": "travel",
+      "title": "Dash Travel",
+      "accent": "#0284c7",
+      "accentName": "ocean-blue",
+      "default": false,
+      "audience": ["traveller", "booking-ops"],
+      "path": "./travel"
+    },
+    {
+      "name": "marketplace",
+      "title": "Dash Marketplace",
+      "accent": "#ca8a04",
+      "accentName": "commerce-yellow",
+      "default": false,
+      "audience": ["merchant", "buyer"],
+      "path": "./marketplace"
+    },
+    {
+      "name": "trellis-tenant",
+      "title": "Trellis Tenant (template)",
+      "accent": "#6b7280",
+      "accentName": "neutral-placeholder",
+      "default": false,
+      "audience": ["saas-tenant"],
+      "template": true,
+      "path": "./trellis-tenant"
+    }
+  ]
+}

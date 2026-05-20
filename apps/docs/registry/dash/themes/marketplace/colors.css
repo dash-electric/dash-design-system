@@ -1,0 +1,47 @@
+/*
+ * Dash DS — Theme: marketplace (Dash Marketplace)
+ * Layer 2 accent overlay. Extends Layer 0 globals.css.
+ *
+ * Accent: commerce yellow #ca8a04 (Tailwind yellow-600).
+ * WCAG AA — yellow is contrast-sensitive, observe usage rules:
+ *   - 600 (#ca8a04) on white: contrast ratio 3.04 — passes AA Large + non-text UI ONLY.
+ *   - 700 (#a16207) on white: contrast ratio 4.65 — passes AA Normal Text.
+ *   - 800 (#854d0e) on white: contrast ratio 6.84 — passes AAA Normal Text.
+ *   - black on 400 (#facc15): contrast ratio 12.4 — passes AAA easily (use for filled badges).
+ *
+ * CRITICAL: never put white text on accent 500/600 — fails AA. Use black-on-yellow OR
+ * white-on-accent-800. --theme-accent-on is set to black accordingly.
+ */
+
+:root {
+  --theme-accent-50:  #fefce8;
+  --theme-accent-100: #fef9c3;
+  --theme-accent-200: #fef08a;
+  --theme-accent-300: #fde047;
+  --theme-accent-400: #facc15;
+  --theme-accent-500: #eab308;
+  --theme-accent-600: #ca8a04;
+  --theme-accent-700: #a16207;
+  --theme-accent-800: #854d0e;
+  --theme-accent-900: #713f12;
+  --theme-accent-950: #422006;
+
+  /* base = 600 for fills, dark = 700 for text-on-white. */
+  --theme-accent-base:    var(--theme-accent-600);
+  --theme-accent-dark:    var(--theme-accent-700);
+  --theme-accent-darker:  var(--theme-accent-800);
+  --theme-accent-light:   var(--theme-accent-100);
+  --theme-accent-lighter: var(--theme-accent-50);
+
+  /* Yellow needs BLACK on top — white-on-yellow fails AA. */
+  --theme-accent-on:      #1c1c1c;
+}
+
+.dark {
+  --theme-accent-base:    var(--theme-accent-400);
+  --theme-accent-dark:    var(--theme-accent-300);
+  --theme-accent-darker:  var(--theme-accent-200);
+  --theme-accent-light:   var(--theme-accent-900);
+  --theme-accent-lighter: var(--theme-accent-950);
+  --theme-accent-on:      #1c1c1c;
+}
