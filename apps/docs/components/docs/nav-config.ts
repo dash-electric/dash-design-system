@@ -39,6 +39,7 @@ export const navSections: NavSection[] = [
           { title: "Introduction",   href: "/docs", status: "shipped" },
           { title: "Installation",   href: "/docs/installation", status: "shipped" },
           { title: "Quick Start",    href: "/docs/quick-start", status: "shipped" },
+          { title: "Testing Locally (Wave 5)", href: "/docs/getting-started/testing-locally", status: "new" },
           { title: "User Onboarding (Wave 5)", href: "/docs/onboarding", status: "new" },
           { title: "Dark Mode",      href: "/docs/foundations/dark-mode", status: "shipped" },
           { title: "Dash CLI",       href: "/docs/tools/cli", status: "shipped" },
