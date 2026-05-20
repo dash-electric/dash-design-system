@@ -3508,6 +3508,36 @@
     },
     {
       "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "audit-history-table",
+      "type": "registry:block",
+      "title": "Audit History Table",
+      "description": "Render edit history for any user-editable legal/financial field. Sortable, filterable, paginated. Per Dash audit trail rule.",
+      "categories": [
+        "block",
+        "table"
+      ],
+      "dependencies": [
+        "@remixicon/react"
+      ],
+      "registryDependencies": [
+        "utils",
+        "input",
+        "select",
+        "date-picker",
+        "badge",
+        "avatar",
+        "pagination",
+        "tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/dash/blocks/audit-history-table.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "activity-timeline",
       "type": "registry:block",
       "title": "Activity Timeline",
@@ -4182,6 +4212,28 @@
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["utils", "button", "card", "icon-button", "toaster"],
       "files": [{ "path": "registry/dash/patterns/bulk-submit.tsx", "type": "registry:block" }]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "bulk-upload-with-status",
+      "type": "registry:block",
+      "title": "Bulk Upload with Per-File Status",
+      "description": "N-file batch upload, parallel with concurrency limit, per-file status + retry, summary toast. Common: delivery proof batch, KYC docs, vehicle photos.",
+      "categories": ["block", "form"],
+      "dependencies": ["@remixicon/react"],
+      "registryDependencies": ["utils", "button", "icon-button", "badge", "file-upload", "toaster"],
+      "files": [{ "path": "registry/dash/blocks/bulk-upload-with-status.tsx", "type": "registry:block" }]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "image-editor-with-audit",
+      "type": "registry:block",
+      "title": "Image Editor with Audit Trail",
+      "description": "Canvas-based crop + rotate for proof images. Audit trail built-in. POD/POP/KYC/vehicle-condition support. No external image lib.",
+      "categories": ["block", "composite"],
+      "dependencies": ["@remixicon/react"],
+      "registryDependencies": ["modal", "button", "icon-button", "select", "textarea", "label", "toaster"],
+      "files": [{ "path": "registry/dash/blocks/image-editor-with-audit.tsx", "type": "registry:block" }]
     }
   ]
 }
