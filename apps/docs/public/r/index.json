@@ -1302,6 +1302,162 @@
       "products": [
         "logistic"
       ]
+    },
+    {
+      "name": "widget-shell",
+      "type": "registry:ui",
+      "title": "Widget Shell",
+      "description": "Layer-1 dashboard widget primitive: rounded card container with header (title + optional controls), body, and optional 'See all' footer. Used by every Dash dashboard widget (HR, Finance, Marketing). Hover lift + accent ring tinted by active Layer-2 theme."
+    },
+    {
+      "name": "hr-time-off-widget",
+      "type": "registry:block",
+      "title": "HR Time Off Widget",
+      "description": "Mitra time-off summary card: stacked date rows with status badges (approved / pending / declined). Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-notes-widget",
+      "type": "registry:block",
+      "title": "HR Notes Widget",
+      "description": "Pinned notes list with author avatar + timestamp meta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-time-tracker-widget",
+      "type": "registry:block",
+      "title": "HR Time Tracker Widget",
+      "description": "Per-mitra running time tracker with start/stop control and accumulated hours readout. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-employee-spotlight-widget",
+      "type": "registry:block",
+      "title": "HR Employee Spotlight Widget",
+      "description": "Featured mitra hero card with avatar, role meta, and quick action. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-schedule-widget",
+      "type": "registry:block",
+      "title": "HR Schedule Widget",
+      "description": "Day-by-day session schedule list with time + attendee thumbnails. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-daily-feedback-widget",
+      "type": "registry:block",
+      "title": "HR Daily Feedback Widget",
+      "description": "Quick mitra feedback capture rows with sentiment chips. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-work-hours-widget",
+      "type": "registry:block",
+      "title": "HR Work Hours Analysis Widget",
+      "description": "Weekly work-hours bar chart with target line + total summary. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-courses-widget",
+      "type": "registry:block",
+      "title": "HR Courses Widget",
+      "description": "Course enrolment cards with progress bar + module count. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-daily-work-hours-widget",
+      "type": "registry:block",
+      "title": "HR Daily Work Hours Widget",
+      "description": "Today's accumulated hours readout with goal-progress ring. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-training-analysis-widget",
+      "type": "registry:block",
+      "title": "HR Training Analysis Widget",
+      "description": "Training completion / pass-rate panel with category breakdown. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-employee-rating-widget",
+      "type": "registry:block",
+      "title": "HR Employee Rating Widget",
+      "description": "Top-rated mitra leaderboard rows with score + delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "hr-course-progress-widget",
+      "type": "registry:block",
+      "title": "HR Course Progress Widget",
+      "description": "Per-course progress rows with percent + last-activity meta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+    },
+    {
+      "name": "finance-stock-tracker-widget",
+      "type": "registry:block",
+      "title": "Finance Stock Tracker Widget",
+      "description": "Single-ticker price card with sparkline + day delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-my-cards-widget",
+      "type": "registry:block",
+      "title": "Finance My Cards Widget",
+      "description": "Carousel of payment cards (EMV chip face) with balance overlay + add-card CTA. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-spending-summary-widget",
+      "type": "registry:block",
+      "title": "Finance Spending Summary Widget",
+      "description": "Category spending bar chart with totals + period selector. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-exchange-widget",
+      "type": "registry:block",
+      "title": "Finance Exchange Widget",
+      "description": "FX exchange input pair (from / to) with live rate + swap action. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-currency-list-widget",
+      "type": "registry:block",
+      "title": "Finance Currency List Widget",
+      "description": "Currency rows with flag + symbol + 24h delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-recent-transactions-widget",
+      "type": "registry:block",
+      "title": "Finance Recent Transactions Widget",
+      "description": "Reverse-chrono transaction list with merchant logo + signed amount + category chip. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-subscriptions-widget",
+      "type": "registry:block",
+      "title": "Finance Subscriptions Widget",
+      "description": "Active subscription rows with provider logo + next billing date + monthly cost. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-quick-transfer-widget",
+      "type": "registry:block",
+      "title": "Finance Quick Transfer Widget",
+      "description": "Frequent-recipient avatar row + amount input for one-tap transfer. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-donation-profile-widget",
+      "type": "registry:block",
+      "title": "Finance Donation Profile Widget",
+      "description": "Recipient profile hero (avatar + cause meta) with donate CTA + progress ring. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-net-balance-widget",
+      "type": "registry:block",
+      "title": "Finance Net Balance Widget",
+      "description": "Aggregate account balance hero with month-over-month delta + sparkline. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-major-expenses-widget",
+      "type": "registry:block",
+      "title": "Finance Major Expenses Widget",
+      "description": "Top-N category expense breakdown with horizontal bars + period selector. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-credit-score-widget",
+      "type": "registry:block",
+      "title": "Finance Credit Score Widget",
+      "description": "Credit score gauge with rating band + tip footer. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+    },
+    {
+      "name": "finance-budget-overview-widget",
+      "type": "registry:block",
+      "title": "Finance Budget Overview Widget",
+      "description": "Annual / yearly budget vs actual stacked bars with category legend. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
     }
   ]
 }

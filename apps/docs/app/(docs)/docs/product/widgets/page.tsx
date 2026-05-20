@@ -913,12 +913,11 @@ function WidgetShell({
   headerExtra?: React.ReactNode
   headerNoTitle?: boolean
   children: React.ReactNode
-  /** Deprecated — kept for prop compatibility. Install command is now canonical `widget-shell`. */
+  /** Per-widget registry slug — drives the footer `dash add <slug>` hint. Falls back to `widget-shell` primitive. */
   registrySlug?: string
   /** Hide footer install hint (e.g. in shell-anatomy demo). */
   showInstall?: boolean
 }) {
-  void registrySlug
   return (
     <div className="group/widget relative flex h-full flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5 shadow-regular-xs transition-all duration-150 hover:border-stroke-strong-950 hover:shadow-card-sm hover:ring-1 hover:ring-(--primary-alpha-16)">
       <div className="flex items-center gap-2">
@@ -941,7 +940,7 @@ function WidgetShell({
       ) : null}
       {showInstall ? (
         <div className="mt-3 pt-2.5 border-t border-stroke-soft-200/70 flex items-center justify-between">
-          <code className="text-[10px] text-text-soft-400 font-mono">dash add widget-shell</code>
+          <code className="text-[10px] text-text-soft-400 font-mono">dash add {registrySlug ?? "widget-shell"}</code>
           <span className="text-[10px] font-medium text-(--primary-base) opacity-0 transition-opacity group-hover/widget:opacity-100">
             Install →
           </span>
