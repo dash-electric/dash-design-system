@@ -8,6 +8,7 @@ import { DocsCopyPage } from "@/components/docs/copy-page"
 import { DocsPreview } from "@/components/docs/preview"
 import { DocsCode } from "@/components/docs/code-block"
 import { DocsBreadcrumb } from "@/components/docs/breadcrumb"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/registry/dash/ui/tabs"
 
 type PageShellProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -269,14 +270,35 @@ type ExampleProps = Omit<React.HTMLAttributes<HTMLDivElement>, "title"> & {
    * 1440px design can horizontally scroll instead of being clipped.
    */
   bare?: boolean
+  /**
+   * Which tab is initially active. Defaults to `"preview"` so visual context
+   * is shown first — switch to `"code"` for snippets where the code itself is
+   * the point (e.g. utility hooks, lib helpers).
+   */
+  defaultTab?: "preview" | "code"
 }
 
 /**
- * DocsExample — title + description above a unified preview/code container.
- * Preview frame (DocsPreview) + DocsCode share the same outer rounded border
- * so they read as a single "spec sheet" unit, not two stacked boxes.
+ * DocsExample — title + description above a Preview/Code tabbed container.
+ *
+ * Switched from stacked (preview + code both rendered) to Tabs in 2026-05-20
+ * to cut typical 4-example page height ~40%. Preview is shown by default;
+ * users opt-in to code via tab switch. The `defaultTab` prop flips the
+ * default to "code" for snippets where the code is the focus.
+ *
+ * Tab indicator uses Dash Purple (via `variant="line"` of the Tabs primitive),
+ * matching the rest of the docs surface.
  */
-export const DocsExample = ({ className, title, description, preview, code, bare, ...props }: ExampleProps) => (
+export const DocsExample = ({
+  className,
+  title,
+  description,
+  preview,
+  code,
+  bare,
+  defaultTab = "preview",
+  ...props
+}: ExampleProps) => (
   <div className={cn("space-y-3", className)} {...props}>
     <div className="space-y-1">
       <h3 className="text-base font-semibold tracking-tight text-text-strong-950">
@@ -288,16 +310,31 @@ export const DocsExample = ({ className, title, description, preview, code, bare
         </p>
       ) : null}
     </div>
-    <div className={cn("rounded-xl", !bare && "overflow-hidden")}>
-      <DocsPreview bare={bare} label={typeof title === "string" ? title : undefined}>
-        {preview}
-      </DocsPreview>
-      <DocsCode
-        code={code}
-        language="tsx"
-        className="rounded-none rounded-b-xl border-x border-b border-stroke-soft-200"
-      />
-    </div>
+    <Tabs defaultValue={defaultTab} className="w-full">
+      <TabsList variant="line" aria-label="Example view">
+        <TabsTrigger variant="line" value="preview">
+          Preview
+        </TabsTrigger>
+        <TabsTrigger variant="line" value="code">
+          Code
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent
+        value="preview"
+        className={cn("mt-3 rounded-xl", !bare && "overflow-hidden")}
+      >
+        <DocsPreview bare={bare} label={typeof title === "string" ? title : undefined}>
+          {preview}
+        </DocsPreview>
+      </TabsContent>
+      <TabsContent value="code" className="mt-3">
+        <DocsCode
+          code={code}
+          language="tsx"
+          className="rounded-xl border border-stroke-soft-200"
+        />
+      </TabsContent>
+    </Tabs>
   </div>
 )
 
