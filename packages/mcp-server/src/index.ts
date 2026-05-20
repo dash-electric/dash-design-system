@@ -8,6 +8,10 @@
  * Env:
  *   DASH_REGISTRY_URL   — registry base URL (default: https://ds.dash.com)
  *   DASH_REGISTRY_TOKEN — optional bearer token
+ *
+ * Response format: markdown (per shadcn MCP convention). Each tool returns
+ * a single MCP TextContent with markdown including section headers, install
+ * commands, and CTAs. See `lib/markdown-response.ts` for formatters.
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -19,12 +23,26 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 import { RegistryClient } from "./lib/registry-client.js";
+import {
+  formatAiRules,
+  formatAuditChecklist,
+  formatCategoryList,
+  formatComponentDetail,
+  formatComponentList,
+  formatError,
+  formatTemplateList,
+  formatTokenList,
+} from "./lib/markdown-response.js";
 import { SERVER_NAME, VERSION } from "./version.js";
 
 import {
   GET_AI_RULES_TOOL,
   runGetAiRules,
 } from "./tools/get-ai-rules.js";
+import {
+  GET_AUDIT_CHECKLIST_TOOL,
+  runGetAuditChecklist,
+} from "./tools/get-audit-checklist.js";
 import {
   GET_COMPONENT_TOOL,
   runGetComponent,
@@ -57,6 +75,7 @@ const TOOLS = [
   LIST_TEMPLATES_TOOL,
   SEARCH_TOKENS_TOOL,
   GET_AI_RULES_TOOL,
+  GET_AUDIT_CHECKLIST_TOOL,
 ];
 
 async function main(): Promise<void> {
@@ -73,15 +92,20 @@ async function main(): Promise<void> {
     const args = (rawArgs ?? {}) as Record<string, unknown>;
 
     try {
-      const result = await dispatch(client, name, args);
+      const markdown = await dispatch(client, name, args);
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: markdown }],
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return {
         isError: true,
-        content: [{ type: "text", text: `Error in ${name}: ${message}` }],
+        content: [
+          {
+            type: "text",
+            text: formatError(`Tool \`${name}\` failed: ${message}`),
+          },
+        ],
       };
     }
   });
@@ -95,24 +119,49 @@ async function main(): Promise<void> {
   );
 }
 
+/**
+ * Dispatch a tool call and return a markdown string. Each branch wires the
+ * tool runner's raw result through the matching formatter from
+ * `lib/markdown-response.ts`.
+ */
 async function dispatch(
   client: RegistryClient,
   name: string,
   args: Record<string, unknown>,
-): Promise<unknown> {
+): Promise<string> {
   switch (name) {
-    case "search_components":
-      return runSearchComponents(client, args as unknown as SearchComponentsInput);
-    case "get_component":
-      return runGetComponent(client, args as unknown as GetComponentInput);
-    case "list_categories":
-      return runListCategories(client);
-    case "list_templates":
-      return runListTemplates(client, args as unknown as ListTemplatesInput);
-    case "search_tokens":
-      return runSearchTokens(client, args as unknown as SearchTokensInput);
-    case "get_ai_rules":
-      return runGetAiRules(client);
+    case "search_components": {
+      const input = args as unknown as SearchComponentsInput;
+      const result = await runSearchComponents(client, input);
+      return formatComponentList(result, { query: input.query, type: input.type });
+    }
+    case "get_component": {
+      const input = args as unknown as GetComponentInput;
+      const result = await runGetComponent(client, input);
+      return formatComponentDetail(result);
+    }
+    case "list_categories": {
+      const result = await runListCategories(client);
+      return formatCategoryList(result);
+    }
+    case "list_templates": {
+      const input = args as unknown as ListTemplatesInput;
+      const result = await runListTemplates(client, input);
+      return formatTemplateList(result, { vertical: input.vertical });
+    }
+    case "search_tokens": {
+      const input = args as unknown as SearchTokensInput;
+      const result = await runSearchTokens(client, input);
+      return formatTokenList(result, { query: input.query });
+    }
+    case "get_ai_rules": {
+      const markdown = await runGetAiRules(client);
+      return formatAiRules(markdown);
+    }
+    case "get_audit_checklist": {
+      const markdown = await runGetAuditChecklist(client);
+      return formatAuditChecklist(markdown);
+    }
     default:
       throw new Error(`Unknown tool: ${name}`);
   }

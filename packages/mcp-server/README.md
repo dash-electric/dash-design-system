@@ -6,18 +6,49 @@ Once installed, an AI session in a Dash repo can answer "what auth blocks ship w
 
 ## What this gives an AI agent
 
-Six tools, six lines:
+Seven tools:
 
 | Tool | Purpose |
 | --- | --- |
 | `search_components` | Full-text search across name, title, description, categories |
-| `get_component` | Fetch one item's full JSON (files, deps, CSS vars) |
+| `get_component` | Fetch one item's full schema (files, deps, CSS vars) |
 | `list_categories` | Group the registry by category, with sample items |
 | `list_templates` | Filter `registry:page` items, optionally by vertical |
 | `search_tokens` | Find a CSS var by name or value (`--dash-purple-500`, `#5e2aac`) |
 | `get_ai_rules` | Return `dash-ai-rules.md` — the convention guide for AI editing |
+| `get_audit_checklist` | Return Layer 0 Cardinal Rules (banned imports, audit trail, voice, tokens). Smaller than `get_ai_rules`; read BEFORE code-gen. |
 
 All input schemas are JSON Schema (Draft 2020-12), discoverable via the standard MCP `tools/list` method.
+
+## Response format — markdown with CTAs
+
+Every tool returns a single MCP `TextContent` block whose body is **markdown** (not JSON). Each response includes section headers, copy-paste install commands, and CTAs pointing the agent at the next useful tool call or docs page. This matches the shadcn MCP convention and produces noticeably cleaner agent output than a raw JSON dump.
+
+**Example: `search_components({ query: "button" })` →**
+
+````markdown
+## Found 2 components for `button`
+
+### `button` — Button _(form)_
+Primary action button.
+
+**Type:** `ui` · **Install:** `dash add button`
+
+### `icon-button` — Icon Button _(form)_
+Compact icon-only variant.
+
+**Type:** `ui` · **Install:** `dash add icon-button`
+
+**To install one:**
+```bash
+dash add <component-name>
+```
+
+**To see the full schema (files, deps, cssVars) for any of these:**
+Call `get_component` with `{ "name": "<component-name>" }`.
+````
+
+Backward compat: the MCP protocol shape (`content: [{ type: "text", text: ... }]`) is unchanged. Only the contents of `text` changed from `JSON.stringify(...)` to markdown.
 
 ## Install + wire in 3 commands
 
@@ -82,6 +113,7 @@ With the server wired up, prompts like these route through real tool calls inste
 - *"Show me the anatomy of `dashboard-shell`."* → `get_component({ name: "dashboard-shell" })`
 - *"How should I structure forms in Dash?"* → `get_ai_rules({})`
 - *"What categories exist?"* → `list_categories({})`
+- *"What are the cardinal rules before I touch this code?"* → `get_audit_checklist({})`
 
 The agent then writes code that matches Dash conventions, because it's reading the registry instead of inventing component names.
 
@@ -121,13 +153,16 @@ src/
 │   ├── auth.ts                env + bearer header construction
 │   ├── registry-client.ts     HTTP + 5-minute LRU cache
 │   └── schema.ts              registry-item type defs
+├── lib/
+│   └── markdown-response.ts   formatters: JSON → markdown w/ CTAs
 └── tools/                     one file per MCP tool
     ├── search-components.ts
     ├── get-component.ts
     ├── list-categories.ts
     ├── list-templates.ts
     ├── search-tokens.ts
-    └── get-ai-rules.ts
+    ├── get-ai-rules.ts
+    └── get-audit-checklist.ts
 ```
 
 Design rules:
@@ -148,7 +183,7 @@ Verify the server responds to a minimal MCP handshake:
   sleep 0.3) | node dist/index.js
 ```
 
-Expect a JSON line for id `2` listing the six tools above.
+Expect a JSON line for id `2` listing the seven tools above.
 
 ## Troubleshooting
 
