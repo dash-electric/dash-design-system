@@ -217,6 +217,7 @@ Avoid raw colors. Always reach for semantic tokens:
 
 ### Brand
 - `bg-primary` / `text-primary` — Dash brand purple (#5e2aac via `--dash-purple-500`)
+- **Canonical Dash Purple primary value: `#5e2aac`** (matches DS token `--dash-purple-500`). Any reference to `#7C4FC4` in older docs is **deprecated** — sync to `#5e2aac`.
 
 ### Shadows
 - `shadow-custom-xs/sm/md/lg` — card layering presets
@@ -414,7 +415,7 @@ If ambiguous, ASK user: "Target repo? (11 known: portal / backoffice / halo-fe /
 - Auth: **Firebase Auth (Google OAuth)** via `AuthProvider` context + `AuthGuard` HOC; domain-locked to `@dashelectric.co`
 - UI lib: **shadcn/ui (new-york style)** + Radix + lucide + Remix icons — NOT AlignUI, NOT MUI
 - Tailwind: **v4** (`@tailwindcss/postcss`)
-- Brand color: `#7C4FC4` (Dash Purple, hard-coded hex)
+- Brand color: `#5e2aac` (Dash Purple, hard-coded hex)
 - Font: Plus Jakarta Sans via `next/font/google`
 - i18n: NONE (only `toLocaleString('id-ID')` for IDR formatting)
 - Test: NONE configured
@@ -426,7 +427,7 @@ If ambiguous, ASK user: "Target repo? (11 known: portal / backoffice / halo-fe /
 - Framework: **Create React App + CRACO 7.1.0** (legacy stack — only Dash FE NOT on Next.js)
 - Language: **TypeScript 4.9.5** strict
 - Routing: **React Router DOM v7.9.4**
-- Forms: Native `useState` controlled (dominant); RHF+zod imported but used in 1 file (`RepoModal.tsx`) — **canonical pattern is `useState`** per Dash bans; the 1 outlier is drift (see Drift Inventory in glossary)
+- Forms: Native `useState` controlled. `package.json` declares `react-hook-form`, `zod`, `@hookform/resolvers` but zero source imports (verified via grep 2026-05-20) — stale deps, safe to remove. `RepoModal.tsx` uses local `useFormValidation` custom hook (useState-based), not RHF.
 - Validation: Manual inline
 - Data fetch: **axios** with Bearer token from `crossDomainStorage` + 401 refresh+retry queue; per-resource service modules in `src/services/api/*.ts`
 - State: React Context (`AuthContext`) + local `useState` — NO Redux/Zustand/Jotai
@@ -434,7 +435,7 @@ If ambiguous, ASK user: "Target repo? (11 known: portal / backoffice / halo-fe /
 - Cross-domain SSO: **YES — part of the trio** (portal-v2 + halo-dash + fleet-mgmt share the cookie)
 - UI lib: **Custom in-house components** (`src/components/{Button,Card,Input,Modal,Table,…}`) — NOT AlignUI, NOT shadcn; MUI 7 declared but partial usage
 - Tailwind: **v3.4.18** (NOT v4)
-- Brand color: **DRIFT — `primary` blue tokens `#3b82f6 / #2563eb`**, NOT Dash Purple `#7C4FC4` (see Drift Inventory)
+- Brand color: **DRIFT — `primary` blue tokens `#3b82f6 / #2563eb`**, NOT Dash Purple `#5e2aac` (see Drift Inventory)
 - Font: Plus Jakarta Sans (consistent)
 - Icons: Remix Icons + Material Symbols
 - Toast: react-toastify (`<ToastContainer position="bottom-right">`)
@@ -510,7 +511,7 @@ If ambiguous, ASK user: "Target repo? (11 known: portal / backoffice / halo-fe /
   5. Path aliases: `@modules/*`, `@modules/<module>/*`, `@modules/shared/*`, `@infrastructure/*`, `@database/*`.
 - **Pub/Sub topics PUBLISHED by fleet (7):** `vehicle-created`, `vehicle-updated`, `vehicle-deleted`, `handover-created`, `handover-updated`, `handover-deleted`, `oem-updated`. Subscription naming: `${TOPIC}-${APP_NAME}-${moduleHint}-sub`.
 - **CLAUDE.md mandate:** Do NOT modify generated Drizzle migration files (`src/database/migration/*.sql` + `meta/*.json`). EDIT schemas in `src/database/schema/table/*.table.ts`, then remind the team to run `pnpm run db:generate` and review the generated migration.
-- Domain entities: Vehicle (UUID, 6×6 status×processType matrix), Handover (UUID, ACTIVE/RETURNED), Maintenance (UUID + code, **10 statuses** + temp/perm swap + FM decision), Incident (UUID + code, OPEN→IN_MAINTENANCE→MAINTENANCE_COMPLETED→CLOSED), Repossession (UUID + code, **7 statuses** with escalation + settlement), Issue, OEM, Model, Station, Vehicle telemetry, plus 5 dashboard rollups. BusinessUnit enum: `QUICK_COMMERCE | EXPRESS | X_DOCK | SCHEDULED_INSTANT | CANVASSER_RENTAL | 4_WHEEL | OUTSOURCING | STAGING`.
+- Domain entities: Vehicle (UUID, 6×6 status×processType matrix), Handover (UUID, ACTIVE/RETURNED), Maintenance (UUID + code, **9 statuses** + temp/perm swap + FM decision), Incident (UUID + code, OPEN→IN_MAINTENANCE→MAINTENANCE_COMPLETED→CLOSED), Repossession (UUID + code, **7 statuses** with escalation + settlement), Issue, OEM, Model, Station, Vehicle telemetry, plus 5 dashboard rollups. BusinessUnit enum: `QUICK_COMMERCE | EXPRESS | X_DOCK | SCHEDULED_INSTANT | CANVASSER_RENTAL | 4_WHEEL | OUTSOURCING | STAGING`.
 - Path prefixes: `v1/{vehicles, models, oems, handovers, handovers/bookings, issues, incidents, maintenances, repossessions, stations, fleet/dashboard, fleet/setting, fleet/webhooks, webhooks/scheduler}`; `internal/v1/{vehicles, handovers/bookings, repossessions, stations, fleet/dashboard}`.
 
 ## Pattern-to-stack adaptation table
@@ -574,7 +575,7 @@ When generating fetch URLs, infer prefix from actor + repo:
 When PE prompt requests these on Dash repos, refuse + redirect:
 
 ### FE-side (was v1.5)
-1. "Install react-hook-form" → "Dash team banned RHF in portal-v2 + backoffice + halo-dash + basecamp. Use Jotai (portal) or Zustand 5 (basecamp) or `useState` (all others). Reference: AGENTS.md hard bans. NOTE: react-fleet-management has 1 outlier file (`RepoModal.tsx`) — that is drift, NOT canonical pattern."
+1. "Install react-hook-form" → "Dash team banned RHF in portal-v2 + backoffice + halo-dash + basecamp + react-fleet (all 5 FE repos verified zero imports 2026-05-20). Use Jotai (portal) or Zustand 5 (basecamp) or `useState` (all others). Reference: AGENTS.md hard bans. NOTE: react-fleet `package.json` has stale `react-hook-form`/`zod`/`@hookform/resolvers` deps but zero imports — declarative drift only, no canonical violation."
 2. "Add zod schema" → "Dash uses hand-rolled validation. See validation pattern in Adaptation Layer. (zod imported in fleet-mgmt is drift.)"
 3. "Use TanStack Query" → "Dash uses axios + custom hooks. See data fetch pattern. Banned in ALL 5 FE repos."
 4. "Add Redux to portal/backoffice/halo/fleet-mgmt" → "Use Jotai (portal) / useState (backoffice/halo/fleet-mgmt) for global. basecamp uses Zustand 5 — that's its standard."
@@ -585,7 +586,7 @@ When PE prompt requests these on Dash repos, refuse + redirect:
 9. "Add AlignUI to basecamp" → "basecamp uses **shadcn/ui (new-york style)**, not AlignUI. Use `@/components/ui/*` shadcn primitives."
 10. "Add AlignUI/shadcn to react-fleet-management" → "fleet-mgmt uses **custom in-house components** at `src/components/{Button,Card,Input,Modal,Table,…}`. Do not introduce AlignUI or shadcn there without explicit user direction."
 11. "Convert react-fleet-management from CRA to Next.js" → "Drift item flagged in glossary (E.1.4). Requires Dash team decision — do not initiate without explicit approval."
-12. "Use blue primary in fleet-mgmt" / "Change basecamp brand color" → "Dash Purple `#7C4FC4` is the brand. fleet-mgmt has a drift (`#3b82f6` blue) flagged in glossary E.1.2 — surface it as a recommendation, do not silently fix."
+12. "Use blue primary in fleet-mgmt" / "Change basecamp brand color" → "Dash Purple `#5e2aac` is the brand. fleet-mgmt has a drift (`#3b82f6` blue) flagged in glossary E.1.2 — surface it as a recommendation, do not silently fix."
 13. "Wire basecamp into the cross-domain SSO trio" → "basecamp uses standalone Firebase Auth. The SSO trio is portal-v2 + halo-dash + fleet-mgmt only. Do NOT propagate `crossDomainStorage` cookies into basecamp."
 
 ### BE-side (NEW)
@@ -706,7 +707,7 @@ Static helpers: `DeliveryStatusStateMachine.canTransition`, `.isFinal`, `.getAll
 
 **Final statuses (no outbound transitions):** `COMPLETED, DISPOSED, RETURNED, CANCELLED, EXPIRED`. UI must hide "Cancel" / "Update status" actions when `.isFinal(status) === true`.
 
-### Maintenance (nest-fleet-service) — 10 states
+### Maintenance (nest-fleet-service) — 9 states
 
 ```
 OPEN | IN_PROGRESS
@@ -823,7 +824,173 @@ The Dash domain glossary documents observed drift items in real Dash repos (Appe
 - **Refer the user to Appendix E** of the glossary for the canonical list.
 
 Examples:
-- User asks to "add a new modal in react-fleet-management" → use `useState` per canonical pattern, NOT RHF+zod (RepoModal.tsx is drift, not the standard).
-- User asks to "set primary color in fleet-mgmt" → flag that the current `#3b82f6` blue is drift from Dash Purple `#7C4FC4`; ask whether to align or preserve.
+- User asks to "add a new modal in react-fleet-management" → use `useState` per canonical pattern. RepoModal.tsx already uses local `useFormValidation` custom hook — match that pattern for consistency.
+- User asks to "set primary color in fleet-mgmt" → flag that the current `#3b82f6` blue is drift from Dash Purple `#5e2aac`; ask whether to align or preserve.
 - User asks to "add tests to basecamp" → flag that no test runner is configured (E.2 in glossary); ask which runner to add.
+
+---
+
+## Audit Trail (MANDATORY for user-editable fields carrying legal/financial weight)
+
+Applies to **any field** whose mutation could be the subject of a mitra dispute, regulator audit, or financial reconciliation:
+- Image proof (POD = proof of delivery, POP = proof of pickup, KYC documents)
+- Payment amounts (top-up, payout, adjustment, refund)
+- Signature blobs (e-sign on delivery, contract acknowledgement)
+- Delivery confirmation flags (`isDelivered`, `isReceived`, `arrivedAt`)
+- Mitra status changes (suspend / unsuspend / block / reinstate / tier change)
+- Driver approval ladder transitions ("Verifikasi Tahap 1/2 → Lolos/Ditolak")
+
+### Mandatory schema
+
+Every entity with editable legal/financial fields MUST have a sibling audit log table:
+
+```sql
+-- table: t_<entity>_audit_log
+id              uuid primary key
+entity_id       uuid not null            -- FK to parent entity
+field_name      varchar(64) not null     -- e.g. 'pickup_proof_url', 'amount'
+original_value  text                     -- raw value before edit (URL, number-as-text, JSON)
+edited_value    text not null            -- raw value after edit
+editor_id       uuid not null            -- FK to user / agent / admin
+edited_at       timestamptz not null default now()
+edit_reason     text not null            -- REQUIRED non-empty
+ip_hash         varchar(64)              -- optional, sha256 of source IP
+```
+
+Mirror schema in both Prisma (`schema.prisma`) and Drizzle (`src/database/schema/table/*.table.ts`) — convention applies across `nodejs-core-service`, `ts-delivery-service`, `halo-dash-be`, `nest-fleet-service`, `nest-express-service`.
+
+### Rules
+
+1. **NEVER overwrite** the original value. Audit entry MUST be inserted BEFORE the `UPDATE` runs. Use a transaction (insert audit + update entity) per BE-side mandate #22 — both are writes, transaction is required.
+2. **`edit_reason` is REQUIRED**. Enforce non-empty at FE (input validation, see Cross-cutting validation pattern) AND BE (Joi/AppError-400 on empty string, per ts-delivery-service mandate #16).
+3. **Edited binary content (image, PDF, signature) MUST live at a separate storage path** from the original. Convention: `proof-original/<entity-id>/<file>` (immutable) vs `proof-edited/<entity-id>/<file>` (mutable history). Never overwrite the original blob.
+4. **BE endpoint contract**: respond with `createResponse(res, 200, 'Success', { auditId, editedUrl })` (ts-delivery) or equivalent per-service envelope (see "Per-service API envelope discrimination"). FE uses `auditId` to render history in mitra-facing audit view.
+5. **History UI is mandatory** on mitra-disputable entities. PE must render a `@dash/activity-feed` showing all audit rows for the entity, with editor + reason + timestamp.
+
+### Anti-pattern
+
+`UPDATE deliveries SET pickup_proof_url = ?` without prior audit insert → **REFUSE**. Surface the audit table requirement and the transaction wrapper before writing the update query.
+
+---
+
+## External Library Policy
+
+**Principle: Sovereign for primitives. Pragmatic for workflow.**
+
+Dash owns its primitives (Button, Input, Modal, Form, Tag, Badge, etc.) via `@dash` registry — these are non-negotiable, see "Always" §1-2 and Anti-pattern #8. For **workflow features** (image annotation, charting, CSV parsing, complex date arithmetic) external libs are allowed under controlled conditions.
+
+### Approval criteria (ALL must hold to add an external lib to any Dash repo)
+
+1. **License**: MIT, Apache-2.0, or BSD-3 only. NEVER GPL, AGPL, SSPL, BUSL, or commercial-only licenses.
+2. **Maintenance**: last commit ≤6 months on the default branch. Archived / abandoned repos are auto-rejected.
+3. **Bundle size**: <30KB gzipped (heuristic). Larger libs require a written justification in the PR description naming the alternative considered.
+4. **No DS duplication**: lib MUST NOT overlap with an existing `@dash` primitive. Don't add a second button / modal / form / select lib.
+5. **Wrappable**: lib's surface area is small enough to wrap under `@dash/lib-wrappers/`. If it requires deep app-level integration (router, store, build plugin), escalate via `dash gap report`.
+
+### Wrapper pattern (mandatory)
+
+```tsx
+// src/lib-wrappers/image-editor.tsx
+// Wraps external lib X with Dash tokens, voice, and audit hooks.
+// External lib is NEVER imported directly in feature code — only here.
+import { ImageEditor as ExternalEditor } from 'some-image-lib'
+import { logAudit } from '@/lib/audit'
+
+export function ImageEditor(props: DashImageEditorProps) {
+  // Apply Dash tokens, Bahasa copy, audit-on-save side-effect, etc.
+  return <ExternalEditor {...mappedProps} />
+}
+```
+
+Once a wrapper proves stable in one repo, it gets promoted to the DS registry as a `block` and consumed via `dash add image-editor` thereafter.
+
+### Banned categories (refuse on sight)
+
+- **Form libraries**: react-hook-form, Formik, Final Form, react-final-form (see Anti-pattern #1)
+- **Validation libraries**: zod, joi (FE-side), yup, ajv, valibot (see Anti-pattern #2)
+- **Data-fetch libraries**: TanStack Query, SWR, react-query, Apollo Client (see Anti-pattern #3)
+- **Component libraries in greenfield**: MUI, antd, Chakra, Mantine, Radix-themes (backoffice tolerates legacy MUI+antd per Anti-pattern #8; do not add to new repos)
+
+### Allowed categories (with wrapper)
+
+- **Chart**: `recharts` is the established choice — must be wrapped, never imported direct
+- **Date pickers** if `@dash/date-picker` lacks the feature (rare — first file `dash gap report`)
+- **File handling**: CSV parsers (papaparse), image manipulation (browser-image-compression)
+- **Animation**: framer-motion is allowed when wrapped — direct usage in feature code is discouraged
+
+### Cross-ref
+
+When an external lib gets wrapped, the wrapper becomes a DS block — see "Cross-Repo Component Replication" §2 below for promotion mechanics. PE never imports the underlying external lib directly in feature code.
+
+---
+
+## Cross-Repo Component Replication
+
+**Single source of truth**: `/dash-ds/apps/docs/registry/dash/` is the ONLY canonical source for shared Dash components. No exceptions.
+
+### Rules
+
+1. **NEVER copy-paste** a component between Dash repos. Use `dash add <name>` to install a fresh copy from the registry. The CLI handles tokens, dependencies, and cssVars correctly — manual copy will silently break theming (see Anti-pattern #4).
+2. **Divergence protocol**: if a component must diverge in a repo (e.g., backoffice Button needs a tone the registry doesn't have), the divergence MUST:
+   1. Be reported via `dash gap report <component> --reason="<why>"` FIRST.
+   2. Resolve as EITHER (a) promote the variant to DS as a new component or new variant prop, OR (b) justify per-repo override in the PR description with explicit ADR-style reasoning.
+3. **No silent forks**. Once a component is vendored locally via `dash add`, PE may modify it, but:
+   - **Cosmetic tweaks** (margin, label copy, icon swap) → OK in place.
+   - **Behavioral changes** (state machine, event contract, accessibility tree) → log via `dash gap report` for upstream consideration; do not fork silently.
+   - The component file should NOT be edited beyond surface props. Deep edits inside the component body signal a divergence that needs DS-level discussion.
+4. **Version pinning**: each repo's `components.json` records installed component versions (managed by the `dash` CLI). Do not hand-edit version fields.
+5. **Mass update**: `dash sync` (planned v0.5 CLI feature) will detect components installed in a repo and prompt for upgrade — do NOT precompose a manual upgrade script.
+
+### Anti-pattern
+
+`git cp src/components/Button.tsx <other-repo>/src/components/Button.tsx` → **REFUSE**. Run `dash add button` in the destination repo instead.
+
+---
+
+## DS Update Propagation
+
+**Model**: push-pull. DS maintainer pushes updates to the registry; PE pulls via CLI on their schedule.
+
+### Notification channels
+
+- **Slack `#dash-ds-updates`**: mandatory. Every minor/major release posts a changelog summary + migration notes.
+- **Email digest**: weekly roll-up across all PE leads. Patch releases batched here; minor/major also announced in Slack first.
+
+### Version semantics
+
+Dash components follow strict semver:
+
+| Bump | Trigger | PE obligation |
+|---|---|---|
+| **Patch** (v1.0.x) | bug fix, no API change | Update freely whenever. No PR review required for the upgrade itself. |
+| **Minor** (v1.x.0) | new feature, backward-compatible | Update at convenience. Changelog must list new props / variants. |
+| **Major** (vX.0.0) | breaking change (prop rename, removed variant, behavior shift) | **Mandatory upgrade window: 14 days** from release. After window, the old version is EOL and `dash audit` will flag it as critical. |
+
+### Auto-PR pattern
+
+When a new component version lands in DS, the maintainer optionally triggers an auto-PR to each consumer repo upgrading the pinned version in `components.json`. Opt-in per-repo via `.dash/auto-upgrade.json`:
+
+```json
+{
+  "auto_upgrade": {
+    "patch": true,
+    "minor": "pr-only",
+    "major": false
+  }
+}
+```
+
+### Stale detection
+
+`dash audit --stale` flags components >90 days behind upstream. Output is non-blocking but feeds into per-repo health dashboards.
+
+### Maintainer commitment
+
+- Every **minor or major** bump ships a written changelog (Markdown) covering: new props, removed props, behavior diffs, migration snippets, affected blocks.
+- **Patch** bumps can be batched weekly in a single changelog entry.
+- Breaking changes (major) MUST include a codemod script under `/dash-ds/codemods/<component>-vX.ts` whenever the change is mechanically migratable.
+
+### Cross-ref
+
+This policy assumes the "Cross-Repo Component Replication" model above — components are vendored via CLI, not imported from a shared package. Update propagation = re-running `dash add` (or `dash sync`) per repo, not bumping a node_modules dep.
 

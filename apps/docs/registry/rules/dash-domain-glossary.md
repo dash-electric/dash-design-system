@@ -108,7 +108,7 @@ Stack (from README + docs/engineering/ARCHITECTURE.md):
 - Auth: `src/contexts/AuthContext.js` cookie-based, shareable with next-backoffice-web cross-domain.
 - Package manager: **npm** (NOT pnpm, despite ARCHITECTURE.md mentioning pnpm — README says npm; README wins as it's newer post-2026-05-07 restructure).
 - Folder layout: `src/pages/`, `src/components/support/`, `src/services/{authService,supportService,agentService}.js`, `src/contexts/`, `src/enums/`.
-- Brand color: `#5E2AAC` (purple).
+- Brand color: `#5e2aac` (Dash Purple; matches DS token `--dash-purple-500`).
 - AlignUI vendored via `file:/Users/irfanprimaputra.b/code/align-ui` — explicit do-not-modify rule, PR upstream.
 
 Open items / known debt:
@@ -1815,7 +1815,7 @@ Both nest-express and nest-fleet name the envelope class `BaseApiResponse<T>` an
 | Auth | **Firebase Auth (Google OAuth)** via `AuthProvider` context + `AuthGuard` HOC; domain-locked to `@dashelectric.co` | `lib/auth/auth-context.tsx` |
 | UI lib | **shadcn/ui (new-york style)** on Radix + lucide-react + Remix Icons | `components.json` `"style": "new-york"` |
 | Tailwind | **v4** (`@tailwindcss/postcss`) | `package.json` L53 |
-| Brand color | **Dash Purple `#7C4FC4`** (hard-coded hex, no CSS var) | `DESIGN_SYSTEM.md` L13, `components/ui/button.tsx` L40 |
+| Brand color | **Dash Purple `#5e2aac`** (hard-coded hex, no CSS var; matches DS token `--dash-purple-500`) | `DESIGN_SYSTEM.md` L13, `components/ui/button.tsx` L40 |
 | Font | **Plus Jakarta Sans** via `next/font/google` | `app/layout.tsx` L2-L7 |
 | i18n | **NONE** — only `toLocaleString('id-ID')` for IDR | no i18next/next-intl deps |
 | Test | **NONE configured** | no test script, no test deps |
@@ -1870,7 +1870,7 @@ Both nest-express and nest-fleet name the envelope class `BaseApiResponse<T>` an
 | Framework | **Create React App + CRACO 7.1.0** (NOT Next.js, NOT Vite) | `package.json` `react-scripts 5.0.1` + `@craco/craco` |
 | Language | **TypeScript 4.9.5 strict** | `tsconfig.json` |
 | Routing | **React Router DOM v7.9.4** | `src/App.tsx` `BrowserRouter` |
-| Forms | **Native `useState` controlled** (dominant); **RHF + zod used in 1 file** (`RepoModal.tsx`) — drift | `grep useForm` → 1 file out of ~12 modals |
+| Forms | **Native `useState` controlled** (verified 2026-05-20). `package.json` declares RHF+zod+@hookform/resolvers but zero source imports — stale deps. `RepoModal.tsx` uses local `useFormValidation` custom hook | `grep "from 'react-hook-form'"` in `src/` → 0 matches |
 | Validation | **Manual / inline checks**; zod 4.3.5 declared but barely used | `package.json` |
 | Data fetch | **axios 1.12.2** + interceptors + Bearer from localStorage; per-resource service modules in `src/services/api/*.ts` | `src/utils/axios.ts` |
 | State | **React Context (`AuthContext`) + local `useState`** — NO Redux, NO Zustand, NO Jotai | `src/contexts/AuthContext.tsx` |
@@ -1899,10 +1899,10 @@ Both nest-express and nest-fleet name the envelope class `BaseApiResponse<T>` an
 ### Risks / Drift
 
 - **No AGENTS.md** → conventions implicit. ARCHITECTURE.md is informational, not prescriptive.
-- **Mixed form pattern** — mostly `useState`, one file (`RepoModal.tsx`) uses RHF+zod. RHF/zod ban (per portal/backoffice/halo) appears **not enforced** here.
+- **Form pattern uniform** — `useState` across all source files. `package.json` declares RHF+zod (stale, never imported). RHF/zod ban effectively enforced (zero source violations verified 2026-05-20).
 - **MUI + custom components coexist** — visual inconsistency risk.
 - **CRACO + CRA** is legacy (deprecated by React team).
-- **Brand color drift:** `primary` blue tokens `#3b82f6 / #2563eb` in tailwind config — **NOT** Dash Purple `#7C4FC4`.
+- **Brand color drift:** `primary` blue tokens `#3b82f6 / #2563eb` in tailwind config — **NOT** Dash Purple `#5e2aac`.
 
 ### Implications for Dash DS (mark "inferred — verify with team")
 
@@ -1916,21 +1916,21 @@ Both nest-express and nest-fleet name the envelope class `BaseApiResponse<T>` an
 
 | Convention | portal-v2 | backoffice | halo-dash | basecamp | fleet-mgmt |
 |---|---|---|---|---|---|
-| Bans RHF? | Yes | Yes | Yes | Yes | **Partial** (1 file) |
-| Bans zod? | Yes | Yes | Yes | Yes | **Partial** (declared, 1 use) |
+| Bans RHF? | Yes | Yes | Yes | Yes | Yes (verified 2026-05-20: 0 imports) |
+| Bans zod? | Yes | Yes | Yes | Yes | Yes (verified: declared in pkg, 0 source imports) |
 | Bans TanStack Query? | Yes | Yes | Yes | Yes | Yes |
 | Uses AlignUI base? | Yes | Mixed (MUI+antd) | Yes (vendored) | **No** (shadcn) | **No** (custom) |
 | Next.js framework? | App | Pages | Pages | App | **No** (CRA+CRACO) |
 | TypeScript? | Yes | **No** (JS) | **No** (JS) | Yes | Yes |
 | Plus Jakarta Sans? | Yes | Likely | Likely | Yes | Yes |
-| Brand `#7C4FC4` primary? | Yes | Yes | Yes | Yes | **No** (blue `#3b82f6`) |
+| Brand `#5e2aac` primary? | Yes | Yes | Yes | Yes | **No** (blue `#3b82f6`) |
 | `crossDomainStorage` cookie SSO? | Yes | Yes (NextAuth) | Yes | **No** (Firebase Auth) | Yes |
 | Has AGENTS.md? | Yes | Yes | Yes | Yes (478L) | **No** |
 | Test runner? | none | Jest (BO) | none | **No** | Yes (Jest+RTL) |
 
 **Consistency verdict:** "ban RHF/zod/TanStack" + "AlignUI base" + "Dash Purple" + "Next.js" + "cross-domain SSO" assumptions hold for the **original 3 repos** but **break partially in both new repos** differently:
 - **basecamp** breaks UI (shadcn), state (Zustand), auth (Firebase standalone). Bans hold.
-- **fleet-mgmt** breaks framework (CRA), UI (custom), brand color (blue), AGENTS.md presence. Bans partially hold (1 RHF file drift).
+- **fleet-mgmt** breaks framework (CRA), UI (custom), brand color (blue), AGENTS.md presence. Bans fully hold in source (stale RHF/zod deps in `package.json` only).
 
 ---
 
@@ -1940,8 +1940,8 @@ Both nest-express and nest-fleet name the envelope class `BaseApiResponse<T>` an
 
 ## E.1 — react-fleet-management-web
 
-1. **RHF + zod usage in `RepoModal.tsx`** — single file violates the Dash FE ban on react-hook-form/zod (banned in portal-v2 + backoffice + halo-dash AGENTS.md). Either ratify RHF as canonical and migrate the other ~11 modals, or remove RHF from this file and rewrite with `useState`. **Recommend Dash team decide and document in AGENTS.md.**
-2. **Brand color is blue `#3b82f6` not Dash Purple `#7C4FC4`** — tailwind config defines `primary` as blue tokens. Visual brand drift from rest of Dash ecosystem (portal-v2 + backoffice + halo-dash + basecamp all use Dash Purple). **Recommend Dash team align to `#7C4FC4`.**
+1. **Stale RHF/zod deps in `package.json`** — `react-hook-form`, `zod`, `@hookform/resolvers` declared but zero source imports (verified 2026-05-20). `RepoModal.tsx` uses local `useFormValidation` custom hook. **Recommend Dash team remove unused deps from `package.json` (no source migration needed).**
+2. **Brand color is blue `#3b82f6` not Dash Purple `#5e2aac`** — tailwind config defines `primary` as blue tokens. Visual brand drift from rest of Dash ecosystem (portal-v2 + backoffice + halo-dash + basecamp all use Dash Purple). **Recommend Dash team align to `#5e2aac`.**
 3. **No `AGENTS.md` exists** — biggest documentation gap in the Dash FE estate. Conventions are inferred from ARCHITECTURE.md + code samples; AI assistants working in this repo have no prescriptive rules. **Recommend Dash team add AGENTS.md.** Minimum content: form pattern canonical choice (lock to `useState` OR migrate all to RHF), MUI deprecation plan, Vite migration plan.
 4. **CRA + CRACO is legacy** — Create React App is deprecated by React team. No migration to Vite/Next planned. **Recommend Dash team schedule CRA → Vite migration.**
 
