@@ -3538,6 +3538,36 @@
     },
     {
       "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "multi-stage-approval",
+      "type": "registry:block",
+      "title": "Multi-Stage Approval",
+      "description": "N-stage approval workflow with sequential gating, role-based action lock, and rollback-or-dead-end rejection. Use for Maintenance, Repossession, Mitra-reinstate, payment-adjustment.",
+      "categories": [
+        "block",
+        "workflow"
+      ],
+      "dependencies": [
+        "@remixicon/react"
+      ],
+      "registryDependencies": [
+        "utils",
+        "step-indicator",
+        "button",
+        "textarea",
+        "badge",
+        "avatar",
+        "card",
+        "toaster"
+      ],
+      "files": [
+        {
+          "path": "registry/dash/blocks/multi-stage-approval.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "activity-timeline",
       "type": "registry:block",
       "title": "Activity Timeline",
@@ -3558,6 +3588,35 @@
       "files": [
         {
           "path": "registry/dash/blocks/activity-timeline.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "delivery-status-timeline",
+      "type": "registry:block",
+      "title": "Delivery Status Timeline",
+      "description": "Visual timeline for 26-status ts-delivery-service state machine — category-coded badges, current-status pulse, expandable middle, id/en locale.",
+      "categories": [
+        "block",
+        "workflow",
+        "delivery"
+      ],
+      "dependencies": [
+        "@remixicon/react",
+        "@radix-ui/react-tooltip"
+      ],
+      "registryDependencies": [
+        "utils",
+        "badge",
+        "avatar",
+        "button",
+        "tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/dash/blocks/delivery-status-timeline.tsx",
           "type": "registry:block"
         }
       ]
@@ -4234,6 +4293,39 @@
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["modal", "button", "icon-button", "select", "textarea", "label", "toaster"],
       "files": [{ "path": "registry/dash/blocks/image-editor-with-audit.tsx", "type": "registry:block" }]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "mitra-dispute-flow",
+      "type": "registry:block",
+      "title": "Mitra Dispute Flow",
+      "description": "Mitra (driver) dispute submission flow. Evidence display + reason picker + detail + supervisor escalation + confirm modal + audit-trail payload. Delivery/payment/suspension/maintenance.",
+      "categories": ["block", "composite"],
+      "dependencies": ["@remixicon/react"],
+      "registryDependencies": ["modal", "button", "select", "textarea", "checkbox", "badge", "label", "toaster"],
+      "files": [{ "path": "registry/dash/blocks/mitra-dispute-flow.tsx", "type": "registry:block" }]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "proof-image-viewer",
+      "type": "registry:block",
+      "title": "Proof Image Viewer",
+      "description": "Display proof image (POD/POP/KYC/vehicle-condition) with native zoom + pan + side-by-side compare (original vs edited). Audit history cycling, geolocation map link, keyboard a11y. No external zoom lib.",
+      "categories": ["block", "composite"],
+      "dependencies": ["@remixicon/react"],
+      "registryDependencies": ["button", "icon-button", "badge", "tooltip"],
+      "files": [{ "path": "registry/dash/blocks/proof-image-viewer.tsx", "type": "registry:block" }]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "incident-form-with-attach",
+      "type": "registry:block",
+      "title": "Incident Form with Attachments",
+      "description": "Incident report form (vehicle accident, mitra injury, customer complaint) with photo/PDF attachments. Role-gated type dropdown, formal 'Anda' voice for mitra-facing, audit-ready payload, OPEN-state entry to incident lifecycle.",
+      "categories": ["block", "form"],
+      "dependencies": ["@remixicon/react"],
+      "registryDependencies": ["utils", "button", "select", "radio", "input", "textarea", "label", "field", "icon-button", "badge", "file-upload", "toaster"],
+      "files": [{ "path": "registry/dash/blocks/incident-form-with-attach.tsx", "type": "registry:block" }]
     }
   ]
 }
