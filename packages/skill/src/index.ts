@@ -10,6 +10,7 @@
  * that did succeed.
  */
 import fs from "node:fs/promises"
+import fsSync from "node:fs"
 import path from "node:path"
 import { shouldActivate, type ActivationResult } from "./activate.js"
 import {
@@ -18,6 +19,15 @@ import {
   type CollectorResult,
 } from "./info-collector.js"
 import { buildPrompt, type BuiltPrompt } from "./prompt-builder.js"
+import {
+  detectTenant,
+  loadBlocksForTenant,
+  loadThemeManifest,
+  loadVoiceOverrides,
+  type BlockMetadata,
+  type DetectedTenant,
+  type ThemeManifest,
+} from "./lib/tenant-detector.js"
 
 export type SkillRunResult = {
   status: "skipped" | "scaffold" | "ready"
@@ -33,9 +43,10 @@ export type LoadDashSkillOpts = {
   /**
    * Builder version. Defaults to 2 (priority-pinned + per-repo scoped).
    * Pass `1` to fall back to legacy 8K-truncated v1 behavior.
+   * Pass `3` to enable multi-tenant scoping (Layer-2 theme + voice + blocks).
    */
-  version?: 1 | 2
-  /** v2-only: hard char budget. Default 7000. */
+  version?: 1 | 2 | 3
+  /** v2/v3: hard char budget. Default 7000. */
   charBudget?: number
   /**
    * v2-only: when true (default), prefer `dash-ai-rules.compressed.md` when it
@@ -43,6 +54,18 @@ export type LoadDashSkillOpts = {
    * uses the full file regardless of this flag.
    */
   preferCompressedRules?: boolean
+  /**
+   * v3-only: explicit tenant override. Bypasses auto-detection. Validated
+   * against canonical internal tenants (ride/logistic/travel/marketplace) or
+   * trellis-<tenantId> dynamic ids. Invalid ids fall through to detection.
+   */
+  tenantId?: string
+  /**
+   * v3-only: location of the Dash DS (so we can read themes/manifest.json +
+   * registry.json). Defaults to: snapshot.project.rootPath, then cwd. Set when
+   * the consumer project lives outside the dash-ds monorepo.
+   */
+  dsRoot?: string
 }
 
 export type SkillDeps = {
@@ -132,10 +155,116 @@ export async function loadDashSkill(
     aiRules = null
   }
 
+  // v3: resolve tenant + load tenant-scoped context. No-op when version !== 3.
+  let tenantContext:
+    | {
+        theme: ThemeManifest | null
+        voiceOverrides: string | null
+        blocks: BlockMetadata[]
+      }
+    | null = null
+  if (version === 3) {
+    let tenant: DetectedTenant | undefined
+    try {
+      tenant = detectTenant({
+        explicit: opts.tenantId,
+        snapshot,
+        projectRoot,
+      })
+    } catch {
+      tenant = undefined
+    }
+
+    if (snapshot && tenant) {
+      snapshot.detectedTenant = tenant
+    } else if (snapshot) {
+      // ensure field is not stale
+      snapshot.detectedTenant = undefined
+    }
+
+    const dsRoot = opts.dsRoot ?? projectRoot
+    try {
+      const theme = tenant ? loadThemeManifest(tenant.id, { dsRoot }) : null
+      const voiceOverrides = tenant
+        ? loadVoiceOverrides(tenant.id, { dsRoot })
+        : null
+      const blocks = loadBlocksForTenant(tenant?.id ?? null, { dsRoot })
+      tenantContext = { theme, voiceOverrides, blocks }
+    } catch {
+      tenantContext = { theme: null, voiceOverrides: null, blocks: [] }
+    }
+  }
+
   return buildPrompt(
-    { snapshot, aiRules, glossary: null },
+    { snapshot, aiRules, glossary: null, tenantContext },
     { version, charBudget: opts.charBudget },
   )
+}
+
+/**
+ * v3 helper for consumers (Hermes worker, dashboard, AI clients) that need to
+ * inspect tenant context WITHOUT building the full prompt. Performs the same
+ * detection + lookup the v3 builder runs, returning a structured object.
+ *
+ * Backward-compatible: works on a v1/v2 snapshot too — it just performs
+ * detection from scratch.
+ */
+export function getTenantContext(
+  snapshot: DashInfoSnapshot | null,
+  opts: {
+    explicit?: string
+    dsRoot?: string
+    aiRules?: string | null
+  } = {},
+): {
+  tenantId: string | null
+  tenant: DetectedTenant | null
+  theme: ThemeManifest | null
+  voiceOverrides: string | null
+  blocks: BlockMetadata[]
+  cardinalRules: string | null
+} {
+  const projectRoot = snapshot?.project?.rootPath
+  const tenant =
+    detectTenant({
+      explicit: opts.explicit,
+      snapshot,
+      projectRoot,
+    }) ?? null
+
+  const dsRoot = opts.dsRoot ?? projectRoot
+  const theme = tenant ? loadThemeManifest(tenant.id, { dsRoot }) : null
+  const voiceOverrides = tenant ? loadVoiceOverrides(tenant.id, { dsRoot }) : null
+  const blocks = loadBlocksForTenant(tenant?.id ?? null, { dsRoot })
+
+  let cardinalRules: string | null = null
+  if (opts.aiRules) {
+    cardinalRules = opts.aiRules
+  } else if (dsRoot) {
+    for (const rel of [
+      "apps/docs/registry/rules/dash-ai-rules.compressed.md",
+      "apps/docs/registry/rules/dash-ai-rules.md",
+    ]) {
+      try {
+        const txt = fsSync.readFileSync(path.join(dsRoot, rel), "utf8")
+        if (txt && txt.length > 0) {
+          cardinalRules = txt
+          break
+        }
+      } catch {
+        /* try next */
+      }
+    }
+  }
+
+  return {
+    tenantId: tenant?.id ?? null,
+    tenant,
+    theme,
+    voiceOverrides,
+    blocks,
+    cardinalRules,
+  }
 }
 
 /**
@@ -178,4 +307,24 @@ export async function runSkill(
 }
 
 export { shouldActivate, collectDashInfo, buildPrompt }
-export type { ActivationResult, DashInfoSnapshot, BuiltPrompt, CollectorResult }
+export {
+  detectTenant,
+  loadBlocksForTenant,
+  loadThemeManifest,
+  loadVoiceOverrides,
+  isValidTenantId,
+  KNOWN_INTERNAL_TENANTS,
+  TRELLIS_TEMPLATE,
+} from "./lib/tenant-detector.js"
+export type {
+  ActivationResult,
+  DashInfoSnapshot,
+  BuiltPrompt,
+  CollectorResult,
+}
+export type {
+  DetectedTenant,
+  ThemeManifest,
+  BlockMetadata,
+  ProductLine,
+} from "./lib/tenant-detector.js"

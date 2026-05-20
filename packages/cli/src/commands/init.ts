@@ -44,6 +44,25 @@ export type InitOpts = {
     | "react"
   registryUrl?: string
   cwd?: string
+  /**
+   * v3-additive: Layer-2 tenant theme. Validated against known internal
+   * tenants (ride/logistic/travel/marketplace) or trellis-<id> dynamic ids.
+   * When set, written to components.json.dashTheme for Skill v3 to pick up.
+   */
+  theme?: string
+}
+
+const TRELLIS_PATTERN = /^trellis-[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/
+const KNOWN_INTERNAL_THEMES = ["ride", "logistic", "travel", "marketplace"] as const
+
+function normalizeTheme(input: string | undefined): string | undefined {
+  if (!input) return undefined
+  const v = input.trim().toLowerCase()
+  if (!v) return undefined
+  if ((KNOWN_INTERNAL_THEMES as readonly string[]).includes(v)) return v
+  if (v === "trellis-tenant") return v
+  if (TRELLIS_PATTERN.test(v)) return v
+  return undefined
 }
 
 const __filename = fileURLToPath(import.meta.url)
@@ -216,10 +235,20 @@ export async function runInit(opts: InitOpts): Promise<void> {
   // 1. Write components.json from per-framework template
   console.log(kleur.bold("\n→ Writing components.json"))
   const template = loadComponentsJsonTemplate(framework)
+  const themeValue = normalizeTheme(opts.theme)
+  if (opts.theme && !themeValue) {
+    console.log(
+      kleur.yellow(
+        `  ! --theme="${opts.theme}" is not a known tenant — ignoring. ` +
+          `Valid: ${KNOWN_INTERNAL_THEMES.join(", ")} or trellis-<id>.`,
+      ),
+    )
+  }
   const config: ComponentsJson = {
     ...template,
     rsc: scaffold.rsc,
     tsx,
+    ...(themeValue ? { dashTheme: themeValue } : {}),
     registries: {
       ...(template.registries ?? {}),
       "@dash": {

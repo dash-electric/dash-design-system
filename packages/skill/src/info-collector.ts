@@ -29,6 +29,23 @@ export type DashInfoSnapshot = {
    * simply ignore this field.
    */
   detectedRepoStack?: string | null
+  /**
+   * v3-additive: resolved Layer-2 tenant (theme). Populated by the skill
+   * loader before prompt build using lib/tenant-detector. Optional — when
+   * absent the prompt-builder falls back to shared/generic context. v1/v2
+   * callers ignore this field.
+   */
+  detectedTenant?: {
+    id: string
+    theme: string
+    productLine: "internal" | "external"
+    source:
+      | "components.json"
+      | "package.json"
+      | "env"
+      | "auto-detect"
+      | "explicit-override"
+  }
 }
 
 /**

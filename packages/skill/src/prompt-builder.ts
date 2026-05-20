@@ -14,11 +14,26 @@ import {
   type ParsedRules,
   type RuleSection,
 } from "./lib/rules-parser.js"
+import type {
+  BlockMetadata,
+  ThemeManifest,
+} from "./lib/tenant-detector.js"
 
 export type PromptInputs = {
   snapshot: DashInfoSnapshot | null
   aiRules: string | null
   glossary: Record<string, string> | null
+  /**
+   * v3-additive: optional tenant-scoped context. When provided alongside a
+   * `detectedTenant` snapshot field, composeV3Prompt injects them as a
+   * dedicated block. Ignored by v1/v2.
+   */
+  tenantContext?: {
+    theme: ThemeManifest | null
+    voiceOverrides: string | null
+    blocks: BlockMetadata[]
+    sharedBlocks?: BlockMetadata[]
+  } | null
 }
 
 export type BuiltPrompt = {
@@ -34,13 +49,19 @@ export type BuiltPrompt = {
     detectedRepoStack?: string | null
     /** v2-only: rendered char budget (systemAppend.length). */
     charCount?: number
+    /** v3-only: tenant id used to scope context (null if none). */
+    tenantId?: string | null
+    /** v3-only: tenant product line (internal/external). */
+    tenantProductLine?: "internal" | "external" | null
+    /** v3-only: count of tenant + shared blocks injected. */
+    blockCounts?: { tenant: number; shared: number }
   }
 }
 
 export type BuildPromptOpts = {
   /** Force a schema version. Defaults to 2. */
-  version?: 1 | 2
-  /** Hard char budget for v2. Default 7000. */
+  version?: 1 | 2 | 3
+  /** Hard char budget for v2/v3. Default 7000. */
   charBudget?: number
 }
 
@@ -349,7 +370,232 @@ export function composeV2Prompt(
 }
 
 // ---------------------------------------------------------------------------
-// Public dispatcher — defaults to v2; v1 reachable via opts.version === 1.
+// v3 — multi-tenant scoped (per-product theme + voice overrides + block list)
+// ---------------------------------------------------------------------------
+
+/** Cap voice-overrides body to keep token budget predictable. */
+const VOICE_OVERRIDES_MAX_CHARS = 1500
+
+function summarizeBlocks(
+  blocks: BlockMetadata[],
+  max: number,
+): string[] {
+  const lines: string[] = []
+  for (let i = 0; i < Math.min(blocks.length, max); i++) {
+    const b = blocks[i]
+    const desc = b.description
+      ? ` — ${b.description.slice(0, 90)}${b.description.length > 90 ? "…" : ""}`
+      : ""
+    lines.push(`- ${b.name} [${b.theme}]${desc}`)
+  }
+  if (blocks.length > max) {
+    lines.push(`- …+${blocks.length - max} more (use \`dash list --theme <id>\`)`)
+  }
+  return lines
+}
+
+function renderThemeBlock(theme: ThemeManifest): string {
+  const accentLine = theme.accent?.hex
+    ? `- accent: ${theme.accent.name ?? "?"} (${theme.accent.hex})`
+    : null
+  const audienceLine = theme.audience?.length
+    ? `- audience: ${theme.audience.join(", ")}`
+    : null
+  const lines = [
+    `## Tenant theme — \`${theme.name}\``,
+    "",
+    `- title: ${theme.title}`,
+    theme.primary ? `- primary: ${theme.primary}` : null,
+    accentLine,
+    audienceLine,
+  ].filter((x): x is string => typeof x === "string" && x.length > 0)
+  return lines.join("\n")
+}
+
+function renderVoiceOverrides(text: string): string {
+  const clipped =
+    text.length > VOICE_OVERRIDES_MAX_CHARS
+      ? `${text.slice(0, VOICE_OVERRIDES_MAX_CHARS)}\n\n[…voice overrides truncated]`
+      : text
+  return ["## Tenant voice overrides", "", clipped.trim()].join("\n")
+}
+
+function renderTenantBlocks(
+  tenantId: string,
+  tenantBlocks: BlockMetadata[],
+  sharedBlocks: BlockMetadata[],
+): string {
+  const sections: string[] = [`## Tenant blocks — \`${tenantId}\``, ""]
+  if (tenantBlocks.length === 0) {
+    sections.push("(no tenant-scoped blocks registered yet)")
+  } else {
+    sections.push(...summarizeBlocks(tenantBlocks, 14))
+  }
+  if (sharedBlocks.length > 0) {
+    sections.push("", "### Shared blocks (cross-tenant)", "")
+    sections.push(...summarizeBlocks(sharedBlocks, 8))
+  }
+  return sections.join("\n")
+}
+
+export function composeV3Prompt(
+  inputs: PromptInputs,
+  opts: { charBudget?: number } = {},
+): BuiltPrompt {
+  const charBudget = opts.charBudget ?? 7000
+  const sources: string[] = []
+  const sections: string[] = ["# Dash project context"]
+  const pinnedIds: string[] = []
+  let detectedStack: string | null = null
+  const tenant = inputs.snapshot?.detectedTenant ?? null
+  const tenantId = tenant?.id ?? null
+  const ctx = inputs.tenantContext ?? null
+
+  // 1. Snapshot (always include — cheap)
+  if (inputs.snapshot) {
+    sections.push("", renderSnapshotBlock(inputs.snapshot))
+    sources.push("dash-info")
+    detectedStack = inputs.snapshot.detectedRepoStack ?? null
+  } else {
+    sections.push("", "no Dash context detected — running outside a Dash repo.")
+  }
+
+  // 1b. Tenant header (cheap one-liner, advertises scoping decision)
+  if (tenant) {
+    sections.push(
+      "",
+      `## Tenant context — \`${tenant.id}\` (${tenant.productLine}, via ${tenant.source})`,
+    )
+    sources.push(`dash-tenant:${tenant.id}`)
+  }
+
+  // 2. Pinned blocks — Layer 0 cardinal rules (ALWAYS, never truncated)
+  if (inputs.aiRules && inputs.aiRules.trim().length > 0) {
+    const parsed = parseRules(inputs.aiRules)
+    const { rendered, resolvedIds } = renderPinnedBlocks(parsed)
+    if (resolvedIds.length > 0) {
+      sections.push("", rendered)
+      sources.push("dash-ai-rules:pinned")
+      pinnedIds.push(...resolvedIds)
+    }
+
+    // 3. Per-repo scoped section (v2 behavior preserved)
+    if (detectedStack) {
+      const repoSection = renderPerRepoSection(parsed, detectedStack)
+      if (repoSection) {
+        sections.push("", repoSection)
+        sources.push("dash-ai-rules:repo-scoped")
+      }
+    }
+  }
+
+  // 4. Tenant theme + voice overrides + block list (v3-specific)
+  let tenantBlockCount = 0
+  let sharedBlockCount = 0
+  if (tenantId && ctx) {
+    if (ctx.theme) {
+      sections.push("", renderThemeBlock(ctx.theme))
+      sources.push("dash-theme:manifest")
+    }
+    if (ctx.voiceOverrides) {
+      sections.push("", renderVoiceOverrides(ctx.voiceOverrides))
+      sources.push("dash-theme:voice-overrides")
+    }
+    // Tenant-scoped blocks = explicitly themed for this tenant. Items whose
+    // `theme` is "shared" go in the shared bucket even if products[] mentions
+    // the tenant — that's by-design so the UI/AI can prefer canonical
+    // tenant-owned composites over generic cross-product widgets.
+    const tenantBlocks = ctx.blocks.filter((b) => b.theme === tenantId)
+    const sharedBlocks =
+      ctx.sharedBlocks ?? ctx.blocks.filter((b) => b.theme === "shared")
+    if (tenantBlocks.length > 0 || sharedBlocks.length > 0) {
+      sections.push(
+        "",
+        renderTenantBlocks(tenantId, tenantBlocks, sharedBlocks),
+      )
+      sources.push("dash-blocks:tenant-scoped")
+    }
+    tenantBlockCount = tenantBlocks.length
+    sharedBlockCount = sharedBlocks.length
+  } else if (!tenantId) {
+    // No tenant resolved → shared blocks only (if context provided)
+    if (ctx?.blocks?.length) {
+      const sharedBlocks =
+        ctx.sharedBlocks ?? ctx.blocks.filter((b) => b.theme === "shared")
+      if (sharedBlocks.length > 0) {
+        sections.push(
+          "",
+          ["## Shared blocks (no tenant detected)", "", ...summarizeBlocks(sharedBlocks, 8)].join(
+            "\n",
+          ),
+        )
+        sources.push("dash-blocks:shared-only")
+        sharedBlockCount = sharedBlocks.length
+      }
+    }
+  }
+
+  // 5. Global rules summary (compressed)
+  sections.push("", renderGlobalSummary())
+  if (inputs.aiRules && inputs.aiRules.trim().length > 0) {
+    sources.push("dash-ai-rules:summary")
+  }
+
+  // 6. Glossary acknowledgment
+  const glossaryNote = renderGlossaryNote(inputs.glossary)
+  if (glossaryNote) sections.push("", glossaryNote)
+
+  // Budget guard — drop order: global summary → tenant block list → voice
+  let systemAppend = sections.join("\n")
+  const overflowNotes: string[] = []
+  function dropByPrefix(prefix: string, note: string): boolean {
+    const idx = sections.findIndex((s) => s.startsWith(prefix))
+    if (idx < 0) return false
+    sections.splice(idx, 1)
+    if (idx > 0 && sections[idx - 1] === "") sections.splice(idx - 1, 1)
+    overflowNotes.push(note)
+    systemAppend = sections.join("\n")
+    return true
+  }
+  if (systemAppend.length > charBudget) {
+    dropByPrefix("## Global rules summary", "dropped global summary to stay under budget")
+  }
+  if (systemAppend.length > charBudget) {
+    dropByPrefix("## Tenant blocks", "dropped tenant block list to stay under budget")
+    dropByPrefix("## Shared blocks", "dropped shared block list to stay under budget")
+  }
+  if (systemAppend.length > charBudget) {
+    dropByPrefix("## Tenant voice overrides", "dropped voice overrides to stay under budget")
+  }
+
+  const notes: string[] = []
+  if (inputs.glossary !== null) {
+    notes.push("glossary input received; injection deferred (terms surfaced only when relevant)")
+  } else {
+    notes.push("no glossary input")
+  }
+  for (const n of overflowNotes) notes.push(n)
+
+  return {
+    systemAppend,
+    metadata: {
+      schemaVersion: 3,
+      builtAt: new Date().toISOString(),
+      sources,
+      notes: notes.join("; "),
+      pinned: pinnedIds,
+      detectedRepoStack: detectedStack,
+      charCount: systemAppend.length,
+      tenantId,
+      tenantProductLine: tenant?.productLine ?? null,
+      blockCounts: { tenant: tenantBlockCount, shared: sharedBlockCount },
+    },
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Public dispatcher — defaults to v2; v3 must be explicitly opted in via
+// `opts.version === 3`. v1 reachable via opts.version === 1.
 // ---------------------------------------------------------------------------
 
 export function buildPrompt(
@@ -358,5 +604,6 @@ export function buildPrompt(
 ): BuiltPrompt {
   const version = opts.version ?? 2
   if (version === 1) return composeV1Prompt(inputs)
+  if (version === 3) return composeV3Prompt(inputs, { charBudget: opts.charBudget })
   return composeV2Prompt(inputs, { charBudget: opts.charBudget })
 }

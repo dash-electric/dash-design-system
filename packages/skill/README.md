@@ -49,6 +49,90 @@ dash-skill/
 - `dash` CLI ≥ 0.2.0 (provides `dash info --json`)
 - Claude Code session with skill loader enabled
 
+## v3 — multi-tenant scoping
+
+Opt in by passing `version: 3` to `loadDashSkill`. v3 adds Layer-2 theme
+awareness so different Dash products (Ride / Logistic / Travel / Marketplace)
+plus future Trellis external tenants get isolated context without forking
+the foundation.
+
+```ts
+import { loadDashSkill, getTenantContext } from "@dash/skill"
+
+const prompt = await loadDashSkill({
+  cwd: process.cwd(),
+  version: 3,
+  // optional — bypasses auto-detection
+  tenantId: "ride",
+  // optional — only needed when the DS lives outside the consumer repo
+  dsRoot: "/path/to/dash-ds",
+})
+```
+
+### Tenant detection priority
+
+1. `opts.tenantId` (explicit override, must be valid)
+2. `components.json` field `dashTheme` (written by `dash init --theme <name>`)
+3. `package.json` `name` heuristic (e.g. `@dash-ride/portal`)
+4. Env var `DASH_TENANT`
+5. Auto-detect from imports (paths under `blocks/<tenant>/*`)
+6. Falls back to `undefined` → shared/generic context
+
+Valid tenants: `ride`, `logistic`, `travel`, `marketplace`, `trellis-tenant`,
+or any `trellis-<id>` matching `/^trellis-[a-z0-9-]+$/`.
+
+### Per-tenant context filtering
+
+v3 injects (in priority order, ≤7K char budget):
+
+| Block | Source | Approx chars |
+| --- | --- | --- |
+| Layer 0 cardinal rules (pinned) | `dash-ai-rules.md` line ranges | ~3K |
+| Tenant theme metadata | `themes/<id>/manifest.json` | ~0.5K |
+| Tenant voice overrides | `themes/<id>/voice-overrides.md` | ~1K (capped at 1.5K) |
+| Tenant + shared block list | `registry.json` filtered | ~1K |
+| Global rules summary | hand-rolled 8 bullets | ~0.5K |
+
+Items NOT matching the resolved tenant are filtered out:
+
+- Tenant blocks = items with `theme === <tenantId>` (canonical owner)
+- Shared blocks = items with `theme === "shared"` (cross-tenant primitives)
+- Other tenants' blocks are absent from the prompt regardless of `products[]`
+
+When budget overflows, drop order: global summary → tenant block list → voice
+overrides. Pinned blocks and per-repo scoped rules are never dropped.
+
+### `getTenantContext` helper
+
+For consumers (Hermes worker, dashboard, AI clients) that want tenant data
+without building the full prompt:
+
+```ts
+import { getTenantContext, collectDashInfo } from "@dash/skill"
+
+const info = await collectDashInfo(process.cwd())
+const snapshot = info.ok ? info.snapshot : null
+const { tenantId, theme, voiceOverrides, blocks, cardinalRules } =
+  getTenantContext(snapshot, { explicit: "ride" })
+```
+
+### Migration from v2
+
+v3 is fully additive. Existing v2 callers continue to work unchanged:
+
+- `loadDashSkill()` with no `version` argument still defaults to **v2**.
+- `composeV2Prompt` is preserved verbatim.
+- The new `opts.tenantId` is ignored when `version !== 3`.
+- `DashInfoSnapshot.detectedTenant` is optional — v1/v2 paths ignore it.
+
+To opt a consumer in:
+
+1. Bump call to `loadDashSkill({ version: 3 })`.
+2. (Optional) Add `dashTheme` to `components.json` or run
+   `dash init --theme ride` for a fresh repo.
+3. (Optional) Provide `dsRoot` if your consumer project lives outside the
+   `dash-ds` monorepo so the loader can find `themes/manifest.json`.
+
 ## Why a separate package
 
 Keeping the skill out of `dash-cli` means:

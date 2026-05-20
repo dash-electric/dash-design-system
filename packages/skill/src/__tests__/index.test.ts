@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { loadDashSkill } from "../index.js"
+import { loadDashSkill, getTenantContext } from "../index.js"
 import type { DashInfoSnapshot, CollectorResult } from "../info-collector.js"
 
 const snapshot: DashInfoSnapshot = {
@@ -87,6 +87,62 @@ describe("loadDashSkill", () => {
     )
     expect(result.systemAppend).toContain("custom rules content")
     expect(result.metadata.sources).toContain("dash-ai-rules")
+  })
+
+  it("v3: scopes to ride tenant when opts.tenantId=ride", async () => {
+    const collect = vi.fn(
+      async (): Promise<CollectorResult> => ({ ok: true, snapshot }),
+    )
+    const readRules = vi.fn(async () => "# rules")
+    const result = await loadDashSkill(
+      {
+        cwd: "/tmp/proj",
+        version: 3,
+        tenantId: "ride",
+        dsRoot: "/nonexistent-ds-root",
+      },
+      { collect, readRules },
+    )
+    expect(result.metadata.schemaVersion).toBe(3)
+    expect(result.metadata.tenantId).toBe("ride")
+    expect(result.metadata.tenantProductLine).toBe("internal")
+    expect(result.systemAppend).toContain("Tenant context — `ride`")
+  })
+
+  it("v3: undefined tenant → schemaVersion 3 but tenantId=null", async () => {
+    const collect = vi.fn(
+      async (): Promise<CollectorResult> => ({ ok: true, snapshot }),
+    )
+    const readRules = vi.fn(async () => "# rules")
+    const result = await loadDashSkill(
+      { cwd: "/tmp/proj", version: 3, dsRoot: "/nowhere" },
+      { collect, readRules },
+    )
+    expect(result.metadata.schemaVersion).toBe(3)
+    expect(result.metadata.tenantId).toBeNull()
+  })
+
+  it("v3: backward compat — opts.version unset still routes v2 + ignores tenant", async () => {
+    const collect = vi.fn(
+      async (): Promise<CollectorResult> => ({ ok: true, snapshot }),
+    )
+    const readRules = vi.fn(async () => "# rules")
+    const result = await loadDashSkill(
+      { cwd: "/tmp/proj", tenantId: "ride" },
+      { collect, readRules },
+    )
+    expect(result.metadata.schemaVersion).toBe(2)
+    expect(result.metadata.tenantId).toBeUndefined()
+  })
+
+  it("getTenantContext helper resolves explicit override without prompt build", () => {
+    const result = getTenantContext(snapshot, {
+      explicit: "logistic",
+      dsRoot: "/nowhere",
+    })
+    expect(result.tenantId).toBe("logistic")
+    expect(result.tenant?.source).toBe("explicit-override")
+    expect(result.tenant?.productLine).toBe("internal")
   })
 
   it("tries default rules paths under project root from snapshot", async () => {
