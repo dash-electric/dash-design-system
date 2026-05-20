@@ -32,6 +32,23 @@ export default function TestingLocallyPage() {
         status="beta"
       />
 
+      {/* Redirect banner — points new users to the canonical entry page */}
+      <div
+        role="note"
+        className="rounded-xl border border-information-light bg-information-lighter px-4 py-3 text-sm text-text-strong-950"
+      >
+        <span className="font-semibold">Pilot-only deep dive.</span> First time
+        installing Dash DS? Start with the{" "}
+        <Link
+          href="/docs/getting-started"
+          className="text-(--dash-purple-600) underline underline-offset-4"
+        >
+          10-minute Getting Started
+        </Link>{" "}
+        — this page is the Wave-5 pilot testing playbook that runs the registry
+        on localhost.
+      </div>
+
       {/* Hero metric callout */}
       <section
         aria-label="Hero metric"

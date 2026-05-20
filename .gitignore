@@ -46,6 +46,9 @@ Thumbs.db
 apps/docs/public/r/*.json
 !apps/docs/public/r/index.json
 
+# Screenshot capture output (regenerated via `pnpm --filter @dash/docs screenshots`)
+apps/docs/public/screenshots/
+
 # Misc cache
 .cache/
 .eslintcache

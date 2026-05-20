@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Dash Design System — Platform Foundation</title>
+<meta name="viewport" content="width=1920" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1A1A1A; --ink-2: #0E0E0E;
+  --paper: #F7F7F5; --paper-2: #FFFFFF;
+  --mute: #6B6B68;
+  --rule: #E4E3DE; --rule-dark: #2A2A2A;
+  --purple: #5E2AAC; --purple-soft: #EEE5FB;
+  --purple-card: #F1ECF9; --purple-on-dark: #B589F0;
+  --danger: #A32D2D; --success: #0F6E56; --warn: #B08015;
+  --dark-mute: #9A9A96;
+  /* Product accents — visual representation only, not canonical brand */
+  --ride: #5E2AAC;
+  --logistic: #1E6FD9;
+  --travel: #0F8F6E;
+  --marketplace: #C4521A;
+  --trellis: #6E6E6E;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: #000;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body { display: flex; flex-direction: column; align-items: center; gap: 32px; padding: 32px 0; }
+
+section.slide {
+  width: 1920px; height: 1080px;
+  box-sizing: border-box; overflow: hidden;
+  color: var(--ink); background: var(--paper);
+  letter-spacing: -0.005em; position: relative;
+}
+section.slide.dark { background: var(--ink); color: var(--paper); }
+
+/* Type scale */
+.title-xxl { font-size: 108px; font-weight: 800; line-height: 0.98; letter-spacing: -0.035em; }
+.title-xl  { font-size: 76px;  font-weight: 800; line-height: 1.02; letter-spacing: -0.03em; }
+.title-lg  { font-size: 60px;  font-weight: 700; line-height: 1.05; letter-spacing: -0.025em; }
+.title-md  { font-size: 44px;  font-weight: 700; line-height: 1.10; letter-spacing: -0.02em; }
+.lede      { font-size: 28px;  font-weight: 400; line-height: 1.40; }
+.body      { font-size: 20px;  font-weight: 400; line-height: 1.55; }
+.body-sm   { font-size: 17px;  font-weight: 400; line-height: 1.55; }
+.stat-xxl  { font-size: 140px; font-weight: 800; line-height: 0.90; letter-spacing: -0.04em; }
+.stat-xl   { font-size: 96px;  font-weight: 800; line-height: 0.95; letter-spacing: -0.035em; }
+.stat-lg   { font-size: 64px;  font-weight: 800; line-height: 1.00; letter-spacing: -0.03em; }
+.stat-label { font-size: 15px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
+.eyebrow   { font-size: 14px;  font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mute); }
+.eyebrow-lg { font-size: 18px; font-weight: 700; letter-spacing: 0.30em; text-transform: uppercase; }
+.eyebrow.purple { color: var(--purple); }
+.dark .eyebrow { color: var(--dark-mute); }
+.dark .eyebrow.purple { color: var(--purple-on-dark); }
+.mono { font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Courier New', monospace; font-size: 14px; letter-spacing: 0.10em; font-feature-settings: "liga" 0; }
+.dark .mono { color: var(--dark-mute); }
+
+.purple { color: var(--purple); }
+.dark .purple { color: var(--purple-on-dark); }
+.danger { color: var(--danger); }
+.success { color: var(--success); }
+.warn { color: var(--warn); }
+.mute { color: var(--mute); }
+.dark .mute { color: var(--dark-mute); }
+
+em { font-style: normal; color: var(--purple); }
+.dark em { color: var(--purple-on-dark); }
+
+/* Slide chrome */
+.pad { padding: 100px 120px; height: 100%; }
+.slide-no, .footer-line {
+  position: absolute; bottom: 48px;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
+  font-size: 13px; color: var(--mute);
+  letter-spacing: 0.10em;
+}
+.slide-no { right: 60px; }
+.footer-line { left: 120px; }
+.dark .slide-no, .dark .footer-line { color: #6B6B68; }
+
+.hairline { height: 1px; background: var(--rule); }
+.dark .hairline { background: var(--rule-dark); }
+.hairline-dashed { border-top: 1px dashed #BFBDB4; }
+
+.brand-mark {
+  position: absolute; top: 60px; left: 120px;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
+  font-size: 14px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--mute);
+}
+.dark .brand-mark { color: var(--dark-mute); }
+
+/* Mini Button preview blocks (theme cascade demo) */
+.btn-preview {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600; font-size: 17px;
+  padding: 14px 26px; border-radius: 10px;
+  color: #fff; letter-spacing: -0.01em;
+}
+
+@media print {
+  body { background: #fff; padding: 0; gap: 0; }
+  section.slide { margin: 0; page-break-after: always; break-after: page; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- =================================================================== -->
+<!-- 01 · COVER — dark                                                    -->
+<!-- =================================================================== -->
+<section class="slide dark">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="eyebrow" style="position: absolute; top: 60px; right: 120px;">Internal · Briefing</div>
+
+  <div class="pad" style="display: grid; grid-template-rows: 1fr auto; align-items: end;">
+    <div style="display: flex; align-items: center; height: 100%;">
+      <div>
+        <div class="eyebrow purple" style="margin-bottom: 36px;">Dash Design System</div>
+        <h1 class="title-xxl" style="max-width: 1500px;">
+          One <em>foundation.</em><br/>
+          Many <em>products.</em>
+        </h1>
+        <div class="lede" style="color: var(--paper); max-width: 980px; margin-top: 36px;">
+          Dash isn't a ride-hail company. Dash is a <em>platform of products</em> — and the DS is the layer that makes that real.
+        </div>
+        <div style="display: flex; gap: 14px; margin-top: 44px; flex-wrap: wrap;">
+          <span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(94,42,172,0.18); border: 1px solid rgba(181,137,240,0.4);"><span style="width: 10px; height: 10px; background: var(--ride); border-radius: 2px;"></span><span class="mono" style="color: var(--paper);">DASH RIDE</span></span>
+          <span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(30,111,217,0.16); border: 1px solid rgba(30,111,217,0.4);"><span style="width: 10px; height: 10px; background: var(--logistic); border-radius: 2px;"></span><span class="mono" style="color: var(--paper);">DASH LOGISTIC</span></span>
+          <span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(15,143,110,0.16); border: 1px solid rgba(15,143,110,0.4);"><span style="width: 10px; height: 10px; background: var(--travel); border-radius: 2px;"></span><span class="mono" style="color: var(--paper);">DASH TRAVEL</span></span>
+          <span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(196,82,26,0.16); border: 1px solid rgba(196,82,26,0.4);"><span style="width: 10px; height: 10px; background: var(--marketplace); border-radius: 2px;"></span><span class="mono" style="color: var(--paper);">DASH MARKETPLACE</span></span>
+          <span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(110,110,110,0.16); border: 1px dashed rgba(154,154,150,0.5);"><span style="width: 10px; height: 10px; background: var(--trellis); border-radius: 2px;"></span><span class="mono" style="color: var(--paper);">TRELLIS TENANTS</span></span>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: end; padding-bottom: 12px;">
+      <div>
+        <div class="mono" style="color: var(--dark-mute);">PLATFORM FOUNDATION · WAVE 5 BRIEFING</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="mono" style="color: var(--dark-mute);">IRFAN PRIMA PUTRA · PRODUCT DESIGNER</div>
+        <div class="mono" style="color: var(--dark-mute); margin-top: 4px;">21 MAY 2026 · v2.1</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">01 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 02 · PROBLEM                                                         -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 50px;">
+    <div class="eyebrow purple">02 · The Problem</div>
+    <h2 class="title-lg" style="max-width: 1600px;">
+      Mitra suspension form di backoffice <em>≠</em><br/>
+      di portal <em>≠</em> di basecamp. Tiga developer, tiga UI.
+    </h2>
+
+    <div style="align-self: end; padding-bottom: 30px;">
+      <div class="hairline" style="margin-bottom: 36px;"></div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;">
+        <div style="padding-right: 60px; border-right: 1px solid var(--rule);">
+          <div class="eyebrow purple" style="font-size: 13px;">SYMPTOM 01 · DRIFT</div>
+          <div class="title-md" style="font-size: 30px; margin-top: 14px;">Same form, three faces.</div>
+          <div class="body" style="margin-top: 12px; max-width: 380px;">Mitra suspend di backoffice ≠ portal ≠ basecamp. Payment receipt edit di finance ≠ halo-dash. Dispute form di Ride ≠ Logistic preview.</div>
+          <div class="body-sm mute" style="margin-top: 14px;">Supporting: 1,913 hex hardcodes scanned in backoffice repo.</div>
+        </div>
+        <div style="padding: 0 60px; border-right: 1px solid var(--rule);">
+          <div class="eyebrow purple" style="font-size: 13px;">SYMPTOM 02 · WASTE</div>
+          <div class="title-md" style="font-size: 30px; margin-top: 14px;">10× re-derive primitives.</div>
+          <div class="body" style="margin-top: 12px; max-width: 380px;">Setiap developer build Button / Input / Modal sendiri-sendiri. AI tools generate generic UI — no Dash voice, no Indonesia context, no OJK audit rules.</div>
+          <div class="body-sm mute" style="margin-top: 14px;">Supporting: parallel dev streams across Ride tribes today.</div>
+        </div>
+        <div style="padding-left: 60px;">
+          <div class="eyebrow purple" style="font-size: 13px;">SYMPTOM 03 · COMPOUNDS</div>
+          <div class="title-md" style="font-size: 30px; margin-top: 14px;">Logistic Q3 = Ride from zero.</div>
+          <div class="body" style="margin-top: 12px; max-width: 380px;">When Dash Logistic launches Q3 2026, the dev team will rebuild what Dash Ride already has — UI, audit, voice, layout. Travel + Marketplace = same trap × 3.</div>
+          <div class="body-sm mute" style="margin-top: 14px;">Supporting: ~240h estimated re-derive per new product.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">02 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 03 · HYPOTHESIS — dark statement slide                               -->
+<!-- =================================================================== -->
+<section class="slide dark">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: 1fr auto; align-items: center;">
+    <div>
+      <div class="eyebrow purple" style="margin-bottom: 36px;">03 · Hypothesis</div>
+      <h2 class="title-xl" style="max-width: 1700px;">
+        Dash isn't a <span class="mute">ride-hail company</span>.<br/>
+        Dash is a <em>platform of products</em> —<br/>
+        and design is the <em>structural beam</em>.
+      </h2>
+      <div class="lede" style="color: var(--paper); max-width: 1100px; margin-top: 48px;">
+        Ride. Logistic. Travel. Marketplace. Plus Trellis tenants. Five faces. One spine. The DS is how that spine stays straight under load.
+      </div>
+    </div>
+    <div style="padding-bottom: 12px; display: flex; gap: 36px; align-items: center;">
+      <div class="mono" style="color: var(--dark-mute);">PRODUCTS →</div>
+      <div style="display: flex; gap: 18px; align-items: center;">
+        <span style="display: inline-flex; gap: 10px; align-items: center;"><span style="width: 12px; height: 12px; background: var(--ride); border-radius: 2px;"></span><span class="mono">RIDE</span></span>
+        <span style="display: inline-flex; gap: 10px; align-items: center;"><span style="width: 12px; height: 12px; background: var(--logistic); border-radius: 2px;"></span><span class="mono">LOGISTIC</span></span>
+        <span style="display: inline-flex; gap: 10px; align-items: center;"><span style="width: 12px; height: 12px; background: var(--travel); border-radius: 2px;"></span><span class="mono">TRAVEL</span></span>
+        <span style="display: inline-flex; gap: 10px; align-items: center;"><span style="width: 12px; height: 12px; background: var(--marketplace); border-radius: 2px;"></span><span class="mono">MARKETPLACE</span></span>
+        <span style="display: inline-flex; gap: 10px; align-items: center;"><span style="width: 12px; height: 12px; background: var(--trellis); border-radius: 2px;"></span><span class="mono">TRELLIS</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">03 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 04 · LAYERED ARCHITECTURE DIAGRAM                                    -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">04 · Solution · Layered Architecture</div>
+    <h2 class="title-lg" style="max-width: 1700px;">
+      Four layers. <em>Two move</em>, two are <em>locked.</em>
+    </h2>
+    <div class="lede mute" style="max-width: 1300px; margin-top: -20px;">
+      Built like Alphabet runs Google + YouTube + Waymo — one spine, many products.
+    </div>
+
+    <div style="align-self: center;">
+      <svg viewBox="0 0 1680 640" width="1680" height="640" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+        <!-- Layer 3 -->
+        <rect x="0" y="0" width="1680" height="130" fill="#F1ECF9" stroke="#5E2AAC" stroke-width="1"/>
+        <text x="40" y="42" font-size="14" font-weight="700" fill="#5E2AAC" letter-spacing="3">LAYER 3 · DIVERGENT</text>
+        <text x="40" y="86" font-size="32" font-weight="700" fill="#1A1A1A">Building Blocks</text>
+        <text x="40" y="116" font-size="18" font-weight="400" fill="#6B6B68">50 shared · 70 templates · 6 product-specific · 3 patterns — audit-trail by default</text>
+        <text x="1640" y="86" font-size="44" font-weight="800" fill="#5E2AAC" text-anchor="end">129+</text>
+
+        <!-- arrow -->
+        <path d="M840 130 L840 158 M832 150 L840 158 L848 150" stroke="#6B6B68" stroke-width="1.5" fill="none"/>
+
+        <!-- Layer 2 -->
+        <rect x="0" y="170" width="1680" height="130" fill="#F7F7F5" stroke="#5E2AAC" stroke-width="1"/>
+        <text x="40" y="212" font-size="14" font-weight="700" fill="#5E2AAC" letter-spacing="3">LAYER 2 · DIVERGENT (~30 LOC)</text>
+        <text x="40" y="256" font-size="32" font-weight="700" fill="#1A1A1A">Product / Tenant Theme</text>
+        <text x="40" y="286" font-size="18" font-weight="400" fill="#6B6B68">accent · voice register · density · Ride · Logistic · Travel · Marketplace · Trellis-*</text>
+        <g transform="translate(1420, 196)">
+          <rect x="0" y="0" width="40" height="40" fill="#5E2AAC" rx="4"/>
+          <rect x="48" y="0" width="40" height="40" fill="#1E6FD9" rx="4"/>
+          <rect x="96" y="0" width="40" height="40" fill="#0F8F6E" rx="4"/>
+          <rect x="144" y="0" width="40" height="40" fill="#C4521A" rx="4"/>
+          <rect x="192" y="0" width="40" height="40" fill="#6E6E6E" rx="4"/>
+        </g>
+
+        <!-- arrow -->
+        <path d="M840 300 L840 328 M832 320 L840 328 L848 320" stroke="#6B6B68" stroke-width="1.5" fill="none"/>
+
+        <!-- Layer 1 -->
+        <rect x="0" y="340" width="1680" height="130" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="1"/>
+        <text x="40" y="382" font-size="14" font-weight="700" fill="#1A1A1A" letter-spacing="3">LAYER 1 · SHARED (LOCKED)</text>
+        <text x="40" y="426" font-size="32" font-weight="700" fill="#1A1A1A">Common Primitives</text>
+        <text x="40" y="456" font-size="18" font-weight="400" fill="#6B6B68">76 atoms · Button · Input · Modal · Table · Tabs · Toast · Calendar — token-driven, no hard hex</text>
+        <text x="1640" y="426" font-size="44" font-weight="800" fill="#1A1A1A" text-anchor="end">76</text>
+
+        <!-- arrow -->
+        <path d="M840 470 L840 498 M832 490 L840 498 L848 490" stroke="#6B6B68" stroke-width="1.5" fill="none"/>
+
+        <!-- Layer 0 -->
+        <rect x="0" y="510" width="1680" height="130" fill="#1A1A1A" stroke="#1A1A1A" stroke-width="1"/>
+        <text x="40" y="552" font-size="14" font-weight="700" fill="#B589F0" letter-spacing="3">LAYER 0 · LOCKED (DESIGN LEAD RFC)</text>
+        <text x="40" y="596" font-size="32" font-weight="700" fill="#F7F7F5">Brand Foundation</text>
+        <text x="40" y="626" font-size="18" font-weight="400" fill="#9A9A96">Dash Purple #5E2AAC · Plus Jakarta Sans · type ramp · spacing · motion · a11y floor</text>
+        <text x="1640" y="596" font-size="44" font-weight="800" fill="#B589F0" text-anchor="end">1</text>
+      </svg>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">04 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 05 · LAYER 0 — FOUNDATION                                            -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-columns: 1fr 1fr; gap: 100px;">
+
+    <div style="align-self: center;">
+      <div class="eyebrow purple">05 · Layer 0 · Foundation</div>
+      <h2 class="title-lg" style="margin-top: 28px;">
+        The part we <em>never</em><br/>negotiate.
+      </h2>
+      <div class="body" style="margin-top: 36px; max-width: 620px;" >
+        Type ramp, spacing, motion, a11y floor, semantic tokens, the canonical purple. Any change requires a Design Lead RFC. This is the layer that gives the platform a single voice.
+      </div>
+      <div class="hairline" style="margin: 40px 0;"></div>
+      <div class="mono mute" style="font-size: 13px;">5 CARDINAL RULES</div>
+      <div class="body" style="margin-top: 18px;">
+        <span class="mute">01 · </span>Existing production code is never modified — DS is additive.<br/>
+        <span class="mute">02 · </span>No external form libraries (no RHF / zod / TanStack Query).<br/>
+        <span class="mute">03 · </span>Audit trail mandatory for legal / financial fields.<br/>
+        <span class="mute">04 · </span>Dash Purple canonical hex — single source of truth.<br/>
+        <span class="mute">05 · </span>Mitra-facing voice = formal "Anda", not casual "kamu".
+      </div>
+    </div>
+
+    <div style="align-self: center;">
+      <div style="background: var(--purple); height: 380px; border-radius: 0; position: relative; padding: 50px;">
+        <div class="mono" style="color: rgba(255,255,255,0.7); font-size: 13px; letter-spacing: 0.18em;">DASH PURPLE · CANONICAL</div>
+        <div style="font-size: 140px; font-weight: 800; color: #fff; line-height: 0.95; margin-top: 20px;">#5E2AAC</div>
+        <div style="display: flex; gap: 36px; margin-top: 30px;">
+          <div>
+            <div class="mono" style="color: rgba(255,255,255,0.7); font-size: 12px;">RGB</div>
+            <div style="color: #fff; font-size: 20px; font-weight: 600; margin-top: 4px;">94, 42, 172</div>
+          </div>
+          <div>
+            <div class="mono" style="color: rgba(255,255,255,0.7); font-size: 12px;">OKLCH</div>
+            <div style="color: #fff; font-size: 20px; font-weight: 600; margin-top: 4px;">0.36 / 0.20 / 297</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+        <div>
+          <div class="mono mute" style="font-size: 12px;">TYPEFACE</div>
+          <div style="font-size: 36px; font-weight: 800; margin-top: 6px; letter-spacing: -0.02em;">Plus Jakarta Sans</div>
+          <div class="body-sm mute" style="margin-top: 4px;">300 · 400 · 500 · 600 · 700 · 800</div>
+        </div>
+        <div>
+          <div class="mono mute" style="font-size: 12px;">MONOSPACE</div>
+          <div style="font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Courier New', monospace; font-size: 28px; font-weight: 500; margin-top: 6px;">JetBrains Mono</div>
+          <div class="body-sm mute" style="margin-top: 4px;">Code · tokens · CLI output</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">05 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 06 · LAYER 1 — PRIMITIVES                                            -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">06 · Layer 1 · Primitives</div>
+    <h2 class="title-lg" style="max-width: 1500px;">
+      <em>76 atoms</em> every product reuses —<br/>
+      token-driven, never themed at source.
+    </h2>
+
+    <div style="align-self: end; padding-bottom: 30px;">
+      <div class="hairline" style="margin-bottom: 32px;"></div>
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 28px;">
+        <div><div class="title-md" style="font-size: 28px;">Button</div><div class="body-sm mute" style="margin-top: 4px;">6 variants · 4 sizes</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Input</div><div class="body-sm mute" style="margin-top: 4px;">Text · Date · Phone</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Select</div><div class="body-sm mute" style="margin-top: 4px;">Single · Multi · Async</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Modal</div><div class="body-sm mute" style="margin-top: 4px;">Sheet · Dialog · Drawer</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Table</div><div class="body-sm mute" style="margin-top: 4px;">+ DataTable · sort · paginate</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Tabs</div><div class="body-sm mute" style="margin-top: 4px;">Horizontal · vertical · pill</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Toast</div><div class="body-sm mute" style="margin-top: 4px;">Notification system</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Tooltip</div><div class="body-sm mute" style="margin-top: 4px;">12-side anchor</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Calendar</div><div class="body-sm mute" style="margin-top: 4px;">Date · range · multi</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Badge</div><div class="body-sm mute" style="margin-top: 4px;">Status · count · dot</div></div>
+        <div><div class="title-md" style="font-size: 28px;">Avatar</div><div class="body-sm mute" style="margin-top: 4px;">Photo · initial · group</div></div>
+        <div><div class="title-md" style="font-size: 28px; color: var(--purple);">… +65</div><div class="body-sm mute" style="margin-top: 4px;">Full registry list</div></div>
+      </div>
+      <div class="hairline" style="margin: 36px 0 24px;"></div>
+      <div class="lede mute">
+        Layer 1 is the contract: <em>same anatomy, same accessibility, same audit hooks</em> — no matter which product imports it.
+      </div>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">06 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 07 · LAYER 2 — PRODUCT THEMES + cascade demo                         -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">07 · Layer 2 · Product Themes</div>
+    <h2 class="title-lg" style="max-width: 1500px;">
+      Same <em>Button.</em> Five <em>faces.</em><br/>
+      ~30 lines of theme. Zero forks.
+    </h2>
+
+    <div style="align-self: end; padding-bottom: 30px;">
+      <div class="hairline" style="margin-bottom: 36px;"></div>
+
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 28px;">
+        <!-- RIDE -->
+        <div style="border: 1px solid var(--rule); padding: 32px; background: var(--paper-2);">
+          <div style="display: flex; gap: 10px; align-items: center;"><span style="width: 14px; height: 14px; background: var(--ride); border-radius: 3px;"></span><span class="mono purple">RIDE</span></div>
+          <div style="margin-top: 32px; display: flex; justify-content: center;"><span class="btn-preview" style="background: var(--ride);">Book Ride</span></div>
+          <div class="hairline" style="margin: 28px 0 18px;"></div>
+          <div class="mono mute" style="font-size: 11px;">ACCENT</div>
+          <div class="body-sm" style="margin-top: 4px;">Mobility energy · surge zones</div>
+          <div class="mono mute" style="font-size: 11px; margin-top: 12px;">VOICE</div>
+          <div class="body-sm" style="margin-top: 4px;">Formal "Anda"</div>
+        </div>
+        <!-- LOGISTIC -->
+        <div style="border: 1px solid var(--rule); padding: 32px; background: var(--paper-2);">
+          <div style="display: flex; gap: 10px; align-items: center;"><span style="width: 14px; height: 14px; background: var(--logistic); border-radius: 3px;"></span><span class="mono" style="color: var(--logistic);">LOGISTIC</span></div>
+          <div style="margin-top: 32px; display: flex; justify-content: center;"><span class="btn-preview" style="background: var(--logistic);">Dispatch</span></div>
+          <div class="hairline" style="margin: 28px 0 18px;"></div>
+          <div class="mono mute" style="font-size: 11px;">ACCENT</div>
+          <div class="body-sm" style="margin-top: 4px;">Industrial · delivery alerts</div>
+          <div class="mono mute" style="font-size: 11px; margin-top: 12px;">VOICE</div>
+          <div class="body-sm" style="margin-top: 4px;">Operational · terse</div>
+        </div>
+        <!-- TRAVEL -->
+        <div style="border: 1px solid var(--rule); padding: 32px; background: var(--paper-2);">
+          <div style="display: flex; gap: 10px; align-items: center;"><span style="width: 14px; height: 14px; background: var(--travel); border-radius: 3px;"></span><span class="mono" style="color: var(--travel);">TRAVEL</span></div>
+          <div style="margin-top: 32px; display: flex; justify-content: center;"><span class="btn-preview" style="background: var(--travel);">Book Trip</span></div>
+          <div class="hairline" style="margin: 28px 0 18px;"></div>
+          <div class="mono mute" style="font-size: 11px;">ACCENT</div>
+          <div class="body-sm" style="margin-top: 4px;">Itinerary calm · premium</div>
+          <div class="mono mute" style="font-size: 11px; margin-top: 12px;">VOICE</div>
+          <div class="body-sm" style="margin-top: 4px;">Warm · descriptive</div>
+        </div>
+        <!-- MARKETPLACE -->
+        <div style="border: 1px solid var(--rule); padding: 32px; background: var(--paper-2);">
+          <div style="display: flex; gap: 10px; align-items: center;"><span style="width: 14px; height: 14px; background: var(--marketplace); border-radius: 3px;"></span><span class="mono" style="color: var(--marketplace);">MARKETPLACE</span></div>
+          <div style="margin-top: 32px; display: flex; justify-content: center;"><span class="btn-preview" style="background: var(--marketplace);">Add to Cart</span></div>
+          <div class="hairline" style="margin: 28px 0 18px;"></div>
+          <div class="mono mute" style="font-size: 11px;">ACCENT</div>
+          <div class="body-sm" style="margin-top: 4px;">Cart urgency · commerce</div>
+          <div class="mono mute" style="font-size: 11px; margin-top: 12px;">VOICE</div>
+          <div class="body-sm" style="margin-top: 4px;">Conversion-driven</div>
+        </div>
+        <!-- TRELLIS -->
+        <div style="border: 1px dashed #BFBDB4; padding: 32px; background: var(--paper-2);">
+          <div style="display: flex; gap: 10px; align-items: center;"><span style="width: 14px; height: 14px; background: var(--trellis); border-radius: 3px;"></span><span class="mono mute">TRELLIS · TPL</span></div>
+          <div style="margin-top: 32px; display: flex; justify-content: center;"><span class="btn-preview" style="background: var(--trellis);">Per Tenant</span></div>
+          <div class="hairline" style="margin: 28px 0 18px;"></div>
+          <div class="mono mute" style="font-size: 11px;">ACCENT</div>
+          <div class="body-sm" style="margin-top: 4px;">Tenant-defined</div>
+          <div class="mono mute" style="font-size: 11px; margin-top: 12px;">VOICE</div>
+          <div class="body-sm" style="margin-top: 4px;">Template scaffold</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">07 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 08 · LAYER 3 — WORKFLOW BLOCKS                                       -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">08 · Layer 3 · Building Blocks</div>
+    <h2 class="title-lg" style="max-width: 1500px;">
+      <em>129+ building blocks</em> shipped —<br/>
+      domain-shaped, audit-trail by default.
+    </h2>
+
+    <div style="align-self: end; padding-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
+
+        <div style="padding: 32px 32px 32px 0; border-right: 1px solid var(--rule);">
+          <div class="stat-xl">50</div>
+          <div class="stat-label mute" style="margin-top: 10px;">Shared Blocks</div>
+          <div class="body-sm mute" style="margin-top: 14px;">dashboard-shell · finance-cards · mitra-suspend-page · marketing-analytics · hr-dashboard · portal-deliveries-list · halo-dash-3pane · transactions-table · orders-table · settings-* (profile/notifications/team/privacy) · login-01..03 · signup-01..03 · forgot-password · verification-otp · analytics-grid · activity-timeline · empty-state-collection · page-header · auth-login-apex</div>
+        </div>
+
+        <div style="padding: 32px; border-right: 1px solid var(--rule);">
+          <div class="stat-xl">70</div>
+          <div class="stat-label mute" style="margin-top: 10px;">Templates</div>
+          <div class="body-sm mute" style="margin-top: 14px;">Domain-shaped scaffolds: finance · hr · marketing · portal · halo-dash. Drop-in pages, not generic.</div>
+        </div>
+
+        <div style="padding: 32px; border-right: 1px solid var(--rule);">
+          <div class="stat-xl" style="color: var(--ride);">6</div>
+          <div class="stat-label" style="color: var(--ride); margin-top: 10px;">Product-Specific</div>
+          <div class="body-sm mute" style="margin-top: 14px;"><span style="color: var(--ride);">Ride 3:</span> driver-assignment-board · polygon-shift-map · surge-multiplier-card<br/><span style="color: var(--logistic); margin-top: 6px; display: inline-block;">Logistic 3:</span> batch-dispatch-grid · package-tracking · route-planner</div>
+        </div>
+
+        <div style="padding: 32px 0 32px 32px;">
+          <div class="stat-xl" style="color: var(--purple);">3</div>
+          <div class="stat-label purple" style="margin-top: 10px;">Patterns</div>
+          <div class="body-sm mute" style="margin-top: 14px;">Cross-block compositions: audit-flow · bulk-action · multi-step-form.</div>
+        </div>
+
+      </div>
+
+      <div class="hairline" style="margin: 36px 0 24px;"></div>
+      <div class="lede">
+        Every block carries <em>7 audit rules</em>: original + edited + editor + reason + timestamp + entity ref + change diff. Mandatory for legal / financial fields. <span class="mute">CI-enforced via</span> <span class="mono" style="color: var(--ink);">dash audit</span>.
+      </div>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">08 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 09 · AI-NATIVE — Skill v3                                            -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">09 · AI-Native · Skill v3</div>
+    <h2 class="title-lg" style="max-width: 1500px;">
+      Claude, Cursor, Codex —<br/>
+      they all read the <em>same Dash mind.</em>
+    </h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-self: center;">
+
+      <div>
+        <div class="eyebrow purple" style="font-size: 13px;">SKILL v3 · MULTI-TENANT</div>
+        <div class="body" style="margin-top: 24px;">
+          One package, per-product context envelopes. The Skill auto-detects which Dash repo the developer is working in — portal-v2, backoffice, halo-dash, basecamp, react-fleet — and loads the matching stack rules + glossary + voice register.
+        </div>
+        <div class="hairline" style="margin: 32px 0;"></div>
+        <div style="display: grid; row-gap: 14px;">
+          <div style="display: grid; grid-template-columns: 240px 1fr; align-items: baseline; gap: 24px;">
+            <div class="mono mute" style="font-size: 13px;">CONTEXT ENVELOPE</div>
+            <div class="body">Rules + glossary + fixtures · 18K chars compressed</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 240px 1fr; align-items: baseline; gap: 24px;">
+            <div class="mono mute" style="font-size: 13px;">PINNED BLOCKS</div>
+            <div class="body">Refuse-list · envelope · audit · external-lib policy</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 240px 1fr; align-items: baseline; gap: 24px;">
+            <div class="mono mute" style="font-size: 13px;">FIXTURE VALIDATION</div>
+            <div class="body">Generated PR diff checked against canonical patterns</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 240px 1fr; align-items: baseline; gap: 24px;">
+            <div class="mono mute" style="font-size: 13px;">PER-PRODUCT SCOPE</div>
+            <div class="body">Ride · Logistic · Travel · Marketplace · Trellis-*</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="background: var(--ink); color: var(--paper); padding: 44px; font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Courier New', monospace; font-size: 16px; line-height: 1.7;">
+          <div style="color: var(--purple-on-dark);">$ dash skill activate --product=ride</div>
+          <div style="color: var(--dark-mute); margin-top: 8px;"># detecting repo…</div>
+          <div style="margin-top: 12px;">✓ halo-dash-fe (Pages Router · JS · useState)</div>
+          <div>✓ context envelope · 18,142 chars</div>
+          <div>✓ ride voice · formal "Anda"</div>
+          <div>✓ audit rules · 7 active</div>
+          <div>✓ banned imports · 5 enforced</div>
+          <div style="color: var(--purple-on-dark); margin-top: 16px;">→ ready</div>
+          <div style="color: var(--dark-mute); margin-top: 16px;"># claude / cursor / codex now</div>
+          <div style="color: var(--dark-mute);"># inherit Dash context automatically</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">09 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 10 · HERMES — Autonomous Deputy                                      -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">10 · Hermes · Autonomous Deputy</div>
+    <h2 class="title-lg" style="max-width: 1500px;">
+      Maintenance runs <em>without me.</em><br/>
+      95 % autonomous loop.
+    </h2>
+
+    <div style="align-self: center;">
+      <svg viewBox="0 0 1680 380" width="1680" height="380" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+        <!-- 5 step nodes -->
+        <g>
+          <!-- Step 1 -->
+          <rect x="20" y="100" width="280" height="180" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="1"/>
+          <text x="40" y="138" font-size="12" font-weight="700" fill="#5E2AAC" letter-spacing="2.5">01 · INPUT</text>
+          <text x="40" y="180" font-size="26" font-weight="700" fill="#1A1A1A">Developer</text>
+          <text x="40" y="206" font-size="26" font-weight="700" fill="#1A1A1A">flags gap</text>
+          <text x="40" y="244" font-size="14" font-weight="400" fill="#6B6B68">"Need block X"</text>
+          <text x="40" y="262" font-size="14" font-weight="400" fill="#6B6B68">via Slack / issue</text>
+
+          <!-- arrow -->
+          <path d="M310 190 L350 190 M340 184 L350 190 L340 196" stroke="#5E2AAC" stroke-width="1.5" fill="none"/>
+
+          <!-- Step 2 -->
+          <rect x="360" y="100" width="280" height="180" fill="#F1ECF9" stroke="#5E2AAC" stroke-width="1"/>
+          <text x="380" y="138" font-size="12" font-weight="700" fill="#5E2AAC" letter-spacing="2.5">02 · TRIAGE</text>
+          <text x="380" y="180" font-size="26" font-weight="700" fill="#1A1A1A">Hermes</text>
+          <text x="380" y="206" font-size="26" font-weight="700" fill="#1A1A1A">classifies</text>
+          <text x="380" y="244" font-size="14" font-weight="400" fill="#6B6B68">Layer? Product?</text>
+          <text x="380" y="262" font-size="14" font-weight="400" fill="#6B6B68">Existing match?</text>
+
+          <!-- arrow -->
+          <path d="M650 190 L690 190 M680 184 L690 190 L680 196" stroke="#5E2AAC" stroke-width="1.5" fill="none"/>
+
+          <!-- Step 3 -->
+          <rect x="700" y="100" width="280" height="180" fill="#F1ECF9" stroke="#5E2AAC" stroke-width="1"/>
+          <text x="720" y="138" font-size="12" font-weight="700" fill="#5E2AAC" letter-spacing="2.5">03 · SCAFFOLD</text>
+          <text x="720" y="180" font-size="26" font-weight="700" fill="#1A1A1A">AI agents</text>
+          <text x="720" y="206" font-size="26" font-weight="700" fill="#1A1A1A">generate</text>
+          <text x="720" y="244" font-size="14" font-weight="400" fill="#6B6B68">Block + tests</text>
+          <text x="720" y="262" font-size="14" font-weight="400" fill="#6B6B68">+ doc page</text>
+
+          <!-- arrow -->
+          <path d="M990 190 L1030 190 M1020 184 L1030 190 L1020 196" stroke="#5E2AAC" stroke-width="1.5" fill="none"/>
+
+          <!-- Step 4 -->
+          <rect x="1040" y="100" width="280" height="180" fill="#F1ECF9" stroke="#5E2AAC" stroke-width="1"/>
+          <text x="1060" y="138" font-size="12" font-weight="700" fill="#5E2AAC" letter-spacing="2.5">04 · PR</text>
+          <text x="1060" y="180" font-size="26" font-weight="700" fill="#1A1A1A">Open PR</text>
+          <text x="1060" y="206" font-size="26" font-weight="700" fill="#1A1A1A">on dash-ds</text>
+          <text x="1060" y="244" font-size="14" font-weight="400" fill="#6B6B68">CI runs · audit</text>
+          <text x="1060" y="262" font-size="14" font-weight="400" fill="#6B6B68">passes green</text>
+
+          <!-- arrow -->
+          <path d="M1330 190 L1370 190 M1360 184 L1370 190 L1360 196" stroke="#5E2AAC" stroke-width="1.5" fill="none"/>
+
+          <!-- Step 5 -->
+          <rect x="1380" y="100" width="280" height="180" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.5"/>
+          <text x="1400" y="138" font-size="12" font-weight="700" fill="#0F6E56" letter-spacing="2.5">05 · NOTIFY</text>
+          <text x="1400" y="180" font-size="26" font-weight="700" fill="#1A1A1A">Slack ping</text>
+          <text x="1400" y="206" font-size="26" font-weight="700" fill="#1A1A1A">+ merge</text>
+          <text x="1400" y="244" font-size="14" font-weight="400" fill="#6B6B68">Human approves</text>
+          <text x="1400" y="262" font-size="14" font-weight="400" fill="#6B6B68">5 % of loop</text>
+        </g>
+
+        <!-- Loop-back arrow -->
+        <path d="M1520 100 Q1520 30 840 30 Q160 30 160 100" stroke="#6B6B68" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
+        <text x="840" y="20" font-size="13" font-weight="600" fill="#6B6B68" text-anchor="middle" letter-spacing="2">AUTONOMOUS · 24 / 7</text>
+      </svg>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">10 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 11 · SCOREBOARD                                                       -->
+<!-- =================================================================== -->
+<section class="slide dark">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple" style="color: var(--purple-on-dark);">11 · Scoreboard · 20 May 2026</div>
+    <h2 class="title-lg" style="max-width: 1500px; color: var(--paper);">
+      Four weeks, one developer.<br/>
+      <em>Infrastructure ready.</em>
+    </h2>
+
+    <div style="align-self: end; padding-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--rule-dark); border-bottom: 1px solid var(--rule-dark);">
+        <div style="padding: 32px 32px 32px 0; border-right: 1px solid var(--rule-dark);">
+          <div class="stat-xl" style="color: var(--paper);">49</div>
+          <div class="stat-label" style="color: var(--dark-mute); margin-top: 12px;">Commits Shipped</div>
+        </div>
+        <div style="padding: 32px; border-right: 1px solid var(--rule-dark);">
+          <div class="stat-xl" style="color: var(--paper);">462</div>
+          <div class="stat-label" style="color: var(--dark-mute); margin-top: 12px;">Tests Passing</div>
+        </div>
+        <div style="padding: 32px; border-right: 1px solid var(--rule-dark);">
+          <div class="stat-xl" style="color: var(--paper);">202</div>
+          <div class="stat-label" style="color: var(--dark-mute); margin-top: 12px;">Registry Items</div>
+        </div>
+        <div style="padding: 32px 0 32px 32px;">
+          <div class="stat-xl" style="color: var(--paper);">129<span style="font-size: 64px;">+</span></div>
+          <div class="stat-label" style="color: var(--dark-mute); margin-top: 12px;">Building Blocks</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-bottom: 1px solid var(--rule-dark);">
+        <div style="padding: 32px 32px 32px 0; border-right: 1px solid var(--rule-dark);">
+          <div class="stat-xl" style="color: var(--purple-on-dark);">4</div>
+          <div class="stat-label" style="color: var(--dark-mute); margin-top: 12px;">Product Themes · +1 Trellis</div>
+        </div>
+        <div style="padding: 32px; border-right: 1px solid var(--rule-dark);">
+          <div class="stat-xl" style="color: var(--purple-on-dark);">7</div>
+          <div class="stat-label" style="color: var(--dark-mute); margin-top: 12px;">Layer Audit Rules</div>
+        </div>
+        <div style="padding: 32px; border-right: 1px solid var(--rule-dark);">
+          <div class="stat-xl" style="color: var(--purple-on-dark);">14</div>
+          <div class="stat-label" style="color: var(--dark-mute); margin-top: 12px;">CLI Commands</div>
+        </div>
+        <div style="padding: 32px 0 32px 32px;">
+          <div class="stat-xl" style="color: var(--purple-on-dark);">AI</div>
+          <div class="stat-label" style="color: var(--dark-mute); margin-top: 12px;">Skill v3 · Auto-Loads Dash Context</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">11 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 12 · THEME STUDIO DEMO                                               -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">12 · Theme Studio · Live Proof</div>
+    <h2 class="title-lg" style="max-width: 1500px;">
+      One component file.<br/>
+      <em>Switch tenant.</em> Watch it bend.
+    </h2>
+
+    <div style="align-self: end; padding-bottom: 30px;">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 28px;">
+
+        <!-- RIDE card -->
+        <div style="background: var(--paper-2); border: 1px solid var(--rule); border-radius: 12px; padding: 26px; box-shadow: 0 2px 0 rgba(26,26,26,0.02), 0 8px 24px rgba(26,26,26,0.04);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; background: #F1ECF9; border-radius: 999px;"><span style="width: 8px; height: 8px; background: var(--ride); border-radius: 50%;"></span><span class="mono" style="color: var(--ride); font-size: 11px;">RIDE</span></div>
+            <div style="width: 32px; height: 32px; background: #F1ECF9; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5C5.51 1.5 3.5 3.51 3.5 6c0 3.38 4.5 8.5 4.5 8.5s4.5-5.12 4.5-8.5c0-2.49-2.01-4.5-4.5-4.5z" stroke="#5E2AAC" stroke-width="1.4"/><circle cx="8" cy="6" r="1.6" fill="#5E2AAC"/></svg></div>
+          </div>
+          <div style="margin-top: 22px;">
+            <div style="font-size: 13px; color: var(--mute); font-weight: 500;">Driver Aldi · ⭐ 4.9</div>
+            <div style="font-size: 28px; font-weight: 800; color: var(--ink); margin-top: 6px; letter-spacing: -0.02em;">8 min away</div>
+            <div style="font-size: 12px; color: var(--mute); margin-top: 4px;">Honda PCX · B 1234 XY</div>
+          </div>
+          <div class="hairline" style="margin: 20px 0;"></div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-preview" style="background: var(--ride); flex: 1; font-size: 14px; padding: 11px 0;">Book Now</button>
+            <button style="width: 42px; border: 1px solid var(--rule); border-radius: 10px; background: var(--paper-2); color: var(--ink);">···</button>
+          </div>
+        </div>
+
+        <!-- LOGISTIC card -->
+        <div style="background: var(--paper-2); border: 1px solid var(--rule); border-radius: 12px; padding: 26px; box-shadow: 0 2px 0 rgba(26,26,26,0.02), 0 8px 24px rgba(26,26,26,0.04);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; background: #E8F1FB; border-radius: 999px;"><span style="width: 8px; height: 8px; background: var(--logistic); border-radius: 50%;"></span><span class="mono" style="color: var(--logistic); font-size: 11px;">LOGISTIC</span></div>
+            <div style="width: 32px; height: 32px; background: #E8F1FB; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="5" width="8" height="6" stroke="#1E6FD9" stroke-width="1.4"/><path d="M9.5 7h3l2 2v2h-5V7z" stroke="#1E6FD9" stroke-width="1.4"/><circle cx="4" cy="12" r="1.3" fill="#1E6FD9"/><circle cx="11.5" cy="12" r="1.3" fill="#1E6FD9"/></svg></div>
+          </div>
+          <div style="margin-top: 22px;">
+            <div style="font-size: 13px; color: var(--mute); font-weight: 500;">DLV-7821 · 12 kg</div>
+            <div style="font-size: 28px; font-weight: 800; color: var(--ink); margin-top: 6px; letter-spacing: -0.02em;">2 h ETA</div>
+            <div style="font-size: 12px; color: var(--mute); margin-top: 4px;">Cikarang → Jakarta Pusat</div>
+          </div>
+          <div class="hairline" style="margin: 20px 0;"></div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-preview" style="background: var(--logistic); flex: 1; font-size: 14px; padding: 11px 0;">Dispatch</button>
+            <button style="width: 42px; border: 1px solid var(--rule); border-radius: 10px; background: var(--paper-2); color: var(--ink);">···</button>
+          </div>
+        </div>
+
+        <!-- TRAVEL card -->
+        <div style="background: var(--paper-2); border: 1px solid var(--rule); border-radius: 12px; padding: 26px; box-shadow: 0 2px 0 rgba(26,26,26,0.02), 0 8px 24px rgba(26,26,26,0.04);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; background: #E4F4ED; border-radius: 999px;"><span style="width: 8px; height: 8px; background: var(--travel); border-radius: 50%;"></span><span class="mono" style="color: var(--travel); font-size: 11px;">TRAVEL</span></div>
+            <div style="width: 32px; height: 32px; background: #E4F4ED; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 8L2 14l3-6-3-6 12 6z" stroke="#0F8F6E" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div style="margin-top: 22px;">
+            <div style="font-size: 13px; color: var(--mute); font-weight: 500;">Jakarta → Bali · Garuda</div>
+            <div style="font-size: 28px; font-weight: 800; color: var(--ink); margin-top: 6px; letter-spacing: -0.02em;">07.45 WIB</div>
+            <div style="font-size: 12px; color: var(--mute); margin-top: 4px;">2h 10m direct · 21 May</div>
+          </div>
+          <div class="hairline" style="margin: 20px 0;"></div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-preview" style="background: var(--travel); flex: 1; font-size: 14px; padding: 11px 0;">Book Trip</button>
+            <button style="width: 42px; border: 1px solid var(--rule); border-radius: 10px; background: var(--paper-2); color: var(--ink);">···</button>
+          </div>
+        </div>
+
+        <!-- MARKETPLACE card -->
+        <div style="background: var(--paper-2); border: 1px solid var(--rule); border-radius: 12px; padding: 26px; box-shadow: 0 2px 0 rgba(26,26,26,0.02), 0 8px 24px rgba(26,26,26,0.04);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; background: #F8EBE0; border-radius: 999px;"><span style="width: 8px; height: 8px; background: var(--marketplace); border-radius: 50%;"></span><span class="mono" style="color: var(--marketplace); font-size: 11px;">MARKETPLACE</span></div>
+            <div style="width: 32px; height: 32px; background: #F8EBE0; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1.5 2.5h2l1.5 8.5h8l1.5-6h-9.5" stroke="#C4521A" stroke-width="1.4" stroke-linejoin="round"/><circle cx="6" cy="13.5" r="1.2" fill="#C4521A"/><circle cx="12" cy="13.5" r="1.2" fill="#C4521A"/></svg></div>
+          </div>
+          <div style="margin-top: 22px;">
+            <div style="font-size: 13px; color: var(--mute); font-weight: 500;">Tas Kulit Premium · 3 items</div>
+            <div style="font-size: 28px; font-weight: 800; color: var(--ink); margin-top: 6px; letter-spacing: -0.02em;">Rp 64K</div>
+            <div style="font-size: 12px; color: var(--mute); margin-top: 4px;">Free shipping · ETA 2 days</div>
+          </div>
+          <div class="hairline" style="margin: 20px 0;"></div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-preview" style="background: var(--marketplace); flex: 1; font-size: 14px; padding: 11px 0;">Checkout</button>
+            <button style="width: 42px; border: 1px solid var(--rule); border-radius: 10px; background: var(--paper-2); color: var(--ink);">···</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="hairline" style="margin: 36px 0 24px;"></div>
+      <div class="lede">
+        <em>Same primitive. Different theme cascade.</em>
+        <span class="mute">Card + Badge + Button + Icon — identical anatomy, identical audit hooks.</span>
+        <span class="mono" style="color: var(--ink); margin-left: 12px;">/docs/architecture/themes</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">12 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 13 · USE CASE — Real Example                                         -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 36px;">
+    <div class="eyebrow purple">13 · Real Example · Use Case</div>
+    <h2 class="title-lg" style="max-width: 1600px;">
+      "Edit foto bukti pengantaran."<br/>
+      <em>1 hour</em>, not 1 day.
+    </h2>
+
+    <div style="align-self: center; display: grid; grid-template-columns: 1fr 0.7fr 1fr; gap: 48px; align-items: stretch;">
+
+      <!-- LEFT — BEFORE / PROMPT -->
+      <div style="display: flex; flex-direction: column;">
+        <div class="eyebrow purple" style="font-size: 13px;">BEFORE · OPS STAFF PROMPT</div>
+        <div style="margin-top: 18px; background: var(--ink); color: var(--paper); padding: 28px; border-radius: 12px; font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 14px; line-height: 1.6; flex: 1;">
+          <div style="color: var(--purple-on-dark);">$ claude</div>
+          <div style="color: var(--dark-mute); margin-top: 10px;"># prompt:</div>
+          <div style="color: var(--paper); margin-top: 6px;">"Saya butuh modal untuk edit foto bukti pengantaran di backoffice. Crop + rotate. Reason wajib. Voice formal Anda. Audit trail."</div>
+          <div style="color: var(--dark-mute); margin-top: 16px;"># auto-detected: backoffice · Pages Router · JS</div>
+          <div style="color: var(--dark-mute);"># loading Dash Skill v3…</div>
+        </div>
+      </div>
+
+      <!-- MIDDLE — ARROW / STEPS -->
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div class="eyebrow purple" style="font-size: 13px; text-align: center;">DASH DS DOES THE WORK</div>
+        <div style="margin-top: 24px; display: grid; row-gap: 12px;">
+          <div style="background: #F1ECF9; padding: 14px 18px; border-radius: 10px; border-left: 3px solid var(--purple);">
+            <div class="mono purple" style="font-size: 11px;">01 · SKILL CONSULT</div>
+            <div class="body-sm" style="margin-top: 4px;">AI picks <span class="mono">image-editor-with-audit</span> block.</div>
+          </div>
+          <div style="background: #F1ECF9; padding: 14px 18px; border-radius: 10px; border-left: 3px solid var(--purple);">
+            <div class="mono purple" style="font-size: 11px;">02 · DASH ADD</div>
+            <div class="body-sm" style="margin-top: 4px;"><span class="mono">dash add image-editor-with-audit</span> → lands in repo.</div>
+          </div>
+          <div style="background: #F1ECF9; padding: 14px 18px; border-radius: 10px; border-left: 3px solid var(--purple);">
+            <div class="mono purple" style="font-size: 11px;">03 · AUDIT AUTO</div>
+            <div class="body-sm" style="margin-top: 4px;">original + edited + editor + reason + timestamp.</div>
+          </div>
+          <div style="background: #F1ECF9; padding: 14px 18px; border-radius: 10px; border-left: 3px solid var(--purple);">
+            <div class="mono purple" style="font-size: 11px;">04 · BRAND LOCKED</div>
+            <div class="body-sm" style="margin-top: 4px;">Voice "Anda" · Dash purple · dispute-ready.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT — AFTER / SHIPPED MOCK -->
+      <div style="display: flex; flex-direction: column;">
+        <div class="eyebrow" style="font-size: 13px; color: var(--success);">AFTER · SHIPPED FEATURE</div>
+        <div style="margin-top: 18px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 12px; padding: 24px; flex: 1; box-shadow: 0 8px 24px rgba(26,26,26,0.06);">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px; border-bottom: 1px solid var(--rule);">
+            <div style="font-size: 16px; font-weight: 700; color: var(--ink);">Edit Bukti Pengantaran</div>
+            <div style="width: 22px; height: 22px; border: 1px solid var(--rule); border-radius: 6px; text-align: center; line-height: 22px; color: var(--mute); font-size: 12px;">×</div>
+          </div>
+          <div style="margin-top: 14px; height: 110px; background: linear-gradient(135deg, #E4E3DE 25%, #F0EFEA 25%, #F0EFEA 50%, #E4E3DE 50%, #E4E3DE 75%, #F0EFEA 75%); background-size: 20px 20px; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center;">
+            <div style="border: 2px dashed var(--purple); width: 70%; height: 70%; border-radius: 4px;"></div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button style="flex: 1; padding: 8px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 8px; font-size: 12px; color: var(--ink);">Crop</button>
+            <button style="flex: 1; padding: 8px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 8px; font-size: 12px; color: var(--ink);">Rotate</button>
+          </div>
+          <div style="margin-top: 12px;">
+            <div style="font-size: 11px; color: var(--mute); font-weight: 600;">Alasan edit · wajib</div>
+            <div style="margin-top: 4px; padding: 8px 12px; border: 1px solid var(--rule); border-radius: 8px; font-size: 12px; color: var(--mute);">Pilih alasan ▾</div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 14px;">
+            <button style="flex: 1; padding: 10px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 8px; font-size: 13px; color: var(--ink); font-weight: 600;">Batal</button>
+            <button style="flex: 1; padding: 10px; background: var(--purple); color: #fff; border: 0; border-radius: 8px; font-size: 13px; font-weight: 600;">Simpan</button>
+          </div>
+        </div>
+        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="padding: 10px 12px; background: #E4F4ED; border-radius: 8px;"><div class="mono" style="font-size: 10px; color: var(--success);">SHIP TIME</div><div style="font-size: 18px; font-weight: 800; color: var(--ink); margin-top: 2px;">1 hour</div></div>
+          <div style="padding: 10px 12px; background: #E4F4ED; border-radius: 8px;"><div class="mono" style="font-size: 10px; color: var(--success);">AUDIT</div><div style="font-size: 18px; font-weight: 800; color: var(--ink); margin-top: 2px;">Built-in</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">13 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 14 · PILOT WAVE 5                                                    -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">14 · Pilot · Wave 5</div>
+    <h2 class="title-lg" style="max-width: 1500px;">
+      3 Dash Ride PE · 1 week.<br/>
+      Kill-criteria <em>declared up front.</em>
+    </h2>
+
+    <div style="align-self: end; padding-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px;">
+
+        <div>
+          <div class="eyebrow purple" style="font-size: 13px;">SMOKE TEST · 1 WEEK</div>
+          <div style="display: grid; row-gap: 16px; margin-top: 24px;">
+            <div style="display: grid; grid-template-columns: 80px 1fr; gap: 24px;">
+              <div class="mono purple" style="font-size: 14px;">DAY 0</div>
+              <div><div class="body" style="font-weight: 600;">Onboard 3 developers</div><div class="body-sm mute" style="margin-top: 4px;">Bearer tokens · Slack channel · playbook walkthrough.</div></div>
+            </div>
+            <div class="hairline"></div>
+            <div style="display: grid; grid-template-columns: 80px 1fr; gap: 24px;">
+              <div class="mono purple" style="font-size: 14px;">D 1–3</div>
+              <div><div class="body" style="font-weight: 600;">Shadow ship</div><div class="body-sm mute" style="margin-top: 4px;">Each developer ships 1 real feature using <span class="mono" style="color: var(--ink);">dash add</span> + Skill.</div></div>
+            </div>
+            <div class="hairline"></div>
+            <div style="display: grid; grid-template-columns: 80px 1fr; gap: 24px;">
+              <div class="mono purple" style="font-size: 14px;">D 4–5</div>
+              <div><div class="body" style="font-weight: 600;">Friction capture</div><div class="body-sm mute" style="margin-top: 4px;">Live AI behavior · adoption metrics · qualitative pain.</div></div>
+            </div>
+            <div class="hairline"></div>
+            <div style="display: grid; grid-template-columns: 80px 1fr; gap: 24px;">
+              <div class="mono" style="font-size: 14px; color: var(--success);">D + 7</div>
+              <div><div class="body" style="font-weight: 700;"><em style="color: var(--success);">Retro + go / no-go</em></div><div class="body-sm mute" style="margin-top: 4px;">Decision checkpoint with senior team.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="eyebrow" style="color: var(--danger); font-size: 13px;">KILL CRITERIA · DECLARED</div>
+          <div style="display: grid; row-gap: 14px; margin-top: 24px;">
+            <div style="border-left: 3px solid var(--danger); padding: 14px 18px; background: #FBF4F4;">
+              <div class="mono" style="font-size: 12px; color: var(--danger); font-weight: 600;">T1.1 — ADOPTION</div>
+              <div class="body" style="margin-top: 4px;">&lt; 2 of 3 developers complete a feature without bypass = pivot</div>
+            </div>
+            <div style="border-left: 3px solid var(--danger); padding: 14px 18px; background: #FBF4F4;">
+              <div class="mono" style="font-size: 12px; color: var(--danger); font-weight: 600;">T1.2 — AI ACCURACY</div>
+              <div class="body" style="margin-top: 4px;">Skill v3 generated PRs need &gt; 50 % rework = redesign rules</div>
+            </div>
+            <div style="border-left: 3px solid var(--danger); padding: 14px 18px; background: #FBF4F4;">
+              <div class="mono" style="font-size: 12px; color: var(--danger); font-weight: 600;">T1.3 — VELOCITY</div>
+              <div class="body" style="margin-top: 4px;">Feature cycle ≥ baseline (no time saved) = sunset additive mode</div>
+            </div>
+            <div class="body-sm mute" style="margin-top: 10px;">Honest exit. Documented in <span class="mono" style="color: var(--ink);">KILL-CRITERIA.md</span> — open during the meeting.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">14 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 15 · ROADMAP TO PLATFORM                                             -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-rows: auto auto 1fr; gap: 40px;">
+    <div class="eyebrow purple">15 · Roadmap · From DS to Platform</div>
+    <h2 class="title-lg" style="max-width: 1500px;">
+      Dash internal first.<br/>
+      Then <em>Trellis SaaS for SEA tech.</em>
+    </h2>
+
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px; align-self: end; padding-bottom: 30px;">
+
+      <div style="border-top: 2px solid var(--purple); padding-top: 22px;">
+        <div class="mono purple" style="font-size: 13px; font-weight: 500;">WAVE 5 · THIS WEEK</div>
+        <div class="title-md" style="margin-top: 14px; font-size: 26px; font-weight: 700;">3 Dash Ride PE pilot</div>
+        <div class="body-sm mute" style="margin-top: 12px;">Live AI validation in Ride tribe · kill-criteria checkpoint Day + 7.</div>
+      </div>
+
+      <div style="border-top: 1px solid var(--rule); padding-top: 22px;">
+        <div class="mono mute" style="font-size: 13px; font-weight: 500;">Q3 2026</div>
+        <div class="title-md" style="margin-top: 14px; font-size: 26px; font-weight: 700;">Dash Logistic Day 1</div>
+        <div class="body-sm mute" style="margin-top: 12px;">Launches WITH design system Day 1. DS team standby for theme buildout. Zero re-derive.</div>
+      </div>
+
+      <div style="border-top: 1px solid var(--rule); padding-top: 22px;">
+        <div class="mono mute" style="font-size: 13px; font-weight: 500;">Q4 2026</div>
+        <div class="title-md" style="margin-top: 14px; font-size: 26px; font-weight: 700;">Travel + Marketplace</div>
+        <div class="body-sm mute" style="margin-top: 12px;">Both Dash products onboard. 4 faces, 1 spine. Drift baseline re-measured.</div>
+      </div>
+
+      <div style="border-top: 1px solid var(--rule); padding-top: 22px;">
+        <div class="mono mute" style="font-size: 13px; font-weight: 500;">2027 H1</div>
+        <div class="title-md" style="margin-top: 14px; font-size: 26px; font-weight: 700;">Hermes hardened</div>
+        <div class="body-sm mute" style="margin-top: 12px;">Bus-factor mitigated for Dash. 95 % autonomous DS maintenance validated.</div>
+      </div>
+
+      <div style="border-top: 2px solid var(--success); padding-top: 22px;">
+        <div class="mono" style="font-size: 13px; font-weight: 500; color: var(--success);">2027 H2</div>
+        <div class="title-md" style="margin-top: 14px; font-size: 26px; font-weight: 700;"><em style="color: var(--success);">Trellis SaaS</em></div>
+        <div class="body-sm mute" style="margin-top: 12px;">Dash design infrastructure → external SEA tech tenants. $10–15 / seat. Post-internal proof.</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">15 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 15 · SPOTLIGHT — Curator role                                        -->
+<!-- =================================================================== -->
+<section class="slide">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="pad" style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 100px;">
+
+    <div style="align-self: center;">
+      <div class="eyebrow purple">16 · Curator</div>
+      <h2 class="title-lg" style="margin-top: 28px; max-width: 800px;">
+        Same foundation.<br/>
+        <em>Different product face.</em>
+      </h2>
+      <div class="lede" style="margin-top: 40px; max-width: 720px;">
+        Visible touch across <em>Ride</em>, <em>Logistic</em>, <em>Travel</em>, <em>Marketplace</em>, and eventually <em>Trellis</em>. One design language, five lived experiences. The DS makes that role <em>tractable</em> instead of heroic.
+      </div>
+      <div class="hairline" style="margin: 40px 0;"></div>
+      <div class="body mute" style="max-width: 720px;">
+        Design leadership owns Layer 0 RFCs. Product designers own Layer 2 themes. Developers + AI ship inside Layer 3. Everyone's hands stay on the layer that fits them.
+      </div>
+    </div>
+
+    <div style="align-self: center;">
+      <div style="display: grid; row-gap: 18px;">
+        <div style="display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 24px; padding: 22px 0; border-top: 1px solid var(--rule);">
+          <span style="width: 18px; height: 18px; background: var(--ride); border-radius: 4px;"></span>
+          <div><div class="title-md" style="font-weight: 700; font-size: 30px;">Dash Ride</div><div class="body mute" style="margin-top: 4px;">Original tenant · canonical purple · formal voice</div></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 24px; padding: 22px 0; border-top: 1px solid var(--rule);">
+          <span style="width: 18px; height: 18px; background: var(--logistic); border-radius: 4px;"></span>
+          <div><div class="title-md" style="font-weight: 700; font-size: 30px;">Dash Logistic</div><div class="body mute" style="margin-top: 4px;">Operations-first · trust-blue · terse</div></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 24px; padding: 22px 0; border-top: 1px solid var(--rule);">
+          <span style="width: 18px; height: 18px; background: var(--travel); border-radius: 4px;"></span>
+          <div><div class="title-md" style="font-weight: 700; font-size: 30px;">Dash Travel</div><div class="body mute" style="margin-top: 4px;">Discovery · warm-green · descriptive</div></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 24px; padding: 22px 0; border-top: 1px solid var(--rule);">
+          <span style="width: 18px; height: 18px; background: var(--marketplace); border-radius: 4px;"></span>
+          <div><div class="title-md" style="font-weight: 700; font-size: 30px;">Dash Marketplace</div><div class="body mute" style="margin-top: 4px;">Commerce · conversion-orange · CTA-led</div></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 24px; padding: 22px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
+          <span style="width: 18px; height: 18px; background: var(--trellis); border-radius: 4px;"></span>
+          <div><div class="title-md" style="font-weight: 700; font-size: 30px;">Trellis tenants</div><div class="body mute" style="margin-top: 4px;">External SaaS · per-tenant template · 2027</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="footer-line">DASH · INTERNAL</div>
+  <div class="slide-no">16 / 17</div>
+</section>
+
+<!-- =================================================================== -->
+<!-- 17 · ASKS — closing dark                                             -->
+<!-- =================================================================== -->
+<section class="slide dark">
+  <div class="brand-mark">Dash · Design System</div>
+  <div class="eyebrow" style="position: absolute; top: 60px; right: 120px;">17 / 17 · Call to Action</div>
+
+  <div class="pad" style="display: grid; grid-template-rows: 1fr auto; align-items: end;">
+    <div style="display: flex; align-items: center; height: 100%;">
+      <h1 class="title-xxl" style="max-width: 1500px;">
+        Three asks.<br/>
+        <em>One signature.</em>
+      </h1>
+    </div>
+
+    <div style="padding-bottom: 12px;">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; border-top: 1px solid var(--rule-dark); padding-top: 36px;">
+        <div>
+          <div class="mono" style="color: var(--purple-on-dark);">— ASK 01 · THIS WEEK</div>
+          <div class="title-md" style="margin-top: 14px; font-size: 32px; color: var(--paper); font-weight: 700;">Approve Wave 5 pilot</div>
+          <div class="body-sm" style="color: var(--dark-mute); margin-top: 10px;">Greenlight 3 PE from Dash Ride tribe · kick-off this week · retro Day + 7 with kill-criteria gate.</div>
+        </div>
+        <div>
+          <div class="mono" style="color: var(--purple-on-dark);">— ASK 02 · Q3 LOCK-IN</div>
+          <div class="title-md" style="margin-top: 14px; font-size: 32px; color: var(--paper); font-weight: 700;">Lock Dash Logistic Q3</div>
+          <div class="body-sm" style="color: var(--dark-mute); margin-top: 10px;">Confirm Q3 2026 launch timeline — DS team standby for theme buildout so Logistic ships WITH DS Day 1.</div>
+        </div>
+        <div>
+          <div class="mono" style="color: var(--purple-on-dark);">— ASK 03 · MONTHLY</div>
+          <div class="title-md" style="margin-top: 14px; font-size: 32px; color: var(--paper); font-weight: 700;">Review cadence</div>
+          <div class="body-sm" style="color: var(--dark-mute); margin-top: 10px;">Standing 30-min monthly review against kill criteria. Sunset > stalled — keep the option open.</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: end; margin-top: 60px;">
+        <div class="mono" style="color: var(--dark-mute);">IRFAN PRIMA PUTRA · PRODUCT DESIGNER · DS.DASH.COM (POST-WAVE-5)</div>
+        <div class="mono" style="color: var(--dark-mute);">END OF DECK</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
