@@ -23,6 +23,23 @@ export default function QuickStartPage() {
         status="new"
       />
 
+      {/* Redirect banner — points new users to the canonical entry page */}
+      <div
+        role="note"
+        className="rounded-xl border border-information-light bg-information-lighter px-4 py-3 text-sm text-text-strong-950"
+      >
+        <span className="font-semibold">Deep walkthrough.</span> New here? Start
+        with the{" "}
+        <Link
+          href="/docs/getting-started"
+          className="text-(--dash-purple-600) underline underline-offset-4"
+        >
+          10-minute Getting Started
+        </Link>{" "}
+        — this 8-step version is the longer, AI-first variant with Skill install
+        and troubleshooting.
+      </div>
+
       {/* Hero workflow diagram — at-a-glance view of the journey */}
       <DocsWorkflowDiagram
         steps={[

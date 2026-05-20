@@ -21,6 +21,22 @@ export default function InstallationPage() {
         description="Wire your project to the Dash registry, install the base theme, and ship your first list page in under five minutes. Walk through six visual steps — or jump to the Quick install at the top."
       />
 
+      {/* Redirect banner — points new users to the canonical entry page */}
+      <div
+        role="note"
+        className="rounded-xl border border-information-light bg-information-lighter px-4 py-3 text-sm text-text-strong-950"
+      >
+        <span className="font-semibold">Deep reference.</span> New here? Start with
+        the{" "}
+        <Link
+          href="/docs/getting-started"
+          className="text-(--dash-purple-600) underline underline-offset-4"
+        >
+          10-minute Getting Started
+        </Link>{" "}
+        — this page is the full reference for every flag and edge case.
+      </div>
+
       {/* At-a-glance install flow */}
       <DocsWorkflowDiagram
         steps={[

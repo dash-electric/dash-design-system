@@ -24,6 +24,23 @@ export default function OnboardingPage() {
         kind="composite"
       />
 
+      {/* Redirect banner — points new users to the canonical entry page */}
+      <div
+        role="note"
+        className="rounded-xl border border-information-light bg-information-lighter px-4 py-3 text-sm text-text-strong-950"
+      >
+        <span className="font-semibold">Team onboarding (45 min).</span> Just need
+        the basics? Start with the{" "}
+        <Link
+          href="/docs/getting-started"
+          className="text-(--dash-purple-600) underline underline-offset-4"
+        >
+          10-minute Getting Started
+        </Link>{" "}
+        — this playbook is the wider scope-reading + gap-reporting flow for new
+        team members.
+      </div>
+
       <DocsWorkflowDiagram
         steps={[
           { label: "Pre-flight", sub: "5 min — read & confirm scope" },
