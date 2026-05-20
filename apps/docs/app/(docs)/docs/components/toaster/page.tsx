@@ -166,6 +166,74 @@ toast.info("Synced")`}
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Dispatch confirmation"
+          description="Mitra terima dispatch via driver-app. Toast filled success dengan action link ke detail trip."
+          preview={
+            <div className="space-y-4">
+              <Button
+                size="sm"
+                onClick={() =>
+                  toastFilled.success("Dispatch diterima · trip mtr-9412→DSC-77821", {
+                    action: { label: "Buka trip", onClick: () => {} },
+                  })
+                }
+              >
+                Terima dispatch
+              </Button>
+            </div>
+          }
+          code={`toastFilled.success("Dispatch diterima · trip mtr-9412→DSC-77821", {
+  action: { label: "Buka trip", onClick: () => router.push(\`/trip/\${tripId}\`) },
+})`}
+        />
+
+        <DocsExample
+          title="Payout transfer failed"
+          description="Transfer payout mingguan gagal — rekening tertolak. Toast filled error 2-line dengan deskripsi + action Coba Lagi."
+          preview={
+            <div className="space-y-4">
+              <Button
+                size="sm"
+                tone="destructive"
+                style="stroke"
+                onClick={() =>
+                  toastFilled.error("Transfer payout gagal", {
+                    description: "Rekening BCA 7711xxxx1234 tertolak. Cek nomor rekening atau hubungi support.",
+                    action: { label: "Coba lagi", onClick: () => {} },
+                  })
+                }
+              >
+                Trigger payout error
+              </Button>
+            </div>
+          }
+          code={`toastFilled.error("Transfer payout gagal", {
+  description: "Rekening BCA 7711xxxx1234 tertolak. Cek nomor rekening atau hubungi support.",
+  action: { label: "Coba lagi", onClick: () => retryPayout(payoutId) },
+})`}
+        />
+
+        <DocsExample
+          title="GPS sinyal lemah"
+          description="Driver-app deteksi GPS akurasi rendah. Toast warning stroke yang non-intrusive — mitra tetap bisa drive."
+          preview={
+            <div className="space-y-4">
+              <Button
+                size="sm"
+                tone="neutral"
+                style="stroke"
+                onClick={() => toast.warning("Sinyal GPS lemah · akurasi >50m")}
+              >
+                Simulate GPS drop
+              </Button>
+            </div>
+          }
+          code={`toast.warning("Sinyal GPS lemah · akurasi >50m")`}
+        />
+      </DocsSection>
+
       <DocsSection title="API">
         <DocsPropsTable
           rows={[

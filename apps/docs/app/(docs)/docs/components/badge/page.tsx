@@ -318,6 +318,75 @@ export default function BadgeDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Mitra status row"
+          description="Daftar mitra Dash Express dengan badge status. Active = bisa dispatch, Pending = onboarding belum lengkap, Suspended = kena auto-suspend, Rejected = gagal KYC."
+          preview={
+            <div className="flex flex-col gap-2 max-w-md">
+              {[
+                { id: "mtr-9412", name: "Fauzan Kurniawan", status: "success" as const, label: "Active" },
+                { id: "mtr-9415", name: "Adi Brahmana", status: "warning" as const, label: "Pending KYC" },
+                { id: "mtr-9418", name: "Rizky Pratama", status: "neutral" as const, label: "Suspended" },
+                { id: "mtr-9420", name: "Bagus Wijaya", status: "error" as const, label: "Rejected" },
+              ].map((m) => (
+                <div key={m.id} className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-text-strong-950">{m.name}</span>
+                    <span className="text-xs text-text-sub-600">{m.id}</span>
+                  </div>
+                  <Badge status={m.status} appearance="lighter" type="dot">{m.label}</Badge>
+                </div>
+              ))}
+            </div>
+          }
+          code={`<Badge status="success" appearance="lighter" type="dot">Active</Badge>
+<Badge status="warning" appearance="lighter" type="dot">Pending KYC</Badge>
+<Badge status="neutral" appearance="lighter" type="dot">Suspended</Badge>
+<Badge status="error" appearance="lighter" type="dot">Rejected</Badge>`}
+        />
+
+        <DocsExample
+          title="Dispatch queue counter"
+          description="NumberBadge sebagai unread / outstanding counter di sidebar Halo-dash. Lighter agar tidak compete dengan navigation icon."
+          preview={
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-text-strong-950">Antrian dispatch</span>
+                <NumberBadge status="information" appearance="lighter" value={12} />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-text-strong-950">Pending payment</span>
+                <NumberBadge status="warning" appearance="lighter" value={3} />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-text-strong-950">Maintenance overdue</span>
+                <NumberBadge status="error" appearance="filled" value={8} />
+              </div>
+            </div>
+          }
+          code={`<NumberBadge status="information" appearance="lighter" value={12} />
+<NumberBadge status="warning" appearance="lighter" value={3} />
+<NumberBadge status="error" appearance="filled" value={8} />`}
+        />
+
+        <DocsExample
+          title="EV battery health tags"
+          description="Tag-style badges untuk metadata armada — battery SOH tier, vehicle type, charger compatibility."
+          preview={
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge status="success" appearance="filled" type="left-icon" icon={<Verified />}>SOH 95%</Badge>
+              <Badge status="information" appearance="lighter">Motor</Badge>
+              <Badge status="feature" appearance="lighter">CCS2</Badge>
+              <Badge status="warning" appearance="stroke">Swap due 3d</Badge>
+            </div>
+          }
+          code={`<Badge status="success" appearance="filled" type="left-icon" icon={<Verified />}>SOH 95%</Badge>
+<Badge status="information" appearance="lighter">Motor</Badge>
+<Badge status="warning" appearance="stroke">Swap due 3d</Badge>`}
+        />
+      </DocsSection>
+
       <DocsSection title="Do this, not that">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
           Badge labels state, not action. Color = sentimen, bukan random palette. Pending = warning (kuning, "lagi diproses"), bukan error (merah, "ditolak").

@@ -79,7 +79,7 @@ export default function DataTableDocsPage() {
         </p>
       </DocsSection>
 
-      <DocsSection title="Example">
+      <DocsSection title="Examples">
         <DocsExample
           title="Mitra list with sortable columns"
           preview={<DataTable columns={columns} data={rows} className="w-full" />}

@@ -392,6 +392,99 @@ export default function CheckboxDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Tribe permission grid — ops onboarding"
+          description="Saat ops invite dispatcher baru, mereka pilih tribe mana saja yang dispatcher boleh akses. Multi-select karena satu dispatcher bisa handle lebih dari 1 tribe."
+          preview={
+            <div className="w-full max-w-md space-y-3 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-4">
+              <div className="text-sm font-semibold text-text-strong-950">Akses tribe</div>
+              <div className="grid grid-cols-2 gap-2">
+                <CheckboxField label="Express" sublabel="Roda 2 instant" defaultChecked />
+                <CheckboxField label="Reservasi" sublabel="Delivery scheduled" defaultChecked />
+                <CheckboxField label="X-Dock" sublabel="Hub-to-hub" />
+                <CheckboxField label="4-Wheel" sublabel="Mobil & pickup" />
+                <CheckboxField label="Canvasser" sublabel="Rental harian" />
+                <CheckboxField label="Outsourcing" sublabel="Mitra eksternal" disabled />
+              </div>
+            </div>
+          }
+          code={`<CheckboxField label="Express" sublabel="Roda 2 instant" defaultChecked />
+<CheckboxField label="Reservasi" sublabel="Delivery scheduled" defaultChecked />
+<CheckboxField label="X-Dock" sublabel="Hub-to-hub" />
+<CheckboxField label="4-Wheel" sublabel="Mobil & pickup" />
+<CheckboxField label="Outsourcing" sublabel="Mitra eksternal" disabled />`}
+        />
+
+        <DocsExample
+          title="Bulk action — suspended mitra list"
+          description="Select-all header dengan indeterminate state. Ops centang sebagian mitra untuk bulk-reactivate setelah investigasi."
+          preview={
+            <div className="w-full max-w-md rounded-xl border border-stroke-soft-200 bg-bg-white-0 overflow-hidden">
+              <div className="flex items-center gap-3 border-b border-stroke-soft-200 bg-bg-weak-50 px-3 py-2">
+                <Checkbox checked="indeterminate" />
+                <span className="text-xs font-medium text-text-strong-950">2 dari 4 mitra dipilih</span>
+                <Button size="xs" className="ml-auto">Reaktivasi (2)</Button>
+              </div>
+              {[
+                { id: "mtr-9412", name: "Fauzan Kurniawan", reason: "3 dispatch ditolak", checked: true },
+                { id: "mtr-9418", name: "Rizky Pratama", reason: "Idle 7 hari", checked: true },
+                { id: "mtr-9419", name: "Andi Wijayanto", reason: "GPS spoof flag", checked: false },
+                { id: "mtr-9425", name: "Rina Saputri", reason: "Manual ops review", checked: false },
+              ].map((m) => (
+                <div key={m.id} className="flex items-center gap-3 border-b border-stroke-soft-200 px-3 py-2 last:border-b-0">
+                  <Checkbox checked={m.checked} />
+                  <div className="flex-1">
+                    <div className="text-sm text-text-strong-950">{m.name} · <span className="text-text-sub-600 text-xs">{m.id}</span></div>
+                    <div className="text-xs text-text-sub-600">{m.reason}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          }
+          code={`<Checkbox
+  checked={headerChecked} // "indeterminate" | true | false
+  onCheckedChange={(v) => setRows(rows.map(() => v === true))}
+/>
+{rows.map((row) => (
+  <Checkbox
+    checked={row.selected}
+    onCheckedChange={(v) => toggleRow(row.id, v)}
+  />
+))}`}
+        />
+
+        <DocsExample
+          title="Audit confirmation"
+          description="Sebelum submit suspend permanent, ops harus centang acknowledgement. Mandatory checkbox sebelum primary action enable."
+          preview={
+            <div className="w-full max-w-md space-y-3 rounded-xl border border-(--state-error-base) bg-(--state-error-light) p-4">
+              <div className="text-sm font-semibold text-text-strong-950">Konfirmasi suspend permanen</div>
+              <CheckboxField
+                label="Saya sudah review log dispatch 30 hari terakhir"
+                sublabel="Tindakan ini masuk audit trail dan tidak bisa di-undo."
+              />
+              <CheckboxField
+                label="Saya sudah konfirmasi via WhatsApp ke mitra"
+                sublabel="Bukti screenshot wajib di-upload setelah submit."
+              />
+              <Button tone="destructive" disabled className="w-full">Suspend permanen</Button>
+            </div>
+          }
+          code={`<CheckboxField
+  label="Saya sudah review log dispatch 30 hari terakhir"
+  sublabel="Tindakan ini masuk audit trail dan tidak bisa di-undo."
+/>
+<CheckboxField
+  label="Saya sudah konfirmasi via WhatsApp ke mitra"
+  sublabel="Bukti screenshot wajib di-upload setelah submit."
+/>
+<Button tone="destructive" disabled={!allAcknowledged}>
+  Suspend permanen
+</Button>`}
+        />
+      </DocsSection>
+
       <DocsSection title="Do this, not that">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
           Checkbox = multi-select (banyak pilihan boleh). Untuk pilihan tunggal pakai Radio. Untuk on/off action pakai Switch. Pakai indeterminate hanya untuk select-all parent.

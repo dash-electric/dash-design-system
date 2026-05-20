@@ -800,6 +800,90 @@ export default function InputDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Nomor mitra search"
+          description="Halo-dash quick search bar. Leading icon search, ⌘K shortcut hint, clear button setelah ada value."
+          preview={
+            <div className="w-full max-w-md">
+              <InputRoot>
+                <InputIcon><Search /></InputIcon>
+                <Input placeholder="Cari mitra · mtr-9412, nama, atau plat" defaultValue="mtr-94" />
+                <InputAffix><Kbd>⌘K</Kbd></InputAffix>
+              </InputRoot>
+            </div>
+          }
+          code={`<InputRoot>
+  <InputIcon><Search /></InputIcon>
+  <Input placeholder="Cari mitra · mtr-9412, nama, atau plat" />
+  <InputAffix><Kbd>⌘K</Kbd></InputAffix>
+</InputRoot>`}
+        />
+
+        <DocsExample
+          title="Payout amount — Rupiah prefix"
+          description="Ops input nominal payout manual. Affix 'Rp' kiri + tabular-nums alignment di angka."
+          preview={
+            <Field className="w-full max-w-xs">
+              <Label>Nominal payout</Label>
+              <InputRoot>
+                <InputAffix>Rp</InputAffix>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  className="tabular-nums"
+                  defaultValue="2.450.000"
+                />
+              </InputRoot>
+              <FieldDescription>Maksimum Rp 25.000.000 per transfer manual.</FieldDescription>
+            </Field>
+          }
+          code={`<Field>
+  <Label>Nominal payout</Label>
+  <InputRoot>
+    <InputAffix>Rp</InputAffix>
+    <Input
+      type="text"
+      inputMode="numeric"
+      className="tabular-nums"
+      value={amount}
+      onChange={(e) => setAmount(formatRupiah(e.target.value))}
+    />
+  </InputRoot>
+  <FieldDescription>Maksimum Rp 25.000.000 per transfer manual.</FieldDescription>
+</Field>`}
+        />
+
+        <DocsExample
+          title="Nomor plat kendaraan — validation"
+          description="Mitra input plat saat onboarding. Pattern validation untuk format Indonesia (B 1234 ABC). Error state inline."
+          preview={
+            <Field className="w-full max-w-xs">
+              <Label>Nomor plat</Label>
+              <InputRoot invalid>
+                <Input defaultValue="B1234" />
+              </InputRoot>
+              <Hint tone="error">Format harus B 1234 ABC (huruf area + 4 digit + huruf area).</Hint>
+            </Field>
+          }
+          code={`<Field>
+  <Label>Nomor plat</Label>
+  <InputRoot invalid={!isValidPlat(plat)}>
+    <Input
+      value={plat}
+      onChange={(e) => setPlat(e.target.value.toUpperCase())}
+      placeholder="B 1234 ABC"
+    />
+  </InputRoot>
+  {!isValidPlat(plat) && (
+    <Hint tone="error">
+      Format harus B 1234 ABC (huruf area + 4 digit + huruf area).
+    </Hint>
+  )}
+</Field>`}
+        />
+      </DocsSection>
+
       <DocsSection title="API">
         <DocsPropsTable
           rows={[

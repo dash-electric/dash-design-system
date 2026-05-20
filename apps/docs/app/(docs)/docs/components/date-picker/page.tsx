@@ -254,6 +254,71 @@ export default function DatePickerDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Reservasi pickup date"
+          description="Mitra customer pilih tanggal pickup paket. Disabled untuk tanggal lampau — tidak bisa schedule ke past. Default hari ini."
+          preview={
+            <div className="w-full max-w-xs">
+              <div className="mb-1.5 text-sm font-medium text-text-strong-950">Tanggal pickup</div>
+              <DatePicker
+                value={date}
+                onValueChange={setDate}
+                placeholder="Pilih tanggal"
+              />
+              <p className="mt-1.5 text-xs text-text-sub-600">Pickup tersedia mulai hari ini hingga 30 hari ke depan.</p>
+            </div>
+          }
+          code={`<DatePicker
+  value={date}
+  onValueChange={setDate}
+  placeholder="Pilih tanggal"
+/>`}
+        />
+
+        <DocsExample
+          title="Payout report — date range"
+          description="Ops generate laporan payout antar tanggal. Default ke 7 hari terakhir (Senin-Minggu standard payroll cycle Dash)."
+          preview={
+            <div className="w-full max-w-md">
+              <div className="mb-1.5 text-sm font-medium text-text-strong-950">Periode laporan</div>
+              <DateRangePicker
+                value={range as { from: Date; to?: Date }}
+                onValueChange={(r) => r && setRange(r)}
+                placeholder="Pilih rentang tanggal"
+              />
+              <p className="mt-1.5 text-xs text-text-sub-600">Max 92 hari per report. Untuk periode lebih panjang, export per bulan.</p>
+            </div>
+          }
+          code={`<DateRangePicker
+  value={range}              // DateRange { from, to? }
+  onValueChange={setRange}
+  placeholder="Pilih rentang tanggal"
+/>`}
+        />
+
+        <DocsExample
+          title="Servis kendaraan booking"
+          description="Mitra book slot servis. Calendar inline tanpa popover karena ini wizard step utama — visibility tinggi."
+          preview={
+            <div className="w-full max-w-sm rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-3">
+              <div className="mb-2 px-1 text-sm font-medium text-text-strong-950">Pilih tanggal servis</div>
+              <Calendar mode="single" selected={date} onSelect={setDate} />
+              <div className="mt-3 flex items-center justify-between px-1 pb-1 text-xs text-text-sub-600">
+                <span>Slot tersedia · Bengkel Tebet</span>
+                <span className="font-medium text-text-strong-950">{date ? format(date, "dd MMM yyyy") : "—"}</span>
+              </div>
+            </div>
+          }
+          code={`<Calendar
+  mode="single"
+  selected={serviceDate}
+  onSelect={setServiceDate}
+  disabled={(d) => isWeekend(d) || !slotsAvailable(d)}
+/>`}
+        />
+      </DocsSection>
+
       <DocsSection title="Do this, not that">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
           Date picker untuk pasar Indonesia: pakai format dd MMM yyyy (20 Mei 2026), highlight hari ini, disable tanggal mustahil (past untuk schedule, future untuk birthday).

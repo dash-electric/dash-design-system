@@ -197,6 +197,78 @@ export default function AlertDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Polygon shift broadcast"
+          description="Information alert di atas dispatch queue setelah ops re-balance polygon. Dismissable agar tidak nge-block screen setelah dispatcher acknowledged."
+          preview={
+            <Alert
+              status="information"
+              size="lg"
+              title="Polygon shift Jakarta Selatan aktif"
+              dismissible
+              className="w-full max-w-2xl"
+            >
+              8 mitra Express di-reassign ke zone baru. Dispatch lama tetap valid sampai trip selesai.
+            </Alert>
+          }
+          code={`<Alert
+  status="information"
+  size="lg"
+  title="Polygon shift Jakarta Selatan aktif"
+  dismissible
+>
+  8 mitra Express di-reassign ke zone baru. Dispatch lama tetap valid sampai trip selesai.
+</Alert>`}
+        />
+
+        <DocsExample
+          title="Maintenance overdue warning"
+          description="Warning lg di header halaman mitra detail jika service interval (~6.000 km / 90 hari) terlewat. Action link mengarah ke booking service."
+          preview={
+            <Alert
+              status="warning"
+              appearance="lighter"
+              size="lg"
+              title="Servis berkala terlewat 12 hari"
+              action={<a href="#" className="text-sm font-medium text-(--state-warning-base) underline">Jadwalkan servis</a>}
+              className="w-full max-w-2xl"
+            >
+              Odometer mtr-9412 sudah 6.842 km sejak servis terakhir. Tunda pendaftaran trip jarak jauh sampai servis selesai.
+            </Alert>
+          }
+          code={`<Alert
+  status="warning"
+  appearance="lighter"
+  size="lg"
+  title="Servis berkala terlewat 12 hari"
+  action={<a href="/maintenance/schedule">Jadwalkan servis</a>}
+>
+  Odometer mtr-9412 sudah 6.842 km sejak servis terakhir...
+</Alert>`}
+        />
+
+        <DocsExample
+          title="Payment failure inline"
+          description="Error sm inline di atas form payout retry. Compact karena form di bawah sudah punya context — alert cuma signal status."
+          preview={
+            <Alert
+              status="error"
+              size="sm"
+              title="Transfer payout gagal · rekening BCA 7711xxxx tertolak"
+              action={<a href="#" className="text-sm font-medium text-(--state-error-base) underline">Coba lagi</a>}
+              className="w-full max-w-2xl"
+            />
+          }
+          code={`<Alert
+  status="error"
+  size="sm"
+  title="Transfer payout gagal · rekening BCA 7711xxxx tertolak"
+  action={<a href="/payouts/retry">Coba lagi</a>}
+/>`}
+        />
+      </DocsSection>
+
       <DocsSection title="Do this, not that">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
           Alert = page-level message. One alert at a time, top of content area. Status color must match severity — don't escalate every notification to error red.

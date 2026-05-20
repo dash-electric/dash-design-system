@@ -433,6 +433,101 @@ export default function AvatarDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Online mitra roster"
+          description="Sidebar Halo-dash menampilkan mitra siap-dispatch per polygon. Status dot online = real-time GPS aktif < 30s lalu."
+          preview={
+            <div className="w-full max-w-sm space-y-2 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-3">
+              <div className="px-1 text-xs font-medium text-text-soft-400 uppercase tracking-wider">Online di Bekasi Timur · 6 mitra</div>
+              {[
+                { initials: "FK", name: "Fauzan K.", id: "mtr-9412", tone: "online" as const, trips: "2 trip aktif" },
+                { initials: "RP", name: "Rizky P.", id: "mtr-9418", tone: "online" as const, trips: "Idle 4 menit" },
+                { initials: "AW", name: "Andi W.", id: "mtr-9419", tone: "away" as const, trips: "Break · est 8 min" },
+                { initials: "RS", name: "Rina S.", id: "mtr-9425", tone: "busy" as const, trips: "Trip JKT→BDG" },
+              ].map((m) => (
+                <div key={m.id} className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-bg-weak-50">
+                  <Avatar size="md">
+                    <AvatarFallback>{m.initials}</AvatarFallback>
+                    <AvatarIndicator tone={m.tone} position="bottom-right" />
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-text-strong-950 truncate">{m.name} · <span className="text-text-sub-600 text-xs font-normal">{m.id}</span></div>
+                    <div className="text-xs text-text-sub-600 truncate">{m.trips}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          }
+          code={`<Avatar size="md">
+  <AvatarFallback>FK</AvatarFallback>
+  <AvatarIndicator tone="online" position="bottom-right" />
+</Avatar>
+<Avatar size="md">
+  <AvatarFallback>AW</AvatarFallback>
+  <AvatarIndicator tone="away" position="bottom-right" />
+</Avatar>
+<Avatar size="md">
+  <AvatarFallback>RS</AvatarFallback>
+  <AvatarIndicator tone="busy" position="bottom-right" />
+</Avatar>`}
+        />
+
+        <DocsExample
+          title="Trip handover stack"
+          description="X-Dock handover dari mitra A → B. AvatarGroup tampilkan kedua mitra + +N tile kalau >3 hop."
+          preview={
+            <div className="flex items-center gap-4">
+              <AvatarGroup size="md">
+                <Avatar><AvatarFallback>FK</AvatarFallback></Avatar>
+                <Avatar><AvatarFallback>RS</AvatarFallback></Avatar>
+                <Avatar><AvatarFallback>AW</AvatarFallback></Avatar>
+              </AvatarGroup>
+              <span className="text-sm text-text-sub-600">3 mitra · trip DSC-77821</span>
+
+              <AvatarGroup size="md" className="ml-6">
+                <Avatar><AvatarFallback>FK</AvatarFallback></Avatar>
+                <Avatar><AvatarFallback>RS</AvatarFallback></Avatar>
+                <Avatar><AvatarFallback>AW</AvatarFallback></Avatar>
+                <AvatarGroupCount value={5} />
+              </AvatarGroup>
+              <span className="text-sm text-text-sub-600">8 mitra · bulk relay</span>
+            </div>
+          }
+          code={`<AvatarGroup size="md">
+  <Avatar><AvatarFallback>FK</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>RS</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>AW</AvatarFallback></Avatar>
+  <AvatarGroupCount value={5} />
+</AvatarGroup>`}
+        />
+
+        <DocsExample
+          title="Verified mitra card"
+          description="Mitra detail card di Halo-dash. Verified badge dipasang setelah KYC + SIM verification selesai (≥6 bulan tenure)."
+          preview={
+            <div className="w-full max-w-xs rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-4">
+              <div className="flex flex-col items-center text-center">
+                <Avatar size="3xl">
+                  <AvatarFallback>FK</AvatarFallback>
+                  <AvatarIndicator tone="verified" position="bottom-right"><Verified /></AvatarIndicator>
+                </Avatar>
+                <div className="mt-3 text-base font-semibold text-text-strong-950">Fauzan Kurniawan</div>
+                <div className="text-xs text-text-sub-600">mtr-9412 · Express Bekasi</div>
+                <div className="mt-1 text-xs text-(--state-success-base) font-medium">Verified · KYC + SIM C</div>
+                <Button size="sm" className="mt-4 w-full" leftIcon={<Mail />}>Kirim pesan</Button>
+              </div>
+            </div>
+          }
+          code={`<Avatar size="3xl">
+  <AvatarFallback>FK</AvatarFallback>
+  <AvatarIndicator tone="verified" position="bottom-right">
+    <Verified />
+  </AvatarIndicator>
+</Avatar>`}
+        />
+      </DocsSection>
+
       <DocsSection title="Do this, not that">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
           Avatar identifies who, not what. Always provide a meaningful fallback (initials), and reserve indicators for live presence signals — not generic decoration.

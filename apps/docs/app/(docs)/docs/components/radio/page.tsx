@@ -369,6 +369,87 @@ export default function RadioDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Frekuensi payout mitra"
+          description="Mitra pilih kapan payout ditransfer. Mutually-exclusive — satu mitra hanya bisa satu jadwal aktif. Default 'Mingguan' karena paling umum dipilih."
+          preview={
+            <RadioGroup defaultValue="weekly" className="w-full max-w-md">
+              <RadioField value="daily" label="Harian" description="Transfer setiap H+1 jam 09:00 WIB. Min payout Rp 50.000." />
+              <RadioField value="weekly" label="Mingguan" description="Transfer setiap Senin jam 09:00 WIB. Min payout Rp 100.000." />
+              <RadioField value="monthly" label="Bulanan" description="Transfer tanggal 1 setiap bulan. Tidak ada minimum." />
+            </RadioGroup>
+          }
+          code={`<RadioGroup defaultValue="weekly">
+  <RadioField value="daily" label="Harian" description="Transfer setiap H+1 jam 09:00 WIB. Min payout Rp 50.000." />
+  <RadioField value="weekly" label="Mingguan" description="Transfer setiap Senin jam 09:00 WIB. Min payout Rp 100.000." />
+  <RadioField value="monthly" label="Bulanan" description="Transfer tanggal 1 setiap bulan. Tidak ada minimum." />
+</RadioGroup>`}
+        />
+
+        <DocsExample
+          title="Mitra shift assignment"
+          description="Dispatcher assign mitra ke salah satu shift harian. Card-style biar mitra cepat scan jam vs benefit."
+          preview={
+            <RadioGroup defaultValue="pagi" className="w-full max-w-md grid gap-2">
+              <RadioCard
+                value="pagi"
+                label="Shift pagi"
+                sublabel="06:00 – 14:00 WIB"
+                badge={<Badge size="sm" appearance="lighter" status="success">Demand tinggi</Badge>}
+                description="Slot peak hour ke kantor & sekolah. Surge multiplier 1.3×."
+              />
+              <RadioCard
+                value="siang"
+                label="Shift siang"
+                sublabel="14:00 – 22:00 WIB"
+                description="Slot delivery dan ride umum. Multiplier 1.0×."
+              />
+              <RadioCard
+                value="malam"
+                label="Shift malam"
+                sublabel="22:00 – 06:00 WIB"
+                badge={<Badge size="sm" appearance="lighter" status="feature">Insentif +25%</Badge>}
+                description="Slot low-supply. Bonus insentif aktif."
+              />
+            </RadioGroup>
+          }
+          code={`<RadioGroup defaultValue="pagi">
+  <RadioCard value="pagi" label="Shift pagi" sublabel="06:00 – 14:00 WIB"
+    badge={<Badge status="success">Demand tinggi</Badge>}
+    description="Slot peak hour ke kantor & sekolah. Surge multiplier 1.3×." />
+  <RadioCard value="siang" label="Shift siang" sublabel="14:00 – 22:00 WIB"
+    description="Slot delivery dan ride umum. Multiplier 1.0×." />
+  <RadioCard value="malam" label="Shift malam" sublabel="22:00 – 06:00 WIB"
+    badge={<Badge status="feature">Insentif +25%</Badge>}
+    description="Slot low-supply. Bonus insentif aktif." />
+</RadioGroup>`}
+        />
+
+        <DocsExample
+          title="Suspension severity tier"
+          description="Ops pilih tier suspension. Severity mutually exclusive — auto-suspend tier ringan, manual review tier berat."
+          preview={
+            <RadioGroup defaultValue="warning" className="w-full max-w-md">
+              <RadioField value="warning" label="Warning" description="Notifikasi in-app, tidak block dispatch. Reset H+7." />
+              <RadioField value="cool-down" label="Cool-down 24 jam" description="Block dispatch baru selama 24 jam. Auto-resume." />
+              <RadioField value="suspend-7" label="Suspend 7 hari" description="Block total. Mitra harus konfirmasi ke ops untuk reaktivasi." />
+              <RadioField value="permanent" label="Suspend permanen" description="Final — masuk blacklist, kontrak diakhiri. Wajib review CEO." />
+            </RadioGroup>
+          }
+          code={`<RadioGroup defaultValue="warning">
+  <RadioField value="warning" label="Warning"
+    description="Notifikasi in-app, tidak block dispatch. Reset H+7." />
+  <RadioField value="cool-down" label="Cool-down 24 jam"
+    description="Block dispatch baru selama 24 jam. Auto-resume." />
+  <RadioField value="suspend-7" label="Suspend 7 hari"
+    description="Block total. Mitra harus konfirmasi ke ops untuk reaktivasi." />
+  <RadioField value="permanent" label="Suspend permanen"
+    description="Final — masuk blacklist, kontrak diakhiri. Wajib review CEO." />
+</RadioGroup>`}
+        />
+      </DocsSection>
+
       <DocsSection title="Do this, not that">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
           Radio = pilihan mutually-exclusive (satu pilihan saja). Selalu ada default selection — jangan biarkan group kosong. Untuk multi-select pakai Checkbox.

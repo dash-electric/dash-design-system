@@ -496,6 +496,105 @@ import { Label } from "@/registry/dash/ui/label"
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Mitra availability toggle"
+          description="Mitra di driver-app toggle status 'siap terima dispatch'. Instant effect — server langsung ubah availability tanpa Submit."
+          preview={
+            <div className="w-full max-w-md rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <Label htmlFor="sw-ex-avail" className="text-sm font-medium">Siap terima dispatch</Label>
+                  <p className="text-xs text-text-sub-600 mt-0.5">Anda akan menerima dispatch otomatis selama posisi di area zona aktif.</p>
+                </div>
+                <Switch id="sw-ex-avail" defaultChecked />
+              </div>
+            </div>
+          }
+          code={`<div className="flex items-start justify-between gap-3 ...">
+  <div>
+    <Label htmlFor="avail">Siap terima dispatch</Label>
+    <p className="text-xs text-text-sub-600">
+      Anda akan menerima dispatch otomatis selama posisi di area zona aktif.
+    </p>
+  </div>
+  <Switch id="avail" checked={available} onCheckedChange={setAvailable} />
+</div>`}
+        />
+
+        <DocsExample
+          title="Notification channel preferences"
+          description="Mitra settings page — pisahkan channel notifikasi. Setiap switch saves on toggle. Dispatcher umumnya leave email + push ON."
+          preview={
+            <div className="w-full max-w-md divide-y divide-stroke-soft-200 rounded-xl border border-stroke-soft-200 bg-bg-white-0">
+              {[
+                { id: "ch-push", label: "Push notification", desc: "Dispatch baru & alert urgent", checked: true },
+                { id: "ch-sms", label: "SMS", desc: "Hanya untuk konfirmasi pembayaran & verifikasi OTP", checked: true },
+                { id: "ch-wa", label: "WhatsApp", desc: "Update non-urgent: jadwal servis, promo, payout", checked: false },
+                { id: "ch-email", label: "Email", desc: "Slip payout mingguan & rekap kinerja bulanan", checked: true },
+              ].map((c) => (
+                <div key={c.id} className="flex items-center justify-between gap-3 p-3">
+                  <div>
+                    <Label htmlFor={c.id} className="text-sm font-medium">{c.label}</Label>
+                    <p className="text-xs text-text-sub-600 mt-0.5">{c.desc}</p>
+                  </div>
+                  <Switch id={c.id} defaultChecked={c.checked} />
+                </div>
+              ))}
+            </div>
+          }
+          code={`<div className="divide-y divide-stroke-soft-200 ...">
+  {channels.map((c) => (
+    <div key={c.id} className="flex items-center justify-between gap-3 p-3">
+      <div>
+        <Label htmlFor={c.id}>{c.label}</Label>
+        <p className="text-xs text-text-sub-600">{c.desc}</p>
+      </div>
+      <Switch
+        id={c.id}
+        checked={c.enabled}
+        onCheckedChange={(v) => updateChannel(c.id, v)}
+      />
+    </div>
+  ))}
+</div>`}
+        />
+
+        <DocsExample
+          title="Feature flag — Halo-dash admin"
+          description="Admin toggle experimental feature per environment. Disabled state untuk flag yang masih WIP di production."
+          preview={
+            <div className="w-full max-w-md space-y-3 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-4">
+              <div className="text-sm font-semibold text-text-strong-950">Feature flags · production</div>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm font-medium">Auto-suspend mitra</Label>
+                  <Badge size="sm" appearance="lighter" status="success">Stable</Badge>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm font-medium">Surge pricing v2</Label>
+                  <Badge size="sm" appearance="lighter" status="warning">Beta</Badge>
+                </div>
+                <Switch />
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm font-medium text-text-sub-600">EV swap-battery dispatch</Label>
+                  <Badge size="sm" appearance="lighter" status="neutral">WIP</Badge>
+                </div>
+                <Switch disabled />
+              </div>
+            </div>
+          }
+          code={`<Switch defaultChecked />                  {/* stable ON */}
+<Switch />                                {/* beta OFF */}
+<Switch disabled />                       {/* WIP — locked */}`}
+        />
+      </DocsSection>
+
       <DocsSection title="Do this, not that">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
           Switch = instant toggle on/off, perubahan langsung tersimpan tanpa Save button. Label pakai action verb ('Aktifkan notifikasi'). Untuk pilihan opt-in form yang butuh Submit, pakai Checkbox.

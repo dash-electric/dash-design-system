@@ -423,6 +423,123 @@ export default function SelectDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Tribe filter di Halo-dash"
+          description="Filter mitra list berdasarkan tribe operasional. List finite (8 tribe), default ke 'Semua'."
+          preview={
+            <div className="w-full max-w-xs">
+              <Label className="mb-1.5 block">Tribe</Label>
+              <Select defaultValue="all">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua tribe</SelectItem>
+                  <SelectSeparator />
+                  <SelectItem value="express">Express</SelectItem>
+                  <SelectItem value="reservasi">Reservasi (Delivery)</SelectItem>
+                  <SelectItem value="xdock">X-Dock</SelectItem>
+                  <SelectItem value="scheduled">Scheduled-Instant</SelectItem>
+                  <SelectItem value="canvasser">Canvasser-Rental</SelectItem>
+                  <SelectItem value="fourwheel">4-Wheel</SelectItem>
+                  <SelectItem value="outsource">Outsourcing</SelectItem>
+                  <SelectItem value="staging">Staging</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          }
+          code={`<Select defaultValue="all">
+  <SelectTrigger><SelectValue /></SelectTrigger>
+  <SelectContent>
+    <SelectItem value="all">Semua tribe</SelectItem>
+    <SelectSeparator />
+    <SelectItem value="express">Express</SelectItem>
+    <SelectItem value="reservasi">Reservasi (Delivery)</SelectItem>
+    <SelectItem value="xdock">X-Dock</SelectItem>
+    {/* ...rest */}
+  </SelectContent>
+</Select>`}
+        />
+
+        <DocsExample
+          title="Vehicle type — KYC onboarding"
+          description="Mitra pilih kendaraan saat sign-up. Affects dispatch eligibility (motor = Express only, mobil = 4-Wheel + Reservasi)."
+          preview={
+            <div className="w-full max-w-xs">
+              <Label className="mb-1.5 block">Jenis kendaraan</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih kendaraan Anda" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Roda 2</SelectLabel>
+                    <SelectItem value="motor-listrik">Motor listrik</SelectItem>
+                    <SelectItem value="motor-bensin">Motor bensin (BBM)</SelectItem>
+                  </SelectGroup>
+                  <SelectSeparator />
+                  <SelectGroup>
+                    <SelectLabel>Roda 4</SelectLabel>
+                    <SelectItem value="mobil-listrik">Mobil listrik</SelectItem>
+                    <SelectItem value="mobil-pickup">Pickup / box</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FieldDescription className="mt-1.5">Anda dapat mengubah ini di profil setelah verifikasi.</FieldDescription>
+            </div>
+          }
+          code={`<Select>
+  <SelectTrigger>
+    <SelectValue placeholder="Pilih kendaraan Anda" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectGroup>
+      <SelectLabel>Roda 2</SelectLabel>
+      <SelectItem value="motor-listrik">Motor listrik</SelectItem>
+      <SelectItem value="motor-bensin">Motor bensin (BBM)</SelectItem>
+    </SelectGroup>
+    <SelectSeparator />
+    <SelectGroup>
+      <SelectLabel>Roda 4</SelectLabel>
+      <SelectItem value="mobil-listrik">Mobil listrik</SelectItem>
+      <SelectItem value="mobil-pickup">Pickup / box</SelectItem>
+    </SelectGroup>
+  </SelectContent>
+</Select>`}
+        />
+
+        <DocsExample
+          title="Payout method picker"
+          description="Mitra pilih bank tujuan transfer payout mingguan. Icon di item bantu scan-recognition."
+          preview={
+            <div className="w-full max-w-xs">
+              <Label className="mb-1.5 block">Rekening tujuan payout</Label>
+              <Select defaultValue="bca">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bca">BCA · 7711xxxx1234</SelectItem>
+                  <SelectItem value="mandiri">Mandiri · 1450xxxx5678</SelectItem>
+                  <SelectItem value="bri">BRI · 0050xxxx9012</SelectItem>
+                  <SelectItem value="dana">DANA · 0812xxxxxxxx</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          }
+          code={`<Select defaultValue="bca">
+  <SelectTrigger><SelectValue /></SelectTrigger>
+  <SelectContent>
+    <SelectItem value="bca">BCA · 7711xxxx1234</SelectItem>
+    <SelectItem value="mandiri">Mandiri · 1450xxxx5678</SelectItem>
+    <SelectItem value="bri">BRI · 0050xxxx9012</SelectItem>
+    <SelectItem value="dana">DANA · 0812xxxxxxxx</SelectItem>
+  </SelectContent>
+</Select>`}
+        />
+      </DocsSection>
+
       <DocsSection title="Do this, not that">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
           Select untuk pilih satu value dari list pendek (3-7 opsi statis). Bukan untuk search atau multi-select.

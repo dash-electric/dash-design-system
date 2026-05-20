@@ -260,6 +260,78 @@ export default function TextareaDocsPage() {
         />
       </DocsSection>
 
+      <DocsSection title="Examples">
+        <DocsExample
+          title="Suspension reason — ops audit log"
+          description="Ops menulis alasan suspend mitra. Wajib karena masuk audit trail. Min-length 20 char untuk filter alasan satu kata."
+          preview={
+            <Field className="w-full max-w-md">
+              <Label>Alasan suspend</Label>
+              <Textarea
+                placeholder="Jelaskan kenapa mitra ini di-suspend (min 20 karakter). Contoh: Mitra menolak 3 dispatch berturut-turut dalam shift Bekasi Timur 14 Mei."
+                minLength={20}
+                rows={4}
+              />
+              <FieldDescription>Tersimpan di audit trail · tidak bisa diubah setelah submit.</FieldDescription>
+            </Field>
+          }
+          code={`<Field>
+  <Label>Alasan suspend</Label>
+  <Textarea
+    placeholder="Jelaskan kenapa mitra ini di-suspend (min 20 karakter)..."
+    minLength={20}
+    rows={4}
+  />
+  <FieldDescription>Tersimpan di audit trail · tidak bisa diubah setelah submit.</FieldDescription>
+</Field>`}
+        />
+
+        <DocsExample
+          title="Mitra trip note"
+          description="Mitra Reservasi tulis catatan untuk customer setelah trip selesai — kondisi paket, akses lokasi, dll. Counter cegah over-writing."
+          preview={
+            <Field className="w-full max-w-md">
+              <Label>Catatan trip (Opsional)</Label>
+              <CounterTextarea
+                placeholder="Contoh: Paket diterima security cluster. Gate B tertutup, akses via Gate A."
+                maxLength={140}
+              />
+            </Field>
+          }
+          code={`<Field>
+  <Label>Catatan trip (Opsional)</Label>
+  <CounterTextarea
+    placeholder="Contoh: Paket diterima security cluster..."
+    maxLength={140}
+  />
+</Field>`}
+        />
+
+        <DocsExample
+          title="Maintenance ticket — fleet ops"
+          description="Mekanik input gejala kerusakan motor sebelum service. Multi-line untuk symptom + replication steps + part curiga."
+          preview={
+            <Field className="w-full max-w-md">
+              <Label>Keluhan kendaraan</Label>
+              <Textarea
+                rows={5}
+                placeholder={"Gejala:\nLangkah reproduksi:\nPart yang dicurigai:"}
+                defaultValue={"Gejala: Battery drop dari 100% ke 60% dalam 30 menit idle.\nLangkah reproduksi: Charge full malam, pagi sudah 60%.\nPart yang dicurigai: BMS atau cell #3."}
+              />
+              <FieldDescription>Akan dikirim ke tim X-Dock untuk diagnosis awal.</FieldDescription>
+            </Field>
+          }
+          code={`<Field>
+  <Label>Keluhan kendaraan</Label>
+  <Textarea
+    rows={5}
+    placeholder={"Gejala:\\nLangkah reproduksi:\\nPart yang dicurigai:"}
+  />
+  <FieldDescription>Akan dikirim ke tim X-Dock untuk diagnosis awal.</FieldDescription>
+</Field>`}
+        />
+      </DocsSection>
+
       <DocsSection title="API">
         <DocsPropsTable
           rows={[
