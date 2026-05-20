@@ -27,6 +27,8 @@ import {
   DocsPropsTable,
   DocsDoDont,
 } from "@/components/docs/page-shell"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 /**
  * Badge — Figma 1:1 (8 nodes verified 2026-05-18).
@@ -52,6 +54,28 @@ export default function BadgeDocsPage() {
         category="Components / Data"
         title="Badge"
         description="Pill-shaped status / count / tag indicator. 11 status colors × 3 appearances × 5 type modifiers × 2 sizes. Pair with text labels, status icons, leading dots, trailing counts. For semantic status displays use StatusBadge; for numeric counts use NumberBadge."
+      />
+
+      <DocsShadcnTemplate
+        name="badge"
+        heroPreview={
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge status="success">Live</Badge>
+            <Badge status="warning" appearance="lighter">Pending</Badge>
+            <Badge status="error" appearance="stroke">Suspended</Badge>
+            <NumberBadge value={12} />
+          </div>
+        }
+        heroCode={`<Badge status="success">Live</Badge>
+<Badge status="warning" appearance="lighter">Pending</Badge>
+<Badge status="error" appearance="stroke">Suspended</Badge>
+<NumberBadge value={12} />`}
+        usageImport={`import { Badge, NumberBadge, StatusBadge } from "@/registry/dash/ui/badge"`}
+        usageJsx={`<Badge status="success">Live</Badge>`}
+        manual={{
+          sourcePath: "registry/dash/ui/badge.tsx",
+          dependencies: ["class-variance-authority"],
+        }}
       />
 
       {/* 1. Master matrix — 118:2324 */}
@@ -433,8 +457,9 @@ export default function BadgeDocsPage() {
         />
       </DocsSection>
 
-      <DocsSection title="API">
-        <DocsPropsTable
+      <DocsSection title="API" id="api">
+        <DocsApiTable
+          idPrefix="badge-prop"
           rows={[
             { name: "status", type: '"error" | "warning" | "away" | "success" | "information" | "feature" | "verified" | "highlighted" | "stable" | "faded" | "neutral"', defaultValue: '"neutral"', description: "Semantic color." },
             { name: "appearance", type: '"filled" | "lighter" | "stroke"', defaultValue: '"lighter"', description: "Surface treatment. filled = solid status bg + white text. lighter = -200 tint + status-dark text. stroke = 1px outline status-base + status-base text." },

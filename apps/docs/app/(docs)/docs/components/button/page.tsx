@@ -8,12 +8,13 @@ import {
   DocsHeader,
   DocsSection,
   DocsExample,
-  DocsPropsTable,
   DocsPrinciples,
   DocsDoDont,
   DocsVariantTable,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 const TONES = ["primary", "neutral", "destructive"] as const
 const STYLES = ["filled", "stroke", "lighter", "ghost"] as const
@@ -35,6 +36,26 @@ export default function ButtonDocsPage() {
           { label: "Spec" },
           { label: "Status" },
         ]}
+      />
+
+      <DocsShadcnTemplate
+        name="button"
+        heroPreview={
+          <div className="flex flex-wrap items-center gap-3">
+            <Button tone="primary">Save changes</Button>
+            <Button tone="neutral" style="stroke">Cancel</Button>
+            <Button tone="destructive" style="lighter" leftIcon={<Trash2 />}>Suspend</Button>
+          </div>
+        }
+        heroCode={`<Button tone="primary">Save changes</Button>
+<Button tone="neutral" style="stroke">Cancel</Button>
+<Button tone="destructive" style="lighter" leftIcon={<Trash2 />}>Suspend</Button>`}
+        usageImport={`import { Button } from "@/registry/dash/ui/button"`}
+        usageJsx={`<Button tone="primary">Click me</Button>`}
+        manual={{
+          sourcePath: "registry/dash/ui/button.tsx",
+          dependencies: ["@radix-ui/react-slot", "class-variance-authority"],
+        }}
       />
 
       <DocsSection title="Principles">
@@ -284,12 +305,9 @@ export default function ButtonDocsPage() {
         />
       </DocsSection>
 
-      <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add button`} />
-      </DocsSection>
-
-      <DocsSection title="API">
-        <DocsPropsTable
+      <DocsSection title="API" id="api">
+        <DocsApiTable
+          idPrefix="button-prop"
           rows={[
             { name: "tone", type: '"primary" | "neutral" | "destructive"', defaultValue: '"primary"', description: "Semantic intent." },
             { name: "style", type: '"filled" | "stroke" | "lighter" | "ghost" | "link"', defaultValue: '"filled"', description: "Surface treatment." },

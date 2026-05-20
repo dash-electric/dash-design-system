@@ -35,6 +35,8 @@ import {
   DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 /**
  * Select — Figma 1:1 (11 nodes verified 2026-05-18).
@@ -79,9 +81,45 @@ export default function SelectDocsPage() {
         description="Native-feel single-value dropdown built on Radix Select. Trigger matches Input + DatePicker sizing. Supports leading icon, group + label + separator, multi-row item content, error state via aria-invalid, and inline filter for medium-sized option lists."
       />
 
-      <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add select`} />
-      </DocsSection>
+      <DocsShadcnTemplate
+        name="select"
+        heroPreview={
+          <div className="w-full max-w-xs">
+            <Select value={country} onValueChange={setCountry}>
+              <SelectTrigger>
+                <SelectValue placeholder="Pick a country" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="id">Indonesia</SelectItem>
+                <SelectItem value="sg">Singapore</SelectItem>
+                <SelectItem value="my">Malaysia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        }
+        heroCode={`<Select value={country} onValueChange={setCountry}>
+  <SelectTrigger><SelectValue placeholder="Pick a country" /></SelectTrigger>
+  <SelectContent>
+    <SelectItem value="id">Indonesia</SelectItem>
+    <SelectItem value="sg">Singapore</SelectItem>
+    <SelectItem value="my">Malaysia</SelectItem>
+  </SelectContent>
+</Select>`}
+        usageImport={`import {
+  Select, SelectTrigger, SelectValue,
+  SelectContent, SelectItem,
+} from "@/registry/dash/ui/select"`}
+        usageJsx={`<Select>
+  <SelectTrigger><SelectValue placeholder="Pick…" /></SelectTrigger>
+  <SelectContent>
+    <SelectItem value="a">A</SelectItem>
+  </SelectContent>
+</Select>`}
+        manual={{
+          sourcePath: "registry/dash/ui/select.tsx",
+          dependencies: ["@radix-ui/react-select"],
+        }}
+      />
 
       <DocsSection title="Trigger states">
         <p className="text-sm text-text-sub-600 max-w-2xl">
@@ -580,8 +618,9 @@ export default function SelectDocsPage() {
         />
       </DocsSection>
 
-      <DocsSection title="API">
-        <DocsPropsTable
+      <DocsSection title="API" id="api">
+        <DocsApiTable
+          idPrefix="select-prop"
           rows={[
             { name: "Select", type: "Radix Select Root", description: "Pass value + onValueChange for controlled state, or defaultValue for uncontrolled." },
             { name: "SelectTrigger.size", type: '"sm" | "md" | "lg" | "xl"', defaultValue: '"lg"', description: "Trigger height — matches Input + DatePicker." },

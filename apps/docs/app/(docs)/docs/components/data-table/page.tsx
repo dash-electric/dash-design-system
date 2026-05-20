@@ -12,6 +12,8 @@ import {
   DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 type Mitra = {
   id: string
@@ -69,9 +71,22 @@ export default function DataTableDocsPage() {
         description="Sortable, filterable table built on TanStack Table v8. For static tables use the plain Table primitive. Pair with Pagination + Filter for full list-page UX."
       />
 
-      <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add data-table`} />
-      </DocsSection>
+      <DocsShadcnTemplate
+        name="data-table"
+        heroPreview={
+          <div className="w-full">
+            <DataTable columns={columns} data={rows.slice(0, 4)} />
+          </div>
+        }
+        heroCode={`<DataTable columns={columns} data={rows} />`}
+        usageImport={`import { DataTable } from "@/registry/dash/ui/data-table"
+import { type ColumnDef } from "@tanstack/react-table"`}
+        usageJsx={`<DataTable columns={columns} data={data} />`}
+        manual={{
+          sourcePath: "registry/dash/ui/data-table.tsx",
+          dependencies: ["@tanstack/react-table"],
+        }}
+      />
 
       <DocsSection title="Anatomy">
         <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
@@ -248,11 +263,12 @@ const columns: ColumnDef<Mitra>[] = [
         />
       </DocsSection>
 
-      <DocsSection title="API">
-        <DocsPropsTable
+      <DocsSection title="API" id="api">
+        <DocsApiTable
+          idPrefix="data-table-prop"
           rows={[
-            { name: "columns", type: "ColumnDef<TData>[]", description: "TanStack Table column defs." },
-            { name: "data", type: "TData[]", description: "Row data." },
+            { name: "columns", type: "ColumnDef<TData>[]", required: true, description: "TanStack Table column defs." },
+            { name: "data", type: "TData[]", required: true, description: "Row data." },
             { name: "enableSorting", type: "boolean", defaultValue: "true", description: "Click-to-sort headers." },
             { name: "enableRowSelection", type: "boolean", defaultValue: "false", description: "Selection checkboxes (provide a column with id='select' to render them)." },
             { name: "pageSize", type: "number", defaultValue: "10", description: "Page size for pagination model." },

@@ -27,6 +27,8 @@ import {
   DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 /**
  * Switch — Figma 1:1 (9 nodes verified 2026-05-18).
@@ -89,22 +91,26 @@ export default function SwitchDocsPage() {
         description="Binary toggle for settings that take effect immediately. Pair with Label (+ optional sublabel, NEW badge, description, link). Compose into card patterns for integrations, notification preferences, dropdown menu rows."
       />
 
-      <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add switch`} />
-      </DocsSection>
-
-      <DocsSection title="Usage">
-        <DocsCode
-          language="tsx"
-          code={`import { Switch } from "@/registry/dash/ui/switch"
-import { Label } from "@/registry/dash/ui/label"
-
-<div className="inline-flex items-center gap-2">
+      <DocsShadcnTemplate
+        name="switch"
+        heroPreview={
+          <div className="inline-flex items-center gap-2">
+            <Switch id="hero-dark" checked={darkMode} onCheckedChange={setDarkMode} />
+            <Label htmlFor="hero-dark">Dark Mode</Label>
+          </div>
+        }
+        heroCode={`<div className="inline-flex items-center gap-2">
   <Switch id="dark" checked={darkMode} onCheckedChange={setDarkMode} />
   <Label htmlFor="dark">Dark Mode</Label>
 </div>`}
-        />
-      </DocsSection>
+        usageImport={`import { Switch } from "@/registry/dash/ui/switch"
+import { Label } from "@/registry/dash/ui/label"`}
+        usageJsx={`<Switch checked={value} onCheckedChange={setValue} />`}
+        manual={{
+          sourcePath: "registry/dash/ui/switch.tsx",
+          dependencies: ["@radix-ui/react-switch"],
+        }}
+      />
 
       <DocsSection title="State matrix">
         <p className="text-sm text-text-sub-600 max-w-2xl">
@@ -644,8 +650,9 @@ import { Label } from "@/registry/dash/ui/label"
         />
       </DocsSection>
 
-      <DocsSection title="API">
-        <DocsPropsTable
+      <DocsSection title="API" id="api">
+        <DocsApiTable
+          idPrefix="switch-prop"
           rows={[
             { name: "checked", type: "boolean", description: "Controlled state." },
             { name: "defaultChecked", type: "boolean", description: "Uncontrolled initial state." },

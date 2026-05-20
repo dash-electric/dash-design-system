@@ -21,6 +21,8 @@ import {
   DocsPropsTable,
   DocsDoDont,
 } from "@/components/docs/page-shell"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 /**
  * Checkbox — Figma 1:1 (19 nodes verified 2026-05-18).
@@ -63,6 +65,26 @@ export default function CheckboxDocsPage() {
         category="Components / Forms"
         title="Checkbox"
         description="Binary toggle for opt-in or multi-select. Three primitives: Checkbox (raw input), CheckboxField (label + sublabel + badge + description + action), CheckboxCard (bordered selectable option with leading visual). Supports indeterminate state for table select-all."
+      />
+
+      <DocsShadcnTemplate
+        name="checkbox"
+        heroPreview={
+          <div className="flex items-center gap-3">
+            <Checkbox id="hero-cb-1" />
+            <label htmlFor="hero-cb-1" className="text-sm text-text-strong-950 cursor-pointer">
+              Saya menyetujui syarat &amp; ketentuan
+            </label>
+          </div>
+        }
+        heroCode={`<Checkbox id="terms" />
+<label htmlFor="terms">Saya menyetujui syarat & ketentuan</label>`}
+        usageImport={`import { Checkbox, CheckboxField, CheckboxCard } from "@/registry/dash/ui/checkbox"`}
+        usageJsx={`<Checkbox checked={value} onCheckedChange={setValue} />`}
+        manual={{
+          sourcePath: "registry/dash/ui/checkbox.tsx",
+          dependencies: ["@radix-ui/react-checkbox"],
+        }}
       />
 
       <DocsSection title="States">
@@ -538,8 +560,9 @@ export default function CheckboxDocsPage() {
         />
       </DocsSection>
 
-      <DocsSection title="API">
-        <DocsPropsTable
+      <DocsSection title="API" id="api">
+        <DocsApiTable
+          idPrefix="checkbox-prop"
           rows={[
             { name: "size", type: '"sm" | "md" | "lg"', defaultValue: '"md"', description: "14 / 16 / 20 px box size." },
             { name: "tone", type: '"primary" | "destructive"', defaultValue: '"primary"', description: "Filled color when checked. destructive = error-base." },

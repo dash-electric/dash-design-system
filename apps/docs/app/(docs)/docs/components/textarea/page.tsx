@@ -21,6 +21,8 @@ import {
   DocsPropsTable,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 /**
  * Textarea — Figma 1:1 (8 nodes verified 2026-05-18).
@@ -76,9 +78,20 @@ export default function TextareaDocsPage() {
         description="Multi-line text input. 6 visual states (default / hover / focus / filled / disabled / error), maxLength counter pattern, resize-y handle. Pair with Field + Label + FieldDescription for full form-row composition."
       />
 
-      <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add textarea`} />
-      </DocsSection>
+      <DocsShadcnTemplate
+        name="textarea"
+        heroPreview={
+          <div className="w-full max-w-md">
+            <Textarea placeholder="Catatan untuk dispatcher…" />
+          </div>
+        }
+        heroCode={`<Textarea placeholder="Catatan untuk dispatcher…" />`}
+        usageImport={`import { Textarea } from "@/registry/dash/ui/textarea"`}
+        usageJsx={`<Textarea placeholder="Type a message…" />`}
+        manual={{
+          sourcePath: "registry/dash/ui/textarea.tsx",
+        }}
+      />
 
       <DocsSection title="State matrix">
         <p className="text-sm text-text-sub-600 max-w-2xl">
@@ -332,8 +345,9 @@ export default function TextareaDocsPage() {
         />
       </DocsSection>
 
-      <DocsSection title="API">
-        <DocsPropsTable
+      <DocsSection title="API" id="api">
+        <DocsApiTable
+          idPrefix="textarea-prop"
           rows={[
             { name: "invalid", type: "boolean", defaultValue: "false", description: "Renders red border + red focus ring. Pair with error-tone description below." },
             { name: "disabled", type: "boolean", defaultValue: "false", description: "bg-weak-50 + opacity-50 + cursor-not-allowed." },

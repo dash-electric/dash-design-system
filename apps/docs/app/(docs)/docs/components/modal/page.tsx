@@ -25,6 +25,8 @@ import {
   DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 export default function ModalDocsPage() {
   return (
@@ -37,35 +39,56 @@ export default function ModalDocsPage() {
         description="Centered dialog for focused tasks — confirmation, short form, or detail view. Blocks the page until dismissed. For side-anchored panels use Drawer; for long-form editing use a dedicated page."
       />
 
-      <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add modal`} />
-      </DocsSection>
-
-      <DocsSection title="Usage">
-        <DocsCode
-          language="tsx"
-          code={`import {
-  Modal, ModalTrigger, ModalContent,
-  ModalHeader, ModalTitle, ModalDescription,
-  ModalBody, ModalFooter, ModalClose,
-} from "@/registry/dash/ui/modal"
-
-<Modal>
-  <ModalTrigger asChild><Button>Open</Button></ModalTrigger>
+      <DocsShadcnTemplate
+        name="modal"
+        heroPreview={
+          <Modal>
+            <ModalTrigger asChild>
+              <Button tone="destructive">Suspend mitra</Button>
+            </ModalTrigger>
+            <ModalContent>
+              <ModalHeader>
+                <ModalTitle>Suspend mtr-9412?</ModalTitle>
+                <ModalDescription>
+                  Mitra tidak akan menerima order baru sampai dipulihkan.
+                </ModalDescription>
+              </ModalHeader>
+              <ModalFooter>
+                <ModalClose asChild>
+                  <Button tone="neutral" style="stroke">Batal</Button>
+                </ModalClose>
+                <Button tone="destructive">Suspend</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        }
+        heroCode={`<Modal>
+  <ModalTrigger asChild><Button tone="destructive">Suspend mitra</Button></ModalTrigger>
   <ModalContent>
     <ModalHeader>
       <ModalTitle>Suspend mtr-9412?</ModalTitle>
-      <ModalDescription>…</ModalDescription>
+      <ModalDescription>Mitra tidak akan menerima order baru.</ModalDescription>
     </ModalHeader>
-    <ModalBody>…</ModalBody>
     <ModalFooter>
       <ModalClose asChild><Button style="stroke">Batal</Button></ModalClose>
       <Button tone="destructive">Suspend</Button>
     </ModalFooter>
   </ModalContent>
 </Modal>`}
-        />
-      </DocsSection>
+        usageImport={`import {
+  Modal, ModalTrigger, ModalContent,
+  ModalHeader, ModalTitle, ModalDescription,
+  ModalBody, ModalFooter, ModalClose,
+} from "@/registry/dash/ui/modal"`}
+        usageJsx={`<Modal>
+  <ModalTrigger asChild><Button>Open</Button></ModalTrigger>
+  <ModalContent>…</ModalContent>
+</Modal>`}
+        manual={{
+          sourcePath: "registry/dash/ui/modal.tsx",
+          dependencies: ["@radix-ui/react-dialog"],
+        }}
+      />
 
       <DocsSection title="Examples" description="Confirm, form, sizes, scrollable body, no header.">
         <DocsExample
@@ -334,9 +357,10 @@ export default function ModalDocsPage() {
         </ul>
       </DocsSection>
 
-      <DocsSection title="API">
+      <DocsSection title="API" id="api">
         <h3 className="text-sm font-semibold text-text-strong-950 pt-2">Modal (Root)</h3>
-        <DocsPropsTable
+        <DocsApiTable
+          idPrefix="modal-prop"
           rows={[
             { name: "open", type: "boolean", description: "Controlled open state." },
             { name: "defaultOpen", type: "boolean", description: "Uncontrolled initial open." },
@@ -345,7 +369,8 @@ export default function ModalDocsPage() {
           ]}
         />
         <h3 className="text-sm font-semibold text-text-strong-950 pt-4">ModalContent</h3>
-        <DocsPropsTable
+        <DocsApiTable
+          idPrefix="modalcontent-prop"
           rows={[
             { name: "size", type: '"sm" | "md" | "lg" | "xl" | "2xl"', defaultValue: '"md"', description: "max-width preset." },
             { name: "showClose", type: "boolean", defaultValue: "true", description: "Show built-in close X in top right." },
@@ -354,13 +379,15 @@ export default function ModalDocsPage() {
           ]}
         />
         <h3 className="text-sm font-semibold text-text-strong-950 pt-4">ModalTrigger / ModalClose</h3>
-        <DocsPropsTable
+        <DocsApiTable
+          idPrefix="modaltrigger-prop"
           rows={[
             { name: "asChild", type: "boolean", defaultValue: "false", description: "Forward styles + behaviour to child element via Radix Slot." },
           ]}
         />
         <h3 className="text-sm font-semibold text-text-strong-950 pt-4">ModalHeader / ModalBody / ModalFooter</h3>
-        <DocsPropsTable
+        <DocsApiTable
+          idPrefix="modalslot-prop"
           rows={[
             { name: "className", type: "string", description: "Extend or override slot classes." },
             { name: "children", type: "ReactNode", description: "Slot content." },

@@ -43,6 +43,8 @@ import {
   DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 /**
  * Text Input — Figma 1:1 (11 nodes verified 2026-05-18).
@@ -123,21 +125,34 @@ export default function InputDocsPage() {
         description="Single-line text field. Composable parts (Root, Icon, Affix) so you can slot leading icons, prefixes, suffixes, country codes, currency selectors, copy buttons, and inline action affordances without rebuilding the trigger box."
       />
 
-      <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add input`} />
-      </DocsSection>
-
-      <DocsSection title="Usage">
-        <DocsCode
-          language="tsx"
-          code={`import { InputRoot, Input, InputIcon, InputAffix } from "@/registry/dash/ui/input"
-
-<InputRoot>
+      <DocsShadcnTemplate
+        name="input"
+        heroPreview={
+          <div className="w-full max-w-md space-y-3">
+            <InputRoot>
+              <InputIcon><Search className="size-4" /></InputIcon>
+              <Input placeholder="Search mitra, trip, or driver…" />
+            </InputRoot>
+            <InputRoot>
+              <InputIcon><Mail className="size-4" /></InputIcon>
+              <Input type="email" placeholder="you@dash.id" />
+            </InputRoot>
+          </div>
+        }
+        heroCode={`<InputRoot>
+  <InputIcon><Search className="size-4" /></InputIcon>
+  <Input placeholder="Search mitra, trip, or driver…" />
+</InputRoot>`}
+        usageImport={`import { InputRoot, Input, InputIcon, InputAffix } from "@/registry/dash/ui/input"`}
+        usageJsx={`<InputRoot>
   <InputIcon><Search className="size-4" /></InputIcon>
   <Input placeholder="Search…" />
 </InputRoot>`}
-        />
-      </DocsSection>
+        manual={{
+          sourcePath: "registry/dash/ui/input.tsx",
+          dependencies: ["@radix-ui/react-slot"],
+        }}
+      />
 
       <DocsSection title="State matrix">
         <p className="text-sm text-text-sub-600 max-w-2xl">
@@ -884,8 +899,9 @@ export default function InputDocsPage() {
         />
       </DocsSection>
 
-      <DocsSection title="API">
-        <DocsPropsTable
+      <DocsSection title="API" id="api">
+        <DocsApiTable
+          idPrefix="input-prop"
           rows={[
             { name: "size", type: '"sm" | "md" | "lg" | "xl"', defaultValue: '"lg"', description: "Field height (32/36/40/44px). sm/md/lg = Figma X-Small/Small/Medium · xl = Dash extension." },
             { name: "invalid", type: "boolean", defaultValue: "false", description: "Destructive border + ring. On InputRoot." },

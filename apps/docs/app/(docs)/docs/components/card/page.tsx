@@ -21,6 +21,8 @@ import {
   DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
+import { DocsApiTable } from "@/components/docs/api-table"
+import { DocsShadcnTemplate } from "@/components/docs/shadcn-template"
 
 export default function CardDocsPage() {
   return (
@@ -33,27 +35,43 @@ export default function CardDocsPage() {
         description="Surface for grouping related content. 3 variants (stroke / elevated / ghost), composable Header / Title / Description / Content / Footer / Media slots."
       />
 
-      <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add card`} />
-      </DocsSection>
-
-      <DocsSection title="Usage">
-        <DocsCode
-          language="tsx"
-          code={`import {
-  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
-} from "@/registry/dash/ui/card"
-
-<Card>
+      <DocsShadcnTemplate
+        name="card"
+        heroPreview={
+          <Card className="max-w-sm">
+            <CardHeader>
+              <CardTitle>Express tribe</CardTitle>
+              <CardDescription>Same-day pickup, surge enabled.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-text-sub-600">
+                12 mitra aktif · 4 sedang dispatch · 1 standby.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Button size="sm">Open queue</Button>
+            </CardFooter>
+          </Card>
+        }
+        heroCode={`<Card>
   <CardHeader>
     <CardTitle>Express tribe</CardTitle>
     <CardDescription>Same-day pickup, surge enabled.</CardDescription>
   </CardHeader>
-  <CardContent>…</CardContent>
-  <CardFooter>…</CardFooter>
+  <CardContent>12 mitra aktif · 4 sedang dispatch · 1 standby.</CardContent>
+  <CardFooter><Button size="sm">Open queue</Button></CardFooter>
 </Card>`}
-        />
-      </DocsSection>
+        usageImport={`import {
+  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
+} from "@/registry/dash/ui/card"`}
+        usageJsx={`<Card>
+  <CardHeader><CardTitle>Title</CardTitle></CardHeader>
+  <CardContent>Body</CardContent>
+</Card>`}
+        manual={{
+          sourcePath: "registry/dash/ui/card.tsx",
+        }}
+      />
 
       <DocsSection title="Examples">
         <DocsExample
@@ -211,10 +229,11 @@ export default function CardDocsPage() {
         />
       </DocsSection>
 
-      <DocsSection title="API">
+      <DocsSection title="API" id="api">
         <h3 className="text-sm font-semibold tracking-tight text-text-strong-950">Card</h3>
         <p className="text-sm text-text-sub-600">Outer surface. Owns variant + padding.</p>
-        <DocsPropsTable
+        <DocsApiTable
+          idPrefix="card-prop"
           rows={[
             { name: "variant", type: '"stroke" | "elevated" | "ghost"', defaultValue: '"stroke"', description: "Border / shadow style." },
             { name: "padding", type: '"none" | "sm" | "md" | "lg"', defaultValue: '"md"', description: "Inner padding preset." },
@@ -224,7 +243,8 @@ export default function CardDocsPage() {
 
         <h3 className="text-sm font-semibold tracking-tight text-text-strong-950 mt-6">CardHeader</h3>
         <p className="text-sm text-text-sub-600">Top region. Omit if there&apos;s no title.</p>
-        <DocsPropsTable
+        <DocsApiTable
+          idPrefix="cardheader-prop"
           rows={[
             { name: "className", type: "string", description: "Layout overrides; defaults to a vertical flex stack." },
           ]}
@@ -232,7 +252,8 @@ export default function CardDocsPage() {
 
         <h3 className="text-sm font-semibold tracking-tight text-text-strong-950 mt-6">CardTitle / CardDescription</h3>
         <p className="text-sm text-text-sub-600">Semantic <code className="text-xs">h3</code> + paragraph pair. Override level via <code className="text-xs">asChild</code>.</p>
-        <DocsPropsTable
+        <DocsApiTable
+          idPrefix="cardtitle-prop"
           rows={[
             { name: "asChild", type: "boolean", defaultValue: "false", description: "Forward to a custom heading element (h2/h4) when nesting depth differs." },
           ]}
