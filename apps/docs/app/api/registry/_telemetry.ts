@@ -140,9 +140,22 @@ const AUDIT_BUFFER_MAX = 100
 export function logAudit(record: AuditRecord): void {
   auditBuffer.push(record)
 
+  // Append to local audit JSONL for /admin/usage dashboard (local/self-host only).
+  // Non-blocking, error-swallowed (matches "never crash request" pattern).
+  if (typeof process !== "undefined" && process.cwd) {
+    void appendAuditLine(record).catch(() => {})
+  }
+
   if (auditBuffer.length >= AUDIT_BUFFER_MAX) {
     flushAudit()
   }
+}
+
+async function appendAuditLine(record: AuditRecord): Promise<void> {
+  const fs = await import("node:fs/promises")
+  const path = await import("node:path")
+  const file = path.join(process.cwd(), "registry-audit.jsonl")
+  await fs.appendFile(file, JSON.stringify(record) + "\n", "utf8")
 }
 
 function flushAudit(): void {
