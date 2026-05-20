@@ -22,6 +22,8 @@ import {
   hasDashHeader,
   injectDashHeader,
 } from "../lib/component-version.js"
+import { resolveTheme } from "../lib/theme-resolver.js"
+import { readThemeColorsCss } from "../lib/theme-registry.js"
 import type { RegistryItem, RegistryFile } from "../lib/schema.js"
 
 export type AddOpts = {
@@ -34,6 +36,8 @@ export type AddOpts = {
   token?: string
   noCache?: boolean
   cwd?: string
+  /** Layer-2 theme override (`ride` | `logistic` | `travel` | `marketplace` | `trellis-tenant`). */
+  theme?: string
 }
 
 export async function runAdd(opts: AddOpts): Promise<void> {
@@ -51,6 +55,17 @@ export async function runAdd(opts: AddOpts): Promise<void> {
       ),
     )
   }
+
+  // Resolve Layer-2 theme: --theme flag > components.json.dashTheme > "ride".
+  const theme = resolveTheme({
+    cliFlag: opts.theme,
+    componentsJson: config,
+  })
+  console.log(
+    kleur.dim(
+      `  theme: ${kleur.cyan(theme.name)} (from ${theme.source})`,
+    ),
+  )
 
   // Resolve all items + dedupe across requests
   const seen = new Map<string, RegistryItem>()
@@ -95,7 +110,7 @@ export async function runAdd(opts: AddOpts): Promise<void> {
       // Inject `@dash version` header on first install of a JS/TS source file
       // so `dash sync` can classify bump severity later. Idempotent: skipped
       // if header already present.
-      const stamped = stampDashHeader(f, item.name, itemVersion)
+      const stamped = stampDashHeader(f, item.name, itemVersion, theme.name)
       const result = await writeRegistryFile(stamped, baseTarget, {
         cwd,
         yes: opts.yes,
@@ -104,6 +119,34 @@ export async function runAdd(opts: AddOpts): Promise<void> {
       })
       if (result === "skipped") skipped++
       else written++
+    }
+  }
+
+  // Theme css — copy Layer-2 theme tokens into consumer repo as
+  // `styles/dash-theme-<name>.css`. Forward-compat: current components don't
+  // yet reference `var(--theme-accent-500)`, but new components will, and
+  // this guarantees the css is present at install time.
+  {
+    const themeCss = readThemeColorsCss(theme.name, { cwd })
+    const themeCssTarget = path.join(
+      cwd,
+      "styles",
+      `dash-theme-${theme.name}.css`,
+    )
+    if (!opts.dryRun) {
+      fs.mkdirSync(path.dirname(themeCssTarget), { recursive: true })
+      fs.writeFileSync(themeCssTarget, themeCss, "utf-8")
+      console.log(
+        kleur.dim(
+          `  ↳ theme css → ${path.relative(cwd, themeCssTarget)}`,
+        ),
+      )
+    } else {
+      console.log(
+        kleur.dim(
+          `  ↳ [dry-run] would write theme css → ${path.relative(cwd, themeCssTarget)}`,
+        ),
+      )
     }
   }
 
@@ -152,6 +195,7 @@ export function stampDashHeader(
   file: RegistryFile,
   itemName: string,
   version: string,
+  theme?: string,
 ): RegistryFile {
   const content = file.content ?? ""
   if (!content) return file
@@ -161,6 +205,7 @@ export function stampDashHeader(
   const header = buildDashHeader({
     version,
     source: file.path,
+    theme,
   })
   return { ...file, content: injectDashHeader(content, header) }
 }

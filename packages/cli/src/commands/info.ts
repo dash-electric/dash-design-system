@@ -15,6 +15,7 @@ import {
   readComponentsJson,
 } from "../lib/components-json.js"
 import { fetchRegistryIndex } from "../lib/registry-fetch.js"
+import { resolveTheme } from "../lib/theme-resolver.js"
 import type { ComponentsJson, RegistryIndex } from "../lib/schema.js"
 
 export const INFO_SCHEMA_VERSION = 1
@@ -24,6 +25,8 @@ export type InfoOpts = {
   cwd?: string
   registry?: string
   token?: string
+  /** Optional CLI override for the resolved theme. */
+  theme?: string
   /** Inject a pre-fetched registry index (testing). */
   _index?: RegistryIndex | null
 }
@@ -45,6 +48,11 @@ export type InfoSnapshot = {
       type: string
       path: string
     }>
+    /** Layer-2 theme detected for this project. */
+    theme: {
+      name: string
+      source: "cli" | "config" | "default"
+    }
   }
   customHooks: string[]
   apiBaseUrl: string | null
@@ -324,6 +332,7 @@ export async function collectInfo(opts: InfoOpts = {}): Promise<InfoSnapshot> {
   const installedItems = findInstalledItems(cwd, config, index)
   const installedNames = new Set(installedItems.map((i) => i.name))
   const customHooks = findCustomHooks(cwd, aliases, installedNames)
+  const theme = resolveTheme({ cliFlag: opts.theme, componentsJson: config })
 
   return {
     schemaVersion: INFO_SCHEMA_VERSION,
@@ -338,6 +347,7 @@ export async function collectInfo(opts: InfoOpts = {}): Promise<InfoSnapshot> {
       registryUrl,
       hasToken: envHasToken(cwd) || Boolean(opts.token),
       installedItems,
+      theme,
     },
     customHooks,
     apiBaseUrl: findApiBaseUrl(cwd),
@@ -371,6 +381,12 @@ function printPretty(snap: InfoSnapshot): void {
   console.log(kleur.bold("Dash registry"))
   console.log(line("  url", snap.dash.registryUrl))
   console.log(line("  token", snap.dash.hasToken ? "✓ configured" : "✗ missing"))
+  console.log(
+    line(
+      "  theme",
+      `${snap.dash.theme.name} (${snap.dash.theme.source})`,
+    ),
+  )
   console.log(line("  installed", `${snap.dash.installedItems.length} item(s)`))
   for (const it of snap.dash.installedItems.slice(0, 12)) {
     console.log(kleur.dim(`    · ${it.name} (${it.type}) ${it.path}`))

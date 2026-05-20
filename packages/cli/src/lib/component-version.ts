@@ -25,11 +25,13 @@ export type DashHeader = {
   rawVersion: string | null
   source: string | null
   updated: string | null
+  theme: string | null
 }
 
 const VERSION_RE = /@dash\s+version\s+(\d+)\.(\d+)\.(\d+)/i
 const SOURCE_RE = /@dash\s+source\s+(\S+)/i
 const UPDATED_RE = /@dash\s+updated\s+(\S+)/i
+const THEME_RE = /@dash\s+theme\s+(\S+)/i
 
 export function parseSemVer(raw: string): SemVer | null {
   const m = raw.match(/(\d+)\.(\d+)\.(\d+)/)
@@ -75,12 +77,14 @@ export function parseDashHeader(content: string): DashHeader {
   const vm = head.match(VERSION_RE)
   const sm = head.match(SOURCE_RE)
   const um = head.match(UPDATED_RE)
+  const tm = head.match(THEME_RE)
   const rawVersion = vm ? `${vm[1]}.${vm[2]}.${vm[3]}` : null
   return {
     version: rawVersion ? parseSemVer(rawVersion) : null,
     rawVersion,
     source: sm?.[1] ?? null,
     updated: um?.[1] ?? null,
+    theme: tm?.[1] ?? null,
   }
 }
 
@@ -92,16 +96,19 @@ export function buildDashHeader(args: {
   version: string
   source: string
   updated?: string
+  /** Optional Layer-2 theme stamp (`ride` | `logistic` | …). */
+  theme?: string
 }): string {
   const updated = args.updated ?? new Date().toISOString().slice(0, 10)
-  return [
+  const lines = [
     "/**",
     ` * @dash version ${args.version}`,
     ` * @dash source ${args.source}`,
     ` * @dash updated ${updated}`,
-    " */",
-    "",
-  ].join("\n")
+  ]
+  if (args.theme) lines.push(` * @dash theme ${args.theme}`)
+  lines.push(" */", "")
+  return lines.join("\n")
 }
 
 export function hasDashHeader(content: string): boolean {

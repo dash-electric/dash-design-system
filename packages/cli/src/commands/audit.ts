@@ -28,6 +28,8 @@ export type AuditOpts = {
   only?: string
   /** Override cwd resolution for tests. */
   cwd?: string
+  /** Layer-2 theme override (`ride` | `logistic` | …). Currently advisory. */
+  theme?: string
 }
 
 export type AuditFinding = {

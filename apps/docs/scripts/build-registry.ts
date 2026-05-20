@@ -33,6 +33,10 @@ type RegistryItem = {
   css?: string
   categories?: string[]
   meta?: Record<string, unknown>
+  /** Layered Architecture Layer 3 tag — "shared" | "ride" | "logistic" | "travel" | "marketplace" | etc. */
+  theme?: string
+  /** Products this block applies to. Subset of ["ride", "logistic", "travel", "marketplace"]. */
+  products?: string[]
 }
 type Registry = {
   $schema: string
@@ -50,7 +54,14 @@ const registry = JSON.parse(fs.readFileSync(REGISTRY_PATH, "utf-8")) as Registry
 fs.mkdirSync(OUT_DIR, { recursive: true })
 
 let built = 0
-const index: { name: string; type: string; title: string; description: string }[] = []
+const index: {
+  name: string
+  type: string
+  title: string
+  description: string
+  theme?: string
+  products?: string[]
+}[] = []
 
 for (const item of registry.items) {
   const resolved: RegistryItem = { $schema: ITEM_SCHEMA, ...item }
@@ -72,6 +83,8 @@ for (const item of registry.items) {
     type: item.type,
     title: item.title,
     description: item.description,
+    ...(item.theme ? { theme: item.theme } : {}),
+    ...(item.products ? { products: item.products } : {}),
   })
   console.log(`✓ built ${item.name} (${item.type})`)
   built++

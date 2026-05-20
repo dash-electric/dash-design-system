@@ -46,6 +46,7 @@ import {
   type SemVer,
 } from "../lib/component-version.js"
 import { renderFull, renderPreview } from "../lib/diff-renderer.js"
+import { resolveTheme } from "../lib/theme-resolver.js"
 import type { RegistryItem, ComponentsJson } from "../lib/schema.js"
 import type { InfoSnapshot } from "./info.js"
 
@@ -61,6 +62,8 @@ export type SyncOpts = {
   token?: string
   noCache?: boolean
   cwd?: string
+  /** Layer-2 theme override (`ride` | `logistic` | …). */
+  theme?: string
   /** Inject a pre-built snapshot (testing). */
   _snapshot?: InfoSnapshot
   /** Inject a fetcher (testing) to avoid network. */
@@ -425,6 +428,30 @@ export async function runSync(opts: SyncOpts): Promise<SyncReport> {
     : ora("Scanning installed @dash items").start()
   const { report, fetched } = await planSync(opts)
   spinner?.succeed(`Scanned ${report.total} item(s)`)
+
+  // Theme drift warning: if a local file's `@dash theme` header doesn't match
+  // the active theme, surface it so the user notices cross-theme installs.
+  if (!opts.json && !opts.check) {
+    const config = readComponentsJson(cwd)
+    const active = resolveTheme({
+      cliFlag: opts.theme,
+      componentsJson: config,
+    })
+    for (const item of report.items) {
+      if (item.status === "fetch-failed") continue
+      const remote = fetched.get(item.name)
+      const localFile = remote ? readFirstExistingFile(remote, cwd, config) : null
+      if (!localFile) continue
+      const header = parseDashHeader(localFile.content)
+      if (header.theme && header.theme !== active.name) {
+        console.log(
+          kleur.yellow(
+            `! ${item.name}: local theme "${header.theme}" != active "${active.name}"`,
+          ),
+        )
+      }
+    }
+  }
 
   // JSON path: machine output only, no writes.
   if (opts.json) {

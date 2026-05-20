@@ -3442,6 +3442,8 @@
         "block",
         "dashboard"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "registryDependencies": [
         "utils",
         "card",
@@ -3464,6 +3466,8 @@
         "block",
         "dashboard"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": [
         "@remixicon/react"
       ],
@@ -3490,6 +3494,8 @@
         "block",
         "dashboard"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": [
         "recharts"
       ],
@@ -3516,6 +3522,8 @@
         "block",
         "table"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": [
         "@remixicon/react"
       ],
@@ -3546,6 +3554,8 @@
         "block",
         "workflow"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": [
         "@remixicon/react"
       ],
@@ -3577,6 +3587,8 @@
         "workflow",
         "mobile"
       ],
+      "theme": "ride",
+      "products": ["ride"],
       "dependencies": [
         "@remixicon/react"
       ],
@@ -3609,6 +3621,8 @@
         "block",
         "dashboard"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": [
         "@remixicon/react"
       ],
@@ -3636,6 +3650,8 @@
         "workflow",
         "delivery"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": [
         "@remixicon/react",
         "@radix-ui/react-tooltip"
@@ -4042,6 +4058,8 @@
         "block",
         "headers"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": [
         "@remixicon/react"
       ],
@@ -4069,6 +4087,8 @@
         "block",
         "headers"
       ],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": [
         "@remixicon/react"
       ],
@@ -4312,6 +4332,8 @@
       "title": "Bulk Upload with Per-File Status",
       "description": "N-file batch upload, parallel with concurrency limit, per-file status + retry, summary toast. Common: delivery proof batch, KYC docs, vehicle photos.",
       "categories": ["block", "form"],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["utils", "button", "icon-button", "badge", "file-upload", "toaster"],
       "files": [{ "path": "registry/dash/blocks/bulk-upload-with-status.tsx", "type": "registry:block" }]
@@ -4323,6 +4345,8 @@
       "title": "Image Editor with Audit Trail",
       "description": "Canvas-based crop + rotate for proof images. Audit trail built-in. POD/POP/KYC/vehicle-condition support. No external image lib.",
       "categories": ["block", "composite"],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["modal", "button", "icon-button", "select", "textarea", "label", "toaster"],
       "files": [{ "path": "registry/dash/blocks/image-editor-with-audit.tsx", "type": "registry:block" }]
@@ -4334,6 +4358,8 @@
       "title": "Inline Edit with Audit Trail",
       "description": "Click-to-edit single-field block. Save/cancel + optional reason, validation, char cap, custom read renderer. Audit payload mandatory. For mitra display name, vehicle description, outlet contact, etc.",
       "categories": ["block", "form"],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["input", "button", "icon-button", "toaster"],
       "files": [{ "path": "registry/dash/blocks/inline-edit-with-audit.tsx", "type": "registry:block" }]
@@ -4345,6 +4371,8 @@
       "title": "Mitra Dispute Flow",
       "description": "Mitra (driver) dispute submission flow. Evidence display + reason picker + detail + supervisor escalation + confirm modal + audit-trail payload. Delivery/payment/suspension/maintenance.",
       "categories": ["block", "composite"],
+      "theme": "ride",
+      "products": ["ride"],
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["modal", "button", "select", "textarea", "checkbox", "badge", "label", "toaster"],
       "files": [{ "path": "registry/dash/blocks/mitra-dispute-flow.tsx", "type": "registry:block" }]
@@ -4356,6 +4384,8 @@
       "title": "Proof Image Viewer",
       "description": "Display proof image (POD/POP/KYC/vehicle-condition) with native zoom + pan + side-by-side compare (original vs edited). Audit history cycling, geolocation map link, keyboard a11y. No external zoom lib.",
       "categories": ["block", "composite"],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["button", "icon-button", "badge", "tooltip"],
       "files": [{ "path": "registry/dash/blocks/proof-image-viewer.tsx", "type": "registry:block" }]
@@ -4367,6 +4397,8 @@
       "title": "Incident Form with Attachments",
       "description": "Incident report form (vehicle accident, mitra injury, customer complaint) with photo/PDF attachments. Role-gated type dropdown, formal 'Anda' voice for mitra-facing, audit-ready payload, OPEN-state entry to incident lifecycle.",
       "categories": ["block", "form"],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["utils", "button", "select", "radio", "input", "textarea", "label", "field", "icon-button", "badge", "file-upload", "toaster"],
       "files": [{ "path": "registry/dash/blocks/incident-form-with-attach.tsx", "type": "registry:block" }]
@@ -4378,6 +4410,8 @@
       "title": "Payment Receipt Edit",
       "description": "Edit payment amount on existing receipt/transaction with mandatory audit + Fleet Manager approver gate above Rp 500.000 diff. IDR-cents internally, formatted-as-you-type input, before/after confirm modal. High-stakes financial field.",
       "categories": ["block", "form"],
+      "theme": "shared",
+      "products": ["ride", "logistic"],
       "dependencies": ["@remixicon/react"],
       "registryDependencies": ["modal", "button", "input", "select", "textarea", "badge", "label", "toaster"],
       "files": [{ "path": "registry/dash/blocks/payment-receipt-edit.tsx", "type": "registry:block" }]

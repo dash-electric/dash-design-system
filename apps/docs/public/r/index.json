@@ -846,25 +846,88 @@
       "name": "stat-card-grid",
       "type": "registry:block",
       "title": "Stat Card Grid",
-      "description": "3-4 KPI tiles in responsive grid with optional trend deltas."
+      "description": "3-4 KPI tiles in responsive grid with optional trend deltas.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
     },
     {
       "name": "empty-state-collection",
       "type": "registry:block",
       "title": "Empty State Collection",
-      "description": "4 empty-state patterns: inbox / search / filter / 404."
+      "description": "4 empty-state patterns: inbox / search / filter / 404.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
     },
     {
       "name": "analytics-grid",
       "type": "registry:block",
       "title": "Analytics Grid",
-      "description": "KPI strip + Chart row (Area + Bar) — 2-column on desktop."
+      "description": "KPI strip + Chart row (Area + Bar) — 2-column on desktop.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "audit-history-table",
+      "type": "registry:block",
+      "title": "Audit History Table",
+      "description": "Render edit history for any user-editable legal/financial field. Sortable, filterable, paginated. Per Dash audit trail rule.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "multi-stage-approval",
+      "type": "registry:block",
+      "title": "Multi-Stage Approval",
+      "description": "N-stage approval workflow with sequential gating, role-based action lock, and rollback-or-dead-end rejection. Use for Maintenance, Repossession, Mitra-reinstate, payment-adjustment.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "repossession-action-sheet",
+      "type": "registry:block",
+      "title": "Repossession Action Sheet",
+      "description": "Mobile-first bottom drawer for the 7-state repossession workflow (OPEN/IN_PROGRESS/FOUND/POTENTIAL_LOSS/PENDING_APPROVAL/WRITTEN_OFF/CLOSED). Role-aware actions, required note + optional photos + GPS capture, confirm dialog for irreversible transitions, audit-ready payload.",
+      "theme": "ride",
+      "products": [
+        "ride"
+      ]
     },
     {
       "name": "activity-timeline",
       "type": "registry:block",
       "title": "Activity Timeline",
-      "description": "Vertical timeline with icon + actor + action + meta tag."
+      "description": "Vertical timeline with icon + actor + action + meta tag.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "delivery-status-timeline",
+      "type": "registry:block",
+      "title": "Delivery Status Timeline",
+      "description": "Visual timeline for 26-status ts-delivery-service state machine — category-coded badges, current-status pulse, expandable middle, id/en locale.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
     },
     {
       "name": "my-cards-stack",
@@ -966,13 +1029,23 @@
       "name": "page-header",
       "type": "registry:block",
       "title": "Page Header",
-      "description": "Backoffice page-level title block with optional leading slot (avatar / icon / brand / company), search + notification topbar icons, primary controls slot, and action button row. Figma parity Headers [1.1] :: Page Header."
+      "description": "Backoffice page-level title block with optional leading slot (avatar / icon / brand / company), search + notification topbar icons, primary controls slot, and action button row. Figma parity Headers [1.1] :: Page Header.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
     },
     {
       "name": "section-header",
       "type": "registry:block",
       "title": "Section Header",
-      "description": "Content-section heading with optional leading slot, inline title compact button (dropdown chevron), search icon, and action button row. Figma parity Headers [1.1] :: Section Header."
+      "description": "Content-section heading with optional leading slot, inline title compact button (dropdown chevron), search icon, and action button row. Figma parity Headers [1.1] :: Section Header.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
     },
     {
       "name": "dash-ai-rules",
@@ -1093,6 +1166,82 @@
       "type": "registry:block",
       "title": "Bulk Submit",
       "description": "Pattern for batch endpoint dispatch. Per-row status (idle/pending/success/error), optimistic UI with rollback on individual failure, per-row retry, end-of-run summary toast."
+    },
+    {
+      "name": "bulk-upload-with-status",
+      "type": "registry:block",
+      "title": "Bulk Upload with Per-File Status",
+      "description": "N-file batch upload, parallel with concurrency limit, per-file status + retry, summary toast. Common: delivery proof batch, KYC docs, vehicle photos.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "image-editor-with-audit",
+      "type": "registry:block",
+      "title": "Image Editor with Audit Trail",
+      "description": "Canvas-based crop + rotate for proof images. Audit trail built-in. POD/POP/KYC/vehicle-condition support. No external image lib.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "inline-edit-with-audit",
+      "type": "registry:block",
+      "title": "Inline Edit with Audit Trail",
+      "description": "Click-to-edit single-field block. Save/cancel + optional reason, validation, char cap, custom read renderer. Audit payload mandatory. For mitra display name, vehicle description, outlet contact, etc.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "mitra-dispute-flow",
+      "type": "registry:block",
+      "title": "Mitra Dispute Flow",
+      "description": "Mitra (driver) dispute submission flow. Evidence display + reason picker + detail + supervisor escalation + confirm modal + audit-trail payload. Delivery/payment/suspension/maintenance.",
+      "theme": "ride",
+      "products": [
+        "ride"
+      ]
+    },
+    {
+      "name": "proof-image-viewer",
+      "type": "registry:block",
+      "title": "Proof Image Viewer",
+      "description": "Display proof image (POD/POP/KYC/vehicle-condition) with native zoom + pan + side-by-side compare (original vs edited). Audit history cycling, geolocation map link, keyboard a11y. No external zoom lib.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "incident-form-with-attach",
+      "type": "registry:block",
+      "title": "Incident Form with Attachments",
+      "description": "Incident report form (vehicle accident, mitra injury, customer complaint) with photo/PDF attachments. Role-gated type dropdown, formal 'Anda' voice for mitra-facing, audit-ready payload, OPEN-state entry to incident lifecycle.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "payment-receipt-edit",
+      "type": "registry:block",
+      "title": "Payment Receipt Edit",
+      "description": "Edit payment amount on existing receipt/transaction with mandatory audit + Fleet Manager approver gate above Rp 500.000 diff. IDR-cents internally, formatted-as-you-type input, before/after confirm modal. High-stakes financial field.",
+      "theme": "shared",
+      "products": [
+        "ride",
+        "logistic"
+      ]
     }
   ]
 }

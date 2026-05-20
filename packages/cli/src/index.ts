@@ -52,6 +52,7 @@ program
   .option("--registry-url <url>", "Override registry URL")
   .option("--token <token>", "Bearer token (overrides env)")
   .option("--no-cache", "Bypass persistent disk cache (force fresh fetch)")
+  .option("--theme <name>", "Layer-2 theme (ride | logistic | travel | marketplace | trellis-tenant)")
   .action(async (names: string[], opts) => {
     await runAdd({
       names,
@@ -62,6 +63,7 @@ program
       registryUrl: opts.registryUrl,
       token: opts.token,
       noCache: opts.cache === false,
+      theme: opts.theme,
     })
   })
 
@@ -89,11 +91,13 @@ program
   .option("--type <type>", "Filter by type: ui | theme | block | template | file")
   .option("--registry-url <url>", "Override registry URL")
   .option("--token <token>", "Bearer token")
+  .option("--theme <name>", "Filter by Layer-2 theme (ride | logistic | …)")
   .action(async (opts) => {
     await runList({
       type: opts.type,
       registryUrl: opts.registryUrl,
       token: opts.token,
+      theme: opts.theme,
     })
   })
 
@@ -113,12 +117,14 @@ program
   .option("--cwd <path>", "Override working directory")
   .option("--registry <url>", "Override registry URL for installed-items resolution")
   .option("--token <token>", "Bearer token")
+  .option("--theme <name>", "Override detected Layer-2 theme")
   .action(async (opts) => {
     await runInfo({
       json: opts.json,
       cwd: opts.cwd,
       registry: opts.registry,
       token: opts.token,
+      theme: opts.theme,
     })
   })
 
@@ -133,6 +139,7 @@ program
   .option("--registry-url <url>", "Override registry URL")
   .option("--token <token>", "Bearer token")
   .option("--no-cache", "Bypass disk cache (force fresh fetch)")
+  .option("--theme <name>", "Layer-2 theme to sync against (ride | logistic | …)")
   .action(async (names: string[], opts) => {
     await runSync({
       names: names?.length ? names : undefined,
@@ -144,6 +151,7 @@ program
       registryUrl: opts.registryUrl,
       token: opts.token,
       noCache: opts.cache === false,
+      theme: opts.theme,
     })
   })
 
@@ -213,12 +221,14 @@ program
   .option("--json", "Emit machine-readable JSON report")
   .option("--fail-on-error", "Exit 1 if any HIGH severity drift is found (CI mode)")
   .option("--only <category>", "Limit to one rule category (imports | style) or a rule id")
+  .option("--theme <name>", "Validate against a specific Layer-2 theme")
   .action((opts) => {
     runAudit({
       path: opts.path,
       json: opts.json,
       failOnError: opts.failOnError,
       only: opts.only,
+      theme: opts.theme,
     })
   })
 
