@@ -66,11 +66,33 @@ export type LoadDashSkillOpts = {
    * the consumer project lives outside the dash-ds monorepo.
    */
   dsRoot?: string
+  /**
+   * v4-only: bypass cache + force a fresh `dash info --json` scan. Default
+   * `false` — cache is consulted first, re-scanning on fingerprint change or
+   * TTL expiry. Pass `true` for `dash skill refresh` or when integrating
+   * tooling that wants every call to reflect on-disk state.
+   */
+  forceRefresh?: boolean
+  /**
+   * v4-only: override cache TTL in ms. Defaults to 4h via freshness-policy.
+   * Set to `0` to force every call to re-check fingerprint (still cheap when
+   * files unchanged because fingerprint is stat-only).
+   */
+  ttlMs?: number
+  /**
+   * v4-only: disable the v4 cache entirely (every call shells out, mirroring
+   * v1-v3 behavior). Mainly for testing.
+   */
+  noCache?: boolean
 }
 
 export type SkillDeps = {
   /** Override the info-collector (testing). */
-  collect?: (cwd: string) => Promise<CollectorResult>
+  collect?: (
+    cwd: string,
+    deps?: unknown,
+    opts?: { forceRefresh?: boolean; ttlMs?: number; noCache?: boolean },
+  ) => Promise<CollectorResult>
   /** Override the rules-file reader (testing). */
   readRules?: (filePath: string) => Promise<string>
 }
@@ -110,12 +132,16 @@ export async function loadDashSkill(
   deps: SkillDeps = {},
 ): Promise<BuiltPrompt> {
   const cwd = opts.cwd ?? process.cwd()
-  const collect = deps.collect ?? collectDashInfo
+  const collect = deps.collect ?? (collectDashInfo as SkillDeps["collect"])!
   const readRules = deps.readRules ?? ((p: string) => fs.readFile(p, "utf8"))
 
   let snapshot: DashInfoSnapshot | null = null
   try {
-    const info = await collect(cwd)
+    const info = await collect(cwd, undefined, {
+      forceRefresh: opts.forceRefresh,
+      ttlMs: opts.ttlMs,
+      noCache: opts.noCache,
+    })
     if (info.ok) snapshot = info.snapshot
   } catch {
     snapshot = null
@@ -307,6 +333,34 @@ export async function runSkill(
 }
 
 export { shouldActivate, collectDashInfo, buildPrompt }
+export { scanDashInfo } from "./info-collector.js"
+export {
+  computeFingerprint,
+  computeFingerprintSync,
+  collectFingerprintParts,
+} from "./lib/repo-fingerprint.js"
+export {
+  getCacheKey,
+  readCache,
+  writeCache,
+  clearCache,
+  clearAllCaches,
+  listCacheEntries,
+  getCacheDir,
+  getMetricsPath,
+  CACHE_SCHEMA_VERSION,
+} from "./lib/snapshot-cache.js"
+export type { CachedSnapshot, CacheMetricEvent } from "./lib/snapshot-cache.js"
+export {
+  shouldRefresh,
+  describeFreshness,
+  DEFAULT_CACHE_TTL_MS,
+} from "./lib/freshness-policy.js"
+export type {
+  FreshnessDecision,
+  FreshnessReason,
+  FreshnessInput,
+} from "./lib/freshness-policy.js"
 export {
   detectTenant,
   loadBlocksForTenant,

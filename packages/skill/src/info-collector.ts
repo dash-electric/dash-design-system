@@ -1,10 +1,19 @@
 /**
  * Calls `dash info --json` via execSync to capture project snapshot.
  *
- * v1 minimal impl: shells out to the Dash CLI and parses its JSON output.
- * Caching layer and version-skew negotiation can layer on later.
+ * v1: shells out to the Dash CLI and parses its JSON output.
+ * v4: layered fingerprint + cache. `collectDashInfo` is cache-first by default;
+ *     pass `forceRefresh: true` to bypass and re-scan.
  */
 import { execSync, type ExecSyncOptions } from "node:child_process"
+import { computeFingerprint } from "./lib/repo-fingerprint.js"
+import {
+  getCacheKey,
+  logMetric,
+  readCache,
+  writeCache,
+} from "./lib/snapshot-cache.js"
+import { shouldRefresh } from "./lib/freshness-policy.js"
 
 export type DashInfoSnapshot = {
   schemaVersion: number
@@ -94,10 +103,32 @@ export function detectRepoStackFromPath(rootPath: string): string | null {
 export type CollectorDeps = {
   /** Injectable for testing — defaults to node:child_process.execSync. */
   exec?: (cmd: string, opts?: ExecSyncOptions) => Buffer | string
+  /** v4: override the fingerprint computation (testing). */
+  fingerprint?: (cwd: string) => Promise<string>
+  /** v4: override cache read (testing). */
+  readCache?: typeof readCache
+  /** v4: override cache write (testing). */
+  writeCache?: typeof writeCache
+}
+
+export type CollectorOpts = {
+  /** v4: when true, skip cache lookup and always re-scan. */
+  forceRefresh?: boolean
+  /** v4: override TTL (ms). Defaults to freshness-policy default (4h). */
+  ttlMs?: number
+  /** v4: when true, skip cache entirely (no read, no write). */
+  noCache?: boolean
 }
 
 export type CollectorResult =
-  | { ok: true; snapshot: DashInfoSnapshot }
+  | {
+      ok: true
+      snapshot: DashInfoSnapshot
+      /** v4: indicates whether result came from cache or fresh scan. */
+      cacheHit?: boolean
+      /** v4: reason cache was/wasn't used. */
+      freshnessReason?: string
+    }
   | { ok: false; reason: string }
 
 /**
@@ -119,11 +150,110 @@ function isSnapshotShape(v: unknown): v is DashInfoSnapshot {
 }
 
 /**
+ * Cache-aware collector. v4 default entry point.
+ *
+ * Behavior:
+ *   1. Compute repo fingerprint (~10ms)
+ *   2. Read cache; if fresh (fingerprint match + TTL OK) → return cached
+ *   3. Else shell out to `dash info --json`, persist, return fresh
+ *
+ * Backward compat: `collectDashInfo(cwd)` and `collectDashInfo(cwd, deps)`
+ * still work — opts is a NEW third parameter that defaults to {} so v3 callers
+ * are unaffected. When called with the legacy 2-arg signature, cache is on
+ * by default.
+ *
+ * Test/legacy hatch: pass `{ noCache: true }` to skip cache entirely
+ * (mirrors v1-v3 behavior — every call shells out).
+ */
+export async function collectDashInfo(
+  cwd: string = process.cwd(),
+  deps: CollectorDeps = {},
+  opts: CollectorOpts = {},
+): Promise<CollectorResult> {
+  // Bypass cache entirely (legacy parity).
+  // Heuristic: when caller injects a fake `exec` (test path), default to
+  // no-cache so v1-v3 test suites don't see cross-test cache pollution.
+  // Explicit opts.noCache always wins; explicit opts.forceRefresh also bypasses
+  // the read path so caches stay test-isolated.
+  const implicitNoCache = deps.exec !== undefined && opts.forceRefresh === undefined && opts.noCache === undefined
+  if (opts.noCache || implicitNoCache) {
+    return scanDashInfo(cwd, deps)
+  }
+
+  const fingerprint =
+    deps.fingerprint ?? ((p: string) => computeFingerprint(p))
+  const readFn = deps.readCache ?? readCache
+  const writeFn = deps.writeCache ?? writeCache
+
+  const key = getCacheKey(cwd)
+  let currentFp: string
+  try {
+    currentFp = await fingerprint(cwd)
+  } catch {
+    // Fingerprint failed — fall back to fresh scan (cache disabled this call).
+    return scanDashInfo(cwd, deps)
+  }
+
+  const cached = readFn(key)
+  const decision = shouldRefresh({
+    cache: cached,
+    currentFingerprint: currentFp,
+    forceRefresh: opts.forceRefresh,
+    ttlMs: opts.ttlMs,
+  })
+
+  if (!decision.refresh && cached) {
+    logMetric({
+      ts: Date.now(),
+      cwdHash: key,
+      outcome: "hit",
+      reason: decision.reason,
+    })
+    return {
+      ok: true,
+      snapshot: cached.snapshot,
+      cacheHit: true,
+      freshnessReason: decision.reason,
+    }
+  }
+
+  const t0 = Date.now()
+  const fresh = await scanDashInfo(cwd, deps)
+  const scanDurationMs = Date.now() - t0
+
+  logMetric({
+    ts: Date.now(),
+    cwdHash: key,
+    outcome: "miss",
+    reason: decision.reason,
+    scanDurationMs,
+  })
+
+  if (fresh.ok) {
+    try {
+      await writeFn(key, fresh.snapshot, currentFp, { cwd })
+    } catch {
+      /* best-effort */
+    }
+    return {
+      ...fresh,
+      cacheHit: false,
+      freshnessReason: decision.reason,
+    }
+  }
+  return fresh
+}
+
+/**
  * Run `dash info --json` in the given cwd. Returns a discriminated union so
  * callers can degrade gracefully when the CLI isn't on PATH or the project
  * isn't a Dash repo.
+ *
+ * v4: extracted from `collectDashInfo` so the cache-aware wrapper can call
+ * this internally. Exported for tests + callers that explicitly want zero
+ * caching (e.g. `dash skill refresh`).
  */
-export async function collectDashInfo(
+export async function scanDashInfo(
   cwd: string = process.cwd(),
   deps: CollectorDeps = {},
 ): Promise<CollectorResult> {

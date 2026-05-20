@@ -28,7 +28,11 @@ describe("loadDashSkill", () => {
     const readRules = vi.fn(async (_p: string) => "# Dash AI Rules\nbe nice.")
     const result = await loadDashSkill({ cwd: "/tmp/proj", version: 1 }, { collect, readRules })
 
-    expect(collect).toHaveBeenCalledWith("/tmp/proj")
+    expect(collect).toHaveBeenCalledWith(
+      "/tmp/proj",
+      undefined,
+      expect.any(Object),
+    )
     expect(result.systemAppend).toContain("# Dash project context")
     expect(result.systemAppend).toContain("framework: next")
     expect(result.systemAppend).toContain("be nice.")

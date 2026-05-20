@@ -23,6 +23,11 @@ import {
   runFeedbackList,
   runFeedbackSync,
 } from "./commands/feedback.js"
+import {
+  runSkillClear,
+  runSkillRefresh,
+  runSkillStatus,
+} from "./commands/skill.js"
 
 const program = new Command()
 
@@ -271,7 +276,7 @@ gap
   .description("Log a missing DS pattern/component (or --list / --clear / --export)")
   .option("--severity <level>", "low | medium | high (prompted if omitted)")
   .option("--repo <name>", "Repo name (auto-detected from cwd if omitted)")
-  .option("--prompt <text>", "Original PE prompt that surfaced the gap")
+  .option("--prompt <text>", "Original user prompt that surfaced the gap")
   .option("--list", "Print queue contents")
   .option("--clear", "Clear all queued gaps (interactive confirm)")
   .option("--export <path>", "Export queue JSON to <path>")
@@ -307,7 +312,7 @@ feedback
   .option("--category <name>", "bug | ux | missing | praise | drift | other", "other")
   .option("--severity <level>", "low | med | high")
   .option("--pilot <name>", "Pilot tag (default: wave-5)")
-  .option("--pe <name>", "PE name (auto-detected from git config user.name if omitted)")
+  .option("--pe <name>", "User name (auto-detected from git config user.name if omitted)")
   .option("--command <cmd>", "Command that triggered the feedback (context)")
   .option("--component <name>", "Component related to the feedback (context)")
   .option("--repo <name>", "Repo where the feedback originated (context)")
@@ -330,7 +335,7 @@ feedback
   .command("list")
   .description("Print local feedback entries as a table")
   .option("--pilot <name>", "Filter by pilot tag")
-  .option("--pe <name>", "Filter by PE name")
+  .option("--pe <name>", "Filter by user name")
   .option("--category <name>", "Filter by category")
   .option("--json", "Emit machine-readable JSON")
   .action((opts) => {
@@ -356,6 +361,42 @@ feedback
       dryRun: opts.dryRun,
       json: opts.json,
     })
+  })
+
+// ─────────────────────────────────────────────────────────────────────────
+// `dash skill` — v4 freshness cache management
+// ─────────────────────────────────────────────────────────────────────────
+
+const skill = program
+  .command("skill")
+  .description("Manage @dash/skill v4 snapshot cache (per-prompt freshness)")
+
+skill
+  .command("status")
+  .description("Show whether the skill cache for this cwd is fresh, stale, or missing")
+  .option("--cwd <path>", "Override working directory")
+  .option("--json", "Emit machine-readable JSON")
+  .action(async (opts) => {
+    await runSkillStatus({ cwd: opts.cwd, json: opts.json })
+  })
+
+skill
+  .command("refresh")
+  .description("Force a re-scan of `dash info --json` and update the skill cache")
+  .option("--cwd <path>", "Override working directory")
+  .option("--json", "Emit machine-readable JSON")
+  .action(async (opts) => {
+    await runSkillRefresh({ cwd: opts.cwd, json: opts.json })
+  })
+
+skill
+  .command("clear")
+  .description("Clear the skill cache entry for this cwd (or --all to wipe everything)")
+  .option("--cwd <path>", "Override working directory")
+  .option("--all", "Wipe every cache entry on disk")
+  .option("--json", "Emit machine-readable JSON")
+  .action(async (opts) => {
+    await runSkillClear({ cwd: opts.cwd, all: opts.all, json: opts.json })
   })
 
 program.parseAsync(process.argv).catch((err: Error) => {
