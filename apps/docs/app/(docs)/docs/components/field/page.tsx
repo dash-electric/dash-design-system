@@ -11,6 +11,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -18,6 +19,8 @@ export default function FieldDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Form"
         title="Field"
         description="Lightweight form-row primitive without react-hook-form coupling. Use when wiring forms manually. For RHF integration use Form*."
@@ -146,6 +149,41 @@ export default function FieldDocsPage() {
   <Field><Label>Nama belakang</Label><InputRoot><Input /></InputRoot></Field>
   <Field className="col-span-2"><Label>Email</Label><InputRoot><Input /></InputRoot></Field>
 </FieldGroup>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Label setiap field dengan kata yang dispatcher pakai sehari-hari, bukan dengan key kolom database.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs space-y-1">
+                <div className="font-medium">Nomor handphone mitra</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 px-2 py-1.5">+62 812-3456-7890</div>
+                <div className="text-text-soft-400 text-[10px]">Format Indonesia, 10-13 digit</div>
+              </div>
+            ),
+            caption: "Label natural Indonesia, format hint di bawah. Mitra paham langsung apa yang harus diisi.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs space-y-1">
+                <div className="font-medium">phone</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 px-2 py-1.5">123</div>
+              </div>
+            ),
+            caption: "Hindari label generic (\"phone\") atau bahasa Inggris di mitra-facing form. Tidak relatable.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Field description di bawah label untuk context (\"Akan dipakai untuk OTP login\"). Mitra paham why.",
+          }}
+          dont={{
+            caption: "Jangan stuff helper text + error + hint di tooltip. Mitra harus klik untuk paham — tampilkan visible.",
+          }}
         />
       </DocsSection>
 

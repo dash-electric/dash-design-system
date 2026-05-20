@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -61,6 +62,59 @@ export default function AnalyticsGridDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Chart-type to data-shape match">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Time-series → line chart. Categorical comparison → bar chart. Composition → stacked bar or donut. Don't force a pie chart on time-series.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 w-full max-w-sm">
+                <p className="text-xs text-text-sub-600">Order per hari · 7 hari terakhir</p>
+                <svg className="w-full h-20" viewBox="0 0 200 80"><polyline fill="none" stroke="#7C4FC4" strokeWidth="2" points="0,60 30,40 60,50 90,30 120,35 150,20 180,15 200,25" /></svg>
+              </div>
+            ),
+            caption: "Time-series gets a line chart. Trend, peak, dip are all immediately visible.",
+          }}
+          dont={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 w-full max-w-sm">
+                <p className="text-xs text-text-sub-600">Order per hari · 7 hari terakhir</p>
+                <div className="size-20 rounded-full mx-auto" style={{background: "conic-gradient(#7C4FC4 0 14%, #F75D5F 14% 28%, #38C793 28% 42%, #FFA500 42% 56%, #335CFF 56% 70%, #6E3FF3 70% 86%, #C7D5E9 86% 100%)"}} />
+              </div>
+            ),
+            caption: "Don't pie-chart time-series. Reader can't see Wednesday's dip vs Friday's spike — pie destroys temporal structure.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Tooltip on hover">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Hover over any data point should reveal the exact value + date. Don't make the user squint at gridlines.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 w-full max-w-sm relative">
+                <p className="text-xs text-text-sub-600">GMV mingguan</p>
+                <svg className="w-full h-20" viewBox="0 0 200 80"><polyline fill="none" stroke="#7C4FC4" strokeWidth="2" points="0,60 30,40 60,50 90,20 120,35 150,30 180,15" /><circle cx="90" cy="20" r="4" fill="#7C4FC4" /></svg>
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 rounded-md bg-static-black text-static-white px-2 py-1 text-[10px]">17 Mei · Rp 102 jt</div>
+              </div>
+            ),
+            caption: "Hover surfaces the date + exact value in a tooltip. Drill-down is one click away.",
+          }}
+          dont={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 w-full max-w-sm">
+                <p className="text-xs text-text-sub-600">GMV mingguan</p>
+                <svg className="w-full h-20" viewBox="0 0 200 80"><polyline fill="none" stroke="#7C4FC4" strokeWidth="2" points="0,60 30,40 60,50 90,20 120,35 150,30 180,15" /></svg>
+                <p className="text-[9px] text-text-soft-400">(hover does nothing)</p>
+              </div>
+            ),
+            caption: "Don't ship charts without tooltips. The reader can see the shape but never the exact value for a given day.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

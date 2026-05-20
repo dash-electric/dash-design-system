@@ -1,7 +1,7 @@
 {
   "name": "@dash/registry-schema",
   "version": "0.0.1",
-  "description": "Shared registry types and schemas across Dash monorepo packages (stub).",
+  "description": "Shared registry types and schemas across Dash DS repo packages (stub).",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",

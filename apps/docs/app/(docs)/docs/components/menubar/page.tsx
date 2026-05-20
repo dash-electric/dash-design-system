@@ -19,6 +19,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -26,6 +27,8 @@ export default function MenubarDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Navigation"
         title="Menubar"
         description="Persistent horizontal menubar — desktop app conventions (File / Edit / View). Hover switches active menu. Use for Halo-dash power user shell."
@@ -85,6 +88,40 @@ export default function MenubarDocsPage() {
   </MenubarMenu>
   …
 </Menubar>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Menubar = desktop power-user shell. Top of screen, persistent, multi-menu sibling. Bukan untuk web app casual.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md flex gap-1 text-xs px-2 py-1 rounded border border-stroke-soft-200 bg-bg-weak-50">
+                {["Dispatch", "Mitra", "Outlet", "Laporan"].map(m => (
+                  <div key={m} className="px-2 py-1 hover:bg-bg-white-0 rounded">{m}</div>
+                ))}
+              </div>
+            ),
+            caption: "Menubar untuk Halo-dash support tool yang dispatcher pakai 8 jam/hari. Familiar OS pattern, keyboard-driven.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md flex gap-1 text-xs px-2 py-1 rounded border border-stroke-soft-200 bg-bg-weak-50">
+                <div className="px-2 py-1">Menu</div>
+              </div>
+            ),
+            caption: "Jangan pakai Menubar untuk landing page atau dashboard customer. Itu pakai NavigationMenu (clearer hierarchy).",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Group action per domain: File (export/import), Edit (cut/copy), View (toggle column), Mitra (suspend/reactivate). Konsisten lintas app.",
+          }}
+          dont={{
+            caption: "Jangan stuff 8 menu items langsung di Menubar tanpa sub-menu. Itu jadi navbar, bukan menubar.",
+          }}
         />
       </DocsSection>
 

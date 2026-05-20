@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -27,7 +28,8 @@ export default function ShieldCrownDocsPage() {
         category="Components / Icons"
         title="Shield Crown"
         description="Composite trust icon — filled shield with a centred crown. Use for verified, VIP, or trusted-partner rows. Stacks two Remix icons; no asset import."
-        status="new"
+        status="beta"
+        kind="specialized"
       />
 
       <DocsSection title="Install">
@@ -71,6 +73,51 @@ export default function ShieldCrownDocsPage() {
 <ShieldCrown tone="primary" />
 <ShieldCrown tone="feature" />
 <ShieldCrown tone="success" />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          ShieldCrown = trust signal. Pakai untuk mitra VIP/verified-tier. Bukan untuk decorative atau random user. Selalu pair dengan label teks supaya makna jelas, jangan icon-only.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-1.5 text-sm">
+                <ShieldCrown tone="feature" size="sm" />
+                <span className="text-text-strong-950">mtr-9412</span>
+                <span className="text-xs text-text-soft-400">VIP partner</span>
+              </div>
+            ),
+            caption: "ShieldCrown disamping nama mitra VIP. Label 'VIP partner' kasih konteks supaya icon tidak berdiri sendiri.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex gap-1">
+                <ShieldCrown tone="primary" size="sm" />
+                <ShieldCrown tone="warning" size="sm" />
+                <ShieldCrown tone="feature" size="sm" />
+                <ShieldCrown tone="success" size="sm" />
+              </div>
+            ),
+            caption: "ShieldCrown sebagai decorative kombinasi warna = makna trust hilang. ShieldCrown untuk SATU mitra VIP, bukan ornament.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <span className="inline-flex items-center gap-1 rounded-full bg-warning-lighter text-warning-darker px-2 py-0.5 text-xs font-medium">
+                <ShieldCrown tone="warning" size="sm" /> Top-rated mitra
+              </span>
+            ),
+            caption: "Di dalam Badge dengan label 'Top-rated mitra'. Audience visual + textual reinforcement.",
+          }}
+          dont={{
+            preview: (
+              <ShieldCrown tone="away" size="lg" />
+            ),
+            caption: "ShieldCrown standalone tanpa konteks user atau label = trust signal misterius. Selalu pair dengan target subject + nama affordance.",
+          }}
         />
       </DocsSection>
 

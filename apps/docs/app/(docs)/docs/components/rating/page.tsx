@@ -22,6 +22,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -130,6 +131,8 @@ export default function RatingDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="specialized"
         category="Components / Forms"
         title="Rating"
         description="Star / heart row with half-step support, hover preview, controlled value 0..max. Swap the glyph via icon and the fill colour via tone. Compose with score + reviews count for product cards; use the inline EmojiMood + ThumbsPicker helpers for feedback flows."
@@ -395,6 +398,49 @@ export default function RatingDocsPage() {
   <Hint>Need more assistance? <Link>Learn more</Link></Hint>
   <Buttons><Cancel /><Submit /></Buttons>
 </Footer>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Rating display = readOnly + label numerik. Rating input = pair dengan textarea untuk konteks 'kenapa'. Tone star yellow default — heart/like pakai tone='error'.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-2 max-w-xs">
+                <Rating value={4.5} readOnly allowHalf size="sm" />
+                <span className="text-xs text-text-sub-600">
+                  <strong className="text-text-strong-950">4.5</strong> · 142 trip mtr-9412
+                </span>
+              </div>
+            ),
+            caption: "Display rating mitra dengan readOnly + label numerik + total count. User scan banyak mitra cepat dengan score.",
+          }}
+          dont={{
+            preview: (
+              <Rating value={4.5} onValueChange={() => {}} allowHalf size="sm" />
+            ),
+            caption: "Display rating tanpa readOnly = user kira bisa klik dan rate, padahal data dari backend. Selalu readOnly untuk display.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2">
+                <div className="text-xs font-medium">Rating dispatch DLV-7821</div>
+                <Rating value={0} onValueChange={() => {}} />
+                <textarea placeholder="Ceritakan pengalaman delivery..." className="w-full h-16 rounded border border-stroke-soft-200 p-2 text-xs" />
+              </div>
+            ),
+            caption: "Rating input dipair dengan textarea optional. User kasih kuantitas (bintang) + kualitas (teks) supaya feedback actionable.",
+          }}
+          dont={{
+            preview: (
+              <Rating value={2} readOnly />
+            ),
+            caption: "Rating 2 bintang readOnly tanpa konteks (apa yang dirate, kapan, siapa) = data tidak bermakna. Pair dengan label minimum.",
+          }}
         />
       </DocsSection>
 

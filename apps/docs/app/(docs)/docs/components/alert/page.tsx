@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -31,6 +32,8 @@ export default function AlertDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Feedback"
         title="Alert"
         description="Inline status banner that lives next to the content it describes. Five statuses, three appearances, three sizes. Use for surface-level system status, not transient toast notifications. Pair with a confirmation step for destructive actions."
@@ -191,6 +194,47 @@ export default function AlertDocsPage() {
     <Button tone="destructive">Delete Account</Button>
   </ModalFooter>
 </Modal>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Alert = page-level message. One alert at a time, top of content area. Status color must match severity — don't escalate every notification to error red.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <Alert status="information" size="sm" title="Polygon shift Bekasi sudah live · 8 mitra reassigned" dismissible className="w-full max-w-sm" />
+            ),
+            caption: "Satu alert info di atas konten, dismissable X. Status = informational karena event sukses + bisa di-tutup.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm space-y-2">
+                <Alert status="error" size="xs" title="Polygon shift live" />
+                <Alert status="error" size="xs" title="Mitra reassigned" />
+                <Alert status="error" size="xs" title="Routes optimized" />
+                <Alert status="error" size="xs" title="Update successful" />
+              </div>
+            ),
+            caption: "Empat alert error untuk event sukses = noise. Dispatcher abaikan semua karena merah jadi background.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <Alert status="warning" appearance="lighter" size="lg" title="Service area Tangerang Selatan kena banjir" className="w-full max-w-sm">
+                12 mitra Express di-pause sementara. Estimasi recovery 2 jam.
+              </Alert>
+            ),
+            caption: "Warning lg untuk situasi yang butuh konteks tambahan (waktu recovery, jumlah affected). Title + body kasih dispatcher cukup data.",
+          }}
+          dont={{
+            preview: (
+              <Alert status="warning" size="xs" title="Warning!" className="w-full max-w-sm" />
+            ),
+            caption: "Title generic 'Warning!' tanpa subject + tanpa action plan. Dispatcher panik tapi tidak tahu harus apa.",
+          }}
         />
       </DocsSection>
 

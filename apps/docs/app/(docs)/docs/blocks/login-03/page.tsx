@@ -6,6 +6,7 @@ import {
   DocsHeader,
   DocsSection,
   DocsExample,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -54,6 +55,61 @@ export default function LoginBlock03DocsPage() {
           <li><strong>Don't</strong> use inside modals — too tall, breaks the modal envelope.</li>
         </ul>
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Magic link vs password">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Magic-link blocks remove password entry entirely. Don't show password field as 'optional fallback' — the value of magic link is the single-action flow.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-3">
+                <div className="h-10 rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 text-xs text-text-sub-600 flex items-center">budi@dash.id</div>
+                <div className="h-10 rounded-lg bg-primary-base text-static-white text-xs font-medium flex items-center justify-center">Kirim magic link</div>
+                <p className="text-[10px] text-text-soft-400 text-center">Link akan dikirim ke email Anda</p>
+              </div>
+            ),
+            caption: "Single email field + send-link CTA. The next surface is the inbox — clear, fast, one path.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-2">
+                <div className="h-9 rounded-lg border border-stroke-soft-200 bg-bg-white-0 text-xs text-text-sub-600 flex items-center px-3">Email</div>
+                <div className="h-9 rounded-lg border border-stroke-soft-200 bg-bg-white-0 text-xs text-text-sub-600 flex items-center px-3">Password (opsional)</div>
+                <div className="h-9 rounded-lg bg-primary-base text-static-white text-xs font-medium flex items-center justify-center">Masuk atau kirim link</div>
+              </div>
+            ),
+            caption: "Don't bolt password as an optional field. It collapses the magic-link promise and leaves the user choosing between two flows.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Confirmation surface">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          After magic-link send, replace the form with a clear confirmation. Tell the user what to do next, not just that something happened.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-3 text-center">
+                <div className="size-12 rounded-full bg-success-lighter text-success-base mx-auto flex items-center justify-center text-lg">✓</div>
+                <p className="text-sm font-medium">Cek email Anda</p>
+                <p className="text-xs text-text-sub-600">Kami kirim link ke budi@dash.id. Buka inbox dan klik untuk masuk.</p>
+                <button className="text-xs text-primary-base underline">Kirim ulang</button>
+              </div>
+            ),
+            caption: "Confirmation includes the destination email (so user can spot typo), clear next step, and resend escape hatch.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-3 text-center">
+                <p className="text-sm font-medium">Link dikirim</p>
+                <p className="text-xs text-text-soft-400">OK</p>
+              </div>
+            ),
+            caption: "Don't terminate the flow with a flat 'Link dikirim' message. The user doesn't know which email, when to check, or how to retry.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

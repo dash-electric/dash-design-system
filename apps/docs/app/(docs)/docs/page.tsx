@@ -33,7 +33,7 @@ const quickLinks = [
   {
     title: "Components",
     href: "/docs/components",
-    description: "76 primitives — buttons, inputs, overlays, navigation, charts, feedback.",
+    description: "92 primitives — buttons, inputs, overlays, navigation, charts, feedback.",
   },
   {
     title: "Templates",

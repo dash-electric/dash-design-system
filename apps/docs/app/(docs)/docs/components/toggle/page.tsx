@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function ToggleDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Actions"
         title="Toggle"
         description="Stateful 2-state button. Use for formatting toolbar (bold/italic), feature flags, sticky-pin, or any persistent on/off control."
@@ -49,6 +52,54 @@ export default function ToggleDocsPage() {
           code={`<Toggle variant="outline" size="sm"><Bold /></Toggle>
 <Toggle variant="outline" size="md"><Bold /></Toggle>
 <Toggle variant="outline" size="lg"><Bold /></Toggle>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Toggle = single 2-state button (pressed/unpressed). Untuk toolbar formatting atau filter pin. Bukan global on/off setting (pakai Switch). Bukan multi-select (pakai Checkbox).
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-1">
+                <Toggle size="sm" aria-label="Pin filter mitra Express" defaultPressed><Bold /></Toggle>
+                <span className="text-xs text-text-sub-600">Pin filter Express</span>
+              </div>
+            ),
+            caption: "Toggle single state untuk persist filter pin. Pressed = filter aktif. Visual state jelas, action reversible.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-1">
+                <Toggle aria-label="Notif"><Bold /></Toggle>
+                <span className="text-xs text-text-sub-600">Notifikasi delivery</span>
+              </div>
+            ),
+            caption: "Untuk setting on/off yang instant-apply (notifikasi global) pakai Switch — affordance lebih clear. Toggle untuk per-item state inline.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex gap-1">
+                <Toggle size="sm" aria-label="Bold"><Bold /></Toggle>
+                <Toggle size="sm" aria-label="Italic" defaultPressed><Italic /></Toggle>
+                <Toggle size="sm" aria-label="Underline"><Underline /></Toggle>
+              </div>
+            ),
+            caption: "Formatting toolbar dengan Toggle independent (B+I aktif boleh, tidak mutual exclusive). Setiap toggle punya state sendiri.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex gap-1">
+                <Toggle size="sm" aria-label="List view"><Bold /></Toggle>
+                <Toggle size="sm" aria-label="Grid view"><Italic /></Toggle>
+                <Toggle size="sm" aria-label="Map view"><Underline /></Toggle>
+              </div>
+            ),
+            caption: "View switcher mutually-exclusive (cuma 1 view aktif) = WAJIB ToggleGroup type='single' atau SegmentedControl. Toggle individual = 2 view bisa aktif.",
+          }}
         />
       </DocsSection>
 

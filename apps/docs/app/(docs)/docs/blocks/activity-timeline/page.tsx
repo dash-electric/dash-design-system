@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -63,6 +64,59 @@ export default function ActivityTimelineDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Newest at top">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Activity feeds anchor at the latest event. Don't reverse-chronologically render oldest-first like a chat log.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-2">
+                <div className="flex gap-2 text-xs"><span className="text-[10px] text-text-soft-400 mt-0.5">14:32</span><span><strong>Budi</strong> menyetujui payout #4021 untuk KopKen</span></div>
+                <div className="flex gap-2 text-xs"><span className="text-[10px] text-text-soft-400 mt-0.5">14:10</span><span><strong>Sari</strong> assign order #2842 ke Tono S.</span></div>
+                <div className="flex gap-2 text-xs"><span className="text-[10px] text-text-soft-400 mt-0.5">13:55</span><span><strong>System</strong> auto-suspend mitra #M-184 (3 dispatch terlewat)</span></div>
+              </div>
+            ),
+            caption: "Newest event on top. The activity feed is for catching up — most recent first, scroll down for history.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-2">
+                <div className="flex gap-2 text-xs"><span className="text-[10px] text-text-soft-400 mt-0.5">13:55</span><span>System auto-suspend mitra #M-184</span></div>
+                <div className="flex gap-2 text-xs"><span className="text-[10px] text-text-soft-400 mt-0.5">14:10</span><span>Sari assign order #2842</span></div>
+                <div className="flex gap-2 text-xs"><span className="text-[10px] text-text-soft-400 mt-0.5">14:32</span><span>Budi menyetujui payout #4021</span></div>
+              </div>
+            ),
+            caption: "Don't render activity oldest-first. The reader has to scroll to find what just happened.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Actor + verb + object">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Every event reads as a sentence: subject (who) + verb (action) + object (what). Don't render bare status codes.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-2">
+                <div className="text-xs"><strong>Sari</strong> mengganti SLA polygon Jaksel dari <strong>45min</strong> ke <strong>30min</strong></div>
+                <div className="text-xs"><strong>Budi</strong> menambahkan mitra <strong>Tono S.</strong> ke Tier-3</div>
+              </div>
+            ),
+            caption: "Human-readable: actor, action, object — with the changing values surfaced inline.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-2">
+                <div className="text-xs font-mono">SLA_UPDATE | polygon=JKS | old=45 | new=30 | by=sari@dash.id</div>
+                <div className="text-xs font-mono">MITRA_ADD | tier=3 | id=M-422 | by=budi@dash.id</div>
+              </div>
+            ),
+            caption: "Don't dump audit-log tuples into the activity feed. That's debug output, not human communication.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

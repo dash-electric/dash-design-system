@@ -15,6 +15,7 @@ import {
   DocsHeader,
   DocsSection,
   DocsExample,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 import { InputRoot, Input, InputIcon } from "@/registry/dash/ui/input"
@@ -722,7 +723,52 @@ export default function BrandAssetsPage() {
           <div><code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">aria-label</code> — always provide for accessibility.</div>
         </div>
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Lock up vs free-floating">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Dash wordmark always sits on the baseline with the dot. Don't tilt, distort, or color-shift the brand mark.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-4">
+                <span className="text-xl font-semibold tracking-tight">Dash<span className="text-primary-base">.</span></span>
+                <span className="text-xl font-semibold tracking-tight text-static-white bg-static-black px-3 py-1 rounded">Dash<span className="text-primary-base">.</span></span>
+              </div>
+            ),
+            caption: "Original wordmark on white surface, inverted wordmark on black surface. Geometry untouched, dot stays brand-purple.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-4">
+                <span className="text-xl font-semibold tracking-tight italic" style={{transform: "rotate(-8deg) scaleX(1.3)"}}>Dash<span className="text-success-base">.</span></span>
+                <span className="text-xl font-bold tracking-widest" style={{background: "linear-gradient(45deg,#FF6B9D,#FFA500)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"}}>D A S H</span>
+              </div>
+            ),
+            caption: "Don't tilt, stretch, recolor, or letter-space the wordmark. The brand mark is a fixed asset — modify the layout around it.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Clear-space rule">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Maintain clear space around the wordmark — minimum equal to the cap height. Don't crowd it against other content.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-6 text-center"><span className="text-xl font-semibold tracking-tight">Dash<span className="text-primary-base">.</span></span></div>
+            ),
+            caption: "Clear space = at least cap-height on every side. Reads as a stable, confident mark.",
+          }}
+          dont={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-1 flex items-center gap-1"><span className="text-sm">/</span><span className="text-base font-semibold tracking-tight">Dash<span className="text-primary-base">.</span></span><span className="text-sm">|</span><span className="text-[10px]">EXPRESS</span></div>
+            ),
+            caption: "Don't crowd the wordmark with slashes, dividers, or sub-brand labels. The mark loses authority.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }
 

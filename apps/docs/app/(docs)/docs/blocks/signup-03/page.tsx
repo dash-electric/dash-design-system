@@ -6,6 +6,7 @@ import {
   DocsHeader,
   DocsSection,
   DocsExample,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -51,6 +52,59 @@ export default function SignupBlock03DocsPage() {
           <li><strong>Don't</strong> use inside dialogs — too tall.</li>
         </ul>
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Split-form proof">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          The split-shell signup pairs the form with a value-prop column. Use the right column for proof — testimonial, logo wall, stat — not decorative imagery.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="grid grid-cols-2 gap-3 w-full max-w-md">
+                <div className="space-y-2"><div className="h-7 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /><div className="h-7 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /><div className="h-7 rounded-lg bg-primary-base" /></div>
+                <div className="rounded-lg bg-bg-weak-50 p-3 text-[10px] text-text-sub-600">"Dash Express kami pakai untuk antar produk Kopi Kenangan ke 200 outlet/hari. Operational team 80% lebih cepat." — Ops Lead, KopKen</div>
+              </div>
+            ),
+            caption: "Right column carries a named customer quote. Specific (200 outlets, 80% faster) and attributed (KopKen Ops Lead).",
+          }}
+          dont={{
+            preview: (
+              <div className="grid grid-cols-2 gap-3 w-full max-w-md">
+                <div className="space-y-2"><div className="h-7 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /><div className="h-7 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /><div className="h-7 rounded-lg bg-primary-base" /></div>
+                <div className="rounded-lg bg-[linear-gradient(135deg,#7C4FC4,#FF6B9D)] h-24" />
+              </div>
+            ),
+            caption: "Don't fill the right column with a decorative gradient. The user paid attention with their eyes — give them a reason to sign up.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Single-column collapse">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          On mobile, the right column drops below the form, not behind it. The user scrolls past the form to proof — never the other way around.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-3">
+                <div className="space-y-2"><div className="h-9 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /><div className="h-9 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /><div className="h-9 rounded-lg bg-primary-base" /></div>
+                <div className="rounded-lg bg-bg-weak-50 p-3 text-[10px] text-text-sub-600">"Dash Express bantu 60% biaya logistik turun." — Sayurbox</div>
+              </div>
+            ),
+            caption: "Form on top, proof below. Mobile users start the signup flow within the first viewport.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-3">
+                <div className="rounded-lg bg-bg-weak-50 p-3 text-[10px] text-text-sub-600">"Dash Express bantu 60% biaya logistik turun." — Sayurbox</div>
+                <div className="rounded-lg bg-bg-weak-50 p-3 text-[10px] text-text-sub-600">"On-time rate 98%." — Chagee</div>
+                <div className="rounded-lg bg-bg-weak-50 p-3 text-[10px] text-text-sub-600">"Tim operasional 80% lebih cepat." — KopKen</div>
+                <div className="space-y-1.5"><div className="h-7 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /></div>
+              </div>
+            ),
+            caption: "Don't push form below three testimonials on mobile. The user has to scroll an extra screen before they can type anything.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

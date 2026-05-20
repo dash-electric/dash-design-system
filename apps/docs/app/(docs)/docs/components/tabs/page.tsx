@@ -52,6 +52,8 @@ export default function TabsDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Navigation"
         title="Tabs"
         description="Switch between sibling panels under a single surface. Two variants — line (underline, page-level header) + pill (rounded segment, list/sidebar). Tabs primitives mirror Radix Tabs."

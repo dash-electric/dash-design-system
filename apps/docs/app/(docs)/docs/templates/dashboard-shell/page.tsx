@@ -13,6 +13,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 import { DocsCode } from "@/components/docs/code-block"
@@ -197,6 +198,57 @@ export default function DashboardShellDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Sidebar landmark">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Backoffice pages always anchor to a 272px sidebar + 90px sticky header + max-w 1360px content rail. Don't ship full-bleed dashboards without nav.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden grid grid-cols-[80px_1fr]">
+                <div className="bg-bg-weak-50 border-r border-stroke-soft-200 p-2 space-y-1.5"><div className="h-3 rounded bg-bg-soft-200" /><div className="h-3 rounded bg-bg-soft-200" /><div className="h-3 rounded bg-primary-base" /><div className="h-3 rounded bg-bg-soft-200" /></div>
+                <div className="space-y-2 p-2"><div className="h-4 rounded bg-bg-soft-200 w-24" /><div className="grid grid-cols-3 gap-1.5"><div className="h-12 rounded bg-bg-weak-50" /><div className="h-12 rounded bg-bg-weak-50" /><div className="h-12 rounded bg-bg-weak-50" /></div></div>
+              </div>
+            ),
+            caption: "Persistent sidebar on the left, scrollable content rail on the right. Ops can navigate without losing context.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden p-2 space-y-2">
+                <div className="h-4 rounded bg-bg-soft-200 w-24" />
+                <div className="grid grid-cols-4 gap-1.5"><div className="h-12 rounded bg-bg-weak-50" /><div className="h-12 rounded bg-bg-weak-50" /><div className="h-12 rounded bg-bg-weak-50" /><div className="h-12 rounded bg-bg-weak-50" /></div>
+              </div>
+            ),
+            caption: "Don't ship full-bleed dashboards with no sidebar. User loses their navigation landmark and can't switch sections.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Header actions hierarchy">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Header carries one primary CTA + 2-3 icon buttons (search, notifications, profile). Don't load it with five filled buttons.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 flex items-center justify-between">
+                <p className="text-sm font-medium">Live dispatch</p>
+                <div className="flex items-center gap-2"><div className="size-7 rounded-md border border-stroke-soft-200" /><div className="size-7 rounded-md border border-stroke-soft-200" /><div className="h-7 px-3 rounded-md bg-primary-base text-static-white text-xs flex items-center">+ Dispatch</div></div>
+              </div>
+            ),
+            caption: "Icon-button utilities sit next to one filled primary CTA. The page action is unambiguous.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 flex items-center justify-between gap-2">
+                <p className="text-sm font-medium whitespace-nowrap">Live dispatch</p>
+                <div className="flex items-center gap-1.5"><div className="h-7 px-2 rounded-md bg-primary-base text-static-white text-[10px] flex items-center">Export</div><div className="h-7 px-2 rounded-md bg-primary-base text-static-white text-[10px] flex items-center">Import</div><div className="h-7 px-2 rounded-md bg-primary-base text-static-white text-[10px] flex items-center">Bulk</div><div className="h-7 px-2 rounded-md bg-primary-base text-static-white text-[10px] flex items-center">+ Dispatch</div></div>
+              </div>
+            ),
+            caption: "Don't paint every header action filled purple. The primary action drowns in equal-weight siblings.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

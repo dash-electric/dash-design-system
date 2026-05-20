@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function UseMobileDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="wip"
+        kind="atom"
         category="Utils / Hooks"
         title="useMobile"
         description="Returns true when viewport is below 768px (md breakpoint). Mirrors Tailwind's md: media query so component-level layout decisions stay in sync with class-based responsive styles."
@@ -38,6 +41,52 @@ export default function UseMobileDocsPage() {
           code={`const isMobile = useMobile()
 
 return isMobile ? <Drawer /> : <Sheet />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          useMobile untuk swap component variant (Sheet vs Drawer). Untuk layout responsif pakai Tailwind class (md:hidden). Hook bukan replacement untuk CSS — komplementer untuk decision component-level.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-1 text-xs">
+                <div className="font-medium text-text-strong-950">Mobile detect → Drawer</div>
+                <code className="text-text-sub-600">{`isMobile ? <Drawer /> : <Sheet />`}</code>
+              </div>
+            ),
+            caption: "useMobile untuk swap component (Drawer bottom-sheet di mobile, Sheet side-panel di desktop). Pilihan komponen tergantung viewport behavior.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-1 text-xs">
+                <div className="font-medium text-text-strong-950">Mobile detect → hide elements</div>
+                <code className="text-text-sub-600">{`{!isMobile && <Sidebar />}`}</code>
+              </div>
+            ),
+            caption: "Conditional render via JS untuk show/hide = SSR flicker + layout shift. Pakai Tailwind 'hidden md:block' supaya server+client match.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-1 text-xs">
+                <div className="font-medium text-text-strong-950">Tablet breakpoint custom</div>
+                <code className="text-text-sub-600">{`useMobile(1024) // lg breakpoint`}</code>
+              </div>
+            ),
+            caption: "Custom breakpoint untuk tablet (1024 = lg). Sesuaikan dengan Tailwind breakpoint supaya CSS + JS consistent.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-1 text-xs">
+                <div className="font-medium text-text-strong-950">Random breakpoint</div>
+                <code className="text-text-sub-600">{`useMobile(689) // random pixel`}</code>
+              </div>
+            ),
+            caption: "Custom breakpoint 689px (bukan Tailwind value) = CSS class 'md:' (768) + hook (689) tidak sinkron. Layout pecah di antara range.",
+          }}
         />
       </DocsSection>
 

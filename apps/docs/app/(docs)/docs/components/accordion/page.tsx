@@ -24,6 +24,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -47,6 +48,8 @@ export default function AccordionDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Disclosure"
         title="Accordion"
         description="Progressively-disclosed content panels. Card-style by default (each item a bordered box) with chevron or plus-minus toggle, optional leading icon, optional trailing meta slot for status badges. Built on Radix Accordion — supports single or multiple-open behavior."
@@ -420,6 +423,48 @@ export default function AccordionDocsPage() {
 >
   Individual Accounts <span>(1,243 Accounts)</span>
 </AccordionTrigger>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Accordion untuk konten optional/secondary yang user mungkin perlu lihat. Bukan untuk hide essential info.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200 divide-y divide-stroke-soft-200">
+                <div className="px-3 py-2 flex items-center justify-between">
+                  <span>Cara reset kode referral</span>
+                  <span className="text-text-soft-400">+</span>
+                </div>
+                <div className="px-3 py-2 flex items-center justify-between">
+                  <span>Berapa lama suspend mitra</span>
+                  <span className="text-text-soft-400">+</span>
+                </div>
+              </div>
+            ),
+            caption: "FAQ Help Center — pertanyaan visible, jawaban di-expand on demand. Mengurangi cognitive load.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200">
+                <div className="px-3 py-2 flex items-center justify-between">
+                  <span>Status delivery DLV-7821</span>
+                  <span className="text-text-soft-400">+</span>
+                </div>
+              </div>
+            ),
+            caption: "Jangan sembunyikan status critical (PICKED_UP, ETA) di accordion. Dispatcher butuh lihat tanpa klik.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Single-collapse default: cuma 1 panel terbuka. Mitra fokus baca satu jawaban, tidak overwhelm.",
+          }}
+          dont={{
+            caption: "Jangan auto-collapse panel saat user lagi baca. Itu pakai mode \"multiple\" supaya user kontrol.",
+          }}
         />
       </DocsSection>
 

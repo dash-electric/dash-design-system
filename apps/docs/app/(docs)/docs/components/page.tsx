@@ -8,7 +8,7 @@ import { componentInventory } from "@/components/docs/nav-config"
 
 export const metadata = {
   title: "Components — Dash Design System",
-  description: "76 primitives + hooks. Buttons, inputs, overlays, navigation, feedback. Each ports cleanly via dash CLI.",
+  description: "92 primitives + hooks. Buttons, inputs, overlays, navigation, feedback. Each ports cleanly via dash CLI.",
 }
 
 const GROUP_META: Record<string, { icon: React.ReactNode; blurb: string }> = {

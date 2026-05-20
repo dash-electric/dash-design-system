@@ -1,4 +1,5 @@
 import { cn } from "@/registry/dash/lib/utils"
+import { DocsDoDont } from "@/components/docs/page-shell"
 
 const radiusScale = [
   { token: "--radius-2", px: 2, rem: "0.125rem", use: "Hairline accents on dense controls. Rare." },
@@ -165,6 +166,51 @@ export default function CornerRadiusPage() {
           added by Dash to fill in the scale at small (chip) and large (hero) ends.
         </p>
       </section>
-    </article>
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Radius scale per element type</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">8px (md) for buttons + inputs, 12px (lg) for cards, 16px (xl) for modals, 9999px for pills. Don't free-style radii per element.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="grid grid-cols-4 gap-3">
+                <div className="flex flex-col items-center gap-1"><div className="size-12 rounded-lg bg-primary/20 border border-primary" /><code className="text-[9px]">rounded-lg · card</code></div>
+                <div className="flex flex-col items-center gap-1"><div className="size-12 rounded-md bg-primary/20 border border-primary" /><code className="text-[9px]">rounded-md · button</code></div>
+                <div className="flex flex-col items-center gap-1"><div className="size-12 rounded-xl bg-primary/20 border border-primary" /><code className="text-[9px]">rounded-xl · modal</code></div>
+                <div className="flex flex-col items-center gap-1"><div className="size-12 rounded-full bg-primary/20 border border-primary" /><code className="text-[9px]">rounded-full · avatar</code></div>
+              </div>
+            ),
+            caption: "Four named radii cover every element. Each shape maps to a fixed slot in the scale.",
+          }}
+          dont={{
+            preview: (
+              <div className="grid grid-cols-4 gap-3">
+                <div className="size-12 bg-primary/20 border border-primary" style={{borderRadius: "3px"}} />
+                <div className="size-12 bg-primary/20 border border-primary" style={{borderRadius: "7px"}} />
+                <div className="size-12 bg-primary/20 border border-primary" style={{borderRadius: "14px"}} />
+                <div className="size-12 bg-primary/20 border border-primary" style={{borderRadius: "22px"}} />
+              </div>
+            ),
+            caption: "Don't eyeball radii. 3/7/14/22 looks like four mistakes — no rhythm, no system.",
+          }}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Concentric nested corners</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Outer radius = inner radius + padding. Don't put a 24px inner inside an 8px outer — corners stick out.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-xl border border-border bg-background p-3"><div className="rounded-lg bg-muted h-12" /></div>
+            ),
+            caption: "Outer 16px → inner 12px. Difference equals the padding. Concentric, visually calm.",
+          }}
+          dont={{
+            preview: (
+              <div className="rounded-md border border-border bg-background p-3"><div className="rounded-2xl bg-muted h-12" /></div>
+            ),
+            caption: "Don't put a 24px inner inside an 8px outer. Inner pokes past the outer — looks broken.",
+          }}
+        />
+      </section>
+        </article>
   )
 }

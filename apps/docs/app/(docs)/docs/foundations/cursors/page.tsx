@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -179,7 +180,54 @@ export default function CursorsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Pointer for interactive, default for non-interactive">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Hoverable button → `cursor-pointer`. Disabled button → `cursor-not-allowed`. Plain text → default. Don't apply pointer to entire cards by reflex.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-2 w-full max-w-sm">
+                <button className="h-8 px-3 rounded-md bg-primary-base text-static-white text-xs cursor-pointer">Dispatch · pointer</button>
+                <button className="h-8 px-3 rounded-md bg-bg-soft-200 text-text-soft-400 text-xs cursor-not-allowed" disabled>Disabled · not-allowed</button>
+                <p className="text-xs">Plain paragraph · default cursor</p>
+              </div>
+            ),
+            caption: "Cursor matches affordance. Reader's mouse pointer becomes a UX signal — interactive vs disabled vs static.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-2 w-full max-w-sm">
+                <p className="text-xs cursor-pointer">Plain text with pointer cursor (does nothing)</p>
+                <p className="text-xs cursor-move">Display text with grabby cursor (does nothing)</p>
+                <button className="h-8 px-3 rounded-md bg-bg-soft-200 text-text-soft-400 text-xs cursor-pointer" disabled>Disabled with pointer</button>
+              </div>
+            ),
+            caption: "Don't apply `cursor-pointer` to non-interactive elements. User hovers, expects click, gets nothing — frustrating dead-end.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Drag affordance">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Use `cursor-grab` on draggable handles, `cursor-grabbing` while actively dragging. Don't use `move` for everything draggable.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-sm rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 flex items-center gap-2 cursor-grab"><span className="text-text-soft-400">⋮⋮</span><span className="text-xs">Sortable mitra row · grab</span></div>
+            ),
+            caption: "Six-dot handle paired with grab cursor on hover, grabbing during the drag. Predictable across the web.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 flex items-center gap-2 cursor-move"><span className="text-text-soft-400">⋮⋮</span><span className="text-xs">Sortable mitra row · move</span></div>
+            ),
+            caption: "Don't use `cursor-move` for list reordering. `move` historically meant 'will move in any direction' — wrong semantic for vertical sortable.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }
 

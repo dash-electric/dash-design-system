@@ -17,6 +17,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -46,6 +47,8 @@ export default function TagDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Data"
         title="Tag"
         description="Small inline label / chip. 2 variants (stroke + gray) × 4 states × 3 sizes. Optionally dismissible via onRemove. Use for taxonomy chips (filters, categories, post tags). For status-tone pills use Badge, for count pills use NumberBadge."
@@ -210,6 +213,49 @@ const [draft, setDraft] = useState("")
     {tags.map(t => <Tag key={t} onRemove={() => remove(t)}>{t}</Tag>)}
   </div>
 </Field>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Tag = filter chip atau metadata removable. Untuk label statis pakai Badge. Untuk action verb pakai Button. Selalu sediakan onRemove kalau tag bisa di-dismiss.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-text-sub-600">Filter aktif:</span>
+                <Tag onRemove={() => {}}>tribe=Express</Tag>
+                <Tag onRemove={() => {}}>kota=Bekasi</Tag>
+                <Tag onRemove={() => {}}>status=Active</Tag>
+              </div>
+            ),
+            caption: "Filter chip removable. User klik X untuk lepas filter satu per satu. Match konvensi search filter di table.",
+          }}
+          dont={{
+            preview: (
+              <Tag>Premium</Tag>
+            ),
+            caption: "Tag tanpa onRemove + label statis ('Premium') = behavior Badge. Pakai Badge untuk label kategori, Tag untuk yang interactive/removable.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-wrap gap-1.5 max-w-xs">
+                {["Reservasi", "Bekasi", "Jakarta", "Tangerang"].map((t) => (
+                  <Tag key={t} onRemove={() => {}}>{t}</Tag>
+                ))}
+              </div>
+            ),
+            caption: "Multiple tags untuk multi-value selection. Setiap chip discrete + removable. User control sempurna granular.",
+          }}
+          dont={{
+            preview: (
+              <Tag>Tap untuk lihat detail</Tag>
+            ),
+            caption: "Tag sebagai CTA / link = behavior salah. CTA pakai Button atau LinkButton. Tag bukan action trigger.",
+          }}
         />
       </DocsSection>
 

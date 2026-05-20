@@ -14,6 +14,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 import { DocsCode } from "@/components/docs/code-block"
@@ -185,6 +186,55 @@ export default function AuthShellDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Centered vs split layout">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Centered shell = quick login for known users. Split shell = signup with proof column. Don't put a 1200×800 hero image on every auth page.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 flex items-center justify-center">
+                <div className="w-32 space-y-1.5"><div className="h-2 rounded bg-bg-soft-200 w-16" /><div className="h-5 rounded border border-stroke-soft-200" /><div className="h-5 rounded border border-stroke-soft-200" /><div className="h-5 rounded bg-primary-base" /></div>
+              </div>
+            ),
+            caption: "Login surface uses the centered shell. No marketing — just the form, breathing room, and a clear CTA.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden relative">
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,#7C4FC4,#FF6B9D)]" />
+                <div className="absolute inset-4 rounded bg-bg-white-0 p-2 space-y-1"><div className="h-4 rounded bg-bg-soft-200 w-16" /><div className="h-5 rounded border border-stroke-soft-200" /></div>
+              </div>
+            ),
+            caption: "Don't drop a marketing hero on the login page. Returning users get punished with a render-heavy gradient and no faster path in.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Logo placement">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Dash wordmark sits at the top-left or top-center of the shell — never inside the form card. Don't shrink it to favicon size.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2">
+                <div className="text-sm font-semibold tracking-tight">Dash</div>
+                <div className="flex justify-center pt-3"><div className="w-32 space-y-1.5"><div className="h-5 rounded border border-stroke-soft-200" /><div className="h-5 rounded bg-primary-base" /></div></div>
+              </div>
+            ),
+            caption: "Wordmark anchors the top-left as a brand-confidence cue. Form takes the visual center.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 flex items-center justify-center">
+                <div className="w-32 space-y-1"><div className="size-4 rounded bg-primary-base mx-auto" /><div className="text-[8px] text-center font-medium">Dash</div><div className="h-4 rounded border border-stroke-soft-200" /><div className="h-4 rounded bg-primary-base" /></div>
+              </div>
+            ),
+            caption: "Don't shrink the brand mark to favicon size. The login page is the first surface a returning user sees — show the brand clearly.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

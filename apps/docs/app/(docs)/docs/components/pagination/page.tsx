@@ -29,6 +29,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -111,6 +112,8 @@ export default function PaginationDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Navigation"
         title="Pagination"
         description="Page-based navigation cluster. 32px cells, rounded (radius-8) or full (pill). Compose first/prev/page-number/ellipsis/next/last + optional Page X of Y label + items-per-page select for a complete data-table footer."
@@ -395,6 +398,45 @@ function PagedTable() {
   <Pagination>...</Pagination>
   <ItemsPerPage value={perPage} onChange={setPerPage} />
 </footer>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Pagination sertakan context: total record, page size, current range. Dispatcher tahu posisi dalam dataset besar.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs flex items-center justify-between">
+                <span className="text-text-sub-600">1-25 dari 1,284 mitra</span>
+                <div className="flex gap-1">
+                  <div className="size-6 rounded border border-stroke-soft-200 flex items-center justify-center">‹</div>
+                  <div className="size-6 rounded bg-(--dash-purple-500) text-white flex items-center justify-center">1</div>
+                  <div className="size-6 rounded border border-stroke-soft-200 flex items-center justify-center">2</div>
+                  <div className="size-6 rounded border border-stroke-soft-200 flex items-center justify-center">›</div>
+                </div>
+              </div>
+            ),
+            caption: "Tampilkan \"1-25 dari 1,284\". Dispatcher tahu total dataset, current range, dan estimate berapa halaman tersisa.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs flex items-center gap-1">
+                <div className="size-6 rounded border border-stroke-soft-200 flex items-center justify-center">‹</div>
+                <div className="size-6 rounded border border-stroke-soft-200 flex items-center justify-center">›</div>
+              </div>
+            ),
+            caption: "Jangan kasih cuma prev/next tanpa context. Dispatcher tidak tahu sudah scroll seberapa jauh dari total.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Sediakan page-size selector (25 / 50 / 100). Dispatcher monitor 200 mitra → switch ke 100/page jadi 2 halaman saja.",
+          }}
+          dont={{
+            caption: "Jangan render 50 page button. Pakai ellipsis pattern (1 … 12 13 14 … 51). Cuma show neighborhood + first/last.",
+          }}
         />
       </DocsSection>
 

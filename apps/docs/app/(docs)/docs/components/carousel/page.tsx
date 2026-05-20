@@ -14,6 +14,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -29,6 +30,8 @@ export default function CarouselDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Displaying Data"
         title="Carousel"
         description="Slide-by-slide content browser built on embla-carousel-react. Use for tribe campaign reels, onboarding intro slides, feature tours. For paginated grids use Pagination."
@@ -188,6 +191,77 @@ useEffect(() => {
 
 <Carousel setApi={setApi}>…</Carousel>
 <DotStepper steps={api?.scrollSnapList().length ?? 0} current={current} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Carousel = browse banyak item dalam ruang terbatas. User control kapan slide pindah. Auto-play hanya untuk konten promo, dan harus pause-on-hover supaya tidak mengganggu reading.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <Carousel className="w-full max-w-xs" opts={{ align: "start" }}>
+                <CarouselContent>
+                  {tribes.slice(0, 4).map((t) => (
+                    <CarouselItem key={t.name} className="basis-1/2">
+                      <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs">
+                        <div className="font-semibold">{t.name}</div>
+                        <div className="text-text-sub-600">{t.trips} trips</div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            ),
+            caption: "Multi-slide visible (basis-1/2) + tombol Prev/Next jelas + tidak auto-rotate. User scroll sesuai kecepatan baca, lihat preview slide berikut.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs">
+                <div className="font-semibold">Reservasi</div>
+                <div className="text-text-sub-600">142 trips</div>
+                <div className="text-[10px] text-text-soft-400 mt-2">↻ Auto-rotating every 2s</div>
+              </div>
+            ),
+            caption: "Single-visible + auto-rotate cepat tanpa kontrol pause = user kehilangan info sebelum sempat baca. Frustrasi tinggi.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <Carousel className="w-full max-w-xs">
+                <CarouselContent>
+                  <CarouselItem>
+                    <Card variant="elevated" className="flex flex-col gap-1">
+                      <span className="text-[10px] text-text-soft-400 uppercase">Bekasi</span>
+                      <span className="text-lg font-semibold">Reservasi</span>
+                      <span className="text-xs text-text-sub-600">142 trips · surge 1.2×</span>
+                    </Card>
+                  </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            ),
+            caption: "Carousel untuk konten visual gallery (campaign, tutorial, intro). Setiap slide self-contained dengan konteks lengkap.",
+          }}
+          dont={{
+            preview: (
+              <Carousel className="w-full max-w-xs">
+                <CarouselContent>
+                  {[1,2,3,4,5,6,7,8,9,10].map((n) => (
+                    <CarouselItem key={n} className="basis-1/4">
+                      <div className="rounded border border-stroke-soft-200 p-1 text-[10px] text-center">{n}</div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            ),
+            caption: "Carousel untuk daftar data tabular (10+ items terstruktur) = user sulit scan + tidak bisa filter/sort. Pakai Table atau Pagination.",
+          }}
         />
       </DocsSection>
 

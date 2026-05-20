@@ -47,6 +47,7 @@ import {
 
 
 import { cn } from "@/registry/dash/lib/utils"
+import { DocsDoDont } from "@/components/docs/page-shell"
 
 const sizeTokens = [
   { token: "size-3", px: 12, demo: "size-3" },
@@ -316,6 +317,55 @@ export default function IconsPage() {
           <code className="text-xs px-1 py-0.5 rounded bg-muted">--icon-disabled</code>) are extracted from the Icons page of the Dash-licensed source design Figma.
         </p>
       </section>
-    </article>
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Remix Icon set</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Dash uses Remix Icon exclusively in product UI. Don't mix Lucide, Heroicons, and emojis in the same surface.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="grid grid-cols-4 gap-2 w-full max-w-sm">
+                <div className="size-9 rounded-md border border-border flex items-center justify-center"><svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 12l9-9 9 9M5 10v10h14V10" /></svg></div>
+                <div className="size-9 rounded-md border border-border flex items-center justify-center"><svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="7" width="13" height="10" rx="1" /><path d="M15 10h4l3 3v4h-7z" /></svg></div>
+                <div className="size-9 rounded-md border border-border flex items-center justify-center"><svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="8" r="3" /><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" /></svg></div>
+                <div className="size-9 rounded-md border border-border flex items-center justify-center"><svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="3" /><path d="M19 12a7 7 0 01-.3 2l1.6 1.2-2 3.4-1.9-.8a7 7 0 01-3.4 2L12 22h-4l-.4-2.2a7 7 0 01-3.4-2l-1.9.8-2-3.4 1.6-1.2A7 7 0 011.6 12c0-.7.1-1.3.3-2L.3 8.8l2-3.4 1.9.8a7 7 0 013.4-2L8 2h4l.4 2.2a7 7 0 013.4 2l1.9-.8 2 3.4-1.6 1.2c.2.7.3 1.3.3 2z" /></svg></div>
+              </div>
+            ),
+            caption: "Line variants by default (1.5px stroke), fill for active states. Single icon system end-to-end.",
+          }}
+          dont={{
+            preview: (
+              <div className="grid grid-cols-4 gap-2 w-full max-w-sm text-2xl text-center">
+                <div>🏠</div><div>🚛</div><div>👨‍👩‍👧</div><div>⚙</div>
+              </div>
+            ),
+            caption: "Don't substitute emoji for icons. Different shape per OS, ignores brand color tokens, breaks accessibility tree.",
+          }}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Stroke weight matches size</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">16px icons get 1.5px stroke. 24px icons get 1.5px. 48px hero icons may take 2px. Don't scale a 12px icon to 48px — strokes vanish.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-end gap-3">
+                <div className="size-5 rounded border border-border flex items-center justify-center"><svg viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 8h12M8 2v12" /></svg></div>
+                <div className="size-7 rounded border border-border flex items-center justify-center"><svg viewBox="0 0 20 20" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 10h14M10 3v14" /></svg></div>
+                <div className="size-9 rounded border border-border flex items-center justify-center"><svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 12h16M12 4v16" /></svg></div>
+              </div>
+            ),
+            caption: "Three sizes, calibrated stroke at each. Visually consistent weight across the system.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-end gap-3">
+                <div className="size-3 rounded border border-border flex items-center justify-center"><svg viewBox="0 0 24 24" className="size-2" fill="none" stroke="currentColor" strokeWidth="0.5"><path d="M4 12h16M12 4v16" /></svg></div>
+                <div className="size-12 rounded border border-border flex items-center justify-center"><svg viewBox="0 0 24 24" className="size-10" fill="none" stroke="currentColor" strokeWidth="3"><path d="M4 12h16M12 4v16" /></svg></div>
+              </div>
+            ),
+            caption: "Don't scale a single icon source to extreme sizes. Strokes go fuzzy at 8px and chunky at 48px.",
+          }}
+        />
+      </section>
+        </article>
   )
 }

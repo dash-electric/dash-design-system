@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -21,6 +22,8 @@ export default function ProgressCircleDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="atom"
         category="Components / Feedback"
         title="Progress Circle"
         description="Compact circular progress for inline indicators — KPI tiles, upload progress per row, mitra rating ring. For full-width progress use Progress Bar."
@@ -57,6 +60,55 @@ export default function ProgressCircleDocsPage() {
           title="Without label"
           preview={<ProgressCircle value={70} showLabel={false} />}
           code={`<ProgressCircle value={70} showLabel={false} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          ProgressCircle untuk progress determinate yang compact (KPI tile, per-row upload). Tone harus match severity. Untuk indeterminate work (loading tanpa kemajuan), pakai Spinner.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-col items-center gap-2 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 max-w-[140px]">
+                <ProgressCircle value={72} size={48} tone="success" />
+                <div className="text-xs text-text-strong-950 text-center">72% mitra aktif</div>
+              </div>
+            ),
+            caption: "KPI compact dengan tone success (target tercapai). Label di bawah jelas: 72% dari apa. Progress determinate + label = self-explanatory.",
+          }}
+          dont={{
+            preview: (
+              <ProgressCircle value={0} size={48} tone="primary" />
+            ),
+            caption: "Loading indeterminate pakai ProgressCircle value=0 = visual flat ring, user kira broken. Pakai Spinner.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-3 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 max-w-xs">
+                <ProgressCircle value={92} size={32} tone="warning" />
+                <div className="text-xs">
+                  <div className="font-medium text-text-strong-950">SLA Bekasi</div>
+                  <div className="text-text-sub-600">92% — mendekati threshold</div>
+                </div>
+              </div>
+            ),
+            caption: "92% threshold dengan tone='warning' (mendekati overlimit). Color match severity → dispatcher tahu butuh perhatian.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-3 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 max-w-xs">
+                <ProgressCircle value={92} size={32} tone="error" />
+                <div className="text-xs">
+                  <div className="font-medium text-text-strong-950">SLA Bekasi</div>
+                  <div className="text-text-sub-600">92% — masih aman</div>
+                </div>
+              </div>
+            ),
+            caption: "92% 'masih aman' tapi tone='error' (merah) = dispatcher panik tanpa sebab. Tone harus sinkron dengan teks kondisi.",
+          }}
         />
       </DocsSection>
 

@@ -14,6 +14,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 import { DocsCode } from "@/components/docs/code-block"
@@ -142,6 +143,58 @@ export default function SettingsTabsPageDocs() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Tab-per-domain">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Settings tabs split by user-mental-model domain: Profile, Notifications, Team, Integrations, Privacy. Don't split by data table.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-2">
+                <div className="flex gap-3 text-xs border-b border-stroke-soft-200"><span className="pb-2 border-b-2 border-primary-base text-text-strong-950">Profil</span><span className="pb-2 text-text-sub-600">Notifikasi</span><span className="pb-2 text-text-sub-600">Tim</span><span className="pb-2 text-text-sub-600">Integrasi</span></div>
+                <div className="h-12 rounded bg-bg-weak-50" />
+              </div>
+            ),
+            caption: "Tabs match the user's mental categories. Ops can find 'team invites' under 'Tim' without thinking.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-2">
+                <div className="flex gap-3 text-xs border-b border-stroke-soft-200"><span className="pb-2 border-b-2 border-primary-base">users_table</span><span className="pb-2 text-text-sub-600">invites_table</span><span className="pb-2 text-text-sub-600">notification_prefs</span><span className="pb-2 text-text-sub-600">oauth_apps</span></div>
+                <div className="h-12 rounded bg-bg-weak-50" />
+              </div>
+            ),
+            caption: "Don't name tabs after database tables. User doesn't know they need to look in `oauth_apps` to find Slack integration.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Tab persistence on URL">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Active tab lives in the URL hash or param. Reloading the page or sharing a link should land on the same tab.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2 text-xs">
+                <div className="font-mono text-[10px] text-text-soft-400">/settings/team</div>
+                <div className="flex gap-3"><span className="text-text-sub-600">Profil</span><span className="border-b-2 border-primary-base text-text-strong-950 pb-1">Tim</span></div>
+              </div>
+            ),
+            caption: "URL reflects the active tab. Share `/settings/team` and the recipient lands directly on it.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2 text-xs">
+                <div className="font-mono text-[10px] text-text-soft-400">/settings</div>
+                <div className="flex gap-3"><span className="text-text-sub-600">Profil</span><span className="border-b-2 border-primary-base pb-1">Tim</span></div>
+                <p className="text-[9px] text-text-soft-400">(refresh → snaps back to Profile)</p>
+              </div>
+            ),
+            caption: "Don't keep tab state in component memory. Refresh = lost state, share = wrong tab.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

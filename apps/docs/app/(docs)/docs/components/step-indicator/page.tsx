@@ -22,6 +22,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -53,6 +54,8 @@ export default function StepIndicatorDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Navigation"
         title="Step Indicator"
         description="Progress through a multi-step flow. Three primitives: StepIndicator + Step (numbered chips with completed-check / current-purple / upcoming-outline states), plus DotStepper (3-dot compact variant for modal footers + carousels)."
@@ -274,6 +277,53 @@ export default function StepIndicatorDocsPage() {
   <Button>Cancel</Button>
   <Button>Submit</Button>
 </footer>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Step indicator menunjukkan progress dalam linear flow. Label setiap step secara jelas — mitra tahu apa yang akan terjadi.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs flex items-center gap-1">
+                <div className="flex items-center gap-1">
+                  <div className="size-5 rounded-full bg-success-base text-white flex items-center justify-center text-[9px]">✓</div>
+                  <span className="text-text-sub-600">Identitas</span>
+                </div>
+                <div className="flex-1 h-px bg-success-base" />
+                <div className="flex items-center gap-1">
+                  <div className="size-5 rounded-full bg-(--dash-purple-500) text-white flex items-center justify-center text-[9px]">2</div>
+                  <span className="font-medium">Dokumen</span>
+                </div>
+                <div className="flex-1 h-px bg-stroke-soft-200" />
+                <div className="flex items-center gap-1 text-text-soft-400">
+                  <div className="size-5 rounded-full border border-stroke-soft-200 flex items-center justify-center text-[9px]">3</div>
+                  <span>Review</span>
+                </div>
+              </div>
+            ),
+            caption: "Mitra onboarding 3-step: Identitas → Dokumen → Review. Label jelas, status visual (done/current/upcoming).",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs flex items-center gap-1">
+                {[1,2,3,4,5,6,7].map(n => (
+                  <div key={n} className="size-5 rounded-full border border-stroke-soft-200 flex items-center justify-center text-[9px]">{n}</div>
+                ))}
+              </div>
+            ),
+            caption: "Hindari 7+ step tanpa label. Mitra tidak tahu apa yang harus disiapkan, kapan selesai.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Pakai untuk flow 3-5 step yang serial dan tidak skip-able (mitra onboarding, payout setup, KYC).",
+          }}
+          dont={{
+            caption: "Jangan pakai untuk filter/preference (\"Pilih kategori\"). Itu form biasa, bukan stepper.",
+          }}
         />
       </DocsSection>
 

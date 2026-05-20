@@ -14,6 +14,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -23,6 +24,8 @@ export default function InputOtpDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Form"
         title="Input OTP"
         description="Single-character segmented input for one-time codes — mitra KYC OTP verification, login MFA, payout dispute approval. Built on input-otp."
@@ -180,6 +183,42 @@ export default function InputOtpDocsPage() {
   </InputOTPGroup>
 </InputOTP>
 <p className="text-xs text-error-base">Kode tidak cocok.</p>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          OTP input untuk short numeric/alpha code (4-6 digit). Bukan untuk referral code 6-digit case-sensitive — itu plain Input.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex gap-1.5">
+                {["1","2","3","4","5","6"].map(d => (
+                  <div key={d} className="size-9 rounded border border-stroke-soft-200 bg-bg-white-0 flex items-center justify-center text-sm font-semibold">{d}</div>
+                ))}
+              </div>
+            ),
+            caption: "OTP SMS 6-digit numeric, auto-advance per slot, auto-submit di slot terakhir. Verifikasi nomor handphone mitra <30 detik.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex gap-1.5">
+                {["D","A","s","H","4","2"].map(d => (
+                  <div key={d} className="size-9 rounded border border-stroke-soft-200 bg-bg-white-0 flex items-center justify-center text-sm font-semibold">{d}</div>
+                ))}
+              </div>
+            ),
+            caption: "Jangan pakai OTP untuk referral code DASH42 case-sensitive. Mitra paste full code; OTP slot bikin paste 1-per-slot.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Tampilkan timer resend (\"Kirim ulang 0:47\"). Mitra tahu kapan boleh request OTP baru, mengurangi support call.",
+          }}
+          dont={{
+            caption: "Jangan reset semua slot saat 1 digit salah. Cukup highlight slot terakhir, biarkan mitra koreksi 1 digit saja.",
+          }}
         />
       </DocsSection>
 

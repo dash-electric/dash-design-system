@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function IconButtonDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="atom"
         category="Components / Actions"
         title="Icon Button"
         description="Square-format Button for icon-only triggers — toolbar, table row actions, header utilities. aria-label required. Pair with Tooltip when the icon meaning is not obvious."
@@ -115,6 +118,48 @@ export default function IconButtonDocsPage() {
           }
           code={`<IconButton disabled aria-label="Edit"><Pencil /></IconButton>
 <IconButton disabled tone="destructive" aria-label="Delete"><Trash2 /></IconButton>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          IconButton = label dipindah ke aria-label + Tooltip. Selalu spesifik di aria-label ("Edit mtr-9412", bukan "Edit"). Untuk icon ambigu, wajib pair Tooltip.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-1">
+                <IconButton size="sm" aria-label="Edit mtr-9412"><Pencil /></IconButton>
+                <IconButton size="sm" aria-label="Duplikat mtr-9412"><Copy /></IconButton>
+                <IconButton size="sm" tone="destructive" aria-label="Suspend mtr-9412"><Trash2 /></IconButton>
+              </div>
+            ),
+            caption: "Row action di table mitra. Aria-label sertakan ID target (mtr-9412), bukan generic 'Edit'. SR user tahu sedang edit row mana.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-1">
+                <IconButton size="sm" aria-label=""><Pencil /></IconButton>
+                <IconButton size="sm" aria-label=""><Copy /></IconButton>
+                <IconButton size="sm" tone="destructive" aria-label=""><Trash2 /></IconButton>
+              </div>
+            ),
+            caption: "Tanpa aria-label = SR baca 'button button button'. Wajib aria-label untuk semua icon-only.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <IconButton tone="destructive" aria-label="Suspend mitra mtr-9412"><Trash2 /></IconButton>
+            ),
+            caption: "Destructive action pakai tone='destructive' supaya warna kasih sinyal severity. Aria-label sebut konsekuensi spesifik.",
+          }}
+          dont={{
+            preview: (
+              <IconButton aria-label="X"><Trash2 /></IconButton>
+            ),
+            caption: "Aria-label single char 'X' atau symbol = tidak deskriptif. Aria-label harus deskripsi natural-language untuk SR.",
+          }}
         />
       </DocsSection>
 

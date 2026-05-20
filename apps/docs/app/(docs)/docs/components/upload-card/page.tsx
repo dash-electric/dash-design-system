@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -31,7 +32,8 @@ export default function UploadCardDocsPage() {
         category="Components / Files"
         title="Upload Card"
         description="Per-file row for an upload list. Three states: uploading (progress + cancel), completed (delete), failed (red border + retry). Pair with FileUpload (drop zone)."
-        status="new"
+        status="beta"
+        kind="composite"
       />
 
       <DocsSection title="Install">
@@ -93,6 +95,71 @@ export default function UploadCardDocsPage() {
           code={`<UploadCard status="uploading" progress={70} ... />
 <UploadCard status="completed" ... />
 <UploadCard status="failed" onRetry={...} ... />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          UploadCard = per-file row dengan 3 state jelas. Uploading butuh progress + cancel. Failed butuh retry inline. Completed butuh delete option. State harus visual berbeda supaya user scan cepat.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-col gap-2 w-full max-w-sm">
+                <UploadCard
+                  fileName="ktp-mtr-9412.jpg"
+                  fileSizeKB={1240}
+                  totalSizeKB={1240}
+                  status="completed"
+                  onDelete={() => {}}
+                />
+                <UploadCard
+                  fileName="sim-mtr-9412.jpg"
+                  fileSizeKB={0}
+                  totalSizeKB={2400}
+                  status="failed"
+                  onRetry={() => {}}
+                />
+              </div>
+            ),
+            caption: "Completed (KTP) + Failed (SIM dengan Retry inline). User langsung tahu file mana sukses, mana gagal, dan cara fix tanpa pindah page.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-col gap-2 w-full max-w-sm text-xs">
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 p-2">ktp-mtr-9412.jpg — uploaded</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 p-2">sim-mtr-9412.jpg — error</div>
+              </div>
+            ),
+            caption: "Text-only list tanpa visual state diff + tanpa retry button = user tidak bisa scan cepat, harus pindah modal untuk retry.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <UploadCard
+                fileName="laporan-payroll-mei-2026.pdf"
+                fileSizeKB={350}
+                totalSizeKB={500}
+                status="uploading"
+                progress={70}
+                onCancel={() => {}}
+              />
+            ),
+            caption: "Uploading state dengan ProgressBar real + cancel button. User control: lihat kemajuan, abort kalau salah upload file.",
+          }}
+          dont={{
+            preview: (
+              <UploadCard
+                fileName="report.pdf"
+                fileSizeKB={0}
+                totalSizeKB={500}
+                status="uploading"
+                progress={0}
+              />
+            ),
+            caption: "Uploading state tanpa onCancel = user terjebak kalau salah pilih file. Wajib provide escape (cancel) untuk async operation.",
+          }}
         />
       </DocsSection>
 

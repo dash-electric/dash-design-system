@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -16,6 +17,8 @@ export default function KbdDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Displaying Data"
         title="Kbd"
         description="Keyboard key glyph. Pair with Command Menu hints, Tooltip shortcuts, and settings docs to surface the canonical chord for an action."
@@ -126,6 +129,52 @@ export default function KbdDocsPage() {
           code={`Quick search: <Kbd>/</Kbd>
 New dispatch: <Kbd>N</Kbd>
 Help: <Kbd>?</Kbd>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Kbd menampilkan keycap glyph. Satu Kbd per tombol, dipisah spasi. Gunakan untuk shortcut yang BENAR-BENAR aktif (terhubung listener). Jangan dipakai sebagai dekorasi.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <p className="text-xs text-text-strong-950">
+                Suspend mitra: <Kbd size="sm">⌘</Kbd> <Kbd size="sm">⇧</Kbd> <Kbd size="sm">S</Kbd>
+              </p>
+            ),
+            caption: "Satu Kbd per tombol, dipisah spasi. User dengan keyboard tahu chord exact. Pair dengan real hotkey listener.",
+          }}
+          dont={{
+            preview: (
+              <p className="text-xs text-text-strong-950">
+                Suspend mitra: <Kbd size="sm">⌘+⇧+S</Kbd>
+              </p>
+            ),
+            caption: "Tiga key dalam satu Kbd dengan '+' = bukan visual keycap, jadi text biasa. Pisah jadi 3 Kbd.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="text-xs text-text-sub-600 flex items-center gap-1.5">
+                <Kbd size="sm">↑</Kbd> <Kbd size="sm">↓</Kbd> navigasi
+                <span className="text-text-soft-400">·</span>
+                <Kbd size="sm">↵</Kbd> pilih
+                <span className="text-text-soft-400">·</span>
+                <Kbd size="sm">Esc</Kbd> tutup
+              </div>
+            ),
+            caption: "Footer command palette dengan shortcut hint. Unicode glyph (↑ ↓ ↵) konsisten dengan macOS menu.",
+          }}
+          dont={{
+            preview: (
+              <p className="text-xs">
+                Halaman dashboard <Kbd size="sm">Cool</Kbd> dengan <Kbd size="sm">Mitra</Kbd> aktif
+              </p>
+            ),
+            caption: "Kbd untuk teks biasa ('Cool', 'Mitra') = misleading. Kbd HANYA untuk keyboard key glyph yang real.",
+          }}
         />
       </DocsSection>
 

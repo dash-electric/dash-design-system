@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 import { DocsCode } from "@/components/docs/code-block"
@@ -109,6 +110,53 @@ export default function FinanceDashboardDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Money-first KPI bar">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Finance dashboard leads with the cash KPIs: balance, payout-due, gross volume. Don't lead with vanity counters like 'total transactions'.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md grid grid-cols-3 gap-2">
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Saldo</p><p className="text-base font-semibold">Rp 184 jt</p></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Payout pending</p><p className="text-base font-semibold">Rp 42 jt</p></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">GMV bulan ini</p><p className="text-base font-semibold">Rp 1,2 M</p></div>
+              </div>
+            ),
+            caption: "Three cash-flow KPIs anchor the page. Reader sees position in 3 seconds.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md grid grid-cols-3 gap-2">
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Total trx</p><p className="text-base font-semibold">12.482</p></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Active users</p><p className="text-base font-semibold">734</p></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Login count</p><p className="text-base font-semibold">2.412</p></div>
+              </div>
+            ),
+            caption: "Don't lead a finance dashboard with vanity counts. Money-makers don't open the page to check login count.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Currency formatting">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Indonesian rupiah uses dot thousands separator and 'Rp' prefix. Don't mix locale formats inside one dashboard.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-1 text-xs"><p>Saldo: <span className="font-semibold">Rp 184.250.000</span></p><p>Payout: <span className="font-semibold">Rp 42.500.000</span></p><p>Margin: <span className="font-semibold">12,4%</span></p></div>
+            ),
+            caption: "Rp prefix, dot thousands, comma decimal — consistent Indonesian locale across every number on the page.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-1 text-xs"><p>Balance: <span className="font-semibold">IDR 184,250,000</span></p><p>Payout: <span className="font-semibold">Rp184.250.000</span></p><p>Margin: <span className="font-semibold">12.4%</span></p></div>
+            ),
+            caption: "Don't mix 'IDR', 'Rp', no-space, comma-thousand, period-decimal. Looks like a system that doesn't know its own locale.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

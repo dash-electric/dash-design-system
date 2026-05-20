@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/registry/dash/lib/utils"
+import { DocsDoDont } from "@/components/docs/page-shell"
 
 const durations = [
   { token: "--duration-instant", ms: 80, use: "State acknowledgments — checkbox toggle, switch flip, button press." },
@@ -221,6 +222,53 @@ export default function MotionPage() {
           shadcn/ui, and Radix UI defaults, scoped to Dash needs (mitra dispatch, dashboards, mobile flows).
         </p>
       </section>
-    </article>
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Duration tokens</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">150ms for state changes, 300ms for layout, 500ms for entrance. Don't free-style durations and curves per component.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="grid grid-cols-3 gap-2 text-[10px] text-muted-foreground w-full max-w-md">
+                <div className="rounded-lg border border-border bg-background p-2"><p className="font-mono">150ms</p><p>State (hover/press)</p></div>
+                <div className="rounded-lg border border-border bg-background p-2"><p className="font-mono">300ms</p><p>Layout (drawer)</p></div>
+                <div className="rounded-lg border border-border bg-background p-2"><p className="font-mono">500ms</p><p>Entrance (toast)</p></div>
+              </div>
+            ),
+            caption: "Three tokens cover state, layout, entrance. Coherent rhythm across components.",
+          }}
+          dont={{
+            preview: (
+              <div className="grid grid-cols-3 gap-2 text-[10px] text-muted-foreground w-full max-w-md">
+                <div className="rounded-lg border border-border bg-background p-2"><p className="font-mono">87ms</p><p>linear</p></div>
+                <div className="rounded-lg border border-border bg-background p-2"><p className="font-mono">412ms</p><p>cubic-bezier(.3,.7,.5,.1)</p></div>
+                <div className="rounded-lg border border-border bg-background p-2"><p className="font-mono">1200ms</p><p>ease-elastic</p></div>
+              </div>
+            ),
+            caption: "Don't free-style durations and curves. 87ms state + 1.2s modal slide = rhythm breakdown.",
+          }}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Respect prefers-reduced-motion</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Honor the OS-level reduce-motion preference. Don't ship long animations as the only path.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-lg border border-border bg-background p-3 space-y-1 text-xs font-mono">
+                <p>{`@media (prefers-reduced-motion: reduce) {`}</p>
+                <p className="pl-3 text-muted-foreground">transition-duration: 0.01ms;</p>
+                <p>{`}`}</p>
+              </div>
+            ),
+            caption: "Motion respects user OS settings. Vestibular-sensitive users get an accessible experience automatically.",
+          }}
+          dont={{
+            preview: (
+              <div className="rounded-lg border border-border bg-background p-3 text-xs"><p className="font-mono">animation: slide-in 600ms cubic-bezier(.34,1.56,.64,1) infinite;</p><p className="text-muted-foreground mt-1">(ignores reduce-motion)</p></div>
+            ),
+            caption: "Don't ship animation that ignores user preferences. Users with vestibular sensitivity disable Dash because the toast nauseates.",
+          }}
+        />
+      </section>
+        </article>
   )
 }

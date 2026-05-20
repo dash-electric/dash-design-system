@@ -16,6 +16,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -37,6 +38,8 @@ export default function TableDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Displaying Data"
         title="Table"
         description="Primitive table parts. Bring your own data + sorting logic. Combine with Pagination and Filter for full list pages. For column resizing / virtualization / multi-sort, use Data Table."
@@ -225,6 +228,54 @@ export default function TableDocsPage() {
     <TableBody>{/* long body */}</TableBody>
   </Table>
 </div>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Table primitive untuk daftar yang static atau yang punya sorting/filter sederhana. Untuk advanced (resize/virtualize) pindah ke DataTable.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200 overflow-hidden">
+                <div className="grid grid-cols-2 bg-bg-weak-50 px-2 py-1 font-medium border-b border-stroke-soft-200">
+                  <span>Mitra</span><span className="text-right">Trip</span>
+                </div>
+                <div className="grid grid-cols-2 px-2 py-1 border-b border-stroke-soft-200">
+                  <span>Sigit P.</span><span className="text-right tabular-nums">142</span>
+                </div>
+                <div className="grid grid-cols-2 px-2 py-1">
+                  <span>Andi W.</span><span className="text-right tabular-nums">78</span>
+                </div>
+              </div>
+            ),
+            caption: "Numeric kolom right-aligned dengan tabular-nums. Digit segaris vertikal — comparison lebih cepat.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200 overflow-hidden">
+                <div className="grid grid-cols-2 bg-bg-weak-50 px-2 py-1 font-medium border-b border-stroke-soft-200">
+                  <span>Mitra</span><span>Trip</span>
+                </div>
+                <div className="grid grid-cols-2 px-2 py-1 border-b border-stroke-soft-200">
+                  <span>Sigit P.</span><span>1,242</span>
+                </div>
+                <div className="grid grid-cols-2 px-2 py-1">
+                  <span>Andi W.</span><span>78</span>
+                </div>
+              </div>
+            ),
+            caption: "Hindari left-align untuk angka. Eye scan harus loncat per digit-width tiap row.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Sertakan empty state (\"Belum ada mitra di tribe ini\"). Tabel kosong = jangan render header doang.",
+          }}
+          dont={{
+            caption: "Jangan kasih border tebal di setiap cell. Itu noise. Cukup divider horizontal antar row.",
+          }}
         />
       </DocsSection>
 

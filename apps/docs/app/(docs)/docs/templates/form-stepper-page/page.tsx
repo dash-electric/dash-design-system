@@ -12,6 +12,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
@@ -143,6 +144,59 @@ export default function FormStepperPageDocs() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Progress visibility">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Multi-step forms show a progress indicator with step names. Don't hide progress behind 'Step 3 of 5' alone — name the steps.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-[10px]"><span className="size-5 rounded-full bg-primary-base text-static-white flex items-center justify-center">✓</span><span className="text-text-sub-600">Data diri</span><span className="text-text-soft-400">—</span><span className="size-5 rounded-full bg-primary-base text-static-white flex items-center justify-center">2</span><span className="font-medium">Kendaraan</span><span className="text-text-soft-400">—</span><span className="size-5 rounded-full border border-stroke-soft-200 flex items-center justify-center text-text-soft-400">3</span><span className="text-text-soft-400">Dokumen</span></div>
+              </div>
+            ),
+            caption: "Each step is named with its content. The user knows they're on 'Kendaraan' and 'Dokumen' is next.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2 text-center text-xs">
+                <p>Step 2 of 5</p>
+                <div className="h-1 rounded-full bg-bg-soft-200"><div className="h-1 rounded-full bg-primary-base w-2/5" /></div>
+              </div>
+            ),
+            caption: "Don't show '2 of 5' alone. User can't tell whether step 3 is one more field or 20 more fields of paperwork.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Per-step validation">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Validate when leaving the step, not at final submit. Don't make the user fill 4 steps just to learn step 1's email was malformed.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2 text-xs">
+                <p className="font-medium">Step 1 · Data diri</p>
+                <div className="h-9 rounded-lg border border-error-base bg-bg-white-0 text-error-base flex items-center px-3 text-xs">budi@</div>
+                <p className="text-[10px] text-error-base">Email belum lengkap.</p>
+                <div className="flex justify-end gap-2 pt-1"><button className="h-7 px-3 rounded-md bg-bg-soft-200 text-text-soft-400 text-[10px]" disabled>Lanjut</button></div>
+              </div>
+            ),
+            caption: "Step validates before allowing 'Lanjut'. Errors caught early, user fixes them in context.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2 text-xs">
+                <p className="font-medium">Step 5 · Submit</p>
+                <div className="rounded-md bg-error-lighter text-error-dark p-2 text-[10px]">Email di Step 1 invalid. Plat motor di Step 2 wajib. Foto KTP di Step 3 buram. Foto SIM di Step 3 buram. Tanda tangan di Step 4 kosong.</div>
+                <p className="text-[10px] text-text-soft-400">(user fills 4 steps, gets dumped at submit)</p>
+              </div>
+            ),
+            caption: "Don't validate only on submit. The 5 errors at step 5 are five context-switches back through the stepper.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

@@ -30,6 +30,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -63,6 +64,8 @@ export default function SegmentedControlDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="atom"
         category="Components / Form"
         title="Segmented Control"
         description="Single-select toggle group on a track surface. Use for mutually exclusive view-state pickers (tab-like) where all options should remain visible. 3 item types — label-only, icon+label, icon-only — × 4 states."
@@ -283,6 +286,58 @@ export default function SegmentedControlDocsPage() {
           code={`<SegmentedControl size="sm">...</SegmentedControl>
 <SegmentedControl size="md">...</SegmentedControl>
 <SegmentedControl size="lg">...</SegmentedControl>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          SegmentedControl = mutually-exclusive view switcher. Maks 4 opsi, label kata (bukan kalimat). Untuk daftar action verb pakai ButtonGroup. Untuk multi-select pakai ToggleGroup.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <SegmentedControl defaultValue="list" className="w-full max-w-xs">
+                <SegmentedItem value="list">List</SegmentedItem>
+                <SegmentedItem value="kanban">Kanban</SegmentedItem>
+                <SegmentedItem value="map">Map</SegmentedItem>
+              </SegmentedControl>
+            ),
+            caption: "View switcher (List/Kanban/Map). 3 opsi mutually-exclusive — user pilih satu tampilan, sisanya invisible. Label kata pendek.",
+          }}
+          dont={{
+            preview: (
+              <SegmentedControl defaultValue="a" className="w-full max-w-xs">
+                <SegmentedItem value="a">Buat delivery baru</SegmentedItem>
+                <SegmentedItem value="b">Suspend mitra</SegmentedItem>
+              </SegmentedControl>
+            ),
+            caption: "Action verb (Buat, Suspend) di SegmentedControl = behavior salah. SegmentedControl untuk pilih view, bukan trigger action. Pakai Button.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <SegmentedControl defaultValue="incoming" className="w-full max-w-xs">
+                <SegmentedItem value="incoming">Masuk</SegmentedItem>
+                <SegmentedItem value="outgoing">Keluar</SegmentedItem>
+                <SegmentedItem value="pending">Pending</SegmentedItem>
+              </SegmentedControl>
+            ),
+            caption: "Filter transaction state (masuk/keluar/pending). 3 opsi kata pendek dalam bahasa Indonesia.",
+          }}
+          dont={{
+            preview: (
+              <SegmentedControl defaultValue="1" className="w-full max-w-xs">
+                <SegmentedItem value="1">Tribe Reservasi A</SegmentedItem>
+                <SegmentedItem value="2">Tribe Reservasi B</SegmentedItem>
+                <SegmentedItem value="3">Tribe Express A</SegmentedItem>
+                <SegmentedItem value="4">Tribe Express B</SegmentedItem>
+                <SegmentedItem value="5">Tribe Bulk</SegmentedItem>
+                <SegmentedItem value="6">Tribe Halo</SegmentedItem>
+              </SegmentedControl>
+            ),
+            caption: "6+ opsi label panjang = label terpotong, segmen tidak readable. Pakai Select dropdown atau TabsList untuk >4 opsi.",
+          }}
         />
       </DocsSection>
 

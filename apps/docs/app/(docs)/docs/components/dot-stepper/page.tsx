@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -19,6 +20,8 @@ export default function DotStepperDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Navigation"
         title="Dot Stepper"
         description="Minimal dot-based progress indicator for short flows — onboarding, multi-screen tutorial, carousel progress. For full step-by-step UI use Step Indicator."
@@ -102,6 +105,43 @@ useEffect(() => {
             </div>
           }
           code={`<DotStepper steps={8} current={4} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          DotStepper = compact progress indicator. Pakai saat label step tidak penting / space terbatas (carousel, modal footer).
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs flex items-center justify-center gap-1.5">
+                <div className="size-1.5 rounded-full bg-(--dash-purple-500)" />
+                <div className="size-1.5 rounded-full bg-(--dash-purple-500)" />
+                <div className="size-1.5 rounded-full bg-stroke-soft-200" />
+                <div className="size-1.5 rounded-full bg-stroke-soft-200" />
+                <div className="size-1.5 rounded-full bg-stroke-soft-200" />
+              </div>
+            ),
+            caption: "Onboarding tutorial 5 slide: indicator minimal di bottom modal, dispatcher tetap fokus ke content.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs flex items-center gap-1">
+                <div className="size-1.5 rounded-full bg-(--dash-purple-500)" />
+                <div className="size-1.5 rounded-full bg-stroke-soft-200" />
+              </div>
+            ),
+            caption: "Jangan pakai DotStepper untuk flow critical (KYC, payout setup). Mitra perlu label \"Identitas / Dokumen\" untuk tahu posisi.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Sweet spot: 3-7 dots. Di luar itu jadi sulit hitung — pakai progress bar atau labeled stepper.",
+          }}
+          dont={{
+            caption: "Jangan buat dot clickable kalau step belum boleh di-skip. Confusing — kelihatan navigasi tapi tidak responsive.",
+          }}
         />
       </DocsSection>
 

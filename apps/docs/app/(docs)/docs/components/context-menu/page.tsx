@@ -20,6 +20,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -30,6 +31,8 @@ export default function ContextMenuDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Overlays"
         title="Context Menu"
         description="Right-click menu attached to a region. Use for table row actions, canvas tooling, file explorer. Built on Radix ContextMenu."
@@ -184,6 +187,45 @@ export default function ContextMenuDocsPage() {
     </ContextMenuContent>
   </ContextMenu>
 ))}`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Context menu = shortcut untuk action yang sudah ada di UI. Bukan satu-satunya cara akses fitur.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-0.5 text-xs rounded border border-stroke-soft-200 bg-bg-weak-50 p-1">
+                <div className="rounded px-2 py-1.5">Buka detail mitra</div>
+                <div className="rounded px-2 py-1.5">Reassign trip</div>
+                <div className="border-t border-stroke-soft-200 my-1" />
+                <div className="rounded px-2 py-1.5 text-error-dark">Suspend mitra</div>
+              </div>
+            ),
+            caption: "Action grouped: navigasi → edit → destructive di bawah (separator). Pattern familiar dari OS-level menu.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-0.5 text-xs rounded border border-stroke-soft-200 bg-bg-weak-50 p-1">
+                <div className="rounded px-2 py-1.5 text-error-dark">Suspend mitra</div>
+                <div className="rounded px-2 py-1.5">Edit</div>
+                <div className="rounded px-2 py-1.5">View</div>
+                <div className="rounded px-2 py-1.5 text-error-dark">Hapus permanen</div>
+                <div className="rounded px-2 py-1.5">Export</div>
+              </div>
+            ),
+            caption: "Hindari destructive action di posisi pertama atau scattered. Salah klik = mitra ke-suspend tanpa konfirmasi.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Setiap context-menu action HARUS ada juga di toolbar/overflow menu. Right-click = shortcut, bukan exclusive path.",
+          }}
+          dont={{
+            caption: "Jangan sembunyikan action critical (Cancel delivery) hanya di context-menu. User mobile tanpa mouse tidak bisa akses.",
+          }}
         />
       </DocsSection>
 

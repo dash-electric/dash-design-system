@@ -22,6 +22,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -82,6 +83,8 @@ export default function FilterDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Forms"
         title="Filter"
         description="Faceted-search pill. Dashed-border trigger with leading + icon, opens a Popover with a Command list (checkbox rows + clear). Selected values render as removable Tags inline."
@@ -251,6 +254,47 @@ export default function FilterDocsPage() {
     onValueChange={(v) => setState(s => ({ ...s, [f.id]: v }))}
   />
 ))}`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Filter chip = applied filter visible. Mitra langsung tahu apa yang di-filter, bisa hapus per chip.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs flex flex-wrap gap-1">
+                <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-bg-weak-50 border border-stroke-soft-200">
+                  Status: Active <span className="text-text-soft-400">×</span>
+                </div>
+                <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-bg-weak-50 border border-stroke-soft-200">
+                  Tribe: Reservasi <span className="text-text-soft-400">×</span>
+                </div>
+                <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-bg-weak-50 border border-stroke-soft-200">
+                  Kota: Bekasi <span className="text-text-soft-400">×</span>
+                </div>
+                <button className="text-(--dash-purple-500) px-2">Reset</button>
+              </div>
+            ),
+            caption: "Setiap filter = chip discrete dengan ×. Reset all button explicit. Dispatcher bisa fine-tune filter satu per satu.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="text-text-sub-600">Filter aktif: active, reservasi, bekasi, last_30d</div>
+              </div>
+            ),
+            caption: "Hindari plain text concatenated filter. Tidak removable per item, tidak scannable.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Tampilkan count hasil setelah filter (\"Menampilkan 142 dari 1,284 mitra\"). Mitra tahu apakah filter terlalu sempit.",
+          }}
+          dont={{
+            caption: "Jangan apply filter langsung saat user typing. Debounce 300ms. Re-render setiap keystroke = lag.",
+          }}
         />
       </DocsSection>
 

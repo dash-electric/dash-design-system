@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -27,7 +28,8 @@ export default function DiscountLineItemDocsPage() {
         category="Components / Commerce"
         title="Discount Line Item"
         description="One row in a payment-breakdown table that explains a discount. Renders nothing when discountAmount is 0 — drop it in unconditionally. Pairs with PriceWithDiscount."
-        status="new"
+        status="beta"
+        kind="composite"
       />
 
       <DocsSection title="Install">
@@ -67,6 +69,62 @@ export default function DiscountLineItemDocsPage() {
             </div>
           }
           code={`<DiscountLineItem amount={subtotal} discountAmount={discount} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          DiscountLineItem = satu baris dalam breakdown harga. Pakai untuk diskon kuantitatif (promo, coupon). Jangan duplikat info — kalau breakdown sudah show diskon, hilangkan teks "Hemat Rp X" terpisah.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex w-full max-w-xs flex-col gap-1 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs">
+                <div className="flex items-center justify-between">
+                  <p className="text-text-sub-600">Subtotal DLV-7821</p>
+                  <p className="font-medium text-text-strong-950">Rp50.000</p>
+                </div>
+                <DiscountLineItem amount={50000} discountAmount={12500} label="Promo DASH42" />
+                <div className="my-1 h-px bg-stroke-soft-200" />
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-text-strong-950">Total</p>
+                  <p className="font-semibold text-text-strong-950">Rp37.500</p>
+                </div>
+              </div>
+            ),
+            caption: "Diskon promo dengan label kode kupon ('Promo DASH42'). User tahu kenapa harga turun + persentase auto-calc. Renders nothing kalau discount=0.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex w-full max-w-xs flex-col gap-1 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs">
+                <div className="flex items-center justify-between">
+                  <p className="text-text-sub-600">Subtotal</p>
+                  <p className="font-medium text-text-strong-950">Rp50.000</p>
+                </div>
+                <DiscountLineItem amount={50000} discountAmount={12500} />
+                <p className="text-success-base font-medium">Hemat Rp12.500!</p>
+                <p className="text-success-base font-medium">Anda dapat diskon 25%!</p>
+              </div>
+            ),
+            caption: "Info diskon duplikat 3 kali (line item + 'Hemat' + 'Diskon 25%'). User dianggap tidak bisa baca — noise tinggi, trust turun.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <DiscountLineItem amount={50000} discountAmount={0} label="Promo" />
+            ),
+            caption: "discountAmount=0 → component otomatis render nothing. Drop in unconditionally, tidak perlu ternary di parent.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex w-full max-w-xs items-center justify-between gap-2 text-xs">
+                <p className="text-text-sub-600">Promo</p>
+                <p className="text-text-soft-400">-Rp0 (0%)</p>
+              </div>
+            ),
+            caption: "Render baris diskon Rp0 (0%) = noise. Sembunyikan kalau tidak ada diskon — biarkan DiscountLineItem handle null branch.",
+          }}
         />
       </DocsSection>
 

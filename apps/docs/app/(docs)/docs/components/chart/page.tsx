@@ -16,6 +16,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -48,6 +49,8 @@ export default function ChartDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="specialized"
         category="Components / Displaying Data"
         title="Chart"
         description="Recharts wrapper with Dash token-aware theming. Compose Bar/Line/Area/Pie via Recharts primitives inside ChartContainer. Tooltip + Legend auto-styled."
@@ -140,6 +143,47 @@ const config = {
     <ChartTooltip content={<ChartTooltipContent />} />
   </LineChart>
 </ChartContainer>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Chart untuk pattern detection (trend, comparison). Pick chart type sesuai pertanyaan — bukan sesuai visual yang lucu.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="font-medium mb-1">Dispatch 7 hari · Express</div>
+                <div className="h-20 flex items-end gap-1">
+                  {[40, 38, 47, 50, 61, 73, 42].map((h, i) => (
+                    <div key={i} className="flex-1 rounded-t bg-(--dash-purple-500)" style={{height: `${h}%`}} />
+                  ))}
+                </div>
+                <div className="flex justify-between text-[10px] text-text-soft-400 mt-1">
+                  <span>Sen</span><span>Min</span>
+                </div>
+              </div>
+            ),
+            caption: "Bar chart untuk perbandingan per-hari. Title menyatakan question (Dispatch 7 hari Express). Mitra langsung tahu peak hari Sabtu.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="font-medium mb-1">Stats</div>
+                <div className="h-20 rounded-full bg-gradient-to-br from-(--dash-purple-400) to-(--dash-blue-500)" />
+              </div>
+            ),
+            caption: "Hindari 3D pie chart atau decoration chart tanpa data label. Visual flashy tidak menjawab pertanyaan dispatcher.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Tooltip on hover dengan unit (\"Express: 612 dispatch\"). Mitra dapat exact number tanpa squint axis tick.",
+          }}
+          dont={{
+            caption: "Jangan render chart > 7 series. Mata tidak bisa distinguish 12 warna line. Kalau perlu, pakai facet (small multiples).",
+          }}
         />
       </DocsSection>
 

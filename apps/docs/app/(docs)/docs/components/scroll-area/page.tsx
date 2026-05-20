@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -26,6 +27,8 @@ export default function ScrollAreaDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Layout"
         title="Scroll Area"
         description="Custom scrollbar wrapping Radix ScrollArea. Three track sizes (12 / 16 / 20 px) × two styles (default white, lighter weak-50). Thumb is always 4px rounded-full. Use for content panels where the native scrollbar would clash with the Dash visual language."
@@ -138,6 +141,53 @@ export default function ScrollAreaDocsPage() {
           code={`<ScrollArea size="small">
   <div className="flex gap-2 whitespace-nowrap">{...}</div>
 </ScrollArea>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          ScrollArea untuk container content yang melebihi viewport. Tetap pertahankan scroll affordance — user harus tahu konten masih ada.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 max-h-24 overflow-hidden relative">
+                  <div className="p-2 space-y-1">
+                    <div>DLV-7821 · PICKED_UP</div>
+                    <div>DLV-7822 · ALLOCATING</div>
+                    <div>DLV-7823 · QUEUEING</div>
+                    <div>DLV-7824 · COMPLETED</div>
+                  </div>
+                  <div className="absolute top-1 right-1 w-1 h-12 rounded-full bg-text-soft-400" />
+                </div>
+                <div className="text-[10px] text-text-soft-400 mt-1">24 delivery total</div>
+              </div>
+            ),
+            caption: "Scroll bar visible saat hover. Sertakan total count di luar — dispatcher tahu \"masih ada 20 lagi\".",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 max-h-24 overflow-hidden">
+                  <div className="p-2 space-y-1">
+                    <div>DLV-7821</div>
+                    <div>DLV-7822</div>
+                    <div>DLV-7823</div>
+                  </div>
+                </div>
+              </div>
+            ),
+            caption: "Jangan sembunyikan scrollbar tanpa hint visual (fade gradient bottom / counter). User kira list cuma 3 item.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Pakai untuk 50-500 row. Di atas 500 row, switch ke virtualized list — ScrollArea masih DOM-render semua child.",
+          }}
+          dont={{
+            caption: "Jangan bungkus seluruh halaman dengan ScrollArea. Native page scroll lebih familiar (scroll-to-top browser shortcut, dll).",
+          }}
         />
       </DocsSection>
 

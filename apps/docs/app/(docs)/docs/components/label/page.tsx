@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function LabelDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Form"
         title="Label"
         description="Form field label with required asterisk, optional tag, and inline hint slot. Pair with every Input, Select, Textarea, Checkbox, Radio, and Switch."
@@ -109,6 +112,58 @@ export default function LabelDocsPage() {
           code={`<Label htmlFor="ref" optional hint="(internal use)">
   Reference number
 </Label>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Mark required and optional clearly">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Mitra onboarding forms have a mix of required and optional fields. Make the difference obvious before the mitra submits.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-sm space-y-3">
+                <Label htmlFor="dn1" required>Nomor KTP mitra</Label>
+                <Label htmlFor="dn2" optional>Catatan internal</Label>
+              </div>
+            ),
+            caption: "Use required (red asterisk) for hard validations and optional for fields a dispatcher can skip — partners scan and prioritize.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm space-y-3">
+                <Label htmlFor="dn3">Nomor KTP mitra</Label>
+                <Label htmlFor="dn4">Catatan internal</Label>
+              </div>
+            ),
+            caption: "Unmarked labels leave the mitra guessing which fields block submission, causing failed submits and dropoff.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Keep labels short, push detail to Hint">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          A label names the field. Format examples or rules belong in the Hint slot — not stuffed into the label text.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-sm space-y-1.5">
+                <Label htmlFor="dn5" required hint="6 digit">Use-code mitra</Label>
+                <InputRoot><Input id="dn5" placeholder="491-280" /></InputRoot>
+              </div>
+            ),
+            caption: "A 2-3 word label plus a short hint keeps the form scannable and lets the format rule sit where it belongs.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm space-y-1.5">
+                <Label htmlFor="dn6" required>Masukkan use-code mitra (6 digit, dapat dari SMS)</Label>
+                <InputRoot><Input id="dn6" placeholder="491-280" /></InputRoot>
+              </div>
+            ),
+            caption: "Long labels look like paragraphs, slow the eye, and bury the field name inside instructions.",
+          }}
         />
       </DocsSection>
 

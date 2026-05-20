@@ -37,6 +37,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -65,6 +66,8 @@ export default function TooltipDocsPage() {
     <TooltipProvider delayDuration={150}>
       <DocsPageShell>
         <DocsHeader
+          status="stable"
+          kind="composite"
           category="Components / Overlay"
           title="Tooltip"
           description="Hover/focus overlay revealing supplementary info. 3 sizes (xs/sm/lg) × 2 appearances (light/dark) × 12 placements. Rich variant supports icon + title + description + close button. Use for: form field hints, chart datapoint readouts, label disambiguation, settings explainers."
@@ -474,6 +477,71 @@ export default function TooltipDocsPage() {
     </TooltipContent>
   </Tooltip>
 </Label>`}
+          />
+        </DocsSection>
+
+        <DocsSection title="Do this, not that">
+          <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+            Tooltip menjelaskan icon-only button atau hint shortcut. Bukan untuk teks yang sudah visible. Pakai sparingly — kalau setiap element butuh tooltip, mungkin UI butuh redesign.
+          </p>
+          <DocsDoDont
+            do={{
+              preview: (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <CompactButton variant="ghost" size="sm" aria-label="Suspend mtr-9412"><X /></CompactButton>
+                    </TooltipTrigger>
+                    <TooltipContent>Suspend mtr-9412 (Ctrl+S)</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ),
+              caption: "Icon-only button (X) + tooltip explanation + keyboard shortcut. Hover/focus = clear context untuk semua user.",
+            }}
+            dont={{
+              preview: (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm">Simpan</Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Simpan</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ),
+              caption: "Tooltip yang ulang label visible ('Simpan' = 'Simpan') = noise. Tooltip untuk INFO TAMBAHAN, bukan repeat.",
+            }}
+          />
+          <DocsDoDont
+            do={{
+              preview: (
+                <TooltipProvider>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-text-strong-950">SLA breach 92%</span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CompactButton variant="ghost" size="sm" aria-label="Info SLA"><Info /></CompactButton>
+                      </TooltipTrigger>
+                      <TooltipContent>SLA target ≤95% breach selama bulan ini. Surge mode aktif otomatis ≥80%.</TooltipContent>
+                    </Tooltip>
+                  </div>
+                </TooltipProvider>
+              ),
+              caption: "Info icon dengan tooltip detail (definisi metric, threshold rules). User curious dapat klarifikasi tanpa pindah halaman.",
+            }}
+            dont={{
+              preview: (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-sm text-error-base cursor-help">CLICK HERE FOR IMPORTANT INFO!!!</span>
+                    </TooltipTrigger>
+                    <TooltipContent>Detail SLA breach...</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ),
+              caption: "Critical info di tooltip = hidden behind hover, mobile user tidak akses. Info penting di body content, tooltip untuk sekunder.",
+            }}
           />
         </DocsSection>
 

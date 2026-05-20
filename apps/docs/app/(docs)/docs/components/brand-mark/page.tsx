@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function BrandMarkDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="specialized"
         category="Components / Visual"
         title="Brand Mark"
         description="Header element used at the top of auth blocks. Two canonical shapes: 56×56 round filled with brand colour (Aurora/Solaris/Phoenix/Apex) or 96×96 rounded-square neutral surface holding a single lucide icon (Key/Mail/ShieldCheck)."
@@ -76,6 +79,48 @@ export default function BrandMarkDocsPage() {
             </div>
           }
           code={`<BrandMark size="lg" shape="square" tone="neutral"><KeyRound /></BrandMark>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          BrandMark hidup di header auth screen. Satu icon, satu shape, contrast cukup terhadap latar. Jangan dijadikan general icon container atau tone palette acak.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <BrandMark size="lg" shape="square" tone="neutral">
+                <KeyRound strokeWidth={1.5} />
+              </BrandMark>
+            ),
+            caption: "Reset password screen pakai Key icon, neutral tile 96×96. Konsisten dengan auth flow Dash lainnya.",
+          }}
+          dont={{
+            preview: (
+              <BrandMark size="lg" shape="square" tone="custom" className="bg-warning-base text-static-white">
+                <Star className="fill-static-white" />
+              </BrandMark>
+            ),
+            caption: "Jangan pakai BrandMark sebagai random icon container di dashboard. BrandMark = auth-screen identity, bukan generic decoration.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <BrandMark size="md" shape="round" tone="primary">
+                <ShieldCheck className="fill-static-white" />
+              </BrandMark>
+            ),
+            caption: "Round 56×56 + primary fill untuk verification success screen. Contrast white icon di primary base passes 3:1.",
+          }}
+          dont={{
+            preview: (
+              <BrandMark shape="round" tone="custom" className="bg-bg-weak-50 text-text-soft-400">
+                <ShieldCheck />
+              </BrandMark>
+            ),
+            caption: "Tone custom dengan bg lemah + icon soft = contrast <3:1 gagal WCAG 1.4.11. Selalu verifikasi pair fg/bg saat tone='custom'.",
+          }}
         />
       </DocsSection>
 

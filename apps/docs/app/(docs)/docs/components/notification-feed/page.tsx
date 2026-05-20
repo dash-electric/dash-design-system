@@ -36,6 +36,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -74,6 +75,8 @@ export default function NotificationFeedDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Disclosure"
         title="Notification Feed"
         description="Activity inbox composed of 40×40 avatar/icon rows. Items support 4 content types (Basic / Button / File / Message), an unread state with purple dot indicator, and grouping via NotificationGroup headers. Wrap inside a Popover for the bell-icon dropdown variant."
@@ -325,6 +328,67 @@ export default function NotificationFeedDocsPage() {
   <NotificationItem unread title="James — Comment" timestamp="2m" />
   <NotificationItem icon={<Truck />} title="DSP-08 on the way" timestamp="9m" />
 </NotificationFeed>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Notification feed = inbox audit. Group by waktu (Hari ini, Kemarin, Lebih lama), unread bold-tinted, setiap item bisa di-dismiss/action. Bukan tempat duplikasi toast.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <NotificationFeed className="w-full max-w-xs">
+                <NotificationGroup label="Hari ini">
+                  <NotificationItem unread icon={<Truck />} title="DLV-7821 dipickup mtr-9412" timestamp="2 menit lalu" />
+                  <NotificationItem icon={<Wallet />} title="Payout Rp 48jt diproses" timestamp="1 jam lalu" />
+                </NotificationGroup>
+                <NotificationGroup label="Kemarin">
+                  <NotificationItem icon={<UserCheck />} title="mtr-7821 onboarded di Bandung" timestamp="6:14 PM" />
+                </NotificationGroup>
+              </NotificationFeed>
+            ),
+            caption: "Kelompok by tanggal (Hari ini, Kemarin), unread highlighted dengan dot + tint, label spesifik (DLV-7821, mtr-9412). Audit-friendly.",
+          }}
+          dont={{
+            preview: (
+              <NotificationFeed className="w-full max-w-xs">
+                <NotificationItem icon={<Bell />} title="New notification" timestamp="" />
+                <NotificationItem icon={<Bell />} title="New notification" timestamp="" />
+                <NotificationItem icon={<Bell />} title="New notification" timestamp="" />
+              </NotificationFeed>
+            ),
+            caption: "Tanpa group, tanpa timestamp, title generic 'New notification' = inbox tidak dapat di-audit. Tiap item harus actor + verb + target + waktu.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <NotificationFeed className="w-full max-w-xs">
+                <NotificationItem
+                  unread
+                  avatar={<NotificationAvatar><NotificationAvatarFallback>FK</NotificationAvatarFallback></NotificationAvatar>}
+                  title="Fayzul approve refund DLV-7821"
+                  timestamp="9 menit lalu"
+                  actions={
+                    <>
+                      <Button size="xs" tone="neutral" style="stroke">Lihat detail</Button>
+                      <Button size="xs">Tandai dibaca</Button>
+                    </>
+                  }
+                />
+              </NotificationFeed>
+            ),
+            caption: "Item dengan inline action ('Lihat detail', 'Tandai dibaca'). User langsung resolve dari inbox, tidak perlu pindah halaman.",
+          }}
+          dont={{
+            preview: (
+              <NotificationFeed className="w-full max-w-xs">
+                <NotificationItem unread icon={<Bell />} title="Action required" timestamp="" />
+              </NotificationFeed>
+            ),
+            caption: "'Action required' tanpa apa, kapan, atau how to resolve = user buntu. Notifikasi harus self-contained dengan timestamp + recovery.",
+          }}
         />
       </DocsSection>
 

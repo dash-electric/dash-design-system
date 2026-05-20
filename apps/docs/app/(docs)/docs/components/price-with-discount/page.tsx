@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -28,7 +29,8 @@ export default function PriceWithDiscountDocsPage() {
         category="Components / Commerce"
         title="Price With Discount"
         description="Visual price-pair: original struck-through + final. Three sizes for review-modal totals, inline summaries, and per-option lists. The 'why' (percentage, code) belongs to DiscountLineItem — this is the visual only."
-        status="new"
+        status="beta"
+        kind="composite"
       />
 
       <DocsSection title="Install">
@@ -81,6 +83,49 @@ export default function PriceWithDiscountDocsPage() {
           code={`<PriceWithDiscount size="xl" ... />  // review-modal total
 <PriceWithDiscount size="lg" ... />  // inline summary
 <PriceWithDiscount size="md" ... />  // per-option list`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          PriceWithDiscount = visual pair harga original vs final. Original strikethrough (smaller, soft color), final dominant. Untuk konteks 'kenapa diskon' pakai DiscountLineItem terpisah.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 max-w-xs">
+                <div className="text-xs text-text-sub-600 mb-1">Total DLV-7821</div>
+                <PriceWithDiscount amount={50000} discountAmount={12500} finalAmount={37500} size="lg" />
+              </div>
+            ),
+            caption: "Original Rp 50rb strikethrough + final Rp 37.5rb prominent. Visual hierarchy jelas: harga yang dibayar = paling besar/tegas.",
+          }}
+          dont={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 max-w-xs">
+                <div className="text-xs text-text-sub-600 mb-1">Total</div>
+                <div className="text-sm text-text-strong-950">Rp 37.500 (was Rp 50.000)</div>
+              </div>
+            ),
+            caption: "Tanpa strikethrough + final prominence = sulit di-scan. User butuh microsecond untuk paham mana harga akhir.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <PriceWithDiscount amount={50000} discountAmount={0} finalAmount={50000} size="lg" />
+            ),
+            caption: "discountAmount=0 → render harga final saja, no strikethrough. Component handle no-discount case otomatis.",
+          }}
+          dont={{
+            preview: (
+              <div className="text-sm">
+                <span className="line-through text-text-soft-400">Rp 50.000</span>
+                <span className="ml-2 text-text-strong-950">Rp 50.000</span>
+              </div>
+            ),
+            caption: "Strikethrough harga yang SAMA = misleading. User kira ada diskon padahal tidak. Hindari menampilkan strikethrough kalau diskon = 0.",
+          }}
         />
       </DocsSection>
 

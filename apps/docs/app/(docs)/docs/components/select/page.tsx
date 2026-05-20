@@ -32,6 +32,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -71,6 +72,8 @@ export default function SelectDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Forms"
         title="Select"
         description="Native-feel single-value dropdown built on Radix Select. Trigger matches Input + DatePicker sizing. Supports leading icon, group + label + separator, multi-row item content, error state via aria-invalid, and inline filter for medium-sized option lists."
@@ -417,6 +420,46 @@ export default function SelectDocsPage() {
     <SelectContent>{employees.map(...)}</SelectContent>
   </Select>
 </Field>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Select untuk pilih satu value dari list pendek (3-7 opsi statis). Bukan untuk search atau multi-select.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="mb-1 text-text-sub-600">Status mitra</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 px-2 py-1.5 flex items-center justify-between">
+                  <span>Active</span>
+                  <span className="text-text-soft-400">▾</span>
+                </div>
+              </div>
+            ),
+            caption: "Select untuk 3 status: Active / Suspended / Pending. List finite, value categorical.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="mb-1 text-text-sub-600">Mitra (1,284 opsi)</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 px-2 py-1.5 flex items-center justify-between">
+                  <span className="text-text-soft-400">Pilih mitra…</span>
+                  <span className="text-text-soft-400">▾</span>
+                </div>
+              </div>
+            ),
+            caption: "Jangan pakai Select untuk 1,000+ mitra. Pakai Combobox (filter-as-type).",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Label di luar trigger (\"Status mitra\"), placeholder = \"Pilih status\" kalau belum di-select.",
+          }}
+          dont={{
+            caption: "Jangan pakai placeholder sebagai label. Setelah dipilih, label hilang — mitra lupa field ini buat apa.",
+          }}
         />
       </DocsSection>
 

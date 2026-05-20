@@ -144,7 +144,8 @@ export default function CategoryBarChartPage() {
         category="Components / Charts"
         title="Category Bar"
         description="Stacked horizontal bar that proportions N category values into a single 100% strip. Each segment width = value/total. Used inside the Sales Channels widget."
-        status="shipped"
+        status="stable"
+        kind="atom"
       />
 
       <DocsSection title="Light load (3 categories)">

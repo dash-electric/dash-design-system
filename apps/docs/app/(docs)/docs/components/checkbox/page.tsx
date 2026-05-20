@@ -19,6 +19,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -57,6 +58,8 @@ export default function CheckboxDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Forms"
         title="Checkbox"
         description="Binary toggle for opt-in or multi-select. Three primitives: Checkbox (raw input), CheckboxField (label + sublabel + badge + description + action), CheckboxCard (bordered selectable option with leading visual). Supports indeterminate state for table select-all."
@@ -386,6 +389,59 @@ export default function CheckboxDocsPage() {
 
 <Checkbox checked={headerChecked} onCheckedChange={(v) => setRows(rows.map(() => v === true))} />
 {rows.map((r, i) => <Checkbox checked={r} onCheckedChange={(v) => toggle(i, v)} />)}`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Checkbox = multi-select (banyak pilihan boleh). Untuk pilihan tunggal pakai Radio. Untuk on/off action pakai Switch. Pakai indeterminate hanya untuk select-all parent.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-2 w-full max-w-xs">
+                <div className="text-xs text-text-strong-950 font-medium">Filter tribe:</div>
+                <CheckboxField label="Reservasi" checked />
+                <CheckboxField label="Express" checked />
+                <CheckboxField label="Bulk" />
+              </div>
+            ),
+            caption: "Multi-select filter (dispatcher boleh pilih 2-3 tribe sekaligus). Checkbox = paham bisa pilih lebih dari satu.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-2 w-full max-w-xs">
+                <div className="text-xs text-text-strong-950 font-medium">Pilih tipe akun:</div>
+                <CheckboxField label="Mitra Reguler" checked />
+                <CheckboxField label="Mitra Premium" />
+              </div>
+            ),
+            caption: "Pilihan yang mutually-exclusive (1 mitra cuma 1 tipe) = WAJIB pakai Radio, jangan Checkbox. User kira boleh pilih dua.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-2 w-full max-w-xs">
+                <div className="flex items-center gap-2">
+                  <Checkbox checked="indeterminate" />
+                  <span className="text-xs text-text-strong-950 font-medium">3 dari 8 mitra dipilih</span>
+                </div>
+                <div className="ml-6 space-y-1 text-xs text-text-sub-600">
+                  <div className="flex items-center gap-2"><Checkbox checked size="sm" /> mtr-9412</div>
+                  <div className="flex items-center gap-2"><Checkbox size="sm" /> mtr-7821</div>
+                  <div className="flex items-center gap-2"><Checkbox checked size="sm" /> mtr-3045</div>
+                </div>
+              </div>
+            ),
+            caption: "Header indeterminate saat sebagian row checked. Klik header = toggle semua. Pola table select-all bulk action.",
+          }}
+          dont={{
+            preview: (
+              <CheckboxField label="Anda menyetujui semua syarat" checked="indeterminate" />
+            ),
+            caption: "Indeterminate untuk satu checkbox tunggal (bukan parent-of-children) = user bingung apa artinya. Pakai checked atau unchecked, tidak ada tengah.",
+          }}
         />
       </DocsSection>
 

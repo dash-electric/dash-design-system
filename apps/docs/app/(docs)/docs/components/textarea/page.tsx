@@ -69,6 +69,8 @@ export default function TextareaDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Forms"
         title="Textarea"
         description="Multi-line text input. 6 visual states (default / hover / focus / filled / disabled / error), maxLength counter pattern, resize-y handle. Pair with Field + Label + FieldDescription for full form-row composition."

@@ -36,6 +36,8 @@ export default function ToasterDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Feedback"
         title="Toaster"
         description="Transient bottom-right notifications. Wraps Sonner with Dash tokens. Three Figma variants — compact filled success, multi-line filled error, single-line stroke warning. Auto-dismisses after 4.2s by default; pair with an inline action link for follow-through (See Transaction, Learn More)."

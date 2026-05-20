@@ -1,4 +1,5 @@
 import { cn } from "@/registry/dash/lib/utils"
+import { DocsDoDont } from "@/components/docs/page-shell"
 
 type TypeStyle = {
   name: string
@@ -226,6 +227,55 @@ export default function TypographyPage() {
           registry item.
         </p>
       </section>
-    </article>
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Type scale for hierarchy</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Use named scale tokens for hierarchy. Don't reach for arbitrary sizes to make a label feel important.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-2">
+                <p className="text-xl font-semibold">Live dispatch</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Mitra aktif</p>
+                <p className="text-sm">Snapshot dispatch hari ini · 16:30 WIB</p>
+              </div>
+            ),
+            caption: "Page title at title-h4, column label at label-small caps, body at paragraph-small. Hierarchy is unmistakable.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-2">
+                <p className="text-2xl">Live dispatch</p>
+                <p className="text-2xl">Mitra aktif</p>
+                <p className="text-2xl">Snapshot dispatch hari ini</p>
+              </div>
+            ),
+            caption: "Don't render every text node at the same large size. Hierarchy collapses, reader scans for nothing.",
+          }}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Plus Jakarta Sans default</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Dash standardizes on Plus Jakarta Sans across every surface. Don't let body text fall back to OS default.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-1 font-sans">
+                <p className="text-base font-semibold">Plus Jakarta Sans · 16/600</p>
+                <p className="text-sm">Distinct 'a' bowl, proper x-height, ligatures intact.</p>
+              </div>
+            ),
+            caption: "Plus Jakarta Sans loaded from Google Fonts. Same brand identity across Dash Express, Halo-dash, portal partners.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-1" style={{fontFamily: "ui-system, system-ui, sans-serif"}}>
+                <p className="text-base font-semibold">System default</p>
+                <p className="text-sm">macOS = SF Pro, Windows = Segoe, Android = Roboto. Brand consistency = none.</p>
+              </div>
+            ),
+            caption: "Don't ship system fallback as body. Each OS renders Dash with a different brand voice.",
+          }}
+        />
+      </section>
+        </article>
   )
 }

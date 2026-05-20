@@ -22,6 +22,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -29,6 +30,8 @@ export default function ModalDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Overlays"
         title="Modal"
         description="Centered dialog for focused tasks — confirmation, short form, or detail view. Blocks the page until dismissed. For side-anchored panels use Drawer; for long-form editing use a dedicated page."
@@ -261,6 +264,61 @@ export default function ModalDocsPage() {
     <Button>Confirm</Button>
   </ModalFooter>
 </ModalContent>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          A Modal blocks the screen. One reason, one primary action, one escape — never a mini-page jammed into a dialog.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-col gap-2 w-full max-w-xs">
+                <div className="text-sm font-semibold">Suspend mtr-9412?</div>
+                <p className="text-xs text-text-sub-600">Mitra auto-suspend 7 hari. Bisa di-reaktivasi kapan saja.</p>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button size="sm" tone="neutral" style="stroke">Batal</Button>
+                  <Button size="sm" tone="destructive">Suspend</Button>
+                </div>
+              </div>
+            ),
+            caption: "Satu primary (Suspend) + satu cancel. Title menyatakan target spesifik (mtr-9412), bukan generic.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-col gap-2 w-full max-w-xs">
+                <div className="text-sm font-semibold">Aksi mitra</div>
+                <div className="flex flex-wrap justify-end gap-2 pt-2">
+                  <Button size="sm">Suspend</Button>
+                  <Button size="sm">Reaktivasi</Button>
+                  <Button size="sm">Edit profil</Button>
+                  <Button size="sm" tone="neutral" style="stroke">Batal</Button>
+                </div>
+              </div>
+            ),
+            caption: "Jangan tumpuk 3+ primary action. Modal jadi pilihan ganda, dispatcher ragu mana yang utama.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-col gap-2 w-full max-w-xs">
+                <div className="text-sm font-semibold">Reset kode referral?</div>
+                <p className="text-xs text-text-sub-600">Kode lama (DASH42) akan invalid. Mitra perlu share kode baru.</p>
+              </div>
+            ),
+            caption: "Spell out konsekuensi: kode lama invalid, side-effect ke mitra. Dispatcher confirm dengan informasi cukup.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-col gap-2 w-full max-w-xs">
+                <div className="text-sm font-semibold">Anda yakin?</div>
+                <p className="text-xs text-text-sub-600">Aksi ini tidak dapat dibatalkan.</p>
+              </div>
+            ),
+            caption: "Hindari pertanyaan generic tanpa konteks. Mitra tidak tahu apa yang akan hilang.",
+          }}
         />
       </DocsSection>
 

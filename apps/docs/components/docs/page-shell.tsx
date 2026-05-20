@@ -40,7 +40,21 @@ type HeaderProps = {
   category: string
   title: React.ReactNode
   description: React.ReactNode
-  status?: "shipped" | "wip" | "planned" | "beta" | "new"
+  /**
+   * Canonical schema (Wave 3, P3.14): `stable | beta | wip | deprecated`.
+   * Legacy values (`shipped | planned | new`) are retained for backward
+   * compatibility with non-component doc pages (patterns, tools, product
+   * widgets) that still ship the older taxonomy; component pages should
+   * use the canonical values only.
+   */
+  status?: "stable" | "beta" | "wip" | "deprecated" | "shipped" | "planned" | "new"
+  /**
+   * Component classification per the schema doc — informs sidebar grouping
+   * and the future manifest. Optional today, will be required after the
+   * Wave-5 manifest migration. Distinct from `category` (the human-readable
+   * eyebrow group label).
+   */
+  kind?: "atom" | "composite" | "specialized"
   /** Sub-tabs row under hero — Usage / Spec / Status. */
   tabs?: Array<{ label: string; href?: string; active?: boolean }>
 }
@@ -49,6 +63,10 @@ const STATUS_META: Record<
   NonNullable<HeaderProps["status"]>,
   { label: string; cls: string }
 > = {
+  stable: {
+    label: "Stable",
+    cls: "bg-success-lighter text-success-dark border-success-light",
+  },
   shipped: {
     label: "Stable",
     cls: "bg-success-lighter text-success-dark border-success-light",
@@ -69,9 +87,14 @@ const STATUS_META: Record<
     label: "New",
     cls: "bg-(--dash-purple-50) text-(--dash-purple-700) border-(--dash-purple-200)",
   },
+  deprecated: {
+    label: "Deprecated",
+    cls: "bg-error-lighter text-error-dark border-error-light",
+  },
 }
 
-export const DocsHeader = ({ category, title, description, status, tabs }: HeaderProps) => {
+export const DocsHeader = ({ category, title, description, status, kind, tabs }: HeaderProps) => {
+  void kind // kind is reserved for the future manifest; no visual treatment yet.
   const statusMeta = status ? STATUS_META[status] : null
   return (
     <header className="space-y-6">

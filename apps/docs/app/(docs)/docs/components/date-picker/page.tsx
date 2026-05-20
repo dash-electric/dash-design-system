@@ -20,6 +20,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -56,6 +57,8 @@ export default function DatePickerDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Forms"
         title="Date Picker"
         description="Calendar-driven date selection. Three primitives: Calendar (the grid), DatePicker (single date via Popover), DateRangePicker (from/to). All sized to match Input + Select. Cells support today-dot, range edges, and disabled out-of-month."
@@ -248,6 +251,53 @@ export default function DatePickerDocsPage() {
     <Footer cancel + apply />
   </PopoverContent>
 </Popover>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Date picker untuk pasar Indonesia: pakai format dd MMM yyyy (20 Mei 2026), highlight hari ini, disable tanggal mustahil (past untuk schedule, future untuk birthday).
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="text-sm rounded-md border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 inline-flex items-center gap-2">
+                <Cal className="size-4 text-icon-soft-400" />
+                <span className="text-text-strong-950">20 Mei 2026</span>
+              </div>
+            ),
+            caption: "Format dd MMM yyyy ('20 Mei 2026') jelas untuk user Indonesia. Bulan dalam huruf = no ambiguity antara hari & bulan.",
+          }}
+          dont={{
+            preview: (
+              <div className="text-sm rounded-md border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 inline-flex items-center gap-2">
+                <Cal className="size-4 text-icon-soft-400" />
+                <span className="text-text-strong-950">05/20/2026</span>
+              </div>
+            ),
+            caption: "Format US MM/DD/YYYY = ambigu. 05/06 itu 5 Juni atau 6 Mei? Pakai format dd MMM yyyy untuk konteks Indonesia.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="text-xs space-y-1 max-w-[200px]">
+                <div className="font-medium text-text-strong-950">Pilih tanggal schedule delivery</div>
+                <div className="text-text-sub-600">Hari ini (20 Mei) → 31 Des 2026</div>
+                <div className="text-text-soft-400 line-through">19 Mei dan sebelumnya — disabled</div>
+              </div>
+            ),
+            caption: "Untuk schedule future delivery, disable tanggal lewat. User tidak bisa pilih kemarin secara tidak sengaja.",
+          }}
+          dont={{
+            preview: (
+              <div className="text-xs space-y-1 max-w-[200px]">
+                <div className="font-medium text-text-strong-950">Tanggal lahir mitra</div>
+                <div className="text-text-sub-600">1 Jan 1900 → 31 Des 2099 (semua aktif)</div>
+              </div>
+            ),
+            caption: "Birthday picker tanpa disable future date = user input tanggal lahir 2099. Tambahkan disabled untuk impossible range.",
+          }}
         />
       </DocsSection>
 

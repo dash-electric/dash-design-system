@@ -31,6 +31,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 
@@ -97,7 +98,53 @@ export default function MarketingDashboardDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Funnel-shape layout">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Marketing dashboards mirror the funnel: top-of-funnel reach → engagement → conversion. Don't drop metrics in alphabetical order.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md space-y-2">
+                <div className="grid grid-cols-4 gap-2"><div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Reach</p><p className="text-sm font-semibold">412k</p></div><div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Klik</p><p className="text-sm font-semibold">28k</p></div><div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Signup</p><p className="text-sm font-semibold">1.2k</p></div><div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Paid</p><p className="text-sm font-semibold">184</p></div></div>
+                <p className="text-[10px] text-text-soft-400 text-center">Reach → Klik → Signup → Paid</p>
+              </div>
+            ),
+            caption: "Funnel order matches the user journey. Marketing reads it left-to-right and spots leak between stages instantly.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md grid grid-cols-4 gap-2"><div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Bounce</p><p className="text-sm font-semibold">38%</p></div><div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">CPC</p><p className="text-sm font-semibold">Rp 412</p></div><div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Reach</p><p className="text-sm font-semibold">412k</p></div><div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Signup</p><p className="text-sm font-semibold">1.2k</p></div></div>
+            ),
+            caption: "Don't randomize the metric order. Bounce-rate next to reach-count tells no story.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Campaign attribution">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Group metrics by campaign. Don't aggregate all paid traffic into one bucket and lose source-level signal.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md space-y-1.5">
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 flex items-center justify-between text-xs"><span>TikTok · "Scale" campaign</span><span className="font-medium">+412 signup</span></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 flex items-center justify-between text-xs"><span>Google · brand search</span><span className="font-medium">+284 signup</span></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 flex items-center justify-between text-xs"><span>Instagram · reels</span><span className="font-medium">+91 signup</span></div>
+              </div>
+            ),
+            caption: "Per-campaign breakdown. Marketing sees which channel drives signups and can reallocate budget.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 text-center"><p className="text-xs text-text-sub-600">Total paid signup</p><p className="text-2xl font-semibold">787</p></div>
+            ),
+            caption: "Don't aggregate channels. '787 signups' answers nothing — which channel? Pause Google or scale TikTok?",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }
 

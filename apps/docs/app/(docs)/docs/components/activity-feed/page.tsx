@@ -31,6 +31,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -64,6 +65,8 @@ export default function ActivityFeedDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Disclosure"
         title="Activity Feed"
         description="Chronological list of who-did-what-when. Five item types (default / file / comment / avatar group / tasks) composed under one ActivityFeedItem shell. Pair with the filter pill row for tabbed feeds, the comment thread variant for replies, and the timeline variant for compact detail pages."
@@ -416,6 +419,34 @@ export default function ActivityFeedDocsPage() {
     </li>
   ))}
 </ol>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Activity feed = chronological audit trail. Group by day, lead with the actor, anchor each entry with a relative timestamp. Keep verbs concrete.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-sm text-left space-y-2">
+                <div className="text-[10px] uppercase tracking-wide text-text-soft-400 font-medium">Hari ini</div>
+                <div className="text-xs text-text-sub-600"><span className="font-medium text-text-strong-950">Irfan P.</span> men-suspend <span className="font-medium text-text-strong-950">mtr-9412</span> · 4 menit lalu</div>
+                <div className="text-xs text-text-sub-600"><span className="font-medium text-text-strong-950">Fayzul</span> approve refund <span className="font-medium text-text-strong-950">DLV-7821</span> · 18 menit lalu</div>
+              </div>
+            ),
+            caption: "Kelompokkan per hari (Hari ini, Kemarin, 12 Mei). Verb spesifik (suspend, approve refund) + target object jelas (mtr-9412, DLV-7821).",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm text-left space-y-2">
+                <div className="text-xs text-text-sub-600">Update mitra</div>
+                <div className="text-xs text-text-sub-600">Action performed</div>
+                <div className="text-xs text-text-sub-600">Data changed</div>
+              </div>
+            ),
+            caption: "Verb abstrak (Update, Action performed) tanpa actor + target = log tidak dapat di-audit. Dispatcher tidak tahu siapa yang ubah apa.",
+          }}
         />
       </DocsSection>
 

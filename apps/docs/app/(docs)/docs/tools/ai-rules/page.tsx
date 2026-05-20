@@ -30,10 +30,10 @@ export default function AiRulesDocsPage() {
           <li>• Query Dash registry FIRST before generating UI primitives</li>
           <li>• Use <code className="text-xs">dash add &lt;name&gt;</code> — never hand-copy</li>
           <li>• Use semantic tokens (<code className="text-xs">bg-bg-white-0</code>, <code className="text-xs">text-text-strong-950</code>) — never raw colors</li>
-          <li>• Forms = RHF + zod + Dash <code className="text-xs">@dash/form</code></li>
+          <li>• Forms = RHF + zod pattern blocks as canonical reference. Adaptation Layer translates per-repo (Jotai for portal-v2, useState for backoffice/halo/fleet-mgmt, Zustand for basecamp).</li>
           <li>• Page layouts = pick from <code className="text-xs">@dash/templates/*</code> first</li>
           <li>• 8 naming divergences vs shadcn (Modal/Divider/Radio/ProgressBar/Toaster/Tag + Button anatomy + Input anatomy)</li>
-          <li>• Decision tree for ~110 primitives organized by use case</li>
+          <li>• Decision tree for ~180 primitives organized by use case</li>
           <li>• Dash domain copy patterns (mitra, tribe, dispatch, Halo-dash, BMKG)</li>
         </ul>
       </DocsSection>
@@ -49,7 +49,7 @@ curl -H "Authorization: Bearer $DASH_REGISTRY_TOKEN" \\
 
       <DocsSection title="Coverage">
         <p className="text-sm text-text-sub-600 leading-relaxed">
-          The file covers all 111 registry items as of v1.0. Updated whenever new primitives ship.
+          The file covers all 181 registry items as of v1.0. Updated whenever new primitives ship.
           Pin your version by checking <code className="text-xs">registry/rules/dash-ai-rules.md</code> in
           the Dash DS repo for the latest. AI assistants in Dash repos should respect this file as
           overriding default shadcn knowledge — Dash names differ.

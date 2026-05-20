@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -14,6 +15,8 @@ export default function SocialButtonDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="specialized"
         category="Components / Actions"
         title="Social Button"
         description="Branded sign-in / continue-with button for OAuth providers. Auto-fills label and brand icon. Override label for non-English copy."
@@ -84,6 +87,50 @@ export default function SocialButtonDocsPage() {
           code={`<SocialButton brand="google" block label="Lanjut dengan Google" />
 <SocialButton brand="microsoft" block label="Lanjut dengan Microsoft" />
 <SocialButton brand="github" block label="Lanjut dengan GitHub" />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          SocialButton pakai brand color official + auto-label. Untuk Dash audience Indonesia, override label dengan 'Lanjut dengan X' atau 'Masuk dengan X'. Max 3 provider visible, sisanya hide di 'Show more'.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-col gap-2 max-w-xs w-full">
+                <SocialButton brand="google" block label="Lanjut dengan Google" />
+                <SocialButton brand="microsoft" block label="Lanjut dengan Microsoft" />
+              </div>
+            ),
+            caption: "2 provider primary (Google + Microsoft untuk corporate audience). Label Bahasa Indonesia 'Lanjut dengan X' konsisten dengan auth flow Dash.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-col gap-1 max-w-xs">
+                <SocialButton brand="google" block />
+                <SocialButton brand="apple" block />
+                <SocialButton brand="github" block />
+                <SocialButton brand="facebook" block />
+                <SocialButton brand="microsoft" block />
+                <SocialButton brand="twitter" block />
+              </div>
+            ),
+            caption: "6 provider tumpuk = decision paralysis. User butuh detik mana yang familiar. Max 3 primary, sisanya collapse.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <SocialButton brand="google" block size="md" label="Lanjut dengan Google" />
+            ),
+            caption: "Size md = default auth screen. Block (full-width) supaya parity dengan submit button utama di card.",
+          }}
+          dont={{
+            preview: (
+              <SocialButton brand="google" size="sm" label="g" />
+            ),
+            caption: "Label cuma 'g' atau 1 huruf = brand awareness lemah. Selalu sertakan nama provider supaya user tahu masuk via apa.",
+          }}
         />
       </DocsSection>
 

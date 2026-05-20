@@ -18,6 +18,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -25,6 +26,8 @@ export default function SheetDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Overlays"
         title="Sheet"
         description="Generic large side panel — desktop counterpart to Drawer (which is mobile-bottom-anchored). 4 sides × 5 sizes. Use for inspector panels, edit forms anchored to a list item, multi-step setup wizards."
@@ -97,6 +100,45 @@ export default function SheetDocsPage() {
 <SheetContent side="left" />
 <SheetContent side="top" />
 <SheetContent side="bottom" />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Sheet adalah inspector panel — anchored ke konteks (row di tabel, item di list). Bukan dialog terpusat.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex w-full max-w-xs gap-2">
+                <div className="flex-1 rounded border border-stroke-soft-200 p-2 text-xs text-text-sub-600">Mitra list (16 rows)</div>
+                <div className="w-32 rounded border border-stroke-soft-200 bg-bg-weak-50 p-2">
+                  <div className="text-xs font-semibold">mtr-9412</div>
+                  <div className="text-[10px] text-text-sub-600">Active · 142 trip</div>
+                </div>
+              </div>
+            ),
+            caption: "Sheet anchored right side, list tetap visible. Dispatcher bisa klik mitra lain tanpa close → reopen.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-col w-full max-w-xs gap-2">
+                <div className="rounded border border-stroke-soft-200 p-2 text-xs">
+                  <div className="font-semibold mb-1">Edit profil mitra (form 12 fields)</div>
+                  <div className="text-text-sub-600">NIK · SIM · NPWP · alamat · bank · …</div>
+                </div>
+              </div>
+            ),
+            caption: "Jangan pakai Sheet untuk full-page edit dengan 10+ field. Itu butuh halaman sendiri /mitra/[id]/edit.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Sheet untuk inspector (Mitra detail), wizard 2-3 step (Setup polygon shift), filter advanced (Mitra search filters).",
+          }}
+          dont={{
+            caption: "Jangan pakai Sheet untuk konfirmasi destruktif. Itu pakai Alert Dialog. Jangan pakai Sheet bottom di desktop — pakai Drawer untuk mobile saja.",
+          }}
         />
       </DocsSection>
 

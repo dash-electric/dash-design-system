@@ -118,7 +118,8 @@ export default function ProgressChartPage() {
         category="Components / Charts"
         title="Progress (segmented)"
         description="Striped progress bar — value snaps to the nearest peg so the fill always lands on a discrete boundary. Two variants: 32px categories, 24px stock-status."
-        status="shipped"
+        status="stable"
+        kind="atom"
       />
 
       <DocsSection title="Variant A — categories (32px)">

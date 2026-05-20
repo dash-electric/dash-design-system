@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -28,7 +29,8 @@ export default function ThemeSwitchDocsPage() {
         category="Components / Settings"
         title="Theme Switch"
         description="Three-segment icon toggle for theme preference — light / dark / system. Built on SegmentedControl. Wire to next-themes' setTheme in real apps."
-        status="new"
+        status="beta"
+        kind="specialized"
       />
 
       <DocsSection title="Install">
@@ -62,6 +64,47 @@ export function Header() {
           }
           code={`const [value, setValue] = useState<"light" | "dark" | "system">("system")
 <ThemeSwitch value={value} onValueChange={(v) => setValue(v as any)} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          ThemeSwitch = 3 opsi (light/dark/system). Default 'system' supaya respect OS pref. Persist via next-themes localStorage. Icon-only ok karena conventional.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <ThemeSwitch defaultValue="system" />
+            ),
+            caption: "Default 'system' = respect OS preference user. 3 opsi (sun/moon/equalizer icon) konvensional, user kenali tanpa label.",
+          }}
+          dont={{
+            preview: (
+              <ThemeSwitch defaultValue="dark" />
+            ),
+            caption: "Default 'dark' tanpa user pilihan = paksa preference. Saat user OS light mode, dashboard Dash terbuka dark = jarring.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-text-sub-600">Tema:</span>
+                <ThemeSwitch defaultValue="system" />
+              </div>
+            ),
+            caption: "Pair dengan label kontekstual ('Tema:'). Letak di footer atau settings panel — bukan top bar yang sibuk.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-1 text-xs">
+                <ThemeSwitch defaultValue="light" />
+                <ThemeSwitch defaultValue="dark" />
+                <ThemeSwitch defaultValue="system" />
+              </div>
+            ),
+            caption: "Multiple ThemeSwitch in same UI = control collide, conflicting global state. Hanya satu ThemeSwitch per app.",
+          }}
         />
       </DocsSection>
 

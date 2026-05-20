@@ -19,6 +19,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -26,6 +27,8 @@ export default function SidebarDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Navigation"
         title="Sidebar"
         description="Composable left/right rail for shell layouts. Lightweight: no built-in mobile collapse — pair with Sheet for mobile. Use useSidebar() hook to drive collapsed state."
@@ -103,6 +106,46 @@ export default function SidebarDocsPage() {
     <div className="flex-1 p-6">…</div>
   </SidebarInset>
 </SidebarProvider>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Sidebar untuk primary navigation app shell. 5-8 items top level, group by domain. Bukan untuk content scroll list.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-32 text-xs rounded border border-stroke-soft-200 bg-bg-weak-50 p-1 space-y-0.5">
+                <div className="text-[9px] uppercase text-text-soft-400 px-2 pt-1">Halo-dash</div>
+                <div className="rounded bg-bg-white-0 px-2 py-1">Dispatch</div>
+                <div className="rounded px-2 py-1">Mitra</div>
+                <div className="rounded px-2 py-1">Outlet</div>
+                <div className="border-t border-stroke-soft-200 my-1" />
+                <div className="text-[9px] uppercase text-text-soft-400 px-2">Admin</div>
+                <div className="rounded px-2 py-1">Settings</div>
+              </div>
+            ),
+            caption: "Group items by domain (Halo-dash, Admin). Active item highlighted. 4-5 items per group ideal.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-32 text-xs rounded border border-stroke-soft-200 bg-bg-weak-50 p-1 space-y-0.5 max-h-32 overflow-hidden">
+                {["Dispatch", "Allocate", "Track", "Cancel", "Mitra", "Driver", "Partner", "Outlet"].map(i => (
+                  <div key={i} className="rounded px-2 py-1">{i}</div>
+                ))}
+              </div>
+            ),
+            caption: "Hindari 12+ items flat tanpa grouping. Sidebar scrollable = signal bahwa nav butuh restructure.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Collapsible ke icon-only mode (40px) untuk dispatcher yang butuh real-estate. Tooltip on hover saat collapsed.",
+          }}
+          dont={{
+            caption: "Jangan render Sidebar di mobile permanent. Hide ke off-canvas (Sheet), tampilkan via hamburger.",
+          }}
         />
       </DocsSection>
 

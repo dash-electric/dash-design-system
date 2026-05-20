@@ -32,6 +32,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -52,6 +53,8 @@ export default function FileUploadDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Forms"
         title="File Upload"
         description="Dropzone + uploaded-item list. Three primitives: FileUploadDropzone (click-or-drag target), FileUploadItem (single row with status + progress + actions), ImageUpload (compact avatar slot with Remove + Change). Compose inside Drawer or Dialog for full upload workflows."
@@ -238,6 +241,41 @@ export default function FileUploadDocsPage() {
     </DrawerBody>
   </DrawerContent>
 </Drawer>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Upload component WAJIB tampilkan constraint upfront: max size, accepted types, retry mechanism saat error.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs rounded border-2 border-dashed border-stroke-soft-200 bg-bg-weak-50 p-4 text-center text-xs">
+                <div className="font-semibold mb-1">Upload foto KTP mitra</div>
+                <div className="text-text-sub-600">JPG / PNG · max 5MB</div>
+                <div className="mt-2 text-[10px] text-text-soft-400">Drag & drop atau klik untuk pilih</div>
+              </div>
+            ),
+            caption: "Sebut constraint eksplisit: \"JPG/PNG, max 5MB\". Mitra siapkan file sesuai sebelum upload.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs rounded border-2 border-dashed border-stroke-soft-200 bg-bg-weak-50 p-4 text-center text-xs">
+                <div className="font-semibold mb-1">Upload</div>
+                <div className="text-text-soft-400">Klik untuk upload</div>
+              </div>
+            ),
+            caption: "Jangan biarkan dropzone tanpa konteks tipe file / size. Mitra upload PDF 20MB → ditolak server, frustrasi.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Tampilkan per-file status (uploading 60% / done / failed). KTP mitra failed → tombol \"Coba lagi\" inline.",
+          }}
+          dont={{
+            caption: "Jangan hanya tampilkan toast error untuk batch upload. Mitra tidak tahu file mana yang gagal dari 5 file.",
+          }}
         />
       </DocsSection>
 

@@ -1,12 +1,12 @@
-# Dash Design System — Internal Monorepo
+# Dash Design System
 
 The single repository for everything Dash Design System: docs site + registry, install CLI, MCP server, and Claude Code skill. Built for internal use by Dash product engineering teams.
 
-## Why a monorepo
+## Why the Dash DS repo
 
 Before consolidation, four sibling repos drifted independently — version bumps in the CLI lagged the registry, MCP server schemas fell out of sync with the docs site, and onboarding a new package engineer meant cloning three repos and reading three READMEs. Drift is the dominant failure mode for design systems used across 10+ product teams.
 
-The monorepo gives us one `pnpm install`, one CI pipeline, one place to ship registry + tooling changes atomically, and one shared `@dash/registry-schema` package as Phase 2 lands shared types. AI-first workflows (Claude Code, Cursor, MCP) work best when context is co-located: skill, MCP server, and registry source all live one directory hop apart.
+One `pnpm install`, one CI pipeline, one place to ship registry + tooling changes atomically, one shared `@dash/registry-schema` package as Phase 2 lands shared types. AI-first workflows (Claude Code, Cursor, MCP) work best when context is co-located: skill, MCP server, and registry source live one directory hop apart.
 
 This is an internal-only repository. Components, branding, and tooling are licensed for use within PT Dash Elektrik Indonesia product teams only. See `NOTICE.md` in `apps/docs` for full terms.
 
@@ -21,11 +21,11 @@ dash init           # bootstrap dash.config + tailwind tokens
 dash add button     # install a registry component
 ```
 
-Local development of the monorepo itself:
+Local development of the repo itself:
 
 ```bash
 git clone <this repo>
-cd dash-monorepo
+cd dash-ds
 pnpm install
 pnpm dev            # boots apps/docs at localhost:3000
 ```
@@ -33,7 +33,7 @@ pnpm dev            # boots apps/docs at localhost:3000
 ## Repo structure
 
 ```
-dash-monorepo/
+dash-ds/
 ├── apps/
 │   └── docs/             # @dash/docs — Next.js 16 docs site + registry source of truth
 ├── packages/

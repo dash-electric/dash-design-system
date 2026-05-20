@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -14,6 +15,8 @@ export default function AspectRatioDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Layout"
         title="Aspect Ratio"
         description="Lock a container to a fixed width:height ratio. Use for image cards, video embeds, map previews — prevents layout shift while content loads."
@@ -133,6 +136,40 @@ export default function AspectRatioDocsPage() {
   </CardMedia>
   <CardHeader>…</CardHeader>
 </Card>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          AspectRatio mencegah layout shift sebelum gambar load. Pakai untuk media slot di Card, peta delivery, foto KTP mitra.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-32 rounded overflow-hidden border border-stroke-soft-200">
+                <div className="aspect-video bg-gradient-to-br from-(--dash-purple-400) to-(--dash-blue-500)" />
+                <div className="p-2 text-[10px]">Bekasi-Tangerang map</div>
+              </div>
+            ),
+            caption: "Map preview 16:9 di Card dispatch. Slot reserved sebelum tile map render — tidak ada jump saat load.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-32 rounded overflow-hidden border border-stroke-soft-200">
+                <div className="h-2 bg-bg-weak-50" />
+                <div className="p-2 text-[10px]">Map loading…</div>
+              </div>
+            ),
+            caption: "Jangan biarkan height collapse 0 saat image fetch. Page jump saat tile masuk = layout shift jelek.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Pakai rasio sesuai content: 1:1 untuk avatar/KTP scan, 16:9 untuk map, 4:3 untuk foto outlet.",
+          }}
+          dont={{
+            caption: "Jangan force semua media ke ratio yang sama. Foto KTP horizontal 1:1 = wajah mitra crop tidak terbaca.",
+          }}
         />
       </DocsSection>
 

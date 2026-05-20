@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -16,6 +17,8 @@ export default function HintDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="atom"
         category="Components / Form"
         title="Hint"
         description="Inline helper text below form fields — instructions, validation messages, success confirmations. 5 tones map to the same state colors as Alert."
@@ -107,6 +110,56 @@ export default function HintDocsPage() {
   Mitra ini punya 2 dispatch terlewat hari ini. Sekali lagi dan auto-suspend akan
   menyala otomatis untuk sisa hari ini sampai 04:00 besok.
 </Hint>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Hint = whisper di bawah field. Single line, kontekstual. Untuk error, kasih spesifik apa yang salah + cara fix. Bukan generic 'Invalid'.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-1.5 max-w-xs">
+                <Label htmlFor="ktp">Nomor KTP mitra</Label>
+                <InputRoot invalid><Input id="ktp" defaultValue="123" aria-describedby="ktp-hint" /></InputRoot>
+                <Hint id="ktp-hint" tone="error">KTP harus 16 digit. Anda baru input 3 digit.</Hint>
+              </div>
+            ),
+            caption: "Error spesifik: apa yang salah ('16 digit') + state user sekarang ('baru 3 digit'). Mitra langsung tahu cara fix.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-1.5 max-w-xs">
+                <Label htmlFor="ktp2">Nomor KTP mitra</Label>
+                <InputRoot invalid><Input id="ktp2" defaultValue="123" /></InputRoot>
+                <Hint tone="error">Invalid input.</Hint>
+              </div>
+            ),
+            caption: "'Invalid input' tanpa hint apa yang invalid = mitra tebak-tebakan. Setiap error message harus actionable.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-1.5 max-w-xs">
+                <Label htmlFor="hp">No HP</Label>
+                <InputRoot><Input id="hp" placeholder="0812-..." /></InputRoot>
+                <Hint>Format 10-13 digit, akan dipakai untuk OTP.</Hint>
+              </div>
+            ),
+            caption: "Helper hint (neutral) di bawah input kasih konstrain format + tujuan ('untuk OTP'). Pre-empt error sebelum user kirim.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-1.5 max-w-xs">
+                <Label htmlFor="hp2">No HP</Label>
+                <InputRoot><Input id="hp2" /></InputRoot>
+                <Hint tone="warning">Warning: please enter your phone number.</Hint>
+              </div>
+            ),
+            caption: "Warning untuk instruksi normal = false alarm. Pakai tone='neutral' untuk helper, simpan warning untuk situasi yang butuh perhatian ekstra.",
+          }}
         />
       </DocsSection>
 

@@ -57,7 +57,8 @@ export default function ShimmerDocsPage() {
         category="Components / Loaders"
         title="Shimmer"
         description="Low-level loading primitive: caller sets shape via className, Shimmer owns the moving-highlight gradient. Compose into table rows, cards, and analytics tiles. Distinct from Skeleton (pulse-only) — use Shimmer when you want a visible sweep."
-        status="new"
+        status="beta"
+        kind="specialized"
       />
 
       <DocsSection title="Install">

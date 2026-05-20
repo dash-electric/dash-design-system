@@ -13,6 +13,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 import { DocsCode } from "@/components/docs/code-block"
@@ -158,6 +159,57 @@ export default function ListDetailPageDocs() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="List left, detail right">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Two-pane list/detail keeps both visible on desktop. Don't open the detail in a modal — modals lose URL state and scroll position.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden grid grid-cols-[110px_1fr]">
+                <div className="border-r border-stroke-soft-200 p-1.5 space-y-1"><div className="h-6 rounded bg-primary-alpha-16 border border-primary-base" /><div className="h-6 rounded bg-bg-weak-50" /><div className="h-6 rounded bg-bg-weak-50" /><div className="h-6 rounded bg-bg-weak-50" /></div>
+                <div className="p-2 space-y-1.5"><div className="h-3 rounded bg-bg-soft-200 w-20" /><div className="h-2 rounded bg-bg-weak-50" /><div className="h-2 rounded bg-bg-weak-50" /><div className="h-8 rounded bg-bg-weak-50" /></div>
+              </div>
+            ),
+            caption: "List of mitra on the left stays selectable while detail panel updates. URL reflects the selected item.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden relative">
+                <div className="absolute inset-0 p-2 space-y-1"><div className="h-6 rounded bg-bg-weak-50" /><div className="h-6 rounded bg-bg-weak-50" /><div className="h-6 rounded bg-bg-weak-50" /></div>
+                <div className="absolute inset-x-6 inset-y-4 rounded-lg border border-stroke-strong-950 bg-bg-white-0 shadow-lg p-2"><div className="h-3 rounded bg-bg-soft-200 w-20" /><div className="h-2 rounded bg-bg-weak-50 mt-1" /><div className="text-[8px] text-text-soft-400 mt-2">(modal — no URL, no deep-link)</div></div>
+              </div>
+            ),
+            caption: "Don't open the detail in a modal. URL doesn't change, ops can't share a link to a specific mitra, browser back closes the modal.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Mobile back navigation">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          On mobile the panes stack — detail covers list with explicit back-nav arrow. Don't use a hamburger drawer for the back action.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-48 h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden">
+                <div className="h-7 border-b border-stroke-soft-200 px-2 flex items-center gap-2"><span className="text-xs">←</span><span className="text-[10px]">Daftar mitra</span></div>
+                <div className="p-2 space-y-1"><div className="h-3 rounded bg-bg-soft-200 w-20" /><div className="h-2 rounded bg-bg-weak-50" /><div className="h-8 rounded bg-bg-weak-50" /></div>
+              </div>
+            ),
+            caption: "Back-arrow chevron with the parent list name. One tap returns to the list with selection preserved.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-48 h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden">
+                <div className="h-7 border-b border-stroke-soft-200 px-2 flex items-center gap-2"><span className="text-xs">☰</span><span className="text-[10px]">Mitra detail</span></div>
+                <div className="p-2"><div className="text-[8px] text-text-soft-400">(no back action — user must open drawer + tap list)</div></div>
+              </div>
+            ),
+            caption: "Don't use a hamburger drawer as the back gesture. Hamburger = global nav; user expects to step back to the list.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

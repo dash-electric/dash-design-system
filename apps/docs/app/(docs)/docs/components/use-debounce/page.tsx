@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -19,6 +20,8 @@ export default function UseDebounceDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="wip"
+        kind="atom"
         category="Utils / Hooks"
         title="useDebounce"
         description="Debounces fast-changing values so downstream effects (search API, validation, autosave) only fire after typing settles."
@@ -65,6 +68,60 @@ useEffect(() => {
 }, 600)
 
 <Input onChange={(e) => save(e.target.value)} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          useDebounce untuk derived values (search query, validation input). useDebouncedCallback untuk side effects (autosave, analytics). Delay: 300ms typing, 600ms autosave, 1000ms destructive.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1 text-xs">
+                <div className="font-medium text-text-strong-950">Search mitra (debounce 300ms)</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 p-2 text-text-sub-600">
+                  Type 'mtr-94' → wait 300ms → fetch /api/mitra?q=mtr-94
+                </div>
+              </div>
+            ),
+            caption: "Search input pakai debounce 300ms. User typing 'mtr-9412' = 1 API call (bukan 8). Server tidak overload.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1 text-xs">
+                <div className="font-medium text-text-strong-950">Search mitra (raw)</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 p-2 text-text-sub-600">
+                  Type 'mtr-94' → 6 API calls (m, mt, mtr, mtr-, mtr-9, mtr-94)
+                </div>
+              </div>
+            ),
+            caption: "Raw onChange → API call per keystroke = 6 request untuk 1 query. Database melted, UX lag, cost membengkak. Wajib debounce.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1 text-xs">
+                <div className="font-medium text-text-strong-950">Autosave note (debounce 800ms)</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 p-2 text-text-sub-600">
+                  useDebouncedCallback(saveNote, 800)
+                </div>
+              </div>
+            ),
+            caption: "Autosave dispatcher note pakai callback debounce 800ms. User berhenti ketik = save. Background, no manual Save button needed.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1 text-xs">
+                <div className="font-medium text-text-strong-950">Arrow nav (debounce 300ms)</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 p-2 text-text-sub-600">
+                  Arrow Down → wait 300ms → highlight next row
+                </div>
+              </div>
+            ),
+            caption: "Keyboard nav (arrow keys) DEBOUNCE = lag terasa, frustrasi. Hanya debounce fetch/write yang triggered by typing.",
+          }}
         />
       </DocsSection>
 

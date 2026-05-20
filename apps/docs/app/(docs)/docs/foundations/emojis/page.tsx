@@ -11,6 +11,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -295,6 +296,52 @@ export default function EmojisPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Emoji as content, not UI">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Emoji belongs in user content (chat, notes, status messages). Don't use it as a button icon, status indicator, or nav label.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-sm space-y-2 text-xs">
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><strong>Sari:</strong> Order Sayurbox sudah dipickup 🎉</div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><strong>Budi:</strong> Mantap, on track buat SLA 30 menit</div>
+              </div>
+            ),
+            caption: "Emoji enriches user-generated content. Sari typed the party popper — it's hers, it's expressive, it's right.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm space-y-1.5">
+                <button className="h-8 w-full rounded-md border border-stroke-soft-200 text-xs flex items-center justify-center gap-2">🚚 Dispatch</button>
+                <button className="h-8 w-full rounded-md border border-stroke-soft-200 text-xs flex items-center justify-center gap-2">⚙️ Settings</button>
+                <button className="h-8 w-full rounded-md border border-stroke-soft-200 text-xs flex items-center justify-center gap-2">📊 Reports</button>
+              </div>
+            ),
+            caption: "Don't use emoji as nav icons. Render inconsistently across OS, ignore your color tokens, look like a Slack workspace not an enterprise tool.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Skin tone neutrality">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          When using emoji in templates or seed data, use the neutral yellow variant. Don't pick a specific skin tone — Dash users span Indonesia and beyond.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex gap-3 text-2xl"><span>👋</span><span>👍</span><span>🙏</span></div>
+            ),
+            caption: "Yellow Fitzpatrick-neutral emoji in templates and placeholders. Each user can apply their own modifier in their own content.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex gap-3 text-2xl"><span>👋🏻</span><span>👍🏼</span><span>🙏🏽</span></div>
+            ),
+            caption: "Don't bake a specific skin tone into Dash templates. Pre-modifying makes one user's identity the default for everyone.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

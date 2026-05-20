@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -29,6 +30,8 @@ export default function BannerDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="specialized"
         category="Components / Feedback"
         title="Banner"
         description="Full-width status banner pinned to the top or bottom of a layout. Six statuses × three appearances × two sizes. Use for app-level announcements (downtime, feature launch, payment overdue) — not inline form errors (use Alert)."
@@ -221,6 +224,68 @@ export default function BannerDocsPage() {
           Use Banner for: planned downtime, payment failed, new feature launch, terms update.<br />
           Use Alert for: form validation, inline warnings, confirmation reinforcement inside modals.
         </p>
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Banner = app-level chrome. Sticky di top atau bottom, satu per layout. Pair dengan action link supaya user bisa recover atau learn more, jangan biarkan dead-end.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md">
+                <Banner
+                  status="error"
+                  appearance="filled"
+                  title="Pembayaran payroll gagal"
+                  action={<a href="#" className="font-medium underline underline-offset-2">Retry sekarang</a>}
+                  dismissible
+                  onDismiss={() => {}}
+                >
+                  Saldo VA Dash kurang Rp 12.4jt. Top-up sebelum 17:00 supaya mitra terima hari ini.
+                </Banner>
+              </div>
+            ),
+            caption: "Status (gagal) + konsekuensi (mitra tertunda) + recovery action (Retry) + deadline (17:00). User tahu apa, kenapa, kapan, harus apa.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md">
+                <Banner status="error" appearance="filled" title="Error" />
+              </div>
+            ),
+            caption: "'Error' tanpa konteks, tanpa action, tanpa dismiss = dispatcher panik tanpa exit. Banner blocking interface tanpa solusi.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md">
+                <Banner
+                  status="information"
+                  appearance="lighter"
+                  title="Polygon shift Bekasi pindah jam 22:00 WIB"
+                  action={<a href="#" className="font-medium underline underline-offset-2">Lihat detail</a>}
+                  dismissible
+                  onDismiss={() => {}}
+                >
+                  Mitra Reservasi area Bekasi Timur perlu re-login setelah jam tersebut.
+                </Banner>
+              </div>
+            ),
+            caption: "Satu banner info di top, dismissable. Action link untuk konteks lengkap, body teks ringkas (siapa affected + apa yang berubah).",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md space-y-2">
+                <Banner status="information" appearance="filled" title="Info 1" />
+                <Banner status="warning" appearance="filled" title="Info 2" />
+                <Banner status="feature" appearance="filled" title="Info 3" />
+              </div>
+            ),
+            caption: "Tumpuk 3 banner = chrome menjajah konten. Pilih satu yang paling urgent, sisanya pakai Alert atau Notification.",
+          }}
+        />
       </DocsSection>
 
       <DocsSection title="API">

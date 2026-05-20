@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -18,6 +19,8 @@ export default function SliderDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Form"
         title="Slider"
         description="Numeric range input with one or more thumbs. Use for continuous controls — surge price factor, max dispatch radius, payout cap."
@@ -64,6 +67,63 @@ export default function SliderDocsPage() {
             </div>
           }
           code={`<Slider value={[15, 75]} onValueChange={setRange} min={0} max={100} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Slider untuk continuous range. SELALU tampilkan current value + unit di samping. Tanpa label numerik, slider hanya estetika tanpa fungsi. Step harus realistic (radius 1km, bukan 0.1km).
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs">
+                <div className="flex justify-between text-xs mb-2">
+                  <span className="font-medium">Radius dispatch</span>
+                  <span className="tabular-nums text-text-sub-600">5 km</span>
+                </div>
+                <Slider defaultValue={[5]} min={1} max={20} step={1} />
+                <div className="flex justify-between text-[10px] text-text-soft-400 mt-1.5">
+                  <span>1 km</span><span>20 km</span>
+                </div>
+              </div>
+            ),
+            caption: "Slider radius dispatch + value '5 km' di kanan + min/max marker. User tahu sekarang berapa, batas berapa, scale apa.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs">
+                <Slider defaultValue={[5]} min={1} max={20} />
+              </div>
+            ),
+            caption: "Slider tanpa label = drag handle anonim. User tidak tahu unit apa, sekarang nilai berapa, range berapa. Wajib pair dengan label + current value.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs">
+                <div className="flex justify-between text-xs mb-2">
+                  <span className="font-medium">Surge factor</span>
+                  <span className="tabular-nums text-text-sub-600">1.5×</span>
+                </div>
+                <Slider defaultValue={[150]} min={100} max={300} step={10} />
+              </div>
+            ),
+            caption: "Step 10 (0.1× factor) realistic untuk surge price control. Dispatcher tidak butuh granularity 0.01×.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs">
+                <div className="flex justify-between text-xs mb-2">
+                  <span className="font-medium">Lat</span>
+                  <span className="tabular-nums text-text-sub-600">-6.21500</span>
+                </div>
+                <Slider defaultValue={[-621500]} min={-900000} max={900000} step={1} />
+              </div>
+            ),
+            caption: "Slider untuk koordinat presisi tinggi = tool salah. Pakai Input number atau Map picker. Slider efektif untuk range 10-100 step diskrit.",
+          }}
         />
       </DocsSection>
 

@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function FancyButtonDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="specialized"
         category="Components / Actions"
         title="Fancy Button"
         description="Gradient + lifted shadow + inner ring. Use for marketing hero CTA, paywall upgrade, &quot;launch the rocket&quot; moments. For everyday actions use Button."
@@ -116,6 +119,49 @@ export default function FancyButtonDocsPage() {
 <FancyButton asChild>
   <Link href="/upgrade"><Sparkles /> Upgrade Pro</Link>
 </FancyButton>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          FancyButton = momen hero. Satu per layar. Upgrade, launch, big yes. Bukan untuk aksi rutin (Save, Cancel) — itu Button biasa. Pakai berlebihan = fatigue, semua jadi noise.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-4 max-w-xs space-y-2 text-center">
+                <div className="text-xs uppercase tracking-wider text-text-soft-400">Halo-dash Pro</div>
+                <div className="text-xl font-semibold">Rp 1.2jt/bln</div>
+                <FancyButton size="md" tone="primary" className="w-full"><Sparkles /> Upgrade sekarang</FancyButton>
+              </div>
+            ),
+            caption: "Satu FancyButton di pricing card = jelas mana hero CTA. Upgrade adalah momen yang layak dirayakan visual.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-wrap gap-2 max-w-xs">
+                <FancyButton size="sm">Save</FancyButton>
+                <FancyButton size="sm">Cancel</FancyButton>
+                <FancyButton size="sm">Delete</FancyButton>
+                <FancyButton size="sm">Edit</FancyButton>
+              </div>
+            ),
+            caption: "FancyButton untuk semua aksi rutin = hierarchy hancur. Save/Cancel/Edit pakai Button biasa, sisakan FancyButton untuk hero moment.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <FancyButton size="lg" tone="primary"><Rocket /> Launch tribe pertama</FancyButton>
+            ),
+            caption: "Empty state pertama kali user buka Halo-dash = momen 'mulai dari nol'. FancyButton menggiring user ke action critical.",
+          }}
+          dont={{
+            preview: (
+              <FancyButton tone="destructive">Suspend mtr-9412</FancyButton>
+            ),
+            caption: "Destructive action (suspend, hapus) tidak boleh dihias gradient + sparkle. Pakai Button tone='destructive' supaya weight visual match dengan beratnya consequence.",
+          }}
         />
       </DocsSection>
 

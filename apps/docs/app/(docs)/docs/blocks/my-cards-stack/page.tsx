@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -65,6 +66,58 @@ export default function MyCardsStackDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Card visual fidelity">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Card preview should look like a physical card — issuer logo top-right, last-4 bottom-left, chip + brand mark visible. Don't render a flat rectangle with text.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-64 aspect-[1.586/1] rounded-xl bg-[linear-gradient(135deg,#7C4FC4,#5A3596)] text-static-white p-4 flex flex-col justify-between">
+                <div className="flex items-start justify-between"><div className="size-6 rounded bg-static-white/30" /><span className="text-[10px] font-medium">VISA</span></div>
+                <div className="space-y-1"><p className="font-mono text-sm tracking-widest">•••• 4218</p><p className="text-[10px] opacity-80">BUDI ADITYA</p></div>
+              </div>
+            ),
+            caption: "Gradient surface, chip mark, network badge, last-4, cardholder. Reader recognizes it instantly as their Dash card.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-64 aspect-[1.586/1] rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-4 flex items-center justify-center">
+                <p className="text-xs text-text-sub-600">Card ending 4218</p>
+              </div>
+            ),
+            caption: "Don't render the card as a plain text label. The visual is the value — instant pattern recognition.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Stack depth + active state">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          When multiple cards stack, fan them slightly and highlight the active one. Don't list cards vertically — that loses the wallet metaphor.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="relative w-64 h-40">
+                <div className="absolute inset-x-0 top-8 h-32 rounded-xl bg-[linear-gradient(135deg,#7C4FC4,#5A3596)] shadow-md" />
+                <div className="absolute inset-x-2 top-4 h-32 rounded-xl bg-[linear-gradient(135deg,#FF6B9D,#C7457D)] shadow-md" />
+                <div className="absolute inset-x-4 top-0 h-32 rounded-xl bg-[linear-gradient(135deg,#335CFF,#1E3FB5)] shadow-lg ring-2 ring-primary-base" />
+              </div>
+            ),
+            caption: "Stack fans out, active card is closest to the user with a ring. Wallet metaphor intact.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-64 space-y-2">
+                <div className="h-12 rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 flex items-center text-xs">Visa •••• 4218</div>
+                <div className="h-12 rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 flex items-center text-xs">Mastercard •••• 7733</div>
+                <div className="h-12 rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 flex items-center text-xs">Amex •••• 1004</div>
+              </div>
+            ),
+            caption: "Don't list cards as rows. The block is called 'cards stack' for a reason — vertical rows are a settings list, not a wallet.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

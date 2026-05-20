@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -16,6 +17,8 @@ export default function HoverCardDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Overlays"
         title="Hover Card"
         description="Non-modal preview shown on hover or focus. Use for inline mitra preview in tables, dispatch detail tooltip-with-content, user mention popovers. Skip on mobile — pair with Popover or Drawer there."
@@ -164,6 +167,45 @@ export default function HoverCardDocsPage() {
           code={`<HoverCardContent align="start" />
 <HoverCardContent align="center" />  {/* default */}
 <HoverCardContent align="end" />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Hover Card = preview informasi non-critical. Skip di mobile (tidak ada hover). Bukan replacement Tooltip atau Popover.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="text-sm">
+                Dispatch by <span className="underline decoration-dotted">Sigit P.</span>
+                <div className="mt-2 inline-block rounded border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs space-y-1">
+                  <div className="font-semibold">Sigit P. · mtr-9412</div>
+                  <div className="text-text-sub-600">Active · Reservasi · 142 trip · Bekasi</div>
+                </div>
+              </div>
+            ),
+            caption: "Hover mitra name → preview profil singkat. Dispatcher tidak perlu klik, langsung dapat konteks.",
+          }}
+          dont={{
+            preview: (
+              <div className="text-sm">
+                <span className="underline decoration-dotted">Suspend mitra</span>
+                <div className="mt-2 inline-block rounded border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs">
+                  <button className="text-error-dark">Confirm suspend</button>
+                </div>
+              </div>
+            ),
+            caption: "Jangan tempel action button di Hover Card. Hover → tangan geser → dismiss. Pakai Popover atau dropdown menu.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Konten ringkas (3-5 baris max): nama, status, badge, 1 metrik utama. User scan saat hover beberapa detik.",
+          }}
+          dont={{
+            caption: "Jangan render Hover Card di mobile / touch device. Tidak ada hover state. Pakai Popover yang trigger by tap.",
+          }}
         />
       </DocsSection>
 

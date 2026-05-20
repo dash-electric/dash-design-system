@@ -40,6 +40,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -115,6 +116,8 @@ export default function InputDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Form"
         title="Text Input"
         description="Single-line text field. Composable parts (Root, Icon, Affix) so you can slot leading icons, prefixes, suffixes, country codes, currency selectors, copy buttons, and inline action affordances without rebuilding the trigger box."
@@ -726,6 +729,74 @@ export default function InputDocsPage() {
   </InputRoot>
   <FieldDescription>We'll send order confirmations here.</FieldDescription>
 </Field>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Label, don't lean on placeholder">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          The placeholder disappears once the user types. A visible Label keeps the field self-explanatory at every stage of the form.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-sm">
+                <Field>
+                  <Label required>Nomor handphone mitra</Label>
+                  <InputRoot>
+                    <InputIcon><Phone className="size-4" /></InputIcon>
+                    <Input type="tel" placeholder="0812 3456 7890" />
+                  </InputRoot>
+                  <Hint tone="neutral">Kami kirim use-code ke nomor ini.</Hint>
+                </Field>
+              </div>
+            ),
+            caption: "Pair a visible Label and Hint so the field stays understandable after typing — and tells the mitra what the number is for.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm">
+                <InputRoot>
+                  <Input placeholder="Nomor handphone mitra" />
+                </InputRoot>
+              </div>
+            ),
+            caption: "Placeholder-only labels disappear on focus, leaving partners staring at a blank field and unsure what they typed.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Surface errors next to the field">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          When validation fails, switch the field to <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">invalid</code> and attach a Hint that says exactly how to fix it.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-sm">
+                <Field>
+                  <Label required>Use-code mitra</Label>
+                  <InputRoot invalid>
+                    <Input defaultValue="49213" />
+                  </InputRoot>
+                  <Hint tone="error">Use-code harus 6 digit. Kurang 1 digit.</Hint>
+                </Field>
+              </div>
+            ),
+            caption: "Show the invalid border plus a Hint that names the rule. The mitra fixes it without retrying blind.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm">
+                <Field>
+                  <Label required>Use-code mitra</Label>
+                  <InputRoot invalid>
+                    <Input defaultValue="49213" />
+                  </InputRoot>
+                </Field>
+              </div>
+            ),
+            caption: "A red border alone tells the mitra something is wrong but not what — they retry the same value and stay stuck.",
+          }}
         />
       </DocsSection>
 

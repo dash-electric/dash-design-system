@@ -10,6 +10,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -42,7 +43,8 @@ export default function AnimatedAlertDocsPage() {
         category="Components / Feedback"
         title="Animated Alert"
         description="Alert with a soft slide-in/zoom entrance. Replays on every content change so successive validation errors feel fresh, not sticky."
-        status="new"
+        status="beta"
+        kind="specialized"
       />
 
       <DocsSection title="Install">
@@ -105,6 +107,40 @@ const current = errors[counter % errors.length]
           code={`<AnimatedAlert error={{ type: "error", title: "Invalid OTP", message: "..." }} />
 <AnimatedAlert error={{ type: "information", title: "Tip", message: "..." }} />
 <AnimatedAlert error={{ type: "success", title: "Saved", message: "..." }} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Animated alert replaces a previous message with a slide+fade. Use it for inline form feedback — submit error, save success, OTP retry. Don't decorate static page banners with it.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <AnimatedAlert error={{ type: "error", title: "OTP salah", message: "Sisa 2 percobaan sebelum akun mtr-9412 di-lock." }} className="w-full max-w-sm" />
+            ),
+            caption: "Animasi muncul ketika user submit form gagal. Title + message singkat + konsekuensi spesifik (sisa 2 percobaan).",
+          }}
+          dont={{
+            preview: (
+              <AnimatedAlert error={{ type: "information", title: "Selamat datang di Dash" }} className="w-full max-w-sm" />
+            ),
+            caption: "Jangan pakai untuk pesan statis welcome / banner. AnimatedAlert untuk feedback yang berubah, bukan dekorasi page load.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <AnimatedAlert error={{ type: "success", title: "Refund DLV-7821 berhasil", message: "Rp 48.500 dikembalikan ke wallet mitra." }} className="w-full max-w-sm" />
+            ),
+            caption: "Konfirmasi success setelah action selesai. Sertakan target (DLV-7821) + besaran (Rp 48.500) supaya dispatcher yakin.",
+          }}
+          dont={{
+            preview: (
+              <AnimatedAlert error={{ type: "success", title: "Done!" }} className="w-full max-w-sm" />
+            ),
+            caption: "'Done!' tanpa konteks = dispatcher tidak tahu yang berhasil apa. Kalau ada 3 form di-submit bersamaan, success message mana untuk yang mana?",
+          }}
         />
       </DocsSection>
 

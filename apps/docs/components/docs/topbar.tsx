@@ -16,6 +16,7 @@ const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
 )
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/registry/dash/lib/utils"
+import { DashLogo } from "@/registry/dash/ui/dash-logo"
 
 const LAYOUT_KEY = "dash-ds:layout-mode"
 
@@ -70,13 +71,9 @@ export function DocsTopbar() {
   return (
     <header className="sticky top-0 z-40 h-14 border-b border-stroke-soft-200 bg-bg-white-0/95 backdrop-blur supports-[backdrop-filter]:bg-bg-white-0/80 text-text-strong-950">
       <div className="h-full px-4 lg:px-6 flex items-center gap-4">
-        <Link href="/" className="flex items-center gap-2 mr-2">
-          <span
-            aria-hidden
-            className="size-7 rounded-md flex items-center justify-center bg-(--dash-purple-500) text-static-white font-semibold text-sm tracking-tight"
-          >
-            D
-          </span>
+        <Link href="/" className="flex items-center gap-2 mr-2" aria-label="Dash Design System home">
+          {/* Official Dash mark — registry/dash/ui/dash-logo.tsx, viewBox 32×28.8 */}
+          <DashLogo variant="mark" size="sm" aria-hidden />
           <span className="font-semibold tracking-tight text-text-strong-950">
             Dash
           </span>

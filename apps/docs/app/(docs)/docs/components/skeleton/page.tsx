@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -14,6 +15,8 @@ export default function SkeletonDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Feedback"
         title="Skeleton"
         description="Shape placeholder during fetch. Mirrors the eventual content layout so the page does not jump when data arrives. Pair with Spinner only when wait is long enough to need both."
@@ -77,6 +80,64 @@ export default function SkeletonDocsPage() {
   <Skeleton className="h-5 w-14 rounded-full" />
   <Skeleton shape="text" className="w-8" />
 </div>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Skeleton MIRROR layout sebenarnya. Size, shape, jumlah row harus match konten yang akan datang supaya tidak ada layout shift. Skip skeleton untuk wait &lt;300ms (flicker worse than gap).
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs divide-y divide-stroke-soft-200 rounded-lg border border-stroke-soft-200 bg-bg-white-0">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-2 px-3 py-2">
+                    <Skeleton className="size-7" shape="circle" />
+                    <div className="flex-1 space-y-1">
+                      <Skeleton className="w-24" shape="text" />
+                      <Skeleton className="w-16 h-2.5" shape="text" />
+                    </div>
+                    <Skeleton className="h-4 w-10 rounded-full" />
+                  </div>
+                ))}
+              </div>
+            ),
+            caption: "Mirror exact: 3 rows mitra (avatar + nama/tribe + badge) match layout final. Saat data datang, struktur tidak shift.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-4">
+                <Skeleton className="h-32 w-full" />
+              </div>
+            ),
+            caption: "Skeleton block besar tanpa mirror layout = saat data datang muncul 3 rows + avatar + badge, page jump. Mirror dengan presisi.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs grid grid-cols-3 gap-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-1">
+                    <Skeleton shape="text" className="w-12 h-2" />
+                    <Skeleton shape="text" className="w-10 h-5" />
+                  </div>
+                ))}
+              </div>
+            ),
+            caption: "3 KPI tile skeleton match real card structure: label kecil + nilai besar. Visual hint hierarchy sebelum data muncul.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs flex flex-col items-center gap-2 py-6">
+                <Skeleton className="size-8" shape="circle" />
+                <div className="text-xs text-text-soft-400 animate-pulse">Loading...</div>
+                <Skeleton shape="text" className="w-24" />
+              </div>
+            ),
+            caption: "Skeleton + Spinner + 'Loading...' bersamaan = redundant feedback. Pilih satu: skeleton (mirror layout) atau spinner (atomic action).",
+          }}
         />
       </DocsSection>
 

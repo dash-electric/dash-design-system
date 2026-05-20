@@ -20,6 +20,7 @@ import {
   DocsHeader,
   DocsSection,
   DocsExample,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { cn } from "@/registry/dash/lib/utils"
 
@@ -85,7 +86,58 @@ export default function PortalDashboardShellPage() {
           <li><code>ScrollArea</code> — sidebar overflow.</li>
         </ul>
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Tenant context in header">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Portal shells serve external partners (Kopi Kenangan, Sayurbox). Show the tenant name + logo in the header — never make them wonder which workspace they're in.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden">
+                <div className="h-8 border-b border-stroke-soft-200 px-2 flex items-center gap-2"><div className="size-5 rounded bg-warning-base" /><span className="text-xs font-medium">Kopi Kenangan</span><span className="text-[10px] text-text-soft-400">· Portal Mitra</span></div>
+                <div className="p-2 grid grid-cols-3 gap-1"><div className="h-8 rounded bg-bg-weak-50" /><div className="h-8 rounded bg-bg-weak-50" /><div className="h-8 rounded bg-bg-weak-50" /></div>
+              </div>
+            ),
+            caption: "Tenant logo + name in the topbar. Multi-tenant portal users (agency seats) know which client they're in.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden">
+                <div className="h-8 border-b border-stroke-soft-200 px-2 flex items-center"><span className="text-xs font-medium">Portal</span></div>
+                <div className="p-2 grid grid-cols-3 gap-1"><div className="h-8 rounded bg-bg-weak-50" /><div className="h-8 rounded bg-bg-weak-50" /><div className="h-8 rounded bg-bg-weak-50" /></div>
+              </div>
+            ),
+            caption: "Don't render 'Portal' with no tenant. Agency seats jumping between 4 clients lose track of which one they're acting on.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Co-branded primary color">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Portal partner color may differ from Dash purple. Apply tenant brand to one accent (active nav, CTA) — don't repaint the whole UI.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden grid grid-cols-[80px_1fr]">
+                <div className="border-r border-stroke-soft-200 p-1.5 space-y-1"><div className="h-5 rounded bg-warning-base" /><div className="h-5 rounded bg-bg-weak-50" /><div className="h-5 rounded bg-bg-weak-50" /></div>
+                <div className="p-2"><button className="h-7 px-3 rounded-md bg-warning-base text-static-white text-[10px] font-medium">+ Buat order</button></div>
+              </div>
+            ),
+            caption: "Active nav + primary CTA picks up the partner brand. Layout, typography, shadows stay Dash.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg overflow-hidden grid grid-cols-[80px_1fr]" style={{background: "linear-gradient(135deg,#FFA500,#FF6B00)"}}>
+                <div className="bg-warning-base/40 p-1.5 space-y-1"><div className="h-5 rounded bg-static-white/50" /></div>
+                <div className="p-2"><div className="h-7 rounded bg-static-white/50" /></div>
+              </div>
+            ),
+            caption: "Don't repaint the entire shell with the partner gradient. Dash patterns (spacing, typography, contrast) get lost in the costume.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }
 

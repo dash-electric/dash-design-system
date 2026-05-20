@@ -29,6 +29,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -54,6 +55,8 @@ export default function AvatarDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Data"
         title="Avatar"
         description="User identity glyph. Nine sizes, three shapes, image / text / icon fallback. Compose with AvatarIndicator for status dots or icon badges, AvatarGroup for stacked rosters."
@@ -427,6 +430,54 @@ export default function AvatarDocsPage() {
   <AvatarImage src={photo} />
   <AvatarIndicator tone="verified" position="top-right"><Verified /></AvatarIndicator>
 </Avatar>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Avatar identifies who, not what. Always provide a meaningful fallback (initials), and reserve indicators for live presence signals — not generic decoration.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-3">
+                <Avatar size="md"><AvatarFallback>IP</AvatarFallback></Avatar>
+                <Avatar size="md"><AvatarFallback>FK</AvatarFallback></Avatar>
+                <Avatar size="md"><AvatarFallback>AB</AvatarFallback></Avatar>
+              </div>
+            ),
+            caption: "Fallback = inisial 2 huruf dari nama mitra (Irfan Prima → IP). Cepat dikenali, konsisten across team.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-3">
+                <Avatar size="md"><AvatarFallback>?</AvatarFallback></Avatar>
+                <Avatar size="md"><AvatarFallback>?</AvatarFallback></Avatar>
+                <Avatar size="md"><AvatarFallback>?</AvatarFallback></Avatar>
+              </div>
+            ),
+            caption: "'?' atau emoji generic 👤 = semua mitra terlihat sama. Dispatcher tidak bisa scan-list.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <Avatar size="lg">
+                <AvatarFallback>FK</AvatarFallback>
+                <AvatarIndicator tone="online" position="bottom-right" />
+              </Avatar>
+            ),
+            caption: "Indicator online = mitra siap terima dispatch SEKARANG. Live presence signal yang actionable.",
+          }}
+          dont={{
+            preview: (
+              <Avatar size="lg">
+                <AvatarFallback>FK</AvatarFallback>
+                <AvatarIndicator tone="favorite" position="bottom-right"><StarFill /></AvatarIndicator>
+              </Avatar>
+            ),
+            caption: "Star sebagai indicator = ambigu. Favorite/decorative belong elsewhere; indicator adalah real-time signal, bukan rating.",
+          }}
         />
       </DocsSection>
 

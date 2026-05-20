@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -61,6 +62,8 @@ export default function DataTableDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Displaying Data"
         title="Data Table"
         description="Sortable, filterable table built on TanStack Table v8. For static tables use the plain Table primitive. Pair with Pagination + Filter for full list-page UX."
@@ -197,6 +200,51 @@ const columns: ColumnDef<Mitra>[] = [
     onPageChange={(p) => table.setPageIndex(p - 1)}
   />
 )}`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Data table = scannable grid. Sortable kolom yang mitra butuh urut, format value sesuai semantic (tanggal, currency, status).
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200 overflow-hidden">
+                <div className="grid grid-cols-3 bg-bg-weak-50 px-2 py-1 font-medium border-b border-stroke-soft-200">
+                  <span>Mitra</span><span>Trip terakhir ↓</span><span>Status</span>
+                </div>
+                <div className="grid grid-cols-3 px-2 py-1 border-b border-stroke-soft-200">
+                  <span>mtr-9412</span><span>14 Mei</span><Badge size="sm" appearance="lighter" status="success">Active</Badge>
+                </div>
+                <div className="grid grid-cols-3 px-2 py-1">
+                  <span>mtr-7331</span><span>09 Mei</span><Badge size="sm" appearance="lighter" status="error">Suspend</Badge>
+                </div>
+              </div>
+            ),
+            caption: "Kolom \"Trip terakhir\" sortable, format \"dd MMM\" konsisten. Status di-render Badge by tone — mata cepat scan.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200 overflow-hidden">
+                <div className="grid grid-cols-3 bg-bg-weak-50 px-2 py-1 font-medium border-b border-stroke-soft-200">
+                  <span>id</span><span>last_trip_at</span><span>status</span>
+                </div>
+                <div className="grid grid-cols-3 px-2 py-1 border-b border-stroke-soft-200">
+                  <span>mtr-9412</span><span>2026-05-14T08:23:11Z</span><span>active</span>
+                </div>
+              </div>
+            ),
+            caption: "Hindari raw column name + ISO timestamp + plain text status. Dispatcher harus parse manual setiap row.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Sticky header saat scroll panjang. Row hover state. Action di kolom terakhir (kebab menu) untuk row-level operation.",
+          }}
+          dont={{
+            caption: "Jangan render 1,000 row sekaligus. Pakai paginate atau virtualization. Dashboard lag = dispatcher tidak pakai.",
+          }}
         />
       </DocsSection>
 

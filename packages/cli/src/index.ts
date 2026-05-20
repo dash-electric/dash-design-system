@@ -15,6 +15,8 @@ import { runMcpInit } from "./commands/mcp.js"
 import { runLogin, runLogout } from "./commands/login.js"
 import { runInfo } from "./commands/info.js"
 import { runSync } from "./commands/sync.js"
+import { runDoctor } from "./commands/doctor.js"
+import { runAudit } from "./commands/audit.js"
 
 const program = new Command()
 
@@ -159,15 +161,58 @@ program
 const mcp = program.command("mcp").description("MCP server integration")
 mcp
   .command("init")
-  .description("Wire @dash/mcp-server into Claude Code MCP config")
+  .description("Wire @dash/mcp-server into Claude Code and/or Cursor MCP configs")
   .option("--token <token>", "Bearer token (defaults to DASH_REGISTRY_TOKEN env)")
   .option("--registry-url <url>", "Override registry URL")
-  .option("--config-path <path>", "Override Claude Code config path")
+  .option("--config-path <path>", "Override editor config path (single-editor mode)")
+  .option("--claude-code", "Target Claude Code only")
+  .option("--cursor", "Target Cursor only")
+  .option("--both", "Target both Claude Code and Cursor")
+  .option("--check-only", "Detect editor installs without writing")
   .action(async (opts) => {
+    const editors: Array<"claude-code" | "cursor"> = []
+    if (opts.both) {
+      editors.push("claude-code", "cursor")
+    } else {
+      if (opts.claudeCode) editors.push("claude-code")
+      if (opts.cursor) editors.push("cursor")
+    }
     await runMcpInit({
       token: opts.token,
       registryUrl: opts.registryUrl,
       configPath: opts.configPath,
+      editors: editors.length > 0 ? editors : undefined,
+      checkOnly: opts.checkOnly,
+    })
+  })
+
+program
+  .command("doctor")
+  .description("End-to-end health check (registry, token, MCP, framework, env)")
+  .option("--json", "Emit machine-readable JSON")
+  .option("--registry <url>", "Override registry URL")
+  .option("--no-network", "Skip network calls (offline diagnostic)")
+  .action(async (opts) => {
+    await runDoctor({
+      json: opts.json,
+      registry: opts.registry,
+      noNetwork: opts.network === false,
+    })
+  })
+
+program
+  .command("audit")
+  .description("Scan consumer repo for drift against Dash design-system rules")
+  .option("--path <dir>", "Scan a specific directory (defaults to cwd)")
+  .option("--json", "Emit machine-readable JSON report")
+  .option("--fail-on-error", "Exit 1 if any HIGH severity drift is found (CI mode)")
+  .option("--only <category>", "Limit to one rule category (imports | style) or a rule id")
+  .action((opts) => {
+    runAudit({
+      path: opts.path,
+      json: opts.json,
+      failOnError: opts.failOnError,
+      only: opts.only,
     })
   })
 

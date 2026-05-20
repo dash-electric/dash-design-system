@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -27,6 +28,8 @@ export default function ProgressDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Feedback"
         title="Progress"
         description="Linear and radial progress indicators. ProgressBar fills horizontally; ProgressCircle wraps a 48-80px ring. Both clamp 0-100 and share five semantic tones. Use ProgressBarLabel when you need a label + caption + description composition above and below the bar."
@@ -204,6 +207,57 @@ export default function ProgressDocsPage() {
   <ProgressBar value={68} tone="warning" />
   <Hint>Upgrade before limit</Hint>
 </Card>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Progress = determinate. Selalu pair dengan label numerik (62% atau 68/100). Tone harus match severity. Untuk indeterminate work pakai Spinner atau Shimmer.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs">
+                <ProgressBarLabel
+                  label="Kapasitas dispatch hari ini"
+                  caption="68 / 100"
+                  description="Mendekati threshold — system auto-throttle di 80%."
+                  value={68}
+                  tone="warning"
+                />
+              </div>
+            ),
+            caption: "Label deskriptif + caption count (68/100) + description konsekuensi. User tahu apa, sekarang berapa, apa yang akan terjadi.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs">
+                <ProgressBar value={68} />
+              </div>
+            ),
+            caption: "Bar tanpa label = user tidak tahu progress apa, dari berapa total. Always pair dengan label minimum.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-2">
+                <ProgressBarLabel label="Step 3 dari 4" caption="75%" value={75} tone="success" />
+                <ProgressBarLabel label="Storage" caption="62 GB / 100 GB" value={62} tone="primary" />
+                <ProgressBarLabel label="SLA breach" caption="92%" value={92} tone="error" />
+              </div>
+            ),
+            caption: "Tone sinkron dengan state: success untuk progress positive, primary untuk normal, error untuk threshold breach.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-2">
+                <ProgressBarLabel label="Step 3 dari 4" caption="75%" value={75} tone="error" />
+                <ProgressBarLabel label="Storage 62 GB / 100 GB" value={62} tone="success" />
+              </div>
+            ),
+            caption: "75% complete tapi tone='error' = user kira gagal padahal lagi progress positive. Tone harus map ke makna, bukan random.",
+          }}
         />
       </DocsSection>
 

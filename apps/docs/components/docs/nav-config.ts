@@ -166,7 +166,7 @@ export const navSections: NavSection[] = [
           { title: "Install via CLI", href: "/docs/installation/cli", status: "shipped" },
           { title: "MCP Server",      href: "/docs/tools/mcp", status: "wip" },
           { title: "Skill",           href: "/docs/tools/skill", status: "wip" },
-          { title: "Usage Dashboard", href: "/docs/admin/usage", status: "wip" },
+          { title: "Usage Dashboard", href: "/docs/admin/usage", status: "shipped" },
         ],
       },
     ],

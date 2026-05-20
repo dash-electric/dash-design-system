@@ -13,7 +13,7 @@ export default function DashSkillPage() {
       <DocsHeader
         category="Tools"
         title="Dash Skill"
-        description="A Claude Agent Skill package bundling Dash naming conventions, the decision tree, and project-aware introspection. AI assistants load it once and gain Dash fluency for the rest of the session."
+        description="A Claude Agent Skill package bundling Dash naming conventions, the decision tree, and project-aware introspection. AI assistants load it once and gain Dash fluency for the rest of the session. Phase 2 scaffold shipped — content pending pilot."
         status="wip"
       />
 
@@ -30,10 +30,10 @@ export default function DashSkillPage() {
         </ul>
       </DocsSection>
 
-      <DocsSection title="Install (planned)">
+      <DocsSection title="Install">
         <DocsCode
           language="bash"
-          code={`# planned syntax — Day 14-15
+          code={`# Phase 2 scaffold shipped in the repo as @dash/skill
 claude skill install @dash/skill
 
 # or via dash CLI
@@ -73,14 +73,14 @@ dash skill install`}
 
       <DocsSection title="Roadmap">
         <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
-          <li><strong className="text-text-strong-950">Day 14</strong> — port <code className="text-xs">registry/rules/dash-ai-rules.md</code> into Skill format (SKILL.md + frontmatter)</li>
-          <li><strong className="text-text-strong-950">Day 14</strong> — add <code className="text-xs">dash info --json</code> command to CLI</li>
-          <li><strong className="text-text-strong-950">Day 15</strong> — publish as <code className="text-xs">@dash/skill</code> to internal Verdaccio</li>
-          <li><strong className="text-text-strong-950">Day 16</strong> — beta with 2 internal teams (Halo-dash + Express), measure how often AI hands back &quot;reach for X&quot; correctly</li>
-          <li><strong className="text-text-strong-950">Day 17+</strong> — promote to public @dash/skill once MCP server + skill cross-validate</li>
+          <li><strong className="text-text-strong-950">WK01</strong> — Skill Phase 2 scaffold shipped as <code className="text-xs">@dash/skill</code> (SKILL.md + frontmatter, content pending pilot).</li>
+          <li><strong className="text-text-strong-950">WK02</strong> — <code className="text-xs">dash info --json</code> introspection wired into the scaffold.</li>
+          <li><strong className="text-text-strong-950">WK03</strong> — beta with 2 internal teams (Halo-dash + Express), measure correct &quot;reach for X&quot; rate.</li>
+          <li><strong className="text-text-strong-950">WK04</strong> — 5 PE scale pilot, cross-validate with MCP server.</li>
+          <li><strong className="text-text-strong-950">WK05</strong> — full rollout. Deploy ETA: this week 2026-05-21+.</li>
         </ul>
         <p className="text-sm text-text-sub-600 mt-3">
-          Until the Skill ships, install the static rules via <code className="text-xs">dash add ai-rules</code>
+          Pilot content still maturing — fall back on the static rules via <code className="text-xs">dash add ai-rules</code>
           and reference <code className="text-xs">@registry/rules/dash-ai-rules.md</code> in your AI tool&apos;s context.
         </p>
       </DocsSection>

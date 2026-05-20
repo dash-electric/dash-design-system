@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function SpinnerDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Feedback"
         title="Spinner"
         description="Indeterminate loading indicator. Use for async work whose duration is unknown — table fetch, file save, mutation in flight. For known-duration progress use Progress Bar."
@@ -89,6 +92,49 @@ export default function SpinnerDocsPage() {
   <Spinner size="sm" tone="white" />
   Memproses dispatch…
 </Button>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Spinner = indeterminate wait (durasi tidak tahu). Untuk known progress pakai ProgressBar. Untuk layout placeholder pakai Skeleton. Skip spinner kalau wait &lt;300ms.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <Button>
+                <Spinner size="sm" tone="white" />
+                Memproses dispatch...
+              </Button>
+            ),
+            caption: "Button loading state dengan Spinner inline + label kontekstual ('Memproses dispatch'). User tahu apa yang lagi terjadi.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-6 flex flex-col items-center gap-2">
+                <Spinner size="lg" />
+                <div className="text-xs text-text-soft-400">Loading...</div>
+              </div>
+            ),
+            caption: "Full-page spinner untuk list mitra (data fetching) = layout shift saat data datang. Pakai Skeleton mirror layout supaya stable.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-2 text-xs">
+                <Spinner size="sm" tone="primary" label="Memuat data mitra" />
+                <span className="text-text-sub-600">Memuat 200 mitra dari Halo-dash...</span>
+              </div>
+            ),
+            caption: "Spinner + custom label 'Memuat data mitra' (untuk SR) + visual context. Screen reader user dapat info, sighted dapat indicator.",
+          }}
+          dont={{
+            preview: (
+              <Spinner size="md" />
+            ),
+            caption: "Spinner standalone tanpa label kontekstual = SR user dapat 'Loading' generic. Selalu pass label spesifik kalau bukan default.",
+          }}
         />
       </DocsSection>
 

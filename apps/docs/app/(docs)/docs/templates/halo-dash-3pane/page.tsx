@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 import { DocsCode } from "@/components/docs/code-block"
@@ -73,6 +74,60 @@ export default function HaloDash3PaneDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Three-pane density">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Halo-dash 3-pane = list | thread | inspector. Each pane sized for its job: list ~280px, thread fluid, inspector ~320px. Don't equal-size the panes.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden grid grid-cols-[80px_1fr_90px]">
+                <div className="border-r border-stroke-soft-200 p-1.5 space-y-1"><div className="h-5 rounded bg-primary-alpha-16" /><div className="h-5 rounded bg-bg-weak-50" /><div className="h-5 rounded bg-bg-weak-50" /></div>
+                <div className="border-r border-stroke-soft-200 p-1.5 space-y-1"><div className="h-3 rounded bg-bg-soft-200 w-24" /><div className="h-2 rounded bg-bg-weak-50" /><div className="h-12 rounded bg-bg-weak-50" /></div>
+                <div className="p-1.5 space-y-1"><div className="h-3 rounded bg-bg-soft-200" /><div className="h-3 rounded bg-bg-weak-50" /></div>
+              </div>
+            ),
+            caption: "Narrow list (scan), wide thread (read), narrow inspector (meta). Each pane gets the width its content needs.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden grid grid-cols-3">
+                <div className="border-r border-stroke-soft-200 p-1.5"><div className="h-5 rounded bg-bg-weak-50" /></div>
+                <div className="border-r border-stroke-soft-200 p-1.5"><div className="h-5 rounded bg-bg-weak-50" /></div>
+                <div className="p-1.5"><div className="h-5 rounded bg-bg-weak-50" /></div>
+              </div>
+            ),
+            caption: "Don't equal-size the panes. Thread copy gets cramped, inspector wastes space, list overflows.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Inspector toggleable">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Inspector pane (metadata) should be collapsible — ops sometimes wants thread full-width. Don't lock it open.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden grid grid-cols-[80px_1fr]">
+                <div className="border-r border-stroke-soft-200 p-1.5 space-y-1"><div className="h-5 rounded bg-primary-alpha-16" /><div className="h-5 rounded bg-bg-weak-50" /></div>
+                <div className="p-1.5 space-y-1 relative"><div className="h-3 rounded bg-bg-soft-200 w-32" /><div className="h-12 rounded bg-bg-weak-50" /><button className="absolute top-1 right-1 size-5 rounded border border-stroke-soft-200 text-[9px]">›</button></div>
+              </div>
+            ),
+            caption: "Inspector collapses with a chevron toggle. Thread reflows to full width. State persists across sessions.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden grid grid-cols-[80px_1fr_120px]">
+                <div className="border-r border-stroke-soft-200 p-1.5"><div className="h-5 rounded bg-bg-weak-50" /></div>
+                <div className="border-r border-stroke-soft-200 p-1.5"><div className="h-3 rounded bg-bg-soft-200 w-20" /></div>
+                <div className="p-1.5 space-y-1"><div className="h-3 rounded bg-bg-weak-50" /><div className="h-3 rounded bg-bg-weak-50" /></div>
+              </div>
+            ),
+            caption: "Don't lock the inspector open. On laptop screens it crowds out the thread content the ops is reading.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

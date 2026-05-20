@@ -14,6 +14,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -42,7 +43,8 @@ export default function NotificationOnboardingDocsPage() {
         category="Components / Onboarding"
         title="Notification Onboarding"
         description="One-shot popover walkthrough that points at a single anchor element. Shows a pulsing red dot, then promotes to a card with backdrop after 800ms. Persists 'seen' to localStorage so it fires once per device."
-        status="new"
+        status="beta"
+        kind="composite"
       />
 
       <DocsSection title="Install">
@@ -84,6 +86,65 @@ export default function NotificationOnboardingDocsPage() {
           code={`<NotificationOnboarding>
   <IconButton aria-label="Notifications"><Bell /></IconButton>
 </NotificationOnboarding>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          NotificationOnboarding = walkthrough sekali untuk fitur baru. Persist 'seen' di localStorage supaya tidak nyangkut. Satu hint per session, bump storageKey saat copy berubah.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-end gap-3">
+                <div className="relative">
+                  <IconButton tone="neutral" style="stroke" size="md" aria-label="Notifications"><Bell /></IconButton>
+                  <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-error-base animate-pulse" />
+                </div>
+                <div className="text-xs text-text-sub-600 max-w-[140px]">Hint sekali → user dismiss → localStorage persist 'seen'.</div>
+              </div>
+            ),
+            caption: "Satu pulsing dot pada anchor (bell icon), promote ke card setelah 800ms, dismissable. 'Seen' tersimpan supaya tidak muncul lagi.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-wrap gap-2 max-w-xs">
+                <div className="relative">
+                  <IconButton size="sm" aria-label="A"><Bell /></IconButton>
+                  <span className="absolute -top-1 -right-1 size-2 rounded-full bg-error-base animate-pulse" />
+                </div>
+                <div className="relative">
+                  <Button size="sm">Action</Button>
+                  <span className="absolute -top-1 -right-1 size-2 rounded-full bg-error-base animate-pulse" />
+                </div>
+                <div className="relative">
+                  <IconButton size="sm" aria-label="C"><Bell /></IconButton>
+                  <span className="absolute -top-1 -right-1 size-2 rounded-full bg-error-base animate-pulse" />
+                </div>
+              </div>
+            ),
+            caption: "3 hint pulsing simultan = user kewalahan tidak tahu klik mana dulu. Maks satu onboarding hint aktif per layar.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="text-xs text-text-sub-600 max-w-xs space-y-1">
+                <div className="font-medium text-text-strong-950">storageKey: dash_notif_v2_2026_05_20</div>
+                <div>Bump versi + tanggal saat copy/feature berubah supaya hint muncul lagi.</div>
+              </div>
+            ),
+            caption: "storageKey versioned (v2_2026_05_20). Saat feature update, bump key → user yang sudah 'seen' versi lama dapat hint baru.",
+          }}
+          dont={{
+            preview: (
+              <div className="text-xs text-text-sub-600 max-w-xs space-y-1">
+                <div className="font-medium text-text-strong-950">storageKey: seen</div>
+                <div>Generic key, tabrakan dengan onboarding fitur lain di app yang sama.</div>
+              </div>
+            ),
+            caption: "storageKey 'seen' generic = collide dengan onboarding lain. Pakai prefix unique (dash_<feature>_<version>).",
+          }}
         />
       </DocsSection>
 

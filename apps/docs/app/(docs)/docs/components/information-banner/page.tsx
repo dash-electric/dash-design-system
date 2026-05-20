@@ -11,6 +11,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -48,7 +49,8 @@ export default function InformationBannerDocsPage() {
         category="Components / Marketing"
         title="Information Banner"
         description="Multi-slide hero carousel for in-product promotions. Auto-advances every 6s, pause-on-hover, pill indicators widen to show the active slide. Each slide is a single image so marketing owns the design end-to-end."
-        status="new"
+        status="beta"
+        kind="specialized"
       />
 
       <DocsSection title="Install">
@@ -76,6 +78,48 @@ export default function InformationBannerDocsPage() {
             </div>
           }
           code={`<InformationBanner slides={SLIDES} autoMs={4000} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          InformationBanner = hero slideshow di dashboard. Maks 3-4 slide, auto-advance 5-6 detik, pause on hover. Setiap slide single image dengan CTA jelas. Bukan tempat untuk system alert.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md">
+                <InformationBanner slides={SLIDES.slice(0, 3)} autoMs={5000} />
+              </div>
+            ),
+            caption: "3 slide promo dengan auto-advance 5 detik. User dapat lihat preview dot 1/3, 2/3, 3/3 — terbatas tapi visible.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md text-xs text-text-sub-600 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 text-center">
+                12 slide dengan auto-advance 2 detik
+              </div>
+            ),
+            caption: "12 slide auto-advance cepat = user tidak sempat baca apa pun. Maks 4 slide, advance ≥5 detik supaya readable.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md">
+                <InformationBanner slides={[SLIDES[0]]} autoMs={0} />
+              </div>
+            ),
+            caption: "Single slide (autoMs=0) untuk promo prioritas. Tidak auto-rotate karena cuma ada satu pesan — indicator hilang otomatis.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-error-base text-static-white p-3 text-xs">
+                System error: payment gateway down
+              </div>
+            ),
+            caption: "System alert (payment down) bukan di InformationBanner. Pakai Banner atau Alert. InformationBanner = marketing/promo content.",
+          }}
         />
       </DocsSection>
 

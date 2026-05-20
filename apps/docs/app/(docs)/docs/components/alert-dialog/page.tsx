@@ -18,6 +18,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -25,6 +26,8 @@ export default function AlertDialogDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Overlays"
         title="Alert Dialog"
         description="Modal for destructive or irreversible action confirmations. Differs from Modal — cannot dismiss by clicking overlay, must use explicit Cancel or Action button. Built on Radix AlertDialog."
@@ -240,6 +243,48 @@ export default function AlertDialogDocsPage() {
   </AlertDialogHeader>
   …
 </AlertDialogContent>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Alert Dialog hanya untuk aksi destruktif / irreversible. Konsekuensi harus tertulis spesifik, action label harus verb yang sama dengan aksinya.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-col gap-2 w-full max-w-xs">
+                <div className="text-sm font-semibold">Hapus kode DASH42?</div>
+                <p className="text-xs text-text-sub-600">Kode tidak bisa di-recover. 12 mitra yang sedang pakai kode ini akan otomatis pindah ke kode default.</p>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button size="sm" tone="neutral" style="stroke">Batal</Button>
+                  <Button size="sm" tone="destructive">Hapus kode</Button>
+                </div>
+              </div>
+            ),
+            caption: "Action button menyatakan verb persis (Hapus kode). Description spell out konsekuensi konkret (12 mitra terdampak).",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-col gap-2 w-full max-w-xs">
+                <div className="text-sm font-semibold">Konfirmasi</div>
+                <p className="text-xs text-text-sub-600">Lanjutkan?</p>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button size="sm" tone="neutral" style="stroke">Tidak</Button>
+                  <Button size="sm">OK</Button>
+                </div>
+              </div>
+            ),
+            caption: "Hindari OK/Tidak generic. Dispatcher klik tanpa baca, lalu kaget data hilang.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Pakai Alert Dialog untuk suspend permanen mitra, hapus kode referral, cancel delivery yang sudah PICKED_UP — aksi yang tidak punya undo.",
+          }}
+          dont={{
+            caption: "Jangan pakai Alert Dialog untuk action reversible (toggle tribe, edit profil, ubah lot). Itu cukup Modal biasa atau inline edit.",
+          }}
         />
       </DocsSection>
 

@@ -14,6 +14,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -21,6 +22,8 @@ export default function BreadcrumbDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Navigation"
         title="Breadcrumb"
         description="Path navigation. Shows where the user is in the hierarchy and lets them jump back up. Use it on any page two levels deep or further inside Halo-dash, mitra detail pages, and audit screens."
@@ -219,6 +222,66 @@ export default function BreadcrumbDocsPage() {
 <BreadcrumbLink asChild>
   <Link href="/halo-dash">Halo-dash</Link>
 </BreadcrumbLink>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Breadcrumb = peta hierarki halaman. Last step = current page (non-clickable). Pakai untuk halaman ≥2 level dalam. Jangan untuk linear wizard atau halaman landing.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem><BreadcrumbLink href="#">Halo-dash</BreadcrumbLink></BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem><BreadcrumbLink href="#">Mitra</BreadcrumbLink></BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem><BreadcrumbPage>mtr-9412</BreadcrumbPage></BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            ),
+            caption: "Last crumb (mtr-9412) = BreadcrumbPage, non-clickable. Parent crumbs (Halo-dash, Mitra) clickable supaya dispatcher bisa naik level cepat.",
+          }}
+          dont={{
+            preview: (
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem><BreadcrumbLink href="#">Halo-dash</BreadcrumbLink></BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem><BreadcrumbLink href="#">mtr-9412</BreadcrumbLink></BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            ),
+            caption: "Current page jadi link = user klik halaman yang sedang dibuka = full reload sia-sia. Last crumb HARUS BreadcrumbPage.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem><BreadcrumbLink href="#"><Home aria-hidden className="size-4" /><span className="sr-only">Home</span></BreadcrumbLink></BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem><BreadcrumbEllipsis /></BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem><BreadcrumbLink href="#">Mitra</BreadcrumbLink></BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem><BreadcrumbPage>mtr-9412</BreadcrumbPage></BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            ),
+            caption: "≥5 step → collapse middle dengan BreadcrumbEllipsis (expand via dropdown). User tetap lihat root + parent terakhir + current.",
+          }}
+          dont={{
+            preview: (
+              <div className="text-xs text-text-sub-600 leading-relaxed">
+                Home / Halo-dash / Operations / Tribe-Express / Mitra / Aktif / Bekasi / Region 4 / mtr-9412
+              </div>
+            ),
+            caption: "9 step tanpa collapse = breadcrumb pecah multi-line, tidak ada yang baca. Selalu gunakan ellipsis di tengah saat trail panjang.",
+          }}
         />
       </DocsSection>
 

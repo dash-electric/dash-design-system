@@ -5,6 +5,7 @@ import {
   DocsHeader,
   DocsSection,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -197,6 +198,62 @@ export function ThemeToggle() {
           </div>
         </div>
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Token-driven theming">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Dark mode flips through semantic tokens — `bg-bg-white-0` swaps automatically. Don't ship `dark:` class overrides on every element.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs space-y-1">
+                <p className="font-mono">bg-bg-white-0</p>
+                <p className="font-mono">text-text-strong-950</p>
+                <p className="text-text-soft-400 text-[10px]">— flips automatically in dark mode —</p>
+              </div>
+            ),
+            caption: "Use semantic tokens for surface, text, stroke. Dark mode flips them through a single CSS variable swap.",
+          }}
+          dont={{
+            preview: (
+              <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs space-y-1">
+                <p className="font-mono">bg-white dark:bg-zinc-900</p>
+                <p className="font-mono">text-black dark:text-white</p>
+                <p className="font-mono">border-gray-200 dark:border-gray-800</p>
+                <p className="text-text-soft-400 text-[10px]">— authored 2× per element —</p>
+              </div>
+            ),
+            caption: "Don't author light + dark variants per element. Every new element doubles your test surface and drifts from the system.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Contrast in both modes">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Verify contrast ratios in both light and dark. Don't ship a 'pretty' dark mode that fails WCAG-AA on key text.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="rounded-lg bg-bg-strong-950 text-text-white-0 p-3 text-xs space-y-1">
+                <p className="font-semibold">Mitra aktif</p>
+                <p>734 · ↑ 12% vs minggu lalu</p>
+                <p className="text-[10px] text-text-sub-300">Ratio 7.2 : 1 — AAA</p>
+              </div>
+            ),
+            caption: "Dark surface paired with high-contrast text passes WCAG-AAA. Numbers, status badges, axis labels all readable.",
+          }}
+          dont={{
+            preview: (
+              <div className="rounded-lg p-3 text-xs space-y-1" style={{background: "#1A1422", color: "#7C4FC4"}}>
+                <p className="font-semibold">Mitra aktif</p>
+                <p>734</p>
+                <p className="text-[10px]">Ratio 2.4 : 1 — fails AA</p>
+              </div>
+            ),
+            caption: "Don't use brand purple as dark-mode body text. 2.4 : 1 contrast = unreadable for anyone over 40 or with low-light dimming.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

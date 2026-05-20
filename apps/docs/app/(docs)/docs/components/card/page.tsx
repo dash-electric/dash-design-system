@@ -18,6 +18,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -25,6 +26,8 @@ export default function CardDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Displaying Data"
         title="Card"
         description="Surface for grouping related content. 3 variants (stroke / elevated / ghost), composable Header / Title / Description / Content / Footer / Media slots."
@@ -135,6 +138,76 @@ export default function CardDocsPage() {
     <CardDescription>…</CardDescription>
   </CardHeader>
 </Card>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          A Card groups one idea. Don&apos;t flatten unrelated data into the same surface.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <Card className="w-72">
+                <CardHeader>
+                  <CardDescription>Reservasi · Bekasi-Tangerang</CardDescription>
+                  <CardTitle className="text-2xl tracking-tight">734</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <span className="text-xs text-text-sub-600">142 mitra aktif · surge ON</span>
+                </CardContent>
+              </Card>
+            ),
+            caption: "One topic per Card — judul, satu metrik utama, satu konteks pendukung. Mata mitra dispatcher langsung paham.",
+          }}
+          dont={{
+            preview: (
+              <Card className="w-72">
+                <CardHeader>
+                  <CardTitle className="text-base">Ringkasan</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-1 text-xs text-text-sub-600">
+                  <div>Dispatch hari ini: 1,284</div>
+                  <div>Mitra suspended: 12</div>
+                  <div>Outlet baru: 4</div>
+                  <div>NPS: 8.2 · Churn: 1.4%</div>
+                </CardContent>
+              </Card>
+            ),
+            caption: "Jangan jejalkan 4 metrik tanpa hierarki dalam satu Card. Split jadi Card-per-topik supaya dispatcher bisa skim cepat.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <Card variant="elevated" className="w-72">
+                <CardHeader>
+                  <CardTitle>Express tribe</CardTitle>
+                  <CardDescription>Same-day pickup, surge enabled</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button size="xs">Review tribe</Button>
+                </CardFooter>
+              </Card>
+            ),
+            caption: "Satu primary action per Card di CardFooter. Mitra tahu langkah berikutnya tanpa harus baca ulang.",
+          }}
+          dont={{
+            preview: (
+              <Card variant="elevated" className="w-72">
+                <CardHeader>
+                  <CardTitle>Express tribe</CardTitle>
+                </CardHeader>
+                <CardFooter className="flex flex-wrap gap-1">
+                  <Button size="xs">Review</Button>
+                  <Button size="xs" tone="neutral" style="stroke">Export</Button>
+                  <Button size="xs" tone="neutral" style="stroke">Suspend</Button>
+                  <Button size="xs" tone="destructive">Hapus</Button>
+                </CardFooter>
+              </Card>
+            ),
+            caption: "Hindari 4 aksi sejajar di footer Card. Pindahkan aksi sekunder ke menu overflow atau halaman detail.",
+          }}
         />
       </DocsSection>
 

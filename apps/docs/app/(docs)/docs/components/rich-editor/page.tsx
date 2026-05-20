@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -18,6 +19,8 @@ export default function RichEditorDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Form"
         title="Rich Editor"
         description="Tiptap-powered rich text editor with Dash-styled toolbar. Use for suspend reason, complaint reply, announcement body, internal comment."
@@ -95,6 +98,47 @@ export default function RichEditorDocsPage() {
             </div>
           }
           code={`<RichEditor toolbar="none" defaultContent="<p>…</p>" />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Rich editor untuk konten yang butuh formatting (announcement mitra, internal note dispatcher). Bukan untuk single-line text.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200 bg-bg-white-0">
+                <div className="border-b border-stroke-soft-200 p-1 flex gap-1 text-text-sub-600">
+                  <span className="font-bold">B</span>
+                  <span className="italic">I</span>
+                  <span>•</span>
+                </div>
+                <div className="p-2">
+                  Mitra <strong>mtr-9412</strong> di-suspend karena 3 dispatch terlewat.
+                </div>
+              </div>
+            ),
+            caption: "Note internal dispatcher: bold mitra ID, list dispatch yang missed. Editor minimal — Bold/Italic/List cukup.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200 bg-bg-white-0">
+                <div className="border-b border-stroke-soft-200 p-1 flex flex-wrap gap-0.5 text-text-sub-600">
+                  {Array.from({length: 18}, (_, i) => <span key={i} className="px-1">T{i}</span>)}
+                </div>
+              </div>
+            ),
+            caption: "Hindari 18 toolbar button (table, image, embed, color, font-family). Mitra cuma butuh basic markup.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Untuk \"Nama mitra\" / \"Nomor handphone\" / \"Alasan suspend\" — pakai plain Input/Textarea, bukan RichEditor. Save bandwidth dan storage.",
+          }}
+          dont={{
+            caption: "Jangan biarkan output HTML render langsung tanpa sanitize. XSS lewat alasan suspend mitra = bad day.",
+          }}
         />
       </DocsSection>
 

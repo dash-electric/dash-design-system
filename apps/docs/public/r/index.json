@@ -438,7 +438,7 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "react-hook-form integration with accessible label/control/description/error wiring. Form/FormField/FormItem/FormLabel/FormControl/FormDescription/FormMessage + useFormField hook. Pair with zod via @hookform/resolvers."
+      "description": "Vanilla useState + hand-rolled validation. No external form lib. Exports useDashForm hook + Form/FormField/FormItem/FormLabel/FormControl/FormDescription/FormMessage + useFormField + validateForm helper. Matches Dash AI rules (no react-hook-form, no zod)."
     },
     {
       "name": "field",

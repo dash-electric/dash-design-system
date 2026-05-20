@@ -100,6 +100,52 @@ dash search "settings" --type page
 
 Use this before `dash add` to confirm the exact name. The registry has 178 items — guessing rarely works.
 
+### `dash doctor`
+
+End-to-end health check per laptop. Runs ten diagnostics: registry reachable (`/api/health`), token valid (`/r/utils.json` with `Authorization: Bearer …`), MCP wired (Claude Code + Cursor), CLI version, framework detected, `components.json` present, `.env.local` has a token, Node ≥ 20, package manager, workspace detection.
+
+```bash
+dash doctor                      # pretty output
+dash doctor --json               # machine output (CI / tooling)
+dash doctor --no-network         # offline diagnostic (skips registry + token probes)
+dash doctor --registry http://localhost:3000   # override registry for the check
+```
+
+Sample output:
+
+```
+🩺 Dash DS health check
+
+  ✓ Registry reachable        https://ds.dash.com/api/health → 200
+  ✓ Token valid               /r/utils.json → 200
+  ✓ MCP wired                 Claude Code · Cursor
+  ✓ CLI version               v0.4.0
+  ✓ Framework                 next-app
+  ✓ components.json           found
+  ✓ .env.local                DASH_REGISTRY_TOKEN set
+  ✓ Node                      v20.10.0
+  ✓ Package manager           pnpm
+  ✓ Workspace                 workspace detected
+
+Summary: 10 OK, 0 warnings, 0 errors
+```
+
+The command never prints the token value — only its presence. Exits non-zero when any check is in `error` state (handy for CI / pre-flight scripts).
+
+### `dash mcp init`
+
+Wires `@dash/mcp-server` into your editor's MCP config. Supports both Claude Code (`~/.claude/mcp-config.json`, key `dash`, bakes the token in `env`) and Cursor (`~/.cursor/mcp.json`, key `@dash`, interpolates `${env:DASH_REGISTRY_TOKEN}` so the token stays out of disk).
+
+```bash
+dash mcp init                    # auto-detect installed editors
+dash mcp init --claude-code      # Claude Code only
+dash mcp init --cursor           # Cursor only
+dash mcp init --both             # both editors in one shot
+dash mcp init --check-only       # detect + report, no writes
+```
+
+For Cursor, export `DASH_REGISTRY_TOKEN` in your shell rc (`~/.zshrc` or `~/.bashrc`) so Cursor can resolve the `${env:…}` reference at startup.
+
 ## Full command reference
 
 | Command | Description |
@@ -111,7 +157,8 @@ Use this before `dash add` to confirm the exact name. The registry has 178 items
 | `dash list` | List all items (filter with `--type ui\|block\|page\|hook`) |
 | `dash diff <name>` | Compare local copy of an item against latest registry version |
 | `dash build` | Build registry JSON from source (only inside the `dash-ds` repo) |
-| `dash mcp init` | Wire `@dash/mcp-server` into Claude Code's `mcp_servers.json` |
+| `dash mcp init` | Wire `@dash/mcp-server` into Claude Code (`~/.claude/mcp-config.json`) and/or Cursor (`~/.cursor/mcp.json`). Auto-detects installed editors. Flags: `--claude-code`, `--cursor`, `--both`, `--check-only` |
+| `dash doctor` | End-to-end health check (registry reachable, token valid, MCP wired per editor, framework, Node, package manager, workspace root). Flags: `--json`, `--registry <url>`, `--no-network` |
 
 Global flags: `--registry-url <url>`, `--token <bearer>`, `--cwd <path>`, `--verbose`.
 

@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -63,6 +64,61 @@ export default function ProductsGridDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Price + status pairing">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Each product card shows price prominently and a stock/availability badge. Don't leave the user guessing whether 'Lili Mineral Water 600ml' is in stock.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="grid grid-cols-3 gap-2 w-full max-w-md">
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-1"><div className="aspect-square rounded-md bg-bg-weak-50" /><p className="text-xs font-medium">Lili 600ml</p><p className="text-xs text-text-strong-950 font-semibold">Rp 4.500</p><span className="inline-block rounded-full bg-success-lighter text-success-dark px-2 py-0.5 text-[9px]">Stok 124</span></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-1"><div className="aspect-square rounded-md bg-bg-weak-50" /><p className="text-xs font-medium">Spun coffee</p><p className="text-xs text-text-strong-950 font-semibold">Rp 28.000</p><span className="inline-block rounded-full bg-warning-lighter text-warning-dark px-2 py-0.5 text-[9px]">Stok 4</span></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-1"><div className="aspect-square rounded-md bg-bg-weak-50" /><p className="text-xs font-medium">Chagee tea</p><p className="text-xs text-text-strong-950 font-semibold">Rp 35.000</p><span className="inline-block rounded-full bg-error-lighter text-error-dark px-2 py-0.5 text-[9px]">Habis</span></div>
+              </div>
+            ),
+            caption: "Price + stock state on every card. Ops can scan the grid and spot what's out of stock without clicking.",
+          }}
+          dont={{
+            preview: (
+              <div className="grid grid-cols-3 gap-2 w-full max-w-md">
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-1"><div className="aspect-square rounded-md bg-bg-weak-50" /><p className="text-xs font-medium">Lili 600ml</p></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-1"><div className="aspect-square rounded-md bg-bg-weak-50" /><p className="text-xs font-medium">Spun coffee</p></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2 space-y-1"><div className="aspect-square rounded-md bg-bg-weak-50" /><p className="text-xs font-medium">Chagee tea</p></div>
+              </div>
+            ),
+            caption: "Don't show product name alone. Reader needs price for decision and stock state for action.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Image aspect ratio consistency">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          All product images render at the same aspect ratio. Mixed 1:1, 4:3, and 16:9 inside one grid creates visual chaos.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="grid grid-cols-3 gap-2 w-full max-w-md">
+                <div className="rounded-lg bg-bg-weak-50 aspect-square" />
+                <div className="rounded-lg bg-bg-weak-50 aspect-square" />
+                <div className="rounded-lg bg-bg-weak-50 aspect-square" />
+              </div>
+            ),
+            caption: "Uniform 1:1 thumbnails. Grid rows align, product names sit at the same Y position, scan is clean.",
+          }}
+          dont={{
+            preview: (
+              <div className="grid grid-cols-3 gap-2 w-full max-w-md items-end">
+                <div className="rounded-lg bg-bg-weak-50 aspect-square" />
+                <div className="rounded-lg bg-bg-weak-50 aspect-[4/3]" />
+                <div className="rounded-lg bg-bg-weak-50 aspect-[16/9]" />
+              </div>
+            ),
+            caption: "Don't mix aspect ratios across product cards. Names hop around vertically and the grid feels broken.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

@@ -32,6 +32,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -125,6 +126,8 @@ export default function CommandDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Navigation"
         title="Command Menu"
         description="Keyboard-first launcher. Triggered by a search input or ⌘K. Built on cmdk + Radix Dialog. Supports leading icons / avatars, descriptions, group headings, dismissible filter chips, multi-column layouts, and a kbd-hint footer."
@@ -380,6 +383,47 @@ export default function CommandDocsPage() {
     </CommandList>
   </div>
 </Command>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Command palette = power-user shortcut. Tampilkan grouped, scoped, dengan keyboard shortcut chip.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1 text-xs">
+                <div className="text-[10px] uppercase text-text-soft-400 tracking-wider">Mitra</div>
+                <div className="rounded bg-bg-weak-50 px-2 py-1.5">Suspend mtr-9412</div>
+                <div className="rounded px-2 py-1.5 flex items-center justify-between">
+                  <span>Reaktivasi mitra</span>
+                  <kbd className="text-[9px] text-text-soft-400">⌘ R</kbd>
+                </div>
+                <div className="text-[10px] uppercase text-text-soft-400 tracking-wider mt-2">Delivery</div>
+                <div className="rounded px-2 py-1.5">Cancel DLV-7821</div>
+              </div>
+            ),
+            caption: "Items grouped per domain (Mitra / Delivery), shortcut visible. Dispatcher action under 2 detik.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-0.5 text-xs">
+                {["Suspend mitra", "Reaktivasi mitra", "Cancel delivery", "Edit profil", "Export CSV", "Reset kode", "Reassign trip", "Logout"].map(i => (
+                  <div key={i} className="px-2 py-1">{i}</div>
+                ))}
+              </div>
+            ),
+            caption: "Hindari flat list 8+ item tanpa grouping atau shortcut. Mata mitra scan lambat, command palette kehilangan fungsi power-user.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Empty state: tampilkan recent action / shortcut populer. Mitra baru tahu apa yang bisa dilakukan.",
+          }}
+          dont={{
+            caption: "Jangan tampilkan command palette dengan empty result tanpa hint. Dispatcher buka palette → blank → close.",
+          }}
         />
       </DocsSection>
 

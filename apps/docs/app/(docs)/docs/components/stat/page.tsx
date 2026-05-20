@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function StatDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="specialized"
         category="Components / Displaying Data"
         title="Stat"
         description="KPI tile primitive. Label + value + trend indicator + description. Wrap in Card to add a surface, or use bare for inline metrics."
@@ -137,6 +140,63 @@ export default function StatDocsPage() {
   <StatValue>4m 12s</StatValue>
   <StatTrend trend="down" value="-32s">vs 7d ago</StatTrend>
 </Stat>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Stat = KPI tile. Selalu pair value dengan trend + comparison window ('vs kemarin'). Tanpa context, angka 1,284 tidak bermakna. Trend arrow harus match interpretasi user.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <Card className="w-full max-w-xs">
+                <Stat>
+                  <StatLabel>Dispatch Bekasi hari ini</StatLabel>
+                  <StatValue>1,284</StatValue>
+                  <StatTrend trend="up" value="+12.4%">vs kemarin</StatTrend>
+                </Stat>
+              </Card>
+            ),
+            caption: "Label spesifik (Bekasi hari ini) + nilai + trend dengan comparison window. User langsung tahu apa, sekarang berapa, dibanding kapan.",
+          }}
+          dont={{
+            preview: (
+              <Card className="w-full max-w-xs">
+                <Stat>
+                  <StatLabel>Total</StatLabel>
+                  <StatValue>1,284</StatValue>
+                </Stat>
+              </Card>
+            ),
+            caption: "Label 'Total' tanpa subject + tanpa trend = nilai 1,284 dari apa, naik atau turun? Stat butuh konteks minimum.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <Card className="w-full max-w-xs">
+                <Stat>
+                  <StatLabel>Mitra suspended</StatLabel>
+                  <StatValue>28</StatValue>
+                  <StatTrend trend="down" value="-3">7-day</StatTrend>
+                </Stat>
+              </Card>
+            ),
+            caption: "Suspended turun = good news → trend='down' tapi context bagus. Sebenarnya for ops, suspend turun positive — selalu align arrow ke direction angka, bukan interpretasi.",
+          }}
+          dont={{
+            preview: (
+              <Card className="w-full max-w-xs">
+                <Stat>
+                  <StatLabel>Mitra aktif</StatLabel>
+                  <StatValue>734</StatValue>
+                  <StatTrend trend="up" value="-12">7-day</StatTrend>
+                </Stat>
+              </Card>
+            ),
+            caption: "Trend='up' tapi value '-12' = arrow naik dengan delta negatif. Konflik visual. Pastikan trend (arah) match dengan tanda value.",
+          }}
         />
       </DocsSection>
 

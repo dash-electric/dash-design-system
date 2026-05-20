@@ -41,6 +41,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -80,6 +81,8 @@ export default function DrawerDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Overlay"
         title="Drawer"
         description="Side-anchored panel for secondary flows (detail view, config, search). Compose Header (with optional leading icon + description), Body, Footer. Built on Radix Dialog — supports any side (left/right/top/bottom)."
@@ -109,6 +112,45 @@ export default function DrawerDocsPage() {
     <DrawerClose asChild><CompactButton aria-label="Close"><Close /></CompactButton></DrawerClose>
   </div>
 </DrawerHeader>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Drawer adalah secondary surface. Konteks utama tetap visible. Bukan modal yang block screen.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex w-full max-w-xs gap-2">
+                <div className="flex-1 rounded border border-stroke-soft-200 p-2 text-xs text-text-sub-600">Delivery list (24 row)</div>
+                <div className="w-32 rounded border border-stroke-soft-200 bg-bg-weak-50 p-2">
+                  <div className="text-xs font-semibold">DLV-7821</div>
+                  <div className="text-[10px] text-text-sub-600">PICKED_UP · ETA 14 min</div>
+                </div>
+              </div>
+            ),
+            caption: "Drawer right untuk detail delivery. List tetap terlihat, dispatcher track 24 delivery sambil drill ke satu.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-col w-full max-w-xs gap-2">
+                <div className="rounded border border-stroke-soft-200 bg-bg-weak-50 p-2 text-xs">
+                  <div className="font-semibold mb-1">Konfirmasi cancel DLV-7821?</div>
+                  <div className="text-text-sub-600">Customer akan di-notify.</div>
+                </div>
+              </div>
+            ),
+            caption: "Jangan pakai Drawer untuk konfirmasi destructive — itu pakai Alert Dialog (focused, blocks input).",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Drawer bottom hanya untuk mobile context (Halo-dash app driver). Desktop default = right side.",
+          }}
+          dont={{
+            caption: "Jangan nest Drawer dalam Drawer (DLV detail → mitra detail → outlet detail). Itu confusing — flatten ke single drawer dengan sub-section.",
+          }}
         />
       </DocsSection>
 

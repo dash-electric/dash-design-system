@@ -1,3 +1,4 @@
+import { DocsDoDont } from "@/components/docs/page-shell"
 type ShadowToken = {
   token: string
   cssVar: string
@@ -217,6 +218,55 @@ export default function ShadowsPage() {
           dark mode variants are Dash-tuned for OLED-friendly contrast.
         </p>
       </section>
-    </article>
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Elevation map</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Three shadow tokens: regular (resting card), medium (sticky header), high (popover). Don't invent bespoke shadows per surface.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-4 p-4">
+                <div className="rounded-lg bg-background p-3 text-xs shadow-regular-md">resting card · md</div>
+                <div className="rounded-lg bg-background p-3 text-xs shadow-regular-lg">sticky header · lg</div>
+                <div className="rounded-lg bg-background p-3 text-xs shadow-regular-xl">popover · xl</div>
+              </div>
+            ),
+            caption: "Three semantic tokens. Every surface elevation is consistent across pages.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-4 p-4">
+                <div className="rounded-lg bg-background p-3 text-xs" style={{boxShadow: "0 2px 4px rgba(0,0,0,0.08)"}}>card a</div>
+                <div className="rounded-lg bg-background p-3 text-xs" style={{boxShadow: "0 3px 7px rgba(0,0,0,0.12)"}}>card b</div>
+                <div className="rounded-lg bg-background p-3 text-xs" style={{boxShadow: "0 4px 6px rgba(0,0,0,0.1)"}}>card c</div>
+              </div>
+            ),
+            caption: "Don't author bespoke shadows. 12 nearly-identical elevations on one page fight each other.",
+          }}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Hover lifts one level</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Resting card → regular-md. Hovered card → regular-lg. Don't drop elevation on hover — feels like the card is sinking.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex gap-3">
+                <div className="rounded-lg bg-background p-3 text-xs shadow-regular-md">Resting · md</div>
+                <div className="rounded-lg bg-background p-3 text-xs shadow-regular-lg">Hovered · lg</div>
+              </div>
+            ),
+            caption: "Hover lifts the card one elevation step. Tactile cue that the surface is interactive.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex gap-3">
+                <div className="rounded-lg bg-background p-3 text-xs shadow-regular-xl">Resting · xl</div>
+                <div className="rounded-lg bg-background p-3 text-xs shadow-regular-md">Hovered · md</div>
+              </div>
+            ),
+            caption: "Don't drop elevation on hover. Card sinks instead of lifting — counter-intuitive haptic.",
+          }}
+        />
+      </section>
+        </article>
   )
 }

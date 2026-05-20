@@ -24,6 +24,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -81,6 +82,8 @@ export default function SwitchDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Form"
         title="Switch"
         description="Binary toggle for settings that take effect immediately. Pair with Label (+ optional sublabel, NEW badge, description, link). Compose into card patterns for integrations, notification preferences, dropdown menu rows."
@@ -490,6 +493,55 @@ import { Label } from "@/registry/dash/ui/label"
           code={`<Switch size="sm" />
 <Switch size="md" />
 <Switch size="lg" />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Switch = instant toggle on/off, perubahan langsung tersimpan tanpa Save button. Label pakai action verb ('Aktifkan notifikasi'). Untuk pilihan opt-in form yang butuh Submit, pakai Checkbox.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center justify-between w-full max-w-xs gap-3 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3">
+                <div>
+                  <Label htmlFor="dd-sw-1" className="text-xs font-medium">Aktifkan notifikasi delivery</Label>
+                  <p className="text-[10px] text-text-sub-600">Email + SMS saat status berubah.</p>
+                </div>
+                <Switch id="dd-sw-1" defaultChecked />
+              </div>
+            ),
+            caption: "Label action verb 'Aktifkan notifikasi delivery' + description scope (Email+SMS). User pahami efek toggle.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-2 w-full max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3">
+                <Switch id="dd-sw-2" />
+                <Label htmlFor="dd-sw-2" className="text-xs">On / Off</Label>
+              </div>
+            ),
+            caption: "Label 'On / Off' abstrak = user tidak tahu apa yang akan on/off. Pakai action verb spesifik.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 max-w-xs">
+                <Label htmlFor="dd-sw-3" className="text-xs">Auto-suspend mitra setelah 3 dispatch terlewat</Label>
+                <Switch id="dd-sw-3" defaultChecked />
+              </div>
+            ),
+            caption: "Setting auto-save (langsung apply saat toggle). Tidak perlu Save button untuk setting yang instant-apply.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-2 w-full max-w-xs">
+                <Switch id="dd-sw-4" />
+                <Label htmlFor="dd-sw-4" className="text-xs">Saya menyetujui Syarat & Ketentuan</Label>
+              </div>
+            ),
+            caption: "Untuk consent / opt-in form (TOS, marketing email) pakai Checkbox. Switch implikasi instant-apply, T&C tidak.",
+          }}
         />
       </DocsSection>
 

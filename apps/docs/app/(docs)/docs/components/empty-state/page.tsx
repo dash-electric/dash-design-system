@@ -15,6 +15,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -22,6 +23,8 @@ export default function EmptyStateDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Displaying Data"
         title="Empty State"
         description="What a list, table, or query result looks like when there is nothing to show. Always provide a recovery action — search, create new, change filter."
@@ -178,6 +181,63 @@ export default function EmptyStateDocsPage() {
     </EmptyState>
   }
 />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Empty state = jangan biarkan user buntu. Selalu: title (apa yang kosong) + description (kenapa) + action (cara recovery). Tanpa CTA, user keluar dari halaman.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <EmptyState size="sm">
+                <EmptyStateIcon><Inbox /></EmptyStateIcon>
+                <EmptyStateTitle>Belum ada delivery hari ini</EmptyStateTitle>
+                <EmptyStateDescription>Buat delivery pertama untuk mulai dispatch ke mitra Express Bekasi.</EmptyStateDescription>
+                <EmptyStateActions>
+                  <Button size="sm">Buat delivery</Button>
+                </EmptyStateActions>
+              </EmptyState>
+            ),
+            caption: "Title spesifik ('Belum ada delivery hari ini'), description kasih konteks (kemana akan dispatch), CTA jelas ('Buat delivery'). User langsung tahu next step.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full text-center py-8 text-xs text-text-soft-400">
+                No data
+              </div>
+            ),
+            caption: "'No data' tanpa icon, tanpa CTA, tanpa konteks = dead end. User tidak tahu kenapa kosong atau harus ngapain.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <EmptyState size="sm">
+                <EmptyStateIcon><Search /></EmptyStateIcon>
+                <EmptyStateTitle>Tidak ada mitra cocok</EmptyStateTitle>
+                <EmptyStateDescription>Filter tribe=Reservasi + kota=Bandung tidak menghasilkan mitra aktif.</EmptyStateDescription>
+                <EmptyStateActions>
+                  <Button size="sm" tone="neutral" style="stroke">Reset filter</Button>
+                </EmptyStateActions>
+              </EmptyState>
+            ),
+            caption: "Empty karena filter terlalu sempit → CTA = 'Reset filter'. Beda dengan empty karena data belum ada → CTA = 'Buat'.",
+          }}
+          dont={{
+            preview: (
+              <EmptyState size="sm">
+                <EmptyStateIcon><Search /></EmptyStateIcon>
+                <EmptyStateTitle>Tidak ada mitra cocok</EmptyStateTitle>
+                <EmptyStateDescription>Filter terlalu sempit.</EmptyStateDescription>
+                <EmptyStateActions>
+                  <Button size="sm">Buat mitra baru</Button>
+                </EmptyStateActions>
+              </EmptyState>
+            ),
+            caption: "Search-empty diberi CTA 'Buat mitra baru' = salah konteks. User mau menemukan mitra existing, bukan create.",
+          }}
         />
       </DocsSection>
 

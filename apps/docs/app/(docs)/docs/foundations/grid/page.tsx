@@ -1,4 +1,5 @@
 import { cn } from "@/registry/dash/lib/utils"
+import { DocsDoDont } from "@/components/docs/page-shell"
 
 const breakpoints = [
   { name: "sm", min: 640, label: "Small", target: "Phone landscape, narrow tablet" },
@@ -286,6 +287,47 @@ export default function GridPage() {
           Layout breakpoints and gutter steps follow Tailwind v4 defaults — no Dash overrides.
         </p>
       </section>
-    </article>
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">12-column grid + 1360px cap</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Backoffice content rail caps at 1360px. Don't render edge-to-edge on a 4K monitor — line length kills scan.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-border bg-background p-3">
+                <div className="grid grid-cols-12 gap-1"><div className="h-12 rounded bg-muted col-span-8" /><div className="h-12 rounded bg-muted col-span-4" /></div>
+                <p className="text-[10px] text-muted-foreground mt-2 text-center">8 col main · 4 col sidebar</p>
+              </div>
+            ),
+            caption: "12-column grid, 24px gutter, 1360px content cap. Body copy stays in the readable 60-80ch range even on wide screens.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full rounded-lg border border-border bg-background p-3">
+                <div className="flex gap-1"><div className="h-12 rounded bg-muted flex-1" /><div className="h-12 rounded bg-muted w-32" /></div>
+                <p className="text-[10px] text-muted-foreground mt-2 text-center">edge-to-edge, no cap</p>
+              </div>
+            ),
+            caption: "Don't render edge-to-edge on a 3440px ultrawide. Eye saccade across the screen breaks comprehension.",
+          }}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <header><h2 className="text-2xl font-semibold tracking-tight">Mobile gutter scaling</h2><p className="text-sm text-muted-foreground max-w-2xl mt-1">Outer padding shrinks on small viewports — 24px desktop, 16px mobile. Don't keep desktop padding on a 360px phone.</p></header>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-48 rounded-lg border border-border bg-background p-3"><div className="grid grid-cols-4 gap-2"><div className="h-8 rounded bg-muted" /><div className="h-8 rounded bg-muted" /><div className="h-8 rounded bg-muted" /><div className="h-8 rounded bg-muted" /></div></div>
+            ),
+            caption: "Mobile padding tightens to 16px. Content has room to breathe without overwhelming the small viewport.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-48 rounded-lg border border-border bg-background p-8"><div className="grid grid-cols-4 gap-2"><div className="h-4 rounded bg-muted" /><div className="h-4 rounded bg-muted" /><div className="h-4 rounded bg-muted" /><div className="h-4 rounded bg-muted" /></div></div>
+            ),
+            caption: "Don't keep 48px outer padding on mobile. Content squeezes to half-width and reads cramped.",
+          }}
+        />
+      </section>
+        </article>
   )
 }

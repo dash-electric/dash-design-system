@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function CompactButtonDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="atom"
         category="Components / Actions"
         title="Compact Button"
         description="Mini icon button (20-24px) for close, dismiss, in-cell row action. Smaller than IconButton — use when a regular 28-44px hit area would dominate the surrounding UI. Figma node 189:3646."
@@ -112,6 +115,49 @@ export default function CompactButtonDocsPage() {
             </div>
           }
           code={`<CompactButton variant="ghost" size="sm" aria-label="Remove filter"><X /></CompactButton>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          CompactButton 20-24px untuk dismiss, in-cell action, filter chip remove. Bukan untuk primary CTA. Kalau aksi penting (Suspend, Konfirmasi), pakai Button atau IconButton.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center justify-between gap-3 rounded-md border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 max-w-md">
+                <span className="text-xs text-text-strong-950">tribe=Express · kota=Bekasi</span>
+                <CompactButton variant="ghost" size="sm" aria-label="Hapus filter"><X /></CompactButton>
+              </div>
+            ),
+            caption: "Filter chip remove pakai ghost compact button. 20px hit area cukup untuk dismiss tanpa dominasi visual.",
+          }}
+          dont={{
+            preview: (
+              <CompactButton variant="stroke" size="md" aria-label="Suspend mitra"><X /></CompactButton>
+            ),
+            caption: "Suspend mitra adalah destructive primary action — wajib pakai Button tone='destructive' dengan label teks, bukan compact icon yang ambigu.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center justify-between gap-3 rounded-lg bg-bg-strong-950 text-static-white px-4 py-2.5 max-w-xs">
+                <span className="text-xs">Delivery DLV-7821 dibuat</span>
+                <CompactButton variant="white" size="sm" aria-label="Tutup notifikasi"><X /></CompactButton>
+              </div>
+            ),
+            caption: "Toast dismiss pakai variant='white' di latar gelap. Kontras tinggi, hit area kecil, tidak mengganggu pesan.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center justify-between gap-3 rounded-md border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 max-w-md">
+                <span className="text-xs">Konfirmasi suspend mtr-9412?</span>
+                <CompactButton variant="stroke" size="sm" aria-label="Konfirmasi"><Plus /></CompactButton>
+              </div>
+            ),
+            caption: "Compact icon (+) untuk konfirmasi destructive = user tidak yakin button itu apa. Confirmation harus pakai Button dengan label jelas.",
+          }}
         />
       </DocsSection>
 

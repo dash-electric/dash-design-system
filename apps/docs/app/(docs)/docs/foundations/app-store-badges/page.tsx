@@ -19,6 +19,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -268,7 +269,58 @@ export default function AppStoreBadgesPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Official badge SVGs">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Use the Apple-provided 'Download on the App Store' and Google's 'Get it on Google Play' SVG assets. Don't redraw them or apply a color filter.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex gap-2 items-center">
+                <div className="h-10 px-3 rounded-lg bg-static-black text-static-white text-xs flex items-center gap-2"><span></span><div className="leading-tight text-left"><div className="text-[8px]">Download on the</div><div className="text-[10px] font-semibold">App Store</div></div></div>
+                <div className="h-10 px-3 rounded-lg bg-static-black text-static-white text-xs flex items-center gap-2"><span>▶</span><div className="leading-tight text-left"><div className="text-[8px]">GET IT ON</div><div className="text-[10px] font-semibold">Google Play</div></div></div>
+              </div>
+            ),
+            caption: "Official artwork on a black surface, exact proportions. Recognizable everywhere.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex gap-2 items-center">
+                <div className="h-10 px-3 rounded-lg bg-primary-base text-static-white text-xs flex items-center font-medium">📱 Get on iOS</div>
+                <div className="h-10 px-3 rounded-lg bg-success-base text-static-white text-xs flex items-center font-medium">▶ Android Download</div>
+              </div>
+            ),
+            caption: "Don't redraw the badges with brand colors and emojis. Users scan for the iconic black box — your re-skin won't get clicked.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Localized badge variants">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Apple and Google publish localized badges for Indonesian. Use them on Dash Indonesia surfaces. Don't ship English-only badges in a bilingual product.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex gap-2 items-center">
+                <div className="h-10 px-3 rounded-lg bg-static-black text-static-white text-xs flex items-center gap-2"><span></span><div className="leading-tight text-left"><div className="text-[8px]">Unduh di</div><div className="text-[10px] font-semibold">App Store</div></div></div>
+                <div className="h-10 px-3 rounded-lg bg-static-black text-static-white text-xs flex items-center gap-2"><span>▶</span><div className="leading-tight text-left"><div className="text-[8px]">DAPATKAN DI</div><div className="text-[10px] font-semibold">Google Play</div></div></div>
+              </div>
+            ),
+            caption: "Indonesian badges on Dash Indonesia surfaces. Matches the rest of the page copy.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex gap-2 items-center">
+                <div className="h-10 px-3 rounded-lg bg-static-black text-static-white text-xs flex items-center gap-2"><span></span><div className="leading-tight text-left"><div className="text-[8px]">Download on the</div><div className="text-[10px] font-semibold">App Store</div></div></div>
+                <p className="text-[10px] text-text-sub-600">(page in Bahasa, badges in English)</p>
+              </div>
+            ),
+            caption: "Don't mix English badges into a Bahasa Indonesia page. Native speakers notice the inconsistency — feels half-localized.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }
 

@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function PasswordInputDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="atom"
         category="Components / Form"
         title="Password Input"
         description="Password field with a leading lock icon and an eye / eye-off visibility toggle. Wraps InputRoot + Input + InputIcon so it inherits all sizing, focus, and invalid states."
@@ -69,6 +72,54 @@ export default function PasswordInputDocsPage() {
             </div>
           }
           code={`<PasswordInput invalid />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Password input WAJIB ada reveal toggle. User butuh verifikasi typo terutama di mobile keyboard. Pair dengan Label + autoComplete yang sesuai konteks (current vs new).
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1.5">
+                <Label htmlFor="dd-pw-1">Password</Label>
+                <PasswordInput id="dd-pw-1" defaultValue="dispatcher2026" autoComplete="current-password" />
+              </div>
+            ),
+            caption: "Lock icon kiri + eye toggle kanan. autoComplete='current-password' supaya password manager nyimpan benar.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1.5 text-xs">
+                <Label htmlFor="dd-pw-2">Password</Label>
+                <input id="dd-pw-2" type="password" className="w-full h-9 px-3 border border-stroke-soft-200 rounded-md" />
+              </div>
+            ),
+            caption: "Bare input password tanpa eye toggle = mitra typo di mobile, tidak bisa verifikasi. Wajib reveal button.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1.5">
+                <Label htmlFor="dd-pw-3">Password baru</Label>
+                <PasswordInput id="dd-pw-3" autoComplete="new-password" placeholder="Min. 8 karakter" />
+                <p className="text-[10px] text-text-sub-600">Gunakan kombinasi huruf, angka, dan simbol.</p>
+              </div>
+            ),
+            caption: "Untuk signup/change-password pakai autoComplete='new-password'. Hint requirement di bawah supaya user tidak retry.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1.5">
+                <Label htmlFor="dd-pw-4">Password</Label>
+                <PasswordInput id="dd-pw-4" invalid defaultValue="abc" />
+                <p className="text-[10px] text-error-base">Wrong.</p>
+              </div>
+            ),
+            caption: "Error 'Wrong.' tidak deskriptif. Kasih spesifik ('Minimal 8 karakter' atau 'Password salah, sisa 2 percobaan').",
+          }}
         />
       </DocsSection>
 

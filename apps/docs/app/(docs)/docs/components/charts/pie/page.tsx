@@ -132,7 +132,8 @@ export default function PieChartPage() {
         category="Components / Charts"
         title="Pie"
         description="Donut chart with optional active-slice highlight. 90×90 default with 32px inner / 45px outer radius. Hand-rendered SVG — no recharts dependency."
-        status="shipped"
+        status="stable"
+        kind="atom"
       />
 
       <DocsSection title="Default donut">

@@ -30,6 +30,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -52,6 +53,8 @@ export default function ButtonGroupDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Actions"
         title="Button Group"
         description="Joined buttons sharing a single visual unit. 1px gray-200 ring container with shared outer corner radius — children have no own radius. Use for segmented toggles (view modes, time ranges), formatting toolbars (bold/italic/underline), or paired prev/next chevrons."
@@ -294,6 +297,54 @@ export default function ButtonGroupDocsPage() {
   <Button size="icon-xs" tone="neutral" style="stroke" aria-label="Previous"><ChevronLeft /></Button>
   <Button size="icon-xs" tone="neutral" style="stroke" aria-label="Next"><ChevronRight /></Button>
 </ButtonGroup>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          ButtonGroup = visual cluster, bukan radio behavior. Untuk view switcher mutually-exclusive, set <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">aria-pressed</code> + active style. Untuk related-but-independent actions, biarkan semua sama.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <ButtonGroup>
+                <Button size="sm" tone="neutral" style="lighter" leftIcon={<Grid />} aria-pressed>Grid</Button>
+                <Button size="sm" tone="neutral" style="stroke" leftIcon={<List />}>List</Button>
+                <Button size="sm" tone="neutral" style="stroke" leftIcon={<Gallery />}>Gallery</Button>
+              </ButtonGroup>
+            ),
+            caption: "View toggle mutually-exclusive: 1 lighter (active) + sisanya stroke. aria-pressed = screen reader announce 'Grid, selected'.",
+          }}
+          dont={{
+            preview: (
+              <ButtonGroup>
+                <Button size="sm" tone="primary" leftIcon={<Grid />}>Grid</Button>
+                <Button size="sm" tone="primary" leftIcon={<List />}>List</Button>
+                <Button size="sm" tone="primary" leftIcon={<Gallery />}>Gallery</Button>
+              </ButtonGroup>
+            ),
+            caption: "Semua primary filled = user kira tiga aksi simultan. Tidak ada signal mana yang sedang aktif. Untuk view switcher, pakai stroke + 1 lighter.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <ButtonGroup>
+                <Button size="sm" tone="neutral" style="stroke" leftIcon={<ChevronLeft />} aria-label="Halaman sebelumnya" />
+                <Button size="sm" tone="neutral" style="stroke" leftIcon={<ChevronRight />} aria-label="Halaman berikutnya" />
+              </ButtonGroup>
+            ),
+            caption: "Prev/Next cluster di table pagination atau carousel. Dua icon button join radius — visual unit kecil tapi clear.",
+          }}
+          dont={{
+            preview: (
+              <ButtonGroup>
+                <Button size="sm" tone="primary">Buat delivery</Button>
+                <Button size="sm" tone="destructive">Suspend mitra</Button>
+              </ButtonGroup>
+            ),
+            caption: "Jangan join aksi yang beda tone/severity. Buat delivery + Suspend mitra adalah 2 task berbeda — pisah dengan jarak normal, jangan dalam ring yang sama.",
+          }}
         />
       </DocsSection>
 

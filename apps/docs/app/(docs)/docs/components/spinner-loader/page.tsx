@@ -28,7 +28,8 @@ export default function SpinnerLoaderDocsPage() {
         category="Components / Loaders"
         title="Spinner Loader"
         description="Page-level overlay spinner — 8 dots, staggered fade, on a solid backdrop. For route transitions and suspense fallbacks. For inline use, prefer the bare Spinner primitive."
-        status="new"
+        status="beta"
+        kind="specialized"
       />
 
       <DocsSection title="Install">

@@ -11,6 +11,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -461,6 +462,52 @@ flagFromCode("GB") // 🇬🇧`}
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Flag emoji vs SVG">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Use SVG flag assets in production UI. Don't ship `🇮🇩` emoji — Windows renders it as 'ID' text and breaks the visual.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-3">
+                <div className="rounded overflow-hidden w-6 h-4 grid grid-rows-2"><div className="bg-error-base" /><div className="bg-static-white" /></div>
+                <span className="text-xs">+62 · Indonesia</span>
+              </div>
+            ),
+            caption: "SVG flag renders the same on Windows, macOS, and Linux. Crisp at any zoom level, accessible for phone-number inputs.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex items-center gap-3">
+                <span className="text-base">🇮🇩</span>
+                <span className="text-xs">+62 · Indonesia</span>
+                <span className="text-[9px] text-text-soft-400">(Windows renders as "ID")</span>
+              </div>
+            ),
+            caption: "Don't use flag emoji in production UI. Windows users see 'ID' / 'US' / 'SG' text in place of flags — instant visual break.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Sensitive flags policy">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Some flags are politically sensitive (Taiwan, Palestine, Crimea). Honor the user's locale data source — don't make up a default.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-sm rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-1 text-xs"><p>Country / region (from your account locale):</p><div className="h-9 rounded-md border border-stroke-soft-200 px-3 flex items-center gap-2"><div className="w-5 h-3.5 bg-error-base" /><span>Indonesia</span></div></div>
+            ),
+            caption: "Country comes from the user's verified account locale. No editorial override, no political assumptions.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-sm rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-1 text-xs"><p>Country / region (Dash decided for you):</p><div className="h-9 rounded-md border border-stroke-soft-200 px-3 flex items-center gap-2"><span>🌍</span><span>(default · contact support to change)</span></div></div>
+            ),
+            caption: "Don't pick a default country for the user. Pre-selecting the wrong region in a politically sensitive flow erodes trust.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

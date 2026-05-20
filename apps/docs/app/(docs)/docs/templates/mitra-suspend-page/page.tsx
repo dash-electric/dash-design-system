@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 import { DocsCode } from "@/components/docs/code-block"
@@ -73,6 +74,45 @@ export default function MitraSuspendPageDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Reason summary card">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Suspend page leads with the violation pattern card — 3 dispatch terlewat, last 24h. Don't dump the user into a raw event log.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-warning-base bg-warning-lighter/30 p-3 space-y-1"><p className="text-xs font-medium text-warning-dark">Mitra Tono S. otomatis di-suspend</p><p className="text-[10px] text-text-sub-600">3 dispatch terlewat berturut-turut dalam 6 jam terakhir. Status: Tier-3 · Reservasi.</p></div>
+            ),
+            caption: "Headline pattern + count + window. Ops gets the 'why' before they get the data.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 font-mono text-[10px] space-y-0.5"><p>[14:32] dispatch_skip mitra_id=M-184 order=2841</p><p>[15:01] dispatch_skip mitra_id=M-184 order=2842</p><p>[15:38] dispatch_skip mitra_id=M-184 order=2843</p><p>[15:38] suspend mitra_id=M-184 reason=auto_3skip</p></div>
+            ),
+            caption: "Don't open with a raw log. Ops has to parse 4 lines to learn what the headline says directly.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Reversibility hint">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Suspend is reversible. Surface the un-suspend path next to the suspend confirmation — don't hide it behind 'Restore from audit log'.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2 text-xs"><p>Mitra Tono S. di-suspend pada 15:38.</p><div className="flex gap-2"><button className="h-7 px-3 rounded-md border border-stroke-soft-200 text-[10px]">Lihat aktivitas</button><button className="h-7 px-3 rounded-md bg-primary-base text-static-white text-[10px]">Aktifkan kembali</button></div></div>
+            ),
+            caption: "Re-activate button sits next to the suspension state. Ops can reverse a false-positive in one click.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 space-y-2 text-xs"><p>Mitra Tono S. di-suspend pada 15:38.</p><p className="text-[10px] text-text-soft-400">Untuk aktifkan kembali, hubungi admin via Slack #ops-support.</p></div>
+            ),
+            caption: "Don't redirect ops to Slack to undo a suspension. The action surface should expose the inverse action.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

@@ -6,7 +6,11 @@ import {
   DocsHeader,
   DocsSection,
 } from "@/components/docs/page-shell"
-import { DocsCode } from "@/components/docs/code-block"
+import {
+  DocsStep,
+  DocsStepList,
+  DocsWorkflowDiagram,
+} from "@/components/docs/docs-step"
 
 export default function InstallationPage() {
   return (
@@ -14,13 +18,30 @@ export default function InstallationPage() {
       <DocsHeader
         category="Getting Started"
         title="Installation"
-        description="Wire your project to the Dash Design System registry, install the base theme, and ship your first mitra-9412 list page in under five minutes."
+        description="Wire your project to the Dash registry, install the base theme, and ship your first list page in under five minutes. Walk through six visual steps — or jump to the Quick install at the top."
       />
 
-      <DocsSection title="Prerequisites">
+      {/* At-a-glance install flow */}
+      <DocsWorkflowDiagram
+        steps={[
+          { label: "Check prerequisites", sub: "Next 15, Tailwind v4" },
+          { label: "Run dash init", sub: "scaffold + token" },
+          { label: "Wire components.json", sub: "registry pointer" },
+          { label: "Install base theme", sub: "dash add base-theme" },
+          { label: "Verify", sub: "dash list" },
+          { label: "Add first component", sub: "dash add button" },
+        ]}
+      />
+
+      <DocsSection
+        title="Prerequisites"
+        description="Confirm your environment hits these versions before you start. Most issues we triage in #dash-ds are version mismatches caught at this step."
+      >
         <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
           <li>Next.js 15+ (App Router), Vite, or Remix consumer project</li>
-          <li>Tailwind CSS v4 (uses <code className="text-xs">@theme inline</code> directive)</li>
+          <li>
+            Tailwind CSS v4 (uses <code className="text-xs">@theme inline</code> directive)
+          </li>
           <li>pnpm 9+ (recommended) — npm, yarn, and bun also supported</li>
           <li>Node 18.17+</li>
           <li>A registry bearer token from the Dash platform team</li>
@@ -28,32 +49,30 @@ export default function InstallationPage() {
       </DocsSection>
 
       <DocsSection
-        title="Quick install"
-        description="One command — Dash CLI scaffolds components.json, writes .env.local, and pulls the base theme."
+        title="Visual walkthrough"
+        description="Six steps from a fresh repo to a working Dash button. Every step shows the command, the expected stdout, and a screenshot of the result so you can sanity-check as you go."
       >
-        <DocsCode
-          language="bash"
-          code={`pnpm dlx dash@latest init --token sk-dash-xxxx`}
-        />
-        <p className="text-sm text-text-sub-600 mt-3">
-          The CLI prompts for your framework if it can&apos;t auto-detect from{" "}
-          <code className="text-xs">package.json</code>. After init runs, you have:
-        </p>
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1 mt-2">
-          <li><code className="text-xs">components.json</code> with the <code className="text-xs">@dash</code> registry wired</li>
-          <li><code className="text-xs">.env.local</code> with <code className="text-xs">DASH_REGISTRY_TOKEN</code></li>
-          <li><code className="text-xs">registry/dash/lib/utils.ts</code> (cn helper) + base theme CSS variables in <code className="text-xs">app/globals.css</code></li>
-        </ul>
-      </DocsSection>
+        <DocsStepList>
+          <DocsStep
+            number={1}
+            title="Quick install with dash init"
+            description="One command — Dash CLI scaffolds components.json, writes .env.local, and pulls the base theme. Auto-detects your framework from package.json."
+            code={`pnpm dlx dash@latest init --token sk-dash-xxxx`}
+            output={`✔ Detected Next.js 15 + Tailwind v4
+✔ Wrote components.json
+✔ Wrote .env.local (DASH_REGISTRY_TOKEN)
+✔ Wrote registry/dash/lib/utils.ts
+✔ Imported @dash/tokens into app/globals.css
+ℹ Run \`pnpm dlx dash add button\` to verify the wire-up.`}
+            imagePlaceholder="Terminal output of dash init — five green checkmarks confirming scaffold, plus the suggested first-add command."
+          />
 
-      <DocsSection
-        title="Manual install"
-        description="If you prefer to wire the registry by hand — useful for monorepo or custom build setups."
-      >
-        <p className="text-sm text-text-sub-600 mb-3">1. Create <code className="text-xs">components.json</code> at the project root:</p>
-        <DocsCode
-          language="json"
-          code={`{
+          <DocsStep
+            number={2}
+            title="Inspect components.json"
+            description="If you prefer manual setup, or you're wiring a non-standard workspace, you can write this file by hand. The aliases section is the contract for where each registry kind lands."
+            codeLanguage="json"
+            code={`{
   "$schema": "https://ds.dash.com/schema/components.json",
   "style": "dash",
   "rsc": true,
@@ -79,30 +98,77 @@ export default function InstallationPage() {
     }
   }
 }`}
-        />
-        <p className="text-sm text-text-sub-600 mt-4 mb-3">2. Add your token to <code className="text-xs">.env.local</code>:</p>
-        <DocsCode language="bash" code={`DASH_REGISTRY_TOKEN=sk-dash-xxxx`} />
-        <p className="text-sm text-text-sub-600 mt-4 mb-3">3. Install the base theme and utilities:</p>
-        <DocsCode language="bash" code={`pnpm dlx dash add base-theme utils`} />
-        <p className="text-sm text-text-sub-600 mt-3">
-          This drops the token system into <code className="text-xs">app/globals.css</code>{" "}
-          (between <code className="text-xs">{`/* @dash:start base-theme */`}</code>{" "}
-          and <code className="text-xs">{`/* @dash:end base-theme */`}</code> markers, so
-          subsequent updates are idempotent) and writes the <code className="text-xs">cn()</code>{" "}
-          helper at <code className="text-xs">registry/dash/lib/utils.ts</code>.
-        </p>
+            imagePlaceholder="components.json open in VSCode with the aliases and registries blocks highlighted."
+            imageHeight="lg"
+          />
+
+          <DocsStep
+            number={3}
+            title="Set your registry token"
+            description="Bearer token authorizes your CLI against the private @dash registry. Never commit this — it's in .gitignore by default but double-check."
+            code={`# .env.local
+DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
+            imagePlaceholder=".env.local file in editor with the token line visible and a tooltip showing the .gitignore status."
+            imageHeight="sm"
+          />
+
+          <DocsStep
+            number={4}
+            title="Install the base theme + utils"
+            description="Drops the token system into app/globals.css (between markers, so updates are idempotent) and writes the cn() helper at registry/dash/lib/utils.ts."
+            code={`pnpm dlx dash add base-theme utils`}
+            output={`✔ Resolved base-theme (12 token groups)
+✔ Wrote registry/dash/lib/utils.ts
+✔ Updated app/globals.css (between @dash:start/end markers)
+ℹ Run \`pnpm dlx dash list\` to see all available components.`}
+            imagePlaceholder="Diff view of app/globals.css showing the @dash:start/end markers wrapping the new CSS variable block."
+          />
+
+          <DocsStep
+            number={5}
+            title="Verify the registry connection"
+            description="dash list hits the registry with your token and returns the available items. If you see 0 items, your token is bad — check the troubleshooting tips below."
+            code={`pnpm dlx dash list
+# → 181 items available: button, card, data-table, dashboard-shell, …`}
+            output={`@dash registry · 181 items
+  ui          92 components
+  blocks      42 patterns
+  pages       41 docs
+  templates    9 page shells
+  hooks        2 utilities
+  lib          2 helpers`}
+            imagePlaceholder="Terminal output of dash list showing categorized counts for ui / blocks / templates / hooks / forms / charts."
+          />
+
+          <DocsStep
+            number={6}
+            title="Add your first component"
+            description="Pulls button source into registry/dash/ui/button.tsx — you own the file. Now you can import it anywhere in your app and ship."
+            code={`pnpm dlx dash add button`}
+            output={`✔ Resolved button (4 deps)
+✔ Wrote registry/dash/ui/button.tsx
+ℹ Import: import { Button } from "@/registry/dash/ui/button"`}
+            imagePlaceholder="Browser preview of a page rendering a primary Dash button and a ghost button with hover state."
+          />
+        </DocsStepList>
       </DocsSection>
 
-      <DocsSection title="Verify">
-        <DocsCode
-          language="bash"
-          code={`pnpm dlx dash list
-# → 112 items available: button, card, data-table, dashboard-shell, …`}
-        />
-        <p className="text-sm text-text-sub-600 mt-3">
-          If the list returns 0 items, double-check your bearer token, registry URL, and that the
-          token isn&apos;t URL-encoded.
-        </p>
+      <DocsSection
+        title="Troubleshooting"
+        description="If dash list returns 0 items: check that the bearer token isn't URL-encoded, your registry URL matches https://ds.dash.com/r/{name}.json, and your shell environment exports the token (not just the .env.local file — Next.js loads .env.local, but the CLI reads process.env)."
+      >
+        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+          <li>
+            <code className="text-xs">echo $DASH_REGISTRY_TOKEN</code> — confirms shell env
+          </li>
+          <li>
+            <code className="text-xs">curl -H &quot;Authorization: Bearer $DASH_REGISTRY_TOKEN&quot; https://ds.dash.com/r/index.json</code>{" "}
+            — confirms network + token
+          </li>
+          <li>
+            Token rotated? Ping platform team in #dash-ds for a fresh one.
+          </li>
+        </ul>
       </DocsSection>
 
       <DocsSection title="Next steps">
@@ -117,7 +183,7 @@ export default function InstallationPage() {
             <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/installation/cli">
               CLI install detail
             </Link>{" "}
-            — every install method (pnpm, npm, brew, Verdaccio), Bearer auth setup, troubleshooting
+            — every install method (pnpm, npm, brew, Verdaccio), Bearer auth setup
           </li>
           <li>
             <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/components/button">

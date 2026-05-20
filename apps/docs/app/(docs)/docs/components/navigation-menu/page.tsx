@@ -15,6 +15,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -29,6 +30,8 @@ export default function NavigationMenuDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Navigation"
         title="Navigation Menu"
         description="Top-level horizontal nav with hover-mega-menus. Use for marketing site, public Dash dashboard, multi-product shell. For sidebar shell use Sidebar."
@@ -137,6 +140,104 @@ export default function NavigationMenuDocsPage() {
     …
   </NavigationMenuList>
 </NavigationMenu>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          NavigationMenu = top-bar untuk marketing/public site. Setiap mega menu item harus self-contained + linkable. Active route signaled lewat data-active atau aria-current. Untuk dashboard internal pakai Sidebar.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()} aria-current="page">Dashboard</NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()}>Mitra</NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()}>Dispatch</NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            ),
+            caption: "Flat link bar dengan aria-current='page' di item aktif. User tahu sedang di mana.",
+          }}
+          dont={{
+            preview: (
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()}>Dashboard</NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()}>Mitra</NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()}>Dispatch</NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()}>Halo-dash</NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()}>Reports</NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="#" className={navigationMenuTriggerStyle()}>Settings</NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            ),
+            caption: "Tanpa state aktif user tidak tahu sedang di section mana. Selalu set aria-current pada link yang match URL.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>Tribes</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-72 gap-1 p-2">
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <a href="#" className="block rounded p-2 hover:bg-bg-weak-50">
+                              <div className="text-xs font-medium">Reservasi</div>
+                              <p className="text-[10px] text-text-sub-600">Scheduled-pickup mitra</p>
+                            </a>
+                          </NavigationMenuLink>
+                        </li>
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            ),
+            caption: "Mega menu dengan deskripsi singkat per item. User preview konteks sebelum klik = decision faster.",
+          }}
+          dont={{
+            preview: (
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>Menu</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="w-72 p-2 text-xs">
+                        <li>Item 1</li>
+                        <li>Item 2</li>
+                        <li>Item 3</li>
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            ),
+            caption: "Mega menu item tanpa link wrapper, tanpa description = unclickable, tidak deskriptif. Setiap item harus NavigationMenuLink + label spesifik.",
+          }}
         />
       </DocsSection>
 

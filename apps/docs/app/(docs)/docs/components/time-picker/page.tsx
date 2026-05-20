@@ -31,6 +31,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -69,6 +70,8 @@ export default function TimePickerDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Form"
         title="Time Picker"
         description="Time selection family — numeric HH:MM input, selectable slot rows, preset duration chips, availability-status badges, and full popover/modal compositions. Use for booking, scheduling, dispatch windows, focus-time, and reservation flows."
@@ -494,6 +497,61 @@ export default function TimePickerDocsPage() {
   </Field>
   <Button className="w-full">Schedule</Button>
 </Modal>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          TimePicker untuk Dash schedule — pakai timezone WIB explicit + format 24-jam (HH:MM) untuk avoid AM/PM confusion. Slot list untuk pilihan preset, numeric input untuk arbitrary value.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1.5">
+                <Label className="text-xs">Jam dispatch Bekasi</Label>
+                <TimePicker defaultValue="08:00" />
+                <Hint>WIB · 24-jam format</Hint>
+              </div>
+            ),
+            caption: "TimePicker 24-jam HH:MM + label WIB explicit. Dispatcher Indonesia familiar 24-jam (08:00 = pagi, 20:00 = malam) tanpa AM/PM ambiguity.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1.5">
+                <Label className="text-xs">Time</Label>
+                <TimePicker defaultValue="08:00" />
+              </div>
+            ),
+            caption: "Tanpa timezone label = mitra Tangerang dan Jakarta pakai jam berbeda. Selalu sebut timezone (WIB/WITA/WIT).",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1">
+                <Label className="text-xs">Slot dispatch tersedia</Label>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-1 space-y-0.5">
+                  <TimePickerSlot start="08:00" startSuffix="WIB" selected />
+                  <TimePickerSlot start="10:00" startSuffix="WIB" />
+                  <TimePickerSlot start="14:00" startSuffix="WIB" disabled />
+                </div>
+              </div>
+            ),
+            caption: "Slot list dengan 3 state visible (selected, available, disabled). Disabled slot kasih tau mitra slot 14:00 sudah penuh.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs space-y-1">
+                <Label className="text-xs">Pilih jam</Label>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-1 space-y-0.5">
+                  {["00:00","00:30","01:00","01:30","02:00","02:30","03:00","03:30","04:00","04:30","05:00","05:30","06:00","06:30","07:00","07:30","08:00"].map((t) => (
+                    <TimePickerSlot key={t} start={t} startSuffix="WIB" />
+                  ))}
+                </div>
+              </div>
+            ),
+            caption: "Tampil 48 slot 30-menit dari 00:00 = overwhelming + 99% irrelevant (mitra tidur jam 03:00). Filter berdasarkan business hours.",
+          }}
         />
       </DocsSection>
 

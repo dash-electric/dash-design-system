@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function ToggleGroupDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Actions"
         title="Toggle Group"
         description="Set of related Toggle buttons sharing one selection state. Single-mode for radio-style picks, multiple-mode for independent toggles."
@@ -74,6 +77,56 @@ export default function ToggleGroupDocsPage() {
   <ToggleGroupItem value="center" variant="outline"><AlignCenter /></ToggleGroupItem>
   <ToggleGroupItem value="right" size="sm"><AlignRight /></ToggleGroupItem>
 </ToggleGroup>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Pilih <code className="text-xs">type</code> berdasarkan semantik: single = radio-style mutually-exclusive, multiple = independent toggles. Salah type = perilaku salah.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <ToggleGroup type="single" defaultValue="newest">
+                <ToggleGroupItem value="newest">Newest</ToggleGroupItem>
+                <ToggleGroupItem value="oldest">Oldest</ToggleGroupItem>
+                <ToggleGroupItem value="distance">Distance</ToggleGroupItem>
+              </ToggleGroup>
+            ),
+            caption: "Sort order mutually-exclusive (1 pilihan) → type='single'. User pilih satu, lainnya auto-deselect.",
+          }}
+          dont={{
+            preview: (
+              <ToggleGroup type="multiple" defaultValue={["newest"]}>
+                <ToggleGroupItem value="newest">Newest</ToggleGroupItem>
+                <ToggleGroupItem value="oldest">Oldest</ToggleGroupItem>
+                <ToggleGroupItem value="distance">Distance</ToggleGroupItem>
+              </ToggleGroup>
+            ),
+            caption: "Sort order pakai type='multiple' = user pilih 'Newest + Oldest' bersamaan, padahal mutually-exclusive. Type harus match semantik.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <ToggleGroup type="multiple" defaultValue={["express"]}>
+                <ToggleGroupItem value="reservasi">Reservasi</ToggleGroupItem>
+                <ToggleGroupItem value="express">Express</ToggleGroupItem>
+                <ToggleGroupItem value="bulk">Bulk</ToggleGroupItem>
+              </ToggleGroup>
+            ),
+            caption: "Filter tribe multi-select (Reservasi + Express boleh aktif sekaligus) → type='multiple'. User dapat kontrol granular.",
+          }}
+          dont={{
+            preview: (
+              <ToggleGroup type="single">
+                <ToggleGroupItem value="reservasi">Reservasi</ToggleGroupItem>
+                <ToggleGroupItem value="express">Express</ToggleGroupItem>
+                <ToggleGroupItem value="bulk">Bulk</ToggleGroupItem>
+              </ToggleGroup>
+            ),
+            caption: "Filter multi-tribe pakai type='single' = user paksa pilih satu, tidak bisa Reservasi+Express. Match semantik dengan multiple.",
+          }}
         />
       </DocsSection>
 

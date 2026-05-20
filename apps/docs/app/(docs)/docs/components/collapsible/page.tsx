@@ -10,6 +10,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -18,6 +19,8 @@ export default function CollapsibleDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Layout"
         title="Collapsible"
         description="Single-section show/hide built on Radix Collapsible. For multi-section grouped expand/collapse use Accordion."
@@ -138,6 +141,49 @@ export default function CollapsibleDocsPage() {
   </CollapsibleTrigger>
   <CollapsibleContent>…</CollapsibleContent>
 </Collapsible>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Collapsible = single toggle disclosure. Sederhana, satu region show/hide. Bukan untuk multi-section FAQ — itu Accordion.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs space-y-1">
+                <div className="rounded border border-stroke-soft-200 px-3 py-2 flex items-center justify-between">
+                  <span className="font-medium">Detail teknis trip</span>
+                  <span className="text-text-soft-400">▾</span>
+                </div>
+                <div className="rounded border border-stroke-soft-200 px-3 py-2 text-text-sub-600">
+                  Route, traffic, mitra speed, GPS log
+                </div>
+              </div>
+            ),
+            caption: "Toggle untuk show optional detail (debug info, advanced setting). Default collapsed supaya screen tidak penuh.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs space-y-1">
+                {["FAQ 1", "FAQ 2", "FAQ 3"].map(i => (
+                  <div key={i} className="rounded border border-stroke-soft-200 px-3 py-2 flex items-center justify-between">
+                    <span>{i}</span>
+                    <span className="text-text-soft-400">▾</span>
+                  </div>
+                ))}
+              </div>
+            ),
+            caption: "Jangan stack 3+ Collapsible untuk FAQ. Itu pakai Accordion — built-in single/multiple mode dan keyboard nav.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Trigger label menyatakan content: \"Show 12 trip lainnya\" lebih jelas daripada \"More\".",
+          }}
+          dont={{
+            caption: "Jangan pakai Collapsible untuk content yang critical default-visible. Mitra harus klik untuk lihat info penting.",
+          }}
         />
       </DocsSection>
 

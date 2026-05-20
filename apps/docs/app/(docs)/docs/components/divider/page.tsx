@@ -29,6 +29,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -47,6 +48,8 @@ export default function DividerDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Layout"
         title="Divider"
         description="Horizontal or vertical line that separates content. Plain Divider for sibling rows; ContentDivider for centered text/icon labels framed by lines; solid variant for full-width section labels."
@@ -333,6 +336,70 @@ export default function DividerDocsPage() {
           code={`<ContentDivider>
   <Sparkles /> New Releases
 </ContentDivider>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Divider memisahkan grup yang related tapi distinct. Pakai spacing dulu — kalau spacing tidak cukup, baru tarik garis. Jangan divider di antara setiap baris (visual noise).
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-3 max-w-xs text-xs">
+                <div>
+                  <div className="font-medium text-text-strong-950">Account</div>
+                  <div className="text-text-sub-600">Settings, Notifications</div>
+                </div>
+                <Divider />
+                <div>
+                  <div className="font-medium text-text-strong-950">Mitra</div>
+                  <div className="text-text-sub-600">Suspend, Reaktivasi, Audit log</div>
+                </div>
+                <Divider />
+                <div>
+                  <div className="font-medium text-text-strong-950">Logout</div>
+                </div>
+              </div>
+            ),
+            caption: "Divider memisah grup logis (Account, Mitra, Logout). User scan menu lebih cepat karena tahu boundary section.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-2 max-w-xs text-xs">
+                {["Account Settings","Notifications","Suspend mitra","Reaktivasi","Audit log","Logout"].map((s, i, arr) => (
+                  <React.Fragment key={s}>
+                    <div className="text-text-strong-950">{s}</div>
+                    {i < arr.length - 1 ? <Divider /> : null}
+                  </React.Fragment>
+                ))}
+              </div>
+            ),
+            caption: "Divider di antara setiap row = visual noise. Hilangkan garis, naikkan spacing. Garis hanya untuk boundary semantik.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 text-xs">
+                <ContentDivider variant="solid">Detail Mitra</ContentDivider>
+                <div className="p-3 text-text-sub-600">mtr-9412 · Active · Bekasi</div>
+                <ContentDivider variant="solid">Riwayat Delivery</ContentDivider>
+                <div className="p-3 text-text-sub-600">142 trips · last 7d</div>
+              </div>
+            ),
+            caption: "ContentDivider variant='solid' untuk section label di form panjang. Visual weight cukup tanpa pakai heading H3.",
+          }}
+          dont={{
+            preview: (
+              <div className="max-w-xs rounded-lg border border-stroke-soft-200 bg-bg-white-0 text-xs">
+                <ContentDivider variant="solid">Section 1</ContentDivider>
+                <ContentDivider variant="solid">Section 2</ContentDivider>
+                <ContentDivider variant="solid">Section 3</ContentDivider>
+              </div>
+            ),
+            caption: "Solid dividers tanpa konten di antara = bar abu-abu menumpuk. Setiap section harus punya isi minimal sebelum divider berikut.",
+          }}
         />
       </DocsSection>
 

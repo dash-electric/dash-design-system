@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -63,6 +64,61 @@ export default function TransactionsTableDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Signed amount color coding">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Inflow = success green. Outflow = neutral soft. Failed/refunded = error. Use color as redundant cue alongside the +/- arrow — never as the only signal.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md space-y-2">
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Payout · Kopi Kenangan</span><span className="text-success-base font-medium">+ Rp 4.500.000</span></div>
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Topup saldo mitra</span><span className="text-text-sub-600 font-medium">− Rp 250.000</span></div>
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Refund · order #2841</span><span className="text-error-base font-medium">− Rp 75.000</span></div>
+              </div>
+            ),
+            caption: "Green for in, neutral for out, red for refund/failed. Sign and color reinforce each other.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md space-y-2">
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Payout · Kopi Kenangan</span><span className="font-medium">Rp 4.500.000</span></div>
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Topup saldo mitra</span><span className="font-medium">Rp 250.000</span></div>
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Refund · order #2841</span><span className="font-medium">Rp 75.000</span></div>
+              </div>
+            ),
+            caption: "Don't display amounts without sign or color. Ops team scanning a ledger can't tell which way money flowed.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Status badge tone">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Pending = warning. Success = success. Failed = error. Match status badge tone to the same semantic palette as the amount color.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md space-y-2">
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Payout #4021</span><span className="rounded-full bg-success-lighter text-success-dark px-2 py-0.5 text-[10px] font-medium">Berhasil</span></div>
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Payout #4022</span><span className="rounded-full bg-warning-lighter text-warning-dark px-2 py-0.5 text-[10px] font-medium">Diproses</span></div>
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Payout #4023</span><span className="rounded-full bg-error-lighter text-error-dark px-2 py-0.5 text-[10px] font-medium">Gagal</span></div>
+              </div>
+            ),
+            caption: "Each status maps to a state token: success/warning/error. Consistent across every Dash table.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md space-y-2">
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Payout #4021</span><span className="rounded-full bg-primary-base text-static-white px-2 py-0.5 text-[10px] font-medium">Berhasil</span></div>
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Payout #4022</span><span className="rounded-full bg-feature-base text-static-white px-2 py-0.5 text-[10px] font-medium">Diproses</span></div>
+                <div className="flex items-center justify-between rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-xs"><span>Payout #4023</span><span className="rounded-full bg-highlighted-base text-static-white px-2 py-0.5 text-[10px] font-medium">Gagal</span></div>
+              </div>
+            ),
+            caption: "Don't paint status badges in arbitrary brand colors. Purple-as-success breaks the state semantic vocabulary across the system.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

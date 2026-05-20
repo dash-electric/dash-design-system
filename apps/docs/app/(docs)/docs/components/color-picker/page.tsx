@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -23,6 +24,8 @@ export default function ColorPickerDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="composite"
         category="Components / Form"
         title="Color Picker"
         description="Hex color input with saturation square and hue slider. Use it where users need to pick a custom hex — dispatch zone tags, mitra-tribe color labels, marketing surface accents."
@@ -109,6 +112,57 @@ export default function ColorPickerDocsPage() {
             </div>
           }
           code={`<ColorSwatch value={zoneColor} size="md" onClick={openPopover} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Color picker untuk customization (tribe tag, zone marker). Selalu sediakan preset Dash brand supaya konsisten. Hindari memberikan full hex tanpa guardrail — kontras rendah bikin UI tidak terbaca.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-col items-start gap-2">
+                <ColorSwatch value="#5e2aac" size="md" onClick={() => {}} />
+                <code className="text-xs text-text-sub-600">Reservasi · #5e2aac</code>
+              </div>
+            ),
+            caption: "Pair swatch dengan nama (Reservasi · #5e2aac). Warna saja tidak komunikatif — selalu kasih label.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex gap-2">
+                <span aria-hidden className="size-5 rounded-md" style={{ background: "#5e2aac" }} />
+                <span aria-hidden className="size-5 rounded-md" style={{ background: "#fa7319" }} />
+                <span aria-hidden className="size-5 rounded-md" style={{ background: "#1fc16b" }} />
+              </div>
+            ),
+            caption: "Color-only signals untuk color-blind user = unreadable. Selalu pair dengan teks atau icon.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-1.5">
+                  {dashPresets.slice(0, 6).map((c) => (
+                    <span key={c} className="size-5 rounded-md border border-stroke-soft-200" style={{ background: c }} />
+                  ))}
+                </div>
+                <span className="text-[10px] text-text-soft-400">12 preset Dash brand</span>
+              </div>
+            ),
+            caption: "Preset 12 warna Dash brand di atas. User pick dari curated set = konsistensi terjaga + kontras passed.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-col gap-1">
+                <input type="text" defaultValue="#ff0000" className="text-xs px-2 py-1 border border-stroke-soft-200 rounded" />
+                <span className="text-[10px] text-text-soft-400">Free-form hex, no presets</span>
+              </div>
+            ),
+            caption: "Free-form hex tanpa preset = user pilih #ffff00 untuk tag, kontras gagal dengan latar putih. Selalu provide presets.",
+          }}
         />
       </DocsSection>
 

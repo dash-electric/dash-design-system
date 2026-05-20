@@ -25,6 +25,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -36,6 +37,8 @@ export default function DropdownMenuDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Overlay"
         title="Dropdown Menu"
         description="Action menu anchored to a trigger. Use it on row-level actions (mitra rows, dispatch entries), filter chips, profile menus — anywhere a list of one-tap commands belongs near its anchor."
@@ -308,6 +311,42 @@ export default function DropdownMenuDocsPage() {
             { name: "description", type: "ReactNode", description: "Sub-line copy. On DropdownMenuRichItem." },
             { name: "shortcut", type: "ReactNode", description: "Trailing kbd. On DropdownMenuRichItem." },
           ]}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Dropdown menu attached ke trigger button — bukan untuk navigation utama atau form input.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs space-y-0.5 text-xs rounded border border-stroke-soft-200 bg-bg-weak-50 p-1">
+                <div className="text-[10px] uppercase text-text-soft-400 px-2 pt-1">Aksi mitra</div>
+                <div className="rounded px-2 py-1.5">Buka profil</div>
+                <div className="rounded px-2 py-1.5">Reassign trip</div>
+                <div className="border-t border-stroke-soft-200 my-1" />
+                <div className="rounded px-2 py-1.5 text-error-dark">Suspend permanent</div>
+              </div>
+            ),
+            caption: "Group items dengan label, destructive di bottom separator. 3-6 item per dropdown ideal.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs rounded border border-stroke-soft-200 bg-bg-weak-50 p-1 max-h-32 overflow-hidden">
+                {Array.from({length: 12}, (_, i) => <div key={i} className="px-2 py-1">Action #{i+1}</div>)}
+              </div>
+            ),
+            caption: "Hindari 10+ item flat. Itu butuh Command palette atau sub-menu, bukan dropdown.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Pakai untuk action contextual (per row, per item). Contoh: kebab menu di mitra row tabel.",
+          }}
+          dont={{
+            caption: "Jangan pakai untuk pilih opsi form value (Active/Suspended/Pending). Itu Select, bukan Dropdown Menu.",
+          }}
         />
       </DocsSection>
 

@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -15,6 +16,8 @@ export default function LinkButtonDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="beta"
+        kind="atom"
         category="Components / Actions"
         title="Link Button"
         description="Inline anchor styled as a button-like link. For primary page actions use Button; LinkButton is for inline call-outs, breadcrumbs back, footer secondary nav, and table-row drill-ins."
@@ -140,6 +143,47 @@ import { LinkButton } from "@/registry/dash/ui/link-button"
           code={`<LinkButton aria-disabled tabIndex={-1} className="opacity-50 pointer-events-none">
   Surge controls (locked)
 </LinkButton>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          LinkButton = anchor untuk navigasi inline. Bukan untuk primary CTA (pakai Button). Bukan untuk action mutate state (pakai Button). LinkButton hanya navigation antar halaman/section.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <p className="text-sm text-text-sub-600 max-w-xs leading-relaxed">
+                Mitra <span className="font-medium text-text-strong-950">mtr-9412</span> punya 3 dispatch terlewat. <LinkButton href="#" size="sm">Lihat riwayat lengkap</LinkButton>.
+              </p>
+            ),
+            caption: "Inline LinkButton untuk drill-in ke detail page (nav action). User klik untuk explore lebih lanjut, bukan mutate data.",
+          }}
+          dont={{
+            preview: (
+              <LinkButton href="#" tone="destructive" size="sm">Suspend mtr-9412 sekarang</LinkButton>
+            ),
+            caption: "Destructive mutate action (suspend) pakai LinkButton = klik kanan → buka new tab, accident, history pollution. Wajib Button + confirmation modal.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <LinkButton href="#" tone="muted" size="sm" underline="none">
+                <ArrowLeft className="size-3.5" strokeWidth={2} />
+                Kembali ke daftar mitra
+              </LinkButton>
+            ),
+            caption: "Back-nav dengan trailing icon ArrowLeft. Tone muted karena navigasi sekunder. Underline none karena ada icon affordance.",
+          }}
+          dont={{
+            preview: (
+              <p className="text-sm text-text-sub-600 max-w-xs">
+                Klik <LinkButton href="#" underline="none">di sini</LinkButton> untuk download invoice.
+              </p>
+            ),
+            caption: "'Klik di sini' tanpa underline + label tidak deskriptif = SR user dapat 'di sini' tanpa konteks. Pakai 'Download invoice (PDF)'.",
+          }}
         />
       </DocsSection>
 

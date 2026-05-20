@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -29,7 +30,8 @@ export default function LanguageSelectDocsPage() {
         category="Components / Settings"
         title="Language Select"
         description="Locale picker with a globe leading icon. Wraps Select. In real apps, the onLocaleChange handler should rewrite the URL's locale segment and reload."
-        status="new"
+        status="beta"
+        kind="specialized"
       />
 
       <DocsSection title="Install">
@@ -68,6 +70,50 @@ export function LanguagePicker() {
           preview={<LanguageSelect value={locale} onLocaleChange={setLocale} />}
           code={`const [locale, setLocale] = useState("en")
 <LanguageSelect value={locale} onLocaleChange={setLocale} />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Language select untuk Dash = minimal 'Bahasa Indonesia' + 'English'. Label dalam bahasa native ('Bahasa Indonesia', bukan 'Indonesian'). Persist pilihan ke URL/cookie supaya reload tetap.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs">
+                <LanguageSelect value={locale} onLocaleChange={setLocale} languages={[{ value: "id", label: "Bahasa Indonesia" }, { value: "en", label: "English" }]} />
+              </div>
+            ),
+            caption: "Label native ('Bahasa Indonesia', 'English'). User Indonesia langsung kenali bahasanya. ID first karena audience primary Dash.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs">
+                <LanguageSelect value={locale} onLocaleChange={setLocale} languages={[{ value: "en", label: "English" }, { value: "id", label: "Indonesian" }]} />
+              </div>
+            ),
+            caption: "Label 'Indonesian' (English-translated) = mitra tidak yakin itu Bahasa Indonesia atau Malay. Selalu native-name.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="text-xs space-y-1 max-w-xs">
+                <div>URL setelah pilih: <code className="text-text-strong-950">/id/dashboard</code></div>
+                <div className="text-text-sub-600">Reload page tetap di Bahasa Indonesia.</div>
+              </div>
+            ),
+            caption: "Locale tersimpan di URL segment (/id/, /en/). Reload, share link, bookmark — semua respect pilihan user.",
+          }}
+          dont={{
+            preview: (
+              <div className="text-xs space-y-1 max-w-xs">
+                <div>URL: <code className="text-text-strong-950">/dashboard?lang=id</code></div>
+                <div className="text-text-soft-400">Reload tanpa query = balik ke English.</div>
+              </div>
+            ),
+            caption: "Query param tanpa persist = pilih bahasa, refresh, balik default. Pakai URL segment atau cookie, jangan ephemeral query.",
+          }}
         />
       </DocsSection>
 

@@ -6,6 +6,7 @@ import {
   DocsPageShell,
   DocsHeader,
   DocsSection,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -257,6 +258,60 @@ export default function ColorPage() {
           ))}
         </div>
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Use semantic tokens">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Reach for semantic tokens (`bg-primary-base`, `text-success-base`) — never hardcoded hex. Tokens flip in dark mode for free.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2"><div className="size-8 rounded-md bg-primary-base" /><code className="text-[10px]">bg-primary-base</code></div>
+                <div className="flex items-center gap-2"><div className="size-8 rounded-md bg-success-base" /><code className="text-[10px]">bg-success-base</code></div>
+                <div className="flex items-center gap-2"><div className="size-8 rounded-md bg-error-base" /><code className="text-[10px]">bg-error-base</code></div>
+              </div>
+            ),
+            caption: "Semantic tokens read intent. `primary-base` for brand CTAs, `success-base` for confirmation, `error-base` for destructive.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2"><div className="size-8 rounded-md" style={{background: "#7C4FC4"}} /><code className="text-[10px]">bg-[#7C4FC4]</code></div>
+                <div className="flex items-center gap-2"><div className="size-8 rounded-md" style={{background: "#38C793"}} /><code className="text-[10px]">bg-[#38C793]</code></div>
+                <div className="flex items-center gap-2"><div className="size-8 rounded-md" style={{background: "#F75D5F"}} /><code className="text-[10px]">bg-[#F75D5F]</code></div>
+              </div>
+            ),
+            caption: "Don't hardcode hex. Won't flip in dark mode, won't re-theme for portal tenants, won't survive a token rename.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Tone reflects intent">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Success = green for confirmation, never decoration. Error = red for destructive, never branding. Don't dress confirmation as a danger flag.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="space-y-2">
+                <div className="rounded-md bg-success-lighter text-success-dark px-3 py-2 text-xs">Payout Rp 4,5jt berhasil ke KopKen</div>
+                <div className="rounded-md bg-warning-lighter text-warning-dark px-3 py-2 text-xs">Saldo akan habis dalam 2 hari</div>
+                <div className="rounded-md bg-error-lighter text-error-dark px-3 py-2 text-xs">Suspend mitra Tono S. permanen?</div>
+              </div>
+            ),
+            caption: "Green confirms success, yellow warns of attention, red signals destructive consequence. Color = intent.",
+          }}
+          dont={{
+            preview: (
+              <div className="space-y-2">
+                <div className="rounded-md bg-error-lighter text-error-dark px-3 py-2 text-xs">Payout Rp 4,5jt berhasil ke KopKen</div>
+                <div className="rounded-md bg-success-lighter text-success-dark px-3 py-2 text-xs">Suspend mitra Tono S.?</div>
+              </div>
+            ),
+            caption: "Don't invert the intent. Red on success undermines trust. Green on suspend trains users to ignore destructive warnings.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

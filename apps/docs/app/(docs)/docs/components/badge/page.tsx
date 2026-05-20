@@ -25,6 +25,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 
 /**
@@ -46,6 +47,8 @@ export default function BadgeDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Data"
         title="Badge"
         description="Pill-shaped status / count / tag indicator. 11 status colors × 3 appearances × 5 type modifiers × 2 sizes. Pair with text labels, status icons, leading dots, trailing counts. For semantic status displays use StatusBadge; for numeric counts use NumberBadge."
@@ -312,6 +315,52 @@ export default function BadgeDocsPage() {
           }
           code={`<StatusBadge status="faded" variant="icon-light">Absent</StatusBadge>
 <Badge status="away" appearance="lighter" type="left-icon" icon={<Clock />}>25m</Badge>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Badge labels state, not action. Color = sentimen, bukan random palette. Pending = warning (kuning, "lagi diproses"), bukan error (merah, "ditolak").
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge status="success" appearance="lighter">Active</Badge>
+                <Badge status="warning" appearance="lighter">Pending</Badge>
+                <Badge status="neutral" appearance="lighter">Suspended</Badge>
+                <Badge status="error" appearance="lighter">Rejected</Badge>
+              </div>
+            ),
+            caption: "Pending = warning (kuning) karena status sementara butuh review. Suspended = neutral karena reversible. Rejected = error karena terminal.",
+          }}
+          dont={{
+            preview: (
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge status="error" appearance="lighter">Active</Badge>
+                <Badge status="error" appearance="lighter">Pending</Badge>
+                <Badge status="error" appearance="lighter">Suspended</Badge>
+              </div>
+            ),
+            caption: "Semua merah = mitra panik baca status mereka. Pending bukan error, Active jelas bukan merah. Color HARUS map ke sentimen.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-2">
+                <span className="text-sm">mtr-9412</span>
+                <Badge status="success" appearance="lighter" type="dot">Active</Badge>
+              </div>
+            ),
+            caption: "Badge berdampingan dengan ID/nama yang ia labeli. Type dot untuk status compact di list mitra.",
+          }}
+          dont={{
+            preview: (
+              <Badge status="success" appearance="filled">CLICK TO ACTIVATE</Badge>
+            ),
+            caption: "Jangan bikin badge yang clickable / CTA-style. Pakai Button. Badge = label, bukan action trigger.",
+          }}
         />
       </DocsSection>
 

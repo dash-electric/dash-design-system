@@ -9,6 +9,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -29,6 +30,8 @@ export default function ComboboxDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Form"
         title="Combobox"
         description="Searchable single-select dropdown. Use when option list is large (≥10 items) or needs free-text search. For small known sets use Select."
@@ -181,6 +184,48 @@ export default function ComboboxDocsPage() {
             </div>
           }
           code={`<Combobox options={cities} disabled placeholder="Lebaran freeze" />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Combobox = filter-as-type. Pakai untuk list panjang (50+ opsi) atau yang user sudah tahu nama target.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="mb-1 text-text-sub-600">Cari mitra by nama</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 px-2 py-1.5">
+                  <span className="text-text-soft-400">sigi│</span>
+                </div>
+                <div className="mt-1 rounded border border-stroke-soft-200 bg-bg-white-0 p-1 space-y-0.5">
+                  <div className="rounded bg-bg-weak-50 px-2 py-1">Sigit P. · mtr-9412</div>
+                  <div className="rounded px-2 py-1">Sigit R. · mtr-7331</div>
+                </div>
+              </div>
+            ),
+            caption: "Filter 1,284 mitra dengan typing 4 huruf. Dispatcher ketik nama langsung, bukan scroll list.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-xs text-xs">
+                <div className="mb-1 text-text-sub-600">Status</div>
+                <div className="rounded border border-stroke-soft-200 bg-bg-white-0 px-2 py-1.5">
+                  <span className="text-text-soft-400">Cari status…</span>
+                </div>
+              </div>
+            ),
+            caption: "Jangan pakai Combobox untuk 3 status (Active/Suspended/Pending). Itu pakai Select — overkill kalau cuma 3.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            caption: "Sertakan secondary info di item: \"Sigit P. · mtr-9412 · Reservasi\". Mitra duplicate name jadi distinguishable.",
+          }}
+          dont={{
+            caption: "Jangan tampilkan 5,000 row tanpa virtualization. Combobox tetap perlu paginate atau debounce server search.",
+          }}
         />
       </DocsSection>
 

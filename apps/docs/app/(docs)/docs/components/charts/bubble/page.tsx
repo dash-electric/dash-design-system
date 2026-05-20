@@ -112,7 +112,8 @@ export default function BubbleChartPage() {
         category="Components / Charts"
         title="Bubble"
         description="Proportional-area bubbles, ranked by percentage. Largest sits right-of-center, mid bottom-left, smallest top-left; extras orbit. Used for share-of-mix call-outs."
-        status="shipped"
+        status="stable"
+        kind="atom"
       />
 
       <DocsSection title="3-bubble (canonical)">

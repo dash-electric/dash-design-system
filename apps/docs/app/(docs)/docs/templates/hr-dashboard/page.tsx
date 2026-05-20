@@ -7,6 +7,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsTemplatePreview } from "@/components/docs/template-preview"
 import { DocsCode } from "@/components/docs/code-block"
@@ -78,6 +79,52 @@ export default function HrDashboardDocsPage() {
           ]}
         />
       </DocsSection>
-    </DocsPageShell>
+      <DocsSection title="Headcount + state">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          HR dashboards lead with headcount split by employment state — active, onboarding, leaving. Don't show one giant 'team size' number.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md grid grid-cols-3 gap-2">
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Aktif</p><p className="text-base font-semibold">128</p></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Onboarding</p><p className="text-base font-semibold text-warning-dark">7</p></div>
+                <div className="rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-2"><p className="text-[10px] text-text-sub-600">Cuti</p><p className="text-base font-semibold">12</p></div>
+              </div>
+            ),
+            caption: "Split headcount by state. People-ops can see at a glance who's onboarding (needs attention) vs on leave (covered).",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-4 text-center"><p className="text-[10px] text-text-sub-600">Total karyawan</p><p className="text-3xl font-semibold">147</p></div>
+            ),
+            caption: "Don't roll up to one 'total' number. People-ops needs the breakdown — '147' tells them nothing actionable.",
+          }}
+        />
+      </DocsSection>
+
+      <DocsSection title="Quick actions placement">
+        <p className="text-sm text-text-sub-600 max-w-2xl">
+          Approve leave, run payroll, send onboarding doc — these high-frequency actions sit on the dashboard, one click away. Don't bury them in submenus.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="w-full max-w-md space-y-2">
+                <p className="text-xs font-medium">Aksi cepat</p>
+                <div className="grid grid-cols-3 gap-2"><button className="h-12 rounded-md border border-stroke-soft-200 bg-bg-white-0 text-[10px] flex flex-col items-center justify-center gap-1"><span></span>Approve cuti</button><button className="h-12 rounded-md border border-stroke-soft-200 bg-bg-white-0 text-[10px] flex flex-col items-center justify-center gap-1"><span></span>Run payroll</button><button className="h-12 rounded-md border border-stroke-soft-200 bg-bg-white-0 text-[10px] flex flex-col items-center justify-center gap-1"><span></span>Onboard new</button></div>
+              </div>
+            ),
+            caption: "Quick-action tiles on the dashboard. People-ops opens Dash, sees the action, clicks once.",
+          }}
+          dont={{
+            preview: (
+              <div className="w-full max-w-md rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-3 text-xs text-text-sub-600">Aksi-aksi tersedia di menu Settings → Workflows → Quick actions.</div>
+            ),
+            caption: "Don't bury frequent actions three levels deep. Daily flow becomes a treasure hunt.",
+          }}
+        />
+      </DocsSection>
+        </DocsPageShell>
   )
 }

@@ -21,6 +21,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -91,6 +92,8 @@ export default function RadioDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="atom"
         category="Components / Forms"
         title="Radio"
         description="Mutually-exclusive single-select control. Three primitives — RadioGroup, RadioItem (16px disc with inner 8px dot), RadioField (item + label + description). Card-style selectors compose via the inline RadioCard helper."
@@ -363,6 +366,56 @@ export default function RadioDocsPage() {
   <RadioField value="no" label="No" />
   <RadioField value="maybe" label="Maybe" />
 </RadioGroup>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Radio = pilihan mutually-exclusive (satu pilihan saja). Selalu ada default selection — jangan biarkan group kosong. Untuk multi-select pakai Checkbox.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <RadioGroup defaultValue="express">
+                <RadioField value="reservasi" label="Reservasi" description="Schedule pickup, mitra terjadwal." />
+                <RadioField value="express" label="Express" description="Same-day, surge pricing." />
+                <RadioField value="bulk" label="Bulk" description="Multi-package B2B." />
+              </RadioGroup>
+            ),
+            caption: "Pilihan tribe mutually-exclusive (satu delivery = satu tribe). Default selection 'Express' supaya user tidak hit submit kosong.",
+          }}
+          dont={{
+            preview: (
+              <RadioGroup>
+                <RadioField value="r" label="Active" />
+                <RadioField value="s" label="Suspended" />
+                <RadioField value="p" label="Pending" />
+              </RadioGroup>
+            ),
+            caption: "Tanpa defaultValue, group kosong → user submit form lupa pilih → server error 'status required'. Selalu set default.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <RadioGroup defaultValue="weekly">
+                <RadioField value="daily" label="Harian" />
+                <RadioField value="weekly" label="Mingguan" />
+                <RadioField value="monthly" label="Bulanan" />
+              </RadioGroup>
+            ),
+            caption: "Frekuensi payout = mutually-exclusive. Radio dengan 3 opsi ringkas, label dalam bahasa Indonesia.",
+          }}
+          dont={{
+            preview: (
+              <RadioGroup defaultValue="r">
+                <RadioField value="r" label="Suka mitra" />
+                <RadioField value="e" label="Suka dispatch" />
+                <RadioField value="b" label="Suka payroll" />
+              </RadioGroup>
+            ),
+            caption: "User boleh suka >1 fitur — pakai Checkbox. Radio paksa user pilih 1 dari pilihan yang sebenarnya boleh kombinasi.",
+          }}
         />
       </DocsSection>
 

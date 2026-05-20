@@ -8,6 +8,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -28,7 +29,8 @@ export default function AvailabilityStatusDocsPage() {
         category="Components / Status"
         title="Availability Status"
         description="Live-signal chip with hover-explained context. Use when a UI section's actionability depends on a real-time external state — driver pool, server load, slot availability. Not a Badge — Badge is for categorical labels."
-        status="new"
+        status="beta"
+        kind="specialized"
       />
 
       <DocsSection title="Install">
@@ -58,6 +60,46 @@ export default function AvailabilityStatusDocsPage() {
           }
           code={`<AvailabilityStatus status="available" />
 <AvailabilityStatus status="unavailable" />`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          AvailabilityStatus = sinyal real-time. Selalu pair dengan hover explanation supaya user tahu sumber data + ETA recovery saat unavailable.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <AvailabilityStatus
+                status="unavailable"
+                tooltipTitle="Belum ada mitra Express di Bekasi"
+                tooltipDescription="Kami akan notify dalam 2-3 menit setelah mitra check-in."
+              />
+            ),
+            caption: "Unavailable + tooltip jelaskan kenapa + ETA. User tahu harus tunggu, bukan reload page berulang.",
+          }}
+          dont={{
+            preview: (
+              <AvailabilityStatus status="unavailable" label="N/A" />
+            ),
+            caption: "'N/A' tanpa hover context = user tidak tahu apa yang unavailable, kapan available lagi, atau harus apa.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <div className="flex items-center gap-2">
+                <AvailabilityStatus status="available" tooltipTitle="42 mitra Express aktif di Tangerang" />
+              </div>
+            ),
+            caption: "Available + jumlah/lokasi spesifik di tooltip. Sinyal real-time, bukan label statis.",
+          }}
+          dont={{
+            preview: (
+              <AvailabilityStatus status="available" label="Active" />
+            ),
+            caption: "Untuk label kategoris statis (Active mitra), pakai Badge atau StatusBadge. AvailabilityStatus implies LIVE state.",
+          }}
         />
       </DocsSection>
 

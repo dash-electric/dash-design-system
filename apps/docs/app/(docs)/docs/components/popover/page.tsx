@@ -11,6 +11,7 @@ import {
   DocsSection,
   DocsExample,
   DocsPropsTable,
+  DocsDoDont,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 
@@ -18,6 +19,8 @@ export default function PopoverDocsPage() {
   return (
     <DocsPageShell>
       <DocsHeader
+        status="stable"
+        kind="composite"
         category="Components / Overlays"
         title="Popover"
         description="Non-modal floating panel anchored to a trigger. Use for inline forms, settings, filter builders. For action lists use Dropdown Menu instead."
@@ -79,6 +82,87 @@ export default function PopoverDocsPage() {
     <Switch id="lebaran-freeze" />
   </PopoverContent>
 </Popover>`}
+        />
+      </DocsSection>
+
+      <DocsSection title="Do this, not that">
+        <p className="text-base text-text-sub-600 leading-relaxed max-w-2xl">
+          Popover = inline form / settings non-modal. User bisa interact dengan page di luar popover. Untuk daftar action pakai DropdownMenu. Untuk blocking confirmation pakai Modal.
+        </p>
+        <DocsDoDont
+          do={{
+            preview: (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size="sm" tone="neutral" style="stroke" leftIcon={<Settings2 />}>Filter</Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-64 space-y-2">
+                  <div className="text-xs font-medium text-text-strong-950">Filter dispatch</div>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <Label htmlFor="tribe-r">Reservasi</Label>
+                      <Switch id="tribe-r" defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <Label htmlFor="tribe-e">Express</Label>
+                      <Switch id="tribe-e" />
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            ),
+            caption: "Filter builder dengan form controls inside popover. User bisa toggle, lihat hasil di table belakang, refine. Non-modal flow yang fluid.",
+          }}
+          dont={{
+            preview: (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size="sm" tone="destructive">Suspend</Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-64 space-y-2 text-xs">
+                  <div className="font-medium text-text-strong-950">Suspend mtr-9412?</div>
+                  <div className="flex gap-2">
+                    <Button size="xs" tone="neutral" style="stroke">Batal</Button>
+                    <Button size="xs" tone="destructive">Konfirmasi</Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            ),
+            caption: "Destructive confirmation pakai Popover = user bisa klik di luar untuk dismiss accidental. Pakai Modal (blocking) untuk action irreversible.",
+          }}
+        />
+        <DocsDoDont
+          do={{
+            preview: (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size="sm" tone="neutral" style="stroke">Pengaturan polygon</Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-64 space-y-2 text-xs">
+                  <Label htmlFor="radius">Radius (km)</Label>
+                  <input id="radius" type="number" defaultValue={5} className="w-full h-8 px-2 border border-stroke-soft-200 rounded" />
+                </PopoverContent>
+              </Popover>
+            ),
+            caption: "Inline edit untuk setting yang cepat (radius polygon). Popover muncul, user edit, klik luar untuk save. Tidak break flow.",
+          }}
+          dont={{
+            preview: (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size="sm" tone="neutral" style="stroke">Aksi</Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-48 text-xs">
+                  <ul className="space-y-1">
+                    <li className="px-2 py-1 hover:bg-bg-weak-50 cursor-pointer">Edit</li>
+                    <li className="px-2 py-1 hover:bg-bg-weak-50 cursor-pointer">Duplikat</li>
+                    <li className="px-2 py-1 hover:bg-bg-weak-50 cursor-pointer">Suspend</li>
+                  </ul>
+                </PopoverContent>
+              </Popover>
+            ),
+            caption: "Action list dalam Popover = miss keyboard nav. Pakai DropdownMenu yang sudah handle aria-activedescendant + arrow keys.",
+          }}
         />
       </DocsSection>
 
