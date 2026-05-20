@@ -17,6 +17,7 @@ import { runInfo } from "./commands/info.js"
 import { runSync } from "./commands/sync.js"
 import { runDoctor } from "./commands/doctor.js"
 import { runAudit } from "./commands/audit.js"
+import { runGapReport } from "./commands/gap.js"
 
 const program = new Command()
 
@@ -213,6 +214,37 @@ program
       json: opts.json,
       failOnError: opts.failOnError,
       only: opts.only,
+    })
+  })
+
+const gap = program
+  .command("gap")
+  .description("Log Dash design-system coverage gaps for the DS maintainer queue")
+
+gap
+  .command("report [description]")
+  .description("Log a missing DS pattern/component (or --list / --clear / --export)")
+  .option("--severity <level>", "low | medium | high (prompted if omitted)")
+  .option("--repo <name>", "Repo name (auto-detected from cwd if omitted)")
+  .option("--prompt <text>", "Original PE prompt that surfaced the gap")
+  .option("--list", "Print queue contents")
+  .option("--clear", "Clear all queued gaps (interactive confirm)")
+  .option("--export <path>", "Export queue JSON to <path>")
+  .option("--json", "Emit machine-readable JSON")
+  .option("--yes", "Skip confirmation prompts (use with --clear in scripts)")
+  .option("--non-interactive", "Skip interactive prompts (default severity = medium)")
+  .action(async (description: string | undefined, opts) => {
+    await runGapReport({
+      description,
+      severity: opts.severity,
+      repo: opts.repo,
+      prompt: opts.prompt,
+      list: opts.list,
+      clear: opts.clear,
+      export: opts.export,
+      json: opts.json,
+      yes: opts.yes,
+      nonInteractive: opts.nonInteractive,
     })
   })
 
