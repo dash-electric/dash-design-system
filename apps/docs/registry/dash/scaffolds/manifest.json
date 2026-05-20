@@ -1,0 +1,177 @@
+{
+  "$schema": "./manifest.schema.json",
+  "version": "1.0.0",
+  "description": "Hermes scaffold templates — battle-tested shapes Agent N picks via keyword match on gap description. Each template has audit trail / state matrix / a11y / Dash tokens / voice rules pre-baked. AI replaces @placeholder JSDoc comments with feature-specific code, outputs to apps/docs/registry/dash/blocks/<gap-name>.tsx.",
+  "templates": [
+    {
+      "id": "image-action",
+      "path": "image-action.template.tsx",
+      "exportName": "ImageActionTemplate",
+      "propsType": "ImageActionTemplateProps",
+      "triggers": [
+        "image",
+        "photo",
+        "foto",
+        "gambar",
+        "edit picture",
+        "crop",
+        "rotate",
+        "annotate",
+        "redact",
+        "POD",
+        "POP",
+        "proof of delivery",
+        "proof of pickup",
+        "KYC photo",
+        "signature image"
+      ],
+      "categories": ["legal-sensitive", "mitra-facing", "audit-trail"],
+      "placeholders": ["DOMAIN_LOGIC", "DOMAIN_VALIDATION", "DOMAIN_RENDER"],
+      "approxTokens": 1700,
+      "auditTrail": "mandatory",
+      "voice": "mitra-formal"
+    },
+    {
+      "id": "bulk-action",
+      "path": "bulk-action.template.tsx",
+      "exportName": "BulkActionTemplate",
+      "propsType": "BulkActionTemplateProps",
+      "triggers": [
+        "bulk",
+        "batch",
+        "multiple",
+        "many",
+        "parallel",
+        "mass action",
+        "bulk approve",
+        "bulk suspend",
+        "bulk dispatch",
+        "bulk reinstate",
+        "process N",
+        "for each row"
+      ],
+      "categories": ["workflow", "state-machine"],
+      "placeholders": ["ROW_RENDERER", "ACTION_FN", "ACTION_LABEL"],
+      "approxTokens": 1300,
+      "auditTrail": "caller-injected",
+      "voice": "mitra-formal"
+    },
+    {
+      "id": "table-with-filter",
+      "path": "table-with-filter.template.tsx",
+      "exportName": "TableWithFilterTemplate",
+      "propsType": "TableWithFilterTemplateProps",
+      "triggers": [
+        "table",
+        "list",
+        "daftar",
+        "data table",
+        "filter",
+        "search",
+        "pagination",
+        "status filter",
+        "date range filter",
+        "backoffice list",
+        "admin table",
+        "manajemen"
+      ],
+      "categories": ["data-display", "backoffice"],
+      "placeholders": [
+        "COLUMNS",
+        "DATA_FETCHER",
+        "FILTER_FIELDS",
+        "ROW_DETAIL"
+      ],
+      "approxTokens": 1500,
+      "auditTrail": "n/a",
+      "voice": "mitra-formal"
+    },
+    {
+      "id": "form-with-audit",
+      "path": "form-with-audit.template.tsx",
+      "exportName": "FormWithAuditTemplate",
+      "propsType": "FormWithAuditTemplateProps",
+      "triggers": [
+        "form",
+        "edit",
+        "update",
+        "payment",
+        "signature",
+        "status change",
+        "amount edit",
+        "high-stakes field",
+        "legal field",
+        "financial field",
+        "koreksi nominal",
+        "ubah status",
+        "edit pembayaran"
+      ],
+      "categories": ["legal-sensitive", "audit-trail", "form"],
+      "placeholders": ["FIELDS", "VALIDATE_FN", "SUBMIT_FN"],
+      "approxTokens": 1900,
+      "auditTrail": "mandatory",
+      "voice": "mitra-formal"
+    },
+    {
+      "id": "multi-stage",
+      "path": "multi-stage.template.tsx",
+      "exportName": "MultiStageTemplate",
+      "propsType": "MultiStageTemplateProps",
+      "triggers": [
+        "approval",
+        "approver",
+        "approve",
+        "multi-stage",
+        "multi-step",
+        "n-approver",
+        "workflow",
+        "escalation",
+        "maintenance approval",
+        "repossession",
+        "tier change",
+        "persetujuan",
+        "approver ladder",
+        "verifikasi tahap"
+      ],
+      "categories": ["workflow", "state-machine", "audit-trail"],
+      "placeholders": ["STAGES", "APPROVER_FETCHER", "ON_STAGE_CHANGE"],
+      "approxTokens": 2000,
+      "auditTrail": "mandatory",
+      "voice": "mitra-formal"
+    },
+    {
+      "id": "inline-edit",
+      "path": "inline-edit.template.tsx",
+      "exportName": "InlineEditTemplate",
+      "propsType": "InlineEditTemplateProps",
+      "triggers": [
+        "inline edit",
+        "click to edit",
+        "edit in place",
+        "single field edit",
+        "cell edit",
+        "rename",
+        "quick edit",
+        "tap to edit",
+        "ubah cepat"
+      ],
+      "categories": ["form", "audit-trail", "mobile-friendly"],
+      "placeholders": ["FIELD_NAME", "INITIAL_VALUE", "ON_SAVE", "VALIDATE"],
+      "approxTokens": 1300,
+      "auditTrail": "mandatory",
+      "voice": "mitra-formal"
+    }
+  ],
+  "selection": {
+    "strategy": "keyword-match",
+    "fallback": "AI picks closest by category; if no match within 0.4 cosine, generate from scratch.",
+    "tieBreaker": "Prefer templates with more triggers matched. Within ties, prefer narrower category (e.g. legal-sensitive > workflow)."
+  },
+  "conventions": {
+    "fileNaming": "kebab-case + .template.tsx suffix",
+    "exportNaming": "<PascalCaseId>Template",
+    "propsNaming": "<PascalCaseId>TemplateProps",
+    "placeholderStyle": "@placeholder <UPPERCASE_NAME>",
+    "placeholderRationale": "JSDoc @placeholder tags are inert at runtime AND machine-readable. AI replaces the block between two adjacent comment lines without disturbing the surrounding boilerplate. Plain TSX files (not Handlebars / Mustache) means: (1) tsc validates the SHAPE of every template independently, catching broken signatures before Hermes ever runs; (2) AI sees a working component to copy from, not a templated string."
+  }
+}
