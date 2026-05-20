@@ -41,12 +41,14 @@ import type {
   GenerationArtifact,
   GithubProvider,
   Logger,
+  PreviewBundler,
   SkillChainRunner,
   SubmitPromptInput,
   SubmitPromptResult,
 } from "./types.js"
 import { classify, describe, PipelineError } from "./error-handling.js"
 import { nextStatus, isTerminal } from "./status-transitions.js"
+import { bundleForPreview, cleanupOne } from "../preview/index.js"
 
 export interface OrchestratorOptions {
   store: Store
@@ -60,6 +62,38 @@ export interface OrchestratorOptions {
   /** Default base branch when prompt has none. */
   defaultBaseBranch?: string
   logger?: Logger
+  /**
+   * Bundler used to produce a sandboxed JS bundle for the iframe preview after
+   * generation succeeds. Defaults to a wrapper around `bundleForPreview()`. A
+   * bundler failure does NOT block the PR flow — we still mark
+   * awaiting_approval, the iframe just skips rendering.
+   */
+  previewBundler?: PreviewBundler
+  /**
+   * Hook for scheduling the SessionStore TTL sweep. Exposed for tests that
+   * need deterministic timing — production passes a wrapper around
+   * `setInterval` over `clarificationStore.expire(ttlMs)`.
+   *
+   * Pass `null` to disable scheduling entirely.
+   */
+  ttlScheduler?: ((tick: () => Promise<void>) => () => void) | null
+  /** Override the per-tick TTL maxAge passed to SessionStore.expire(). */
+  sessionTtlMs?: number
+  /** Override the TTL tick interval. */
+  sessionSweepIntervalMs?: number
+  /**
+   * Function the orchestrator calls to perform the actual session expire.
+   * Defaults to a no-op so unit tests don't need a real SessionStore.
+   */
+  expireSessions?: (maxAgeMs: number) => Promise<number>
+  /**
+   * Best-effort temp-dir cleanup hook called ~5 min after a PR is opened. The
+   * delay gives the user time to revisit the preview before bytes vanish.
+   * Defaults to `cleanupOne` from preview/temp-dir.
+   */
+  previewCleanup?: (promptId: string) => Promise<boolean>
+  /** Override the post-approve cleanup delay (default 5 min). Tests pass 0. */
+  previewCleanupDelayMs?: number
 }
 
 const NOOP_LOGGER: Logger = {
@@ -78,6 +112,10 @@ export class Orchestrator {
   private readonly repoPathResolver: (fullName: string | null) => string
   private readonly defaultBaseBranch: string
   private readonly logger: Logger
+  private readonly previewBundler: PreviewBundler
+  private readonly previewCleanup: (promptId: string) => Promise<boolean>
+  private readonly previewCleanupDelayMs: number
+  private readonly ttlCancel: (() => void) | null
 
   /** In-memory artifact cache, keyed by promptId. Survives process lifetime
    *  only — by-design, since regenerating is cheaper than reloading from disk. */
@@ -93,6 +131,42 @@ export class Orchestrator {
     this.repoPathResolver = opts.repoPathResolver ?? (() => process.cwd())
     this.defaultBaseBranch = opts.defaultBaseBranch ?? "main"
     this.logger = opts.logger ?? NOOP_LOGGER
+    this.previewBundler =
+      opts.previewBundler ?? {
+        bundle: (input) => bundleForPreview(input),
+      }
+    this.previewCleanup = opts.previewCleanup ?? ((id) => cleanupOne(id))
+    this.previewCleanupDelayMs = opts.previewCleanupDelayMs ?? 5 * 60 * 1000
+
+    // TTL sweep: walk SessionStore every 5 min and expire pending sessions
+    // older than 30 min. Disable with ttlScheduler=null (tests).
+    const ttlMs = opts.sessionTtlMs ?? 30 * 60 * 1000
+    const intervalMs = opts.sessionSweepIntervalMs ?? 5 * 60 * 1000
+    const expire = opts.expireSessions ?? (async () => 0)
+    const scheduler =
+      opts.ttlScheduler === undefined
+        ? (tick: () => Promise<void>) => {
+            const h = setInterval(() => {
+              tick().catch(() => {})
+            }, intervalMs)
+            // Don't keep the event loop alive — production runs alongside an
+            // HTTP server that already holds the loop.
+            if (typeof (h as { unref?: () => void }).unref === "function") {
+              ;(h as { unref: () => void }).unref()
+            }
+            return () => clearInterval(h)
+          }
+        : opts.ttlScheduler
+    this.ttlCancel = scheduler
+      ? scheduler(async () => {
+          await expire(ttlMs).catch(() => 0)
+        })
+      : null
+  }
+
+  /** Shut down background timers — called by daemon.close(). */
+  dispose(): void {
+    this.ttlCancel?.()
   }
 
   // ── Public surface ───────────────────────────────────────────────────────
@@ -191,6 +265,23 @@ export class Orchestrator {
       validation: result.validation,
       generatedAt: new Date().toISOString(),
     }
+
+    // 4b. Best-effort sandbox bundle for the iframe preview. Failure is
+    // explicitly non-fatal — the PR flow doesn't need it and we don't want
+    // an esbuild miss / oversized bundle to wedge the user mid-flow.
+    try {
+      const bundleResult = await this.previewBundler.bundle({
+        files: artifact.files,
+        promptId: prompt.id,
+      })
+      artifact.bundleResult = bundleResult
+    } catch (err) {
+      this.logger.warn("preview bundle failed (continuing without iframe)", {
+        id: prompt.id,
+        err: (err as Error).message,
+      })
+    }
+
     this.artifacts.set(prompt.id, artifact)
 
     await this.setStatus(prompt, "awaiting_approval")
@@ -200,6 +291,7 @@ export class Orchestrator {
       fileCount: result.response.files.length,
       passed: result.validation.passed,
       errorCount: result.validation.errors.length,
+      previewAvailable: Boolean(artifact.bundleResult),
     })
   }
 
@@ -280,8 +372,8 @@ export class Orchestrator {
         newBranch,
         files: artifact.files.map((f) => ({ path: f.path, content: f.content })),
         commitMessage,
-        prTitle: this.buildPRTitle(prompt),
-        prBody: this.buildPRBody(prompt, artifact),
+        prTitle: input.prTitle ?? this.buildPRTitle(prompt),
+        prBody: input.prBody ?? this.buildPRBody(prompt, artifact),
       })
 
       await this.store.updatePromptStatus(input.promptId, "pr_created", {
@@ -292,11 +384,31 @@ export class Orchestrator {
         prUrl: submitted.prUrl,
         prNumber: submitted.prNumber,
       })
+
+      // Schedule preview cleanup after a delay so the user can still revisit
+      // the iframe right after the PR opens. Failure is swallowed — the
+      // cleanupOld() sweeper will catch orphans eventually.
+      this.schedulePreviewCleanup(input.promptId)
+
       return { prUrl: submitted.prUrl, prNumber: submitted.prNumber }
     } catch (err) {
       const classified = classify(err)
       await this.failPrompt(prompt, classified)
       throw classified
+    }
+  }
+
+  private schedulePreviewCleanup(promptId: string): void {
+    if (this.previewCleanupDelayMs <= 0) {
+      // Test path — run immediately, swallow errors.
+      void this.previewCleanup(promptId).catch(() => false)
+      return
+    }
+    const h = setTimeout(() => {
+      this.previewCleanup(promptId).catch(() => false)
+    }, this.previewCleanupDelayMs)
+    if (typeof (h as { unref?: () => void }).unref === "function") {
+      ;(h as { unref: () => void }).unref()
     }
   }
 

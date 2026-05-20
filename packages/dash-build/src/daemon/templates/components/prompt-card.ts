@@ -1,6 +1,13 @@
 import type { PromptRecord } from "../../state/types.js"
 import { escapeHtml } from "../layout.js"
 import { renderStatusPill } from "./status-pill.js"
+import { renderPreviewPane } from "./preview-pane.js"
+import type { GenerationArtifact } from "../../../pipeline/types.js"
+
+/** Resolver the dashboard route passes in so the prompt-card can attach a
+ *  preview pane when a generation artifact exists for a prompt in
+ *  `awaiting_approval`. Kept optional so legacy callers don't break. */
+export type ArtifactResolver = (promptId: string) => GenerationArtifact | undefined
 
 function formatRelative(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime()
@@ -50,13 +57,29 @@ function actionFor(prompt: PromptRecord): string {
   return ""
 }
 
-export function renderPromptCard(prompt: PromptRecord): string {
+export function renderPromptCard(
+  prompt: PromptRecord,
+  resolveArtifact?: ArtifactResolver,
+): string {
   const when = formatRelative(prompt.createdAt)
   const repoLine = prompt.repo
     ? `<span class="db-prompt-repo" aria-label="Target repo">${escapeHtml(prompt.repo)}${
         prompt.branch ? ` · ${escapeHtml(prompt.branch)}` : ""
       }</span>`
     : ""
+
+  let previewSection = ""
+  if (prompt.status === "awaiting_approval" && resolveArtifact) {
+    const artifact = resolveArtifact(prompt.id)
+    if (artifact && artifact.files.length > 0) {
+      previewSection = renderPreviewPane({
+        promptId: prompt.id,
+        files: artifact.files,
+        previewUrl: `/preview/${prompt.id}`,
+        bundleFailed: !artifact.bundleResult,
+      })
+    }
+  }
 
   return `<li class="db-prompt-card" data-prompt-id="${escapeHtml(prompt.id)}" data-status="${escapeHtml(prompt.status)}">
     <div class="db-prompt-card-head">
@@ -65,13 +88,17 @@ export function renderPromptCard(prompt: PromptRecord): string {
       ${repoLine}
     </div>
     <p class="db-prompt-text">${escapeHtml(prompt.text)}</p>
+    ${previewSection}
     <div class="db-prompt-card-foot">
       ${actionFor(prompt)}
     </div>
   </li>`
 }
 
-export function renderPromptList(prompts: PromptRecord[]): string {
+export function renderPromptList(
+  prompts: PromptRecord[],
+  resolveArtifact?: ArtifactResolver,
+): string {
   if (prompts.length === 0) {
     return `<div class="db-empty-state db-empty-prompts">
       <span class="db-empty-icon" aria-hidden="true">✦</span>
@@ -84,5 +111,7 @@ export function renderPromptList(prompts: PromptRecord[]): string {
       </ul>
     </div>`
   }
-  return `<ul class="db-prompt-list" id="db-prompts-list">${prompts.map(renderPromptCard).join("")}</ul>`
+  return `<ul class="db-prompt-list" id="db-prompts-list">${prompts
+    .map((p) => renderPromptCard(p, resolveArtifact))
+    .join("")}</ul>`
 }

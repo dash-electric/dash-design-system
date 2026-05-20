@@ -25,6 +25,7 @@ import type {
   ParsedFile,
   ValidationResult,
 } from "../skills/types.js"
+import type { BundleInput, BundleResult } from "../preview/types.js"
 
 // ── Pipeline result ────────────────────────────────────────────────────────
 
@@ -43,6 +44,10 @@ export interface ApprovePRInput {
   promptId: string
   branch?: string
   commitMessage?: string
+  /** Override the default PR title (default = first 80 chars of prompt text). */
+  prTitle?: string
+  /** Override the default PR body (default = generated summary). */
+  prBody?: string
 }
 
 export interface ApprovePRResult {
@@ -58,6 +63,19 @@ export interface GenerationArtifact {
   explanation: string
   validation: ValidationResult
   generatedAt: string
+  /** Result of bundleForPreview() when the bundle succeeded. Absent when the
+   *  bundler failed or esbuild was unavailable — the artifact is still
+   *  considered valid for PR creation; only the iframe preview is skipped. */
+  bundleResult?: BundleResult
+}
+
+/**
+ * Bundler dependency for Orchestrator. We inject the bundleForPreview function
+ * so unit tests don't need esbuild installed and we don't write to ~/.dash-build
+ * during test runs.
+ */
+export interface PreviewBundler {
+  bundle(input: BundleInput): Promise<BundleResult>
 }
 
 // ── DI for the orchestrator ────────────────────────────────────────────────

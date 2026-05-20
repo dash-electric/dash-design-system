@@ -20,6 +20,8 @@ interface ApproveBody {
   approved?: boolean
   branch?: string
   commitMessage?: string
+  prTitle?: string
+  prBody?: string
 }
 
 /**
@@ -112,6 +114,8 @@ export async function handlePromptsRoute(
           promptId: id,
           branch: body.branch,
           commitMessage: body.commitMessage,
+          prTitle: body.prTitle,
+          prBody: body.prBody,
         })
         return sendJson(res, 200, {
           ok: true,

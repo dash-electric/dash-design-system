@@ -1,4 +1,5 @@
 import type { Store } from "../state/store.js"
+import type { Orchestrator } from "../../pipeline/orchestrator.js"
 import { renderLayout } from "./layout.js"
 import { renderAuthChip } from "./components/auth-chip.js"
 import { renderBranchInput } from "./components/branch-input.js"
@@ -19,10 +20,13 @@ import { renderRepoSelect } from "./components/repo-select.js"
  * The auth + prompts regions get IDs so the client JS can swap them in place
  * on WS push without a full page reload.
  */
-export function renderDashboard(store: Store): string {
+export function renderDashboard(store: Store, orchestrator?: Orchestrator): string {
   const auth = store.getAuth()
   const workspace = store.getWorkspace()
   const prompts = store.getPrompts(10)
+  const resolveArtifact = orchestrator
+    ? (id: string) => orchestrator.getArtifact(id)
+    : undefined
 
   // Workspace / auth region
   const repos = [
@@ -98,8 +102,8 @@ export function renderDashboard(store: Store): string {
     needsAnthropic || needsGithub
       ? `<div class="db-empty-state"><p class="db-empty-body">Connect auth above to see prompts.</p></div>`
       : prompts.length === 0
-        ? renderPromptList([])
-        : renderPromptList(prompts)
+        ? renderPromptList([], resolveArtifact)
+        : renderPromptList(prompts, resolveArtifact)
 
   const promptsCard = `<section class="db-card" aria-labelledby="db-prompts-title">
     <header class="db-card-header">

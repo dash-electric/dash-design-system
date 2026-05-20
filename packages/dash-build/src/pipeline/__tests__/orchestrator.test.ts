@@ -111,10 +111,15 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-  // Let any in-flight async store.persist() calls settle before rm
+  // Let any in-flight async store.persist() calls settle before rm.
+  // Multiple drain passes catch nested microtasks scheduled by addPrompt /
+  // updatePromptStatus.
   await store.persist()
-  await new Promise((r) => setTimeout(r, 20))
-  await rm(dir, { recursive: true, force: true, maxRetries: 3 })
+  for (let i = 0; i < 5; i++) {
+    await Promise.resolve()
+  }
+  await new Promise((r) => setImmediate(r))
+  await rm(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 })
 })
 
 function build({

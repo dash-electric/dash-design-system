@@ -23,6 +23,7 @@ export {
   type GenerationArtifact,
   type GithubProvider,
   type Logger,
+  type PreviewBundler,
   type PromptWithArtifact,
   type SkillChainRunner,
   type SubmitPromptInput,

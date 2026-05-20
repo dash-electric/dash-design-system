@@ -1,92 +1,152 @@
 # @dash/build
 
-**Dash Build** — Lovable-for-Dash internal builder. Browser-based AI workflow for any Dash team member.
+Lovable-for-Dash internal builder. Browser-based AI workflow for any Dash team member.
 
 ## Install
 
 ```bash
-npm i -g @dash/build
+npm install -g @dash/build
 ```
 
-## Usage
+## Quick Start
 
 ```bash
 dash-build
 ```
 
-Interactive menu opens. Pick:
+Opens interactive menu:
 
-- **Web UI** — start daemon + open browser dashboard
-- **Terminal UI** — interactive CLI prompt loop (coming soon)
-- **Hide to Tray** — start daemon in background
-- **Exit** — quit
+- Web UI (Open in Browser) — default, recommended
+- Terminal UI (Interactive CLI)
+- Hide to Tray (Background)
+- Exit
+
+## Setup (one-time)
+
+After first run, open dashboard at <http://localhost:7777/dashboard>.
+
+### 1. Connect Claude
+
+Click **Connect Anthropic** → log in with your Claude Pro/Team account.
+Uses your subscription. Zero API key needed.
+
+### 2. Install GitHub App
+
+Click **Install GitHub App** → install Dash Build app on your repo.
+
+### 3. Pick repo
+
+Select from dropdown.
+
+### 4. Build
+
+Type prompt: `tambahin chart payroll di backoffice`
+Click **Generate** → AI consults Dash DS Skill → may ask clarifications
+→ generates code → preview → **Open PR**.
 
 ## Architecture
 
-Day 1 scaffold (this package):
+```
+┌──────────────────────────────────────────────┐
+│ Browser (localhost:7777/dashboard)           │
+│   ↕ WebSocket                                │
+│ Daemon (Node.js, packages/dash-build)        │
+│   ├ Anthropic OAuth (Pro/Team subscription)  │
+│   ├ GitHub App (Bearer token + Octokit)      │
+│   ├ Skill chain (dash-prd + design + Skill)  │
+│   ├ Clarification (multi-turn questions)     │
+│   ├ Preview (sandboxed iframe + esbuild)     │
+│   └ Pipeline (queued → PR created)           │
+│ Anthropic API ─ via subscription             │
+│ GitHub API ── via App installation           │
+└──────────────────────────────────────────────┘
+```
 
-- `bin.ts` — CLI entry, runs interactive menu
-- `menu/` — banner, prompt loop, port detection
-- `modes/` — web-ui, terminal-ui, tray, exit dispatchers
-- `daemon/` — placeholder (real daemon = Agent B)
+## Configuration
 
-Day 2+ integrations:
+Env vars (optional overrides):
 
-- **Agent B** — daemon HTTP server (Hono + WebSocket)
-- **Agent C** — Anthropic OAuth
-- **Agent D** — GitHub PR automation (see `src/integrations/github/`)
+| Var                              | Default                       | Description                  |
+| -------------------------------- | ----------------------------- | ---------------------------- |
+| `DASH_BUILD_PORT`                | `7777`                        | Daemon port                  |
+| `ANTHROPIC_OAUTH_BASE`           | `https://claude.ai/oauth`     | Anthropic OAuth endpoint     |
+| `DASH_BUILD_GITHUB_APP_ID`       | _(required for GitHub)_       | GitHub App ID                |
+| `DASH_BUILD_GITHUB_PRIVATE_KEY`  | _(required)_                  | PEM-encoded private key      |
+| `DASH_BUILD_GITHUB_CLIENT_ID`    | _(required)_                  | OAuth client ID              |
+| `DASH_BUILD_GITHUB_CLIENT_SECRET`| _(required)_                  | OAuth client secret          |
+| `DASH_BUILD_GITHUB_APP_SLUG`     | `dash-build`                  | App slug (for install URL)   |
+| `DASH_BUILD_GITHUB_WEBHOOK_SECRET`| _(optional)_                 | Only if webhooks enabled     |
 
-## GitHub App setup
+## GitHub App Setup
 
-The GitHub integration uses a GitHub App (not a personal access token) so
-each user's install grants per-repo permission and tokens auto-rotate.
+Manual setup for pilot phase:
 
-For the Wave 5 pilot, Irfan registers a single App manually on the
-`irfanputra-design` org. Production rollout will move this to the Dash org.
-
-### One-time App registration
-
-1. Visit `https://github.com/organizations/<org>/settings/apps/new` (or
-   `https://github.com/settings/apps/new` for a personal-account App).
-2. **Name:** `Dash Build` (slug will be `dash-build`).
-3. **Homepage URL:** `https://dash.id` (or any placeholder during pilot).
-4. **Callback URL:** `http://localhost:7777/api/auth/github/callback`
-   (the daemon's local port). Add additional ports here if needed.
-5. **Webhook:** disable for pilot (we poll via API). Leave secret blank.
-6. **Permissions** (Repository):
+1. <https://github.com/settings/apps> → **New GitHub App**
+2. **Name:** `Dash Build` (your org)
+3. **Homepage:** `http://localhost:7777`
+4. **Callback:** `http://localhost:7777/api/auth/github/callback`
+5. **Permissions** (Repository):
    - Contents: Read & write
    - Pull requests: Read & write
    - Metadata: Read-only
-7. **Where can this GitHub App be installed?** — Any account (or just your org).
-8. Create the App. From its settings page, generate a private key (`.pem`).
+6. **Subscribe to events:** (none required for MVP)
+7. **Where can this GitHub App be installed?** Only on this account
+8. Save → **Generate a private key**
+9. Set env vars per table above
 
-### Daemon env vars
+## Troubleshooting
 
-Export these before running `dash-build`:
+### Daemon won't start
 
 ```bash
-export DASH_BUILD_GITHUB_APP_ID="123456"
-export DASH_BUILD_GITHUB_CLIENT_ID="Iv1.xxxxxxxxxxxxxxxx"
-export DASH_BUILD_GITHUB_CLIENT_SECRET="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-# PEM contents — literal "\n" between lines is tolerated.
-export DASH_BUILD_GITHUB_PRIVATE_KEY="$(cat dash-build.<id>.private-key.pem)"
-# Optional:
-export DASH_BUILD_GITHUB_APP_SLUG="dash-build"       # default
-export DASH_BUILD_GITHUB_WEBHOOK_SECRET=""           # only if webhooks enabled
+dash-build status   # check PID file
+dash-build stop     # kill stale process
+dash-build start    # fresh launch
 ```
 
-If any required env var is missing, GitHub features stay disabled in the UI
-(the "Connect GitHub" button is hidden) and the rest of the daemon keeps
-running. Check `hasAppConfig()` from `src/integrations/github/app-config.ts`
-to gate UI affordances.
+### Port 7777 taken
 
-### Tokens at rest
+Daemon auto-falls back to `7778`, `7779`, … up to `7786`.
 
-Installation metadata is persisted under
-`~/.dash-build/auth/github.json`, AES-256-GCM encrypted with a key derived
-from `username@hostname`, with file mode `0o600`. Moving the file to another
-machine will not decrypt — re-install the App from the dashboard.
+### Claude OAuth fails
 
-## Status
+Fall back to BYO API key:
 
-Phase 1 scaffold — menu + mode dispatcher only. No daemon yet.
+1. Open dashboard → **Settings**
+2. Paste Anthropic API key (`sk-ant-...`)
+
+### GitHub App fails
+
+Verify env vars are set. Re-install the app via the dashboard.
+
+## Files Created
+
+| Path                                       | Purpose                          |
+| ------------------------------------------ | -------------------------------- |
+| `~/.dash-build/daemon.pid`                 | Daemon PID                       |
+| `~/.dash-build/state.json`                 | Daemon state (atomic-write JSON) |
+| `~/.dash-build/auth/anthropic.json`        | Encrypted OAuth tokens           |
+| `~/.dash-build/auth/github.json`           | Encrypted installation tokens    |
+| `~/.dash-build/sessions/<id>.json`         | Clarification sessions           |
+| `~/.dash-build/preview/<id>/`              | Bundled previews                 |
+
+Encrypted files use AES-256-GCM with a key derived from `username@hostname`.
+Moving the file to another machine will not decrypt — re-install the App
+from the dashboard.
+
+## Development
+
+```bash
+cd /Users/irfanprimaputra.b/dash-ds
+pnpm install
+pnpm --filter @dash/build dev        # watch mode
+pnpm --filter @dash/build test       # run tests
+pnpm --filter @dash/build typecheck  # tsc --noEmit
+pnpm --filter @dash/build build      # production build
+```
+
+Smoke test (full pipeline, no network): `pnpm vitest run src/__tests__/smoke/`
+
+## License
+
+Internal — Dash Electric Indonesia.

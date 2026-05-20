@@ -65,6 +65,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
     const anthropicClient = new AuthenticatedAnthropicClient()
     const githubClient = new GitHubAppClient()
 
+    const sessionStoreRef = clarificationStore
     orchestrator = new Orchestrator({
       store,
       broadcaster,
@@ -72,6 +73,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
       anthropic: defaultAnthropicProvider(anthropicClient),
       github: defaultGithubProvider(githubClient),
       skillChain: defaultSkillChainRunner(),
+      expireSessions: (ms) => sessionStoreRef.expire(ms),
     })
 
     if (enableWorker) {
@@ -116,6 +118,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
 
   const close = async () => {
     worker?.stop()
+    orchestrator?.dispose()
     broadcaster.closeAll()
     await new Promise<void>((resolve) => server.close(() => resolve()))
     if (opts.writePid !== false) {

@@ -11,6 +11,8 @@
  * layout supplies only the chrome (header, footer, font loading).
  */
 
+import { toastContainer } from "./components/toast.js"
+import { themeToggle } from "./components/theme-toggle.js"
 import { renderWsIndicator } from "./components/ws-indicator.js"
 
 export function escapeHtml(value: string): string {
@@ -39,12 +41,23 @@ export function renderLayout(opts: LayoutOptions): string {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <title>${escapeHtml(opts.title)} · Dash Build</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/app.css" />
+    <script>
+      // Pre-paint theme application to avoid FOUC.
+      (function () {
+        try {
+          var stored = localStorage.getItem("dash-build-theme");
+          if (stored === "dark" || stored === "light") {
+            document.documentElement.setAttribute("data-theme", stored);
+          }
+        } catch (e) { /* localStorage may be blocked */ }
+      })();
+    </script>
   </head>
   <body>
     <a class="sr-only" href="#db-main">Skip to main content</a>
@@ -56,6 +69,7 @@ export function renderLayout(opts: LayoutOptions): string {
       </div>
       <div class="db-header-actions">
         ${renderWsIndicator()}
+        ${themeToggle()}
         <button class="db-icon-btn" type="button" aria-label="Settings" title="Settings">⚙</button>
         <button class="db-icon-btn" type="button" aria-label="Account" title="Account">◉</button>
       </div>
@@ -66,6 +80,7 @@ export function renderLayout(opts: LayoutOptions): string {
     <footer class="db-footer">
       Dash Build · <span class="db-mono">localhost:${escapeHtml(port)}</span> · Layered Architecture Layer 0 brand
     </footer>
+    ${toastContainer()}
     <script src="/static/app.js"></script>
   </body>
 </html>`

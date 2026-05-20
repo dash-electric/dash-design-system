@@ -14,6 +14,66 @@ export const DASHBOARD_JS = `
 (function () {
   "use strict";
 
+  // ---------- HTML escape (for toast user-supplied strings) ----------
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // ---------- Toast system ----------
+  function showToast(opts) {
+    if (!opts || !opts.message) return;
+    var container = document.getElementById("db-toasts");
+    if (!container) return;
+    var kind = opts.kind || "info";
+    var duration = typeof opts.duration === "number" ? opts.duration : 4000;
+    var toast = document.createElement("div");
+    toast.className = "db-toast " + kind;
+    toast.setAttribute("role", kind === "error" ? "alert" : "status");
+    var html = '<div class="db-toast-msg">' + escapeHtml(opts.message) + '</div>';
+    if (opts.action && opts.action.label && opts.action.href) {
+      html += '<a class="db-toast-action" href="' + escapeHtml(opts.action.href) + '" target="_blank" rel="noopener">' + escapeHtml(opts.action.label) + '</a>';
+    }
+    toast.innerHTML = html;
+    container.appendChild(toast);
+    requestAnimationFrame(function () { toast.classList.add("show"); });
+    if (duration > 0) {
+      setTimeout(function () {
+        toast.classList.remove("show");
+        setTimeout(function () { if (toast.parentNode) toast.remove(); }, 220);
+      }, duration);
+    }
+  }
+  // Expose for debugging / external triggers.
+  window.dashBuildShowToast = showToast;
+
+  // ---------- Theme toggle (system + manual) ----------
+  (function initTheme() {
+    var stored = null;
+    try { stored = localStorage.getItem("dash-build-theme"); } catch (e) {}
+    if (stored === "dark" || stored === "light") {
+      document.documentElement.setAttribute("data-theme", stored);
+    }
+    var btn = document.getElementById("db-theme-toggle");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        var current = document.documentElement.getAttribute("data-theme");
+        if (!current) {
+          current = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+        var next = current === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        try { localStorage.setItem("dash-build-theme", next); } catch (e) {}
+      });
+    }
+  })();
+
   // ---------- WS indicator ----------
   var indicator = document.getElementById("db-ws-indicator");
   function setWsState(state, label) {
@@ -42,6 +102,11 @@ export const DASHBOARD_JS = `
       reconnectTimer = null;
       connectWs();
     }, wait);
+
+    // On extended reconnect (3+ attempts), show skeleton to signal stale data.
+    if (reconnectAttempt === 3) {
+      showSkeletonInPrompts();
+    }
 
     // After 6 attempts (~ 51s+), surface a manual retry prompt
     if (reconnectAttempt >= 6) {
@@ -90,6 +155,33 @@ export const DASHBOARD_JS = `
           if (msg.event === "prompts:changed" || msg.event === "auth:changed") {
             refreshDashboard();
           }
+          // Toast-worthy events.
+          switch (msg.event) {
+            case "pr:created":
+              showToast({
+                message: "PR opened" + (msg.prNumber ? ": #" + msg.prNumber : ""),
+                kind: "success",
+                action: msg.prUrl ? { label: "View on GitHub →", href: msg.prUrl } : undefined,
+              });
+              break;
+            case "generation:complete":
+              showToast({
+                message: "Generation done" + (msg.score != null ? " (score " + msg.score + "/100)" : ""),
+                kind: msg.score != null && msg.score >= 85 ? "success" : "warn",
+              });
+              break;
+            case "clarification:needed":
+              showToast({
+                message: "I need a few clarifications before generating",
+                kind: "info",
+              });
+              break;
+            case "prompts:changed":
+              if (msg.status === "failed") {
+                showToast({ message: "Prompt failed", kind: "error" });
+              }
+              break;
+          }
         } catch (e) { /* ignore malformed */ }
       };
     } catch (e) {
@@ -101,6 +193,23 @@ export const DASHBOARD_JS = `
   // Soft refresh: re-fetches /dashboard and swaps the prompt list region.
   // Falls back to full reload if anything goes sideways.
   var refreshInFlight = false;
+  function promptListSkeleton(count) {
+    var n = Math.max(1, count || 3);
+    var card = '<div class="db-skeleton-card" aria-hidden="true">' +
+      '<div class="db-skeleton-line" style="width: 60%"></div>' +
+      '<div class="db-skeleton-line" style="width: 90%; margin-top: 8px"></div>' +
+      '<div class="db-skeleton-line" style="width: 40%; margin-top: 12px"></div>' +
+      '</div>';
+    var parts = [];
+    for (var i = 0; i < n; i++) parts.push(card);
+    return '<div class="db-skeleton-list" aria-busy="true" aria-live="polite">' + parts.join("") + '</div>';
+  }
+  function showSkeletonInPrompts() {
+    var region = document.getElementById("db-prompts-region");
+    if (region && !region.querySelector(".db-skeleton-list")) {
+      region.innerHTML = promptListSkeleton(3);
+    }
+  }
   function refreshDashboard() {
     if (refreshInFlight) return;
     refreshInFlight = true;
@@ -164,9 +273,9 @@ export const DASHBOARD_JS = `
         refreshDashboard();
       })
       .catch(function () {
-        // surface inline error (could be improved with toast)
         input.classList.add("db-textarea-error");
         setTimeout(function () { input.classList.remove("db-textarea-error"); }, 1200);
+        showToast({ message: "Could not submit prompt — please retry", kind: "error" });
       })
       .finally(function () {
         submitBtn.disabled = false;

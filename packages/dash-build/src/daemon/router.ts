@@ -10,6 +10,7 @@ import { handlePromptsRoute } from "./routes/api/prompts.js"
 import { handleReposRoute } from "./routes/api/repos.js"
 import { handleAuthRoute } from "./routes/api/auth.js"
 import { notFound, sendJson, sendRedirect } from "./routes/_helpers.js"
+import { handlePreviewRoute } from "../preview/api-routes.js"
 
 export interface RouterDeps {
   store: Store
@@ -31,7 +32,7 @@ export async function router(
       return sendRedirect(res, "/dashboard")
     }
     if (pathname === "/dashboard") {
-      return handleDashboard(res, deps.store)
+      return handleDashboard(res, deps.store, deps.orchestrator)
     }
     if (pathname === "/health") {
       return handleHealth(res, deps.store)
@@ -57,6 +58,9 @@ export async function router(
     }
     if (pathname.startsWith("/api/auth/")) {
       return handleAuthRoute(req, res, pathname, deps.store, deps.broadcaster)
+    }
+    if (pathname.startsWith("/preview/")) {
+      return await handlePreviewRoute(req, res, pathname)
     }
     return notFound(res)
   } catch (err) {

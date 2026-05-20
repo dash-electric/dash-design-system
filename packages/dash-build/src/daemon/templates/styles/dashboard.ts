@@ -52,6 +52,104 @@ export const DASHBOARD_CSS = `
   --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 }
 
+/* ----- Dark mode (system preference) ----- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f7f7f5;
+    --ink-2: #ffffff;
+    --paper: #1a1a1a;
+    --paper-2: #0e0e0e;
+    --paper-3: #161616;
+    --mute: #9a9a96;
+    --mute-2: #6b6b68;
+    --rule: #2a2a2a;
+    --rule-2: #1f1f1f;
+
+    --primary: #b589f0;
+    --primary-base: #b589f0;
+    --primary-strong: #c9a4f5;
+    --primary-soft: #2a1a4a;
+    --primary-card: #1f1238;
+    --primary-ring: rgba(181, 137, 240, 0.32);
+
+    --success: #4ade80;
+    --success-soft: #0f3a26;
+    --warn: #fbbf24;
+    --warn-soft: #3a2e0a;
+    --danger: #f87171;
+    --danger-soft: #3a1414;
+    --info: #60a5fa;
+    --info-soft: #14233f;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* ----- Dark mode (manual override via data-theme) ----- */
+[data-theme="dark"] {
+  --ink: #f7f7f5;
+  --ink-2: #ffffff;
+  --paper: #1a1a1a;
+  --paper-2: #0e0e0e;
+  --paper-3: #161616;
+  --mute: #9a9a96;
+  --mute-2: #6b6b68;
+  --rule: #2a2a2a;
+  --rule-2: #1f1f1f;
+
+  --primary: #b589f0;
+  --primary-base: #b589f0;
+  --primary-strong: #c9a4f5;
+  --primary-soft: #2a1a4a;
+  --primary-card: #1f1238;
+  --primary-ring: rgba(181, 137, 240, 0.32);
+
+  --success: #4ade80;
+  --success-soft: #0f3a26;
+  --warn: #fbbf24;
+  --warn-soft: #3a2e0a;
+  --danger: #f87171;
+  --danger-soft: #3a1414;
+  --info: #60a5fa;
+  --info-soft: #14233f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* ----- Light mode (manual override — force light even when system dark) ----- */
+[data-theme="light"] {
+  --ink: #1a1a1a;
+  --ink-2: #0e0e0e;
+  --paper: #f7f7f5;
+  --paper-2: #ffffff;
+  --paper-3: #fbfaf8;
+  --mute: #6b6b68;
+  --mute-2: #9a9a96;
+  --rule: #e4e3de;
+  --rule-2: #efeeea;
+
+  --primary: #5e2aac;
+  --primary-base: #5e2aac;
+  --primary-strong: #4a1f8a;
+  --primary-soft: #eee5fb;
+  --primary-card: #f1ecf9;
+  --primary-ring: rgba(94, 42, 172, 0.24);
+
+  --success: #0f6e56;
+  --success-soft: #def7ec;
+  --warn: #b08015;
+  --warn-soft: #fef3c7;
+  --danger: #a32d2d;
+  --danger-soft: #fde8e8;
+  --info: #2563eb;
+  --info-soft: #e0e7ff;
+
+  --shadow-sm: 0 1px 2px rgba(14, 14, 14, 0.04), 0 1px 1px rgba(14, 14, 14, 0.02);
+  --shadow-md: 0 4px 12px rgba(14, 14, 14, 0.06), 0 1px 2px rgba(14, 14, 14, 0.04);
+}
+
 /* ----- Reset ----- */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -528,6 +626,118 @@ button { font-family: inherit; }
   border: 0;
 }
 :focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 6px; }
+
+/* ----- Theme toggle ----- */
+.db-theme-toggle { position: relative; }
+.db-theme-toggle .db-theme-icon-light,
+.db-theme-toggle .db-theme-icon-dark {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1;
+  transition: opacity 120ms ease, transform 200ms ease;
+}
+.db-theme-toggle .db-theme-icon-dark { display: none; }
+[data-theme="dark"] .db-theme-toggle .db-theme-icon-light,
+:root:not([data-theme]) .db-theme-toggle .db-theme-icon-light { display: inline-block; }
+[data-theme="dark"] .db-theme-toggle .db-theme-icon-light { display: none; }
+[data-theme="dark"] .db-theme-toggle .db-theme-icon-dark { display: inline-block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .db-theme-toggle .db-theme-icon-light { display: none; }
+  :root:not([data-theme="light"]) .db-theme-toggle .db-theme-icon-dark { display: inline-block; }
+}
+
+/* ----- Toast notifications ----- */
+.db-toasts {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+  pointer-events: none;
+}
+.db-toast {
+  pointer-events: auto;
+  min-width: 280px;
+  max-width: 400px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--primary);
+  box-shadow: var(--shadow-md);
+  font-size: 14px;
+  color: var(--ink);
+  transform: translateX(420px);
+  opacity: 0;
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.db-toast.show { transform: translateX(0); opacity: 1; }
+.db-toast.success { border-left-color: var(--success); }
+.db-toast.error { border-left-color: var(--danger); }
+.db-toast.warn { border-left-color: var(--warn); }
+.db-toast.info { border-left-color: var(--primary); }
+.db-toast-msg { line-height: 1.4; }
+.db-toast-action {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+.db-toast-action:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .db-toasts { left: 12px; right: 12px; bottom: 12px; }
+  .db-toast { min-width: 0; max-width: none; width: 100%; }
+}
+
+/* ----- Skeleton placeholders (initial load + reconnect) ----- */
+.db-skeleton-card {
+  padding: 14px 16px;
+  border: 1px solid var(--rule-2);
+  border-radius: var(--radius-md);
+  background: var(--paper-3);
+  margin-bottom: 10px;
+}
+.db-skeleton-card:last-child { margin-bottom: 0; }
+.db-skeleton-line {
+  height: 12px;
+  background: linear-gradient(
+    90deg,
+    var(--rule-2) 0%,
+    var(--rule) 50%,
+    var(--rule-2) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: db-shimmer 1.5s ease-in-out infinite;
+}
+.db-skeleton-chip {
+  display: inline-block;
+  width: 80px;
+  height: 24px;
+  background: linear-gradient(
+    90deg,
+    var(--rule-2) 0%,
+    var(--rule) 50%,
+    var(--rule-2) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-pill);
+  animation: db-shimmer 1.5s ease-in-out infinite;
+  margin-right: 8px;
+}
+.db-skeleton-status { display: flex; gap: 8px; align-items: center; }
+.db-skeleton-list { display: flex; flex-direction: column; gap: 0; }
+@keyframes db-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 /* ----- Responsive ----- */
 @media (max-width: 640px) {
