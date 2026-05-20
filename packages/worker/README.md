@@ -38,7 +38,28 @@ dash-worker watch               # daemon, poll every POLL_INTERVAL_MS,
                                 # exposes /health on $PORT (default 8080)
 dash-worker generate <gap-id>   # manual trigger for a specific gap
 dash-worker --dry-run run       # smoke (no Anthropic / GitHub / Slack)
+dash-worker idempotency status  # show idempotency store stats + recent 10
+dash-worker idempotency clear --all          # wipe store (confirm prompt)
+dash-worker idempotency clear --key <hash>   # evict a single entry
 ```
+
+## Idempotency
+
+Hermes records every processed gap in `~/.dash/hermes-idempotency.json` so a
+crash-and-restart or a manual queue replay can't double-spend Anthropic
+tokens. Key = `sha256(gap.id + gap.created_at + gap.description.slice(0,100))`.
+
+Behavior:
+
+- On `processGap`, the worker checks the store first. If the key is present,
+  it logs `gap.idempotent.skip`, restores the prior queue status, and returns
+  the prior outcome — **no Anthropic call**.
+- After every fresh process (success or fail), the worker writes the outcome,
+  PR URL, and token spend back to the store via atomic tmp+rename.
+- Entries older than 30 days are evicted on next read (TTL prune).
+- To bypass (demo / test): `export DASH_HERMES_NO_IDEMPOTENCY=1`.
+
+Ops commands: see `dash-worker idempotency …` above.
 
 ## Env vars
 

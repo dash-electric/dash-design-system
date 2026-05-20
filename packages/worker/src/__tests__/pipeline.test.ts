@@ -55,11 +55,13 @@ describe("pipeline", () => {
   let tmp: string
   let queuePath: string
   let registryRoot: string
+  let idemStorePath: string
 
   beforeEach(() => {
     tmp = mkTmp("hermes-pipeline-")
     queuePath = path.join(tmp, "gap-queue.json")
     registryRoot = path.join(tmp, "registry")
+    idemStorePath = path.join(tmp, "hermes-idempotency.json")
     fs.mkdirSync(registryRoot, { recursive: true })
   })
 
@@ -94,6 +96,7 @@ describe("pipeline", () => {
         }),
       },
       queuePath,
+      idempotencyStorePath: idemStorePath,
     }
   }
 
@@ -206,6 +209,7 @@ describe("pipeline", () => {
     const outcomes = await runOnce(config, {
       logger: silentLogger(),
       queuePath,
+      idempotencyStorePath: idemStorePath,
     })
     expect(outcomes).toHaveLength(1)
     // Should land somewhere terminal — vendored or needs-review (stub is high quality).
@@ -233,6 +237,7 @@ describe("pipeline", () => {
         skill: async () => ({ systemAppend: "" }),
       },
       queuePath,
+      idempotencyStorePath: idemStorePath,
     })
     expect(outcome.kind).toBe("failed")
     if (outcome.kind === "failed") {

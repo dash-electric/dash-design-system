@@ -175,9 +175,12 @@ export function createMockHarness(opts: MockHarnessOpts = {}): MockHarness {
     }
   }
 
+  const idempotencyStorePath = path.join(tmpDir, ".dash", "hermes-idempotency.json")
+
   const deps: PipelineDeps = {
     logger: silentLogger(),
     queuePath,
+    idempotencyStorePath,
     generator: { client: anthropicClient, skill: skillLoader },
     prCreator: { fetch: githubFetch },
     slackNotifier: { fetch: slackFetch },

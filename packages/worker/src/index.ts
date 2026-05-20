@@ -21,8 +21,15 @@
  * `dash-worker --dry-run run` working without the dep installed.
  */
 import process from "node:process"
+import readline from "node:readline"
 import { loadConfig } from "./config.js"
 import { startHealthServer } from "./health-server.js"
+import {
+  defaultStorePath as defaultIdempotencyStorePath,
+  loadStore as loadIdempotencyStore,
+  removeEntry,
+  writeStore as writeIdempotencyStore,
+} from "./lib/idempotency.js"
 import {
   processGapById,
   runOnce,
@@ -31,12 +38,17 @@ import {
 import type { GeneratorDeps } from "./generator.js"
 import type { PipelineOutcome } from "./types.js"
 
+type IdempotencySub = "status" | "clear" | null
 type ParsedArgs = {
-  mode: "run" | "watch" | "generate" | "help"
+  mode: "run" | "watch" | "generate" | "idempotency" | "help"
   gapId: string | null
   dryRun: boolean
   json: boolean
   queuePath: string | null
+  idempotencySub: IdempotencySub
+  idempotencyKey: string | null
+  idempotencyAll: boolean
+  yes: boolean
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
@@ -46,13 +58,23 @@ function parseArgs(argv: string[]): ParsedArgs {
   let dryRun = false
   let json = false
   let queuePath: string | null = null
+  let idempotencySub: IdempotencySub = null
+  let idempotencyKey: string | null = null
+  let idempotencyAll = false
+  let yes = false
 
   for (let i = 0; i < args.length; i++) {
     const a = args[i]
     if (a === "--dry-run") dryRun = true
     else if (a === "--json") json = true
     else if (a === "--help" || a === "-h") mode = "help"
-    else if (a.startsWith("--queue=")) queuePath = a.slice("--queue=".length)
+    else if (a === "--all") idempotencyAll = true
+    else if (a === "--yes" || a === "-y") yes = true
+    else if (a.startsWith("--key=")) idempotencyKey = a.slice("--key=".length)
+    else if (a === "--key") {
+      idempotencyKey = args[i + 1] ?? null
+      i++
+    } else if (a.startsWith("--queue=")) queuePath = a.slice("--queue=".length)
     else if (a === "--queue") {
       queuePath = args[i + 1] ?? null
       i++
@@ -62,23 +84,44 @@ function parseArgs(argv: string[]): ParsedArgs {
       mode = "generate"
       gapId = args[i + 1] ?? null
       i++
+    } else if (a === "idempotency" && mode === "help") {
+      mode = "idempotency"
+      const sub = args[i + 1]
+      if (sub === "status" || sub === "clear") {
+        idempotencySub = sub
+        i++
+      }
     }
   }
-  return { mode, gapId, dryRun, json, queuePath }
+  return {
+    mode,
+    gapId,
+    dryRun,
+    json,
+    queuePath,
+    idempotencySub,
+    idempotencyKey,
+    idempotencyAll,
+    yes,
+  }
 }
 
 function printHelp(): void {
   console.log(`dash-worker — Hermes gap-to-vendored agent
 
 Usage:
-  dash-worker run                   one-shot: process pending gaps
-  dash-worker watch                 daemon: poll the gap queue
-  dash-worker generate <gap-id>     process a single gap by id
+  dash-worker run                          one-shot: process pending gaps
+  dash-worker watch                        daemon: poll the gap queue
+  dash-worker generate <gap-id>            process a single gap by id
+  dash-worker idempotency status           show idempotency store stats
+  dash-worker idempotency clear --all      wipe all idempotency entries
+  dash-worker idempotency clear --key <k>  evict a single entry
 
 Flags:
   --dry-run      stub Anthropic + GitHub + Slack
   --queue=PATH   override gap queue path
   --json         JSON summary on stdout
+  --yes / -y     skip confirmation prompts (for ops scripting)
   -h, --help     show this help
 
 Env:
@@ -89,7 +132,91 @@ Env:
   MIN_SCORE_AUTO_MERGE  default: 85
   MIN_SCORE_REVIEW       default: 60
   POLL_INTERVAL_MS       default: 60000
+  DASH_HERMES_NO_IDEMPOTENCY  set =1 to disable idempotency (demo/test)
 `)
+}
+
+async function confirmPrompt(question: string): Promise<boolean> {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+  try {
+    const ans: string = await new Promise((resolve) => {
+      rl.question(`${question} [y/N] `, (a) => resolve(a))
+    })
+    return /^y(es)?$/i.test(ans.trim())
+  } finally {
+    rl.close()
+  }
+}
+
+async function runIdempotencyCmd(args: ParsedArgs): Promise<number> {
+  const storePath = defaultIdempotencyStorePath()
+  if (args.idempotencySub === "status") {
+    const store = loadIdempotencyStore(storePath)
+    const entries = Object.entries(store.entries)
+    const recent = entries
+      .slice()
+      .sort((a, b) => Date.parse(b[1].processedAt) - Date.parse(a[1].processedAt))
+      .slice(0, 10)
+      .map(([key, e]) => ({
+        key: key.slice(0, 12),
+        gapId: e.gapId,
+        outcome: e.outcome,
+        processedAt: e.processedAt,
+        tokenSpent: e.tokenSpent,
+        prUrl: e.prUrl,
+      }))
+    const totalTokens = entries.reduce((acc, [, e]) => acc + (e.tokenSpent ?? 0), 0)
+    if (args.json) {
+      process.stdout.write(
+        JSON.stringify(
+          { storePath, count: entries.length, totalTokenSpent: totalTokens, recent },
+          null,
+          2,
+        ) + "\n",
+      )
+    } else {
+      console.log(`[hermes] idempotency store: ${storePath}`)
+      console.log(`         entries: ${entries.length}   total tokens recorded: ${totalTokens}`)
+      console.log(`         recent (up to 10):`)
+      if (recent.length === 0) console.log(`           (empty)`)
+      for (const r of recent) {
+        console.log(
+          `           ${r.key}…  ${r.outcome.padEnd(13)}  ${r.processedAt}  tokens=${r.tokenSpent}  pr=${r.prUrl ?? "—"}`,
+        )
+      }
+    }
+    return 0
+  }
+
+  if (args.idempotencySub === "clear") {
+    if (args.idempotencyAll) {
+      if (!args.yes) {
+        const ok = await confirmPrompt(
+          "Wipe ALL idempotency entries? (next run will re-pay Anthropic tokens for replayed gaps)",
+        )
+        if (!ok) {
+          console.log("[hermes] aborted")
+          return 0
+        }
+      }
+      writeIdempotencyStore({ version: 1, entries: {} }, storePath)
+      console.log("[hermes] idempotency store cleared")
+      return 0
+    }
+    if (args.idempotencyKey) {
+      const store = loadIdempotencyStore(storePath)
+      const next = removeEntry(args.idempotencyKey, store)
+      writeIdempotencyStore(next, storePath)
+      const removed = Object.keys(store.entries).length - Object.keys(next.entries).length
+      console.log(`[hermes] removed ${removed} entry (key=${args.idempotencyKey.slice(0, 12)}…)`)
+      return 0
+    }
+    console.error("dash-worker idempotency clear requires --all or --key <k>")
+    return 2
+  }
+
+  console.error("dash-worker idempotency <status|clear>")
+  return 2
 }
 
 /**
@@ -149,6 +276,10 @@ async function main(): Promise<number> {
   if (args.mode === "help") {
     printHelp()
     return 0
+  }
+
+  if (args.mode === "idempotency") {
+    return runIdempotencyCmd(args)
   }
 
   const config = loadConfig({ dryRun: args.dryRun })
