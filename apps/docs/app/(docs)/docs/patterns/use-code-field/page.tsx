@@ -1,34 +1,21 @@
 "use client"
 
 import * as React from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import {
   DocsPageShell,
   DocsHeader,
   DocsSection,
 } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
-import { Form } from "@/registry/dash/ui/form"
-import {
-  UseCodeField,
-  USE_CODE_REGEX,
-} from "@/registry/dash/patterns/use-code-field"
-
-const schema = z.object({ useCode: z.string().regex(USE_CODE_REGEX) })
+import { UseCodeField } from "@/registry/dash/patterns/use-code-field"
 
 function DemoForm() {
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: { useCode: "" },
-  })
+  // UseCodeField is self-contained — owns its value + validation via the
+  // useCodeField() hook internally. No outer form state needed for the demo.
   return (
-    <Form {...form}>
-      <form className="max-w-sm">
-        <UseCodeField />
-      </form>
-    </Form>
+    <form className="max-w-sm" onSubmit={(e) => e.preventDefault()}>
+      <UseCodeField />
+    </form>
   )
 }
 

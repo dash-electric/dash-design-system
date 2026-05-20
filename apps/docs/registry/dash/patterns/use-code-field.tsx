@@ -6,15 +6,6 @@ import {
   RiFileCopyLine as Copy,
   RiCheckLine as Check,
 } from "@remixicon/react"
-import { useFormContext } from "react-hook-form"
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-} from "@/registry/dash/ui/form"
 import { InputRoot, Input } from "@/registry/dash/ui/input"
 import { IconButton } from "@/registry/dash/ui/icon-button"
 import { toast } from "@/registry/dash/ui/toaster"
@@ -36,13 +27,25 @@ import { toast } from "@/registry/dash/ui/toaster"
  *  - Portal sends `referralCode.trim()` verbatim to
  *    `POST /client-user/v1/auth/signup` as `aff`. NO uppercase forcing, NO
  *    normalization. A code like `aB3xY9` is DISTINCT from `AB3XY9`.
- *  - DB column `PolicyOneTimeCode.code` is also case-sensitive — unique per
- *    `(provider_id, code)`. Auto-uppercase would collapse the keyspace and
- *    break already-issued codes.
+ *  - DB column on `policy_one_time_codes.code` (owned by nodejs-core-service)
+ *    is also case-sensitive — unique per `(provider_id, code)`.
+ *    Auto-uppercase would collapse the keyspace and break already-issued codes.
  *  - Charset includes upper + lower + digits (no special chars). Ambiguous
  *    glyphs (0/O/1/I/L) are NOT excluded from validation — the BE accepts them.
  *  - Earlier Phase 1 assumption "uppercase, exclude ambiguous chars" was
  *    INCORRECT. Confirmed wrong against portal source.
+ *
+ * WHY this file ships ZERO banned deps (no react-hook-form, no zod):
+ *  - Dash hard-bans RHF + zod across all 5 FE repos (portal-v2, backoffice,
+ *    halo-dash, basecamp, fleet-mgmt). Earlier versions of this pattern
+ *    leaked `useFormContext` + a zod-shaped JSDoc example — PE running
+ *    `dash add use-code-field` would have inherited a self-contradiction.
+ *  - The canonical shape is now: `useCodeField()` hook with
+ *    `{ value, setValue, error, isValid, regenerate, copy, copied }` —
+ *    drops straight into the native `useState` form pattern every Dash FE
+ *    already uses. Component variant `<UseCodeField />` is a thin wrapper.
+ *  - Hand-rolled validation = single regex test against `USE_CODE_REGEX`.
+ *    No schema library, no resolver, no FormProvider required.
  *
  * WHY the generator lives in this file (not lib/):
  *  - The function is intentionally trivial — co-locating with the field keeps
@@ -71,106 +74,236 @@ export function genUseCode(): string {
   return out
 }
 
-type UseCodeFieldProps = {
-  /** RHF field name. Default "useCode" — override when nested inside arrays. */
-  name?: string
-  label?: React.ReactNode
-  description?: React.ReactNode
+/**
+ * Hand-rolled validator. Returns Bahasa error string when invalid, `null`
+ * when valid. Inline-callable from any submit handler:
+ *
+ *   const err = validateUseCode(form.useCode)
+ *   if (err) return setErrors({ useCode: err })
+ *
+ * Case is preserved verbatim — no `.toUpperCase()`, no `.trim()` beyond
+ * what the caller chose to do. The BE compares trimmed value byte-for-byte.
+ */
+export function validateUseCode(value: string): string | null {
+  if (!value) return "Use code wajib diisi"
+  if (value.length !== 6) return "Use code harus 6 karakter"
+  if (!USE_CODE_REGEX.test(value)) return "Use code hanya boleh huruf & angka"
+  return null
+}
+
+export type UseCodeFieldState = {
+  value: string
+  /** Pass either a raw string or a React change event — same shape PE writes. */
+  setValue: (next: string | React.ChangeEvent<HTMLInputElement>) => void
+  /** Inline validation error message in Bahasa. `null` when valid or untouched. */
+  error: string | null
+  /** Convenience: `error === null && value !== ""`. */
+  isValid: boolean
+  /** Generate a fresh code, mark touched, clear stale error. */
+  regenerate: () => void
+  /** Copy current value to clipboard + toast. Noop on empty. */
+  copy: () => Promise<void>
+  /** True for ~1.5s after a successful copy — bind to icon swap. */
+  copied: boolean
+  /** Forces a validation pass + sets `error`. Call before submit. */
+  validate: () => string | null
+}
+
+type UseCodeFieldOptions = {
+  /** Seed value (e.g. when editing an existing delivery). */
+  initialValue?: string
   /** Auto-fill an empty field on mount. Default true. */
   autoGenerate?: boolean
 }
 
 /**
- * UseCodeField — drop-in RHF field. Caller is responsible for putting it
- * inside <FormProvider> (Dash <Form>) with a zod schema that uses
- * USE_CODE_REGEX for validation. Example:
+ * useCodeField — vanilla `useState` hook. Drop into any Dash FE repo
+ * without RHF / zod / FormProvider. Mirrors the per-repo guidance in
+ * dash-ai-rules.md (portal: native useState, backoffice: same, halo: same,
+ * basecamp: same, fleet-mgmt: same).
  *
- *   const schema = z.object({ useCode: z.string().regex(USE_CODE_REGEX) })
+ * Usage in a submit handler:
  *
- * Adaptation: on Dash repos that ban RHF/zod (portal, backoffice, halo),
- * see the Adaptation Layer in dash-ai-rules.md — use Jotai atom or useState
- * + hand-rolled validator `(v) => USE_CODE_REGEX.test(v)` instead.
+ *   const code = useCodeField()
+ *   const onSubmit = () => {
+ *     if (code.validate()) return            // sets `error`, halts submit
+ *     await axios.post("/client-user/v1/...", { aff: code.value })
+ *   }
+ */
+export function useCodeField({
+  initialValue = "",
+  autoGenerate = true,
+}: UseCodeFieldOptions = {}): UseCodeFieldState {
+  const [value, setValueRaw] = React.useState<string>(initialValue)
+  const [error, setError] = React.useState<string | null>(null)
+  const [copied, setCopied] = React.useState(false)
+  const [touched, setTouched] = React.useState(initialValue !== "")
+
+  // WHY initial-only autogenerate: avoid overwriting a parent-seeded value
+  // (matches old useEffect empty-check behavior, just rewired for useState).
+  React.useEffect(() => {
+    if (!autoGenerate) return
+    if (initialValue) return
+    setValueRaw(genUseCode())
+    setTouched(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const setValue: UseCodeFieldState["setValue"] = (next) => {
+    const raw =
+      typeof next === "string" ? next : next.target.value
+    // WHY no .toUpperCase(): case is significant per spec. The BE compares
+    // the trimmed value verbatim. Visual deception (CSS uppercase) would
+    // mislead users into thinking case doesn't matter — banned in the
+    // component variant too.
+    setValueRaw(raw)
+    setTouched(true)
+    // Live-clear error once the value becomes valid; do NOT live-set error
+    // on every keystroke (would flash "wajib diisi" while typing first char).
+    if (error && validateUseCode(raw) === null) setError(null)
+  }
+
+  const validate = React.useCallback(() => {
+    const err = validateUseCode(value)
+    setError(err)
+    return err
+  }, [value])
+
+  const regenerate = React.useCallback(() => {
+    const next = genUseCode()
+    setValueRaw(next)
+    setTouched(true)
+    setError(null)
+    setCopied(false)
+  }, [])
+
+  const copy = React.useCallback(async () => {
+    if (!value) return
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      toast.success(`Use code ${value} copied`)
+      // Reset icon after a tick so the affordance stays discoverable.
+      window.setTimeout(() => setCopied(false), 1500)
+    } catch {
+      toast.error("Gagal menyalin use code")
+    }
+  }, [value])
+
+  const isValid = touched && error === null && USE_CODE_REGEX.test(value)
+
+  return {
+    value,
+    setValue,
+    error,
+    isValid,
+    regenerate,
+    copy,
+    copied,
+    validate,
+  }
+}
+
+type UseCodeFieldProps = {
+  /** Stable name for label/htmlFor wiring (NOT an RHF field path). */
+  name?: string
+  label?: React.ReactNode
+  description?: React.ReactNode
+  /** Auto-fill an empty field on mount. Default true. */
+  autoGenerate?: boolean
+  /** Seed value (e.g. when editing an existing delivery). */
+  initialValue?: string
+  /** Fires on every keystroke + regenerate. Parent owns the value. */
+  onChange?: (next: string) => void
+}
+
+/**
+ * UseCodeField — component wrapper around `useCodeField`. Renders the
+ * input + regenerate + copy affordances. Uncontrolled by default; pass
+ * `initialValue` + `onChange` to thread the value into your form state.
  *
- * WHY we expose `name` as a prop: this same field gets reused inside
- * useFieldArray rows (e.g. `items.0.useCode`) — hardcoding the name would
- * defeat the pattern's main use case (multi-order delivery with per-row codes).
+ * Caller is responsible for placing this inside their own native-`useState`
+ * form (or Jotai atom in portal-v2). No FormProvider / RHF / zod required.
+ *
+ * WHY a wrapper exists at all: many PE screens just want a drop-in field
+ * without writing the hook glue. The hook stays the canonical primitive for
+ * cases where the value needs to flow into a larger form object (e.g.
+ * `useFieldArray`-style multi-row delivery list).
  */
 export function UseCodeField({
   name = "useCode",
   label = "Use code",
   description = "6-character code given to the mitra at pickup. Case-sensitive.",
   autoGenerate = true,
+  initialValue,
+  onChange,
 }: UseCodeFieldProps) {
-  const { setValue, getValues } = useFormContext()
-  const [copied, setCopied] = React.useState(false)
+  const field = useCodeField({ initialValue, autoGenerate })
 
-  // WHY useEffect with empty-check: avoid overwriting a value the parent
-  // pre-seeded (e.g. when editing an existing delivery).
+  // Propagate value changes up. WHY useEffect over inline: parents that
+  // setState in onChange would re-render us before we finish ours, causing
+  // duplicate generator calls during the autogenerate effect.
   React.useEffect(() => {
-    if (!autoGenerate) return
-    const current = getValues(name)
-    if (!current) setValue(name, genUseCode(), { shouldValidate: false })
-  }, [autoGenerate, getValues, name, setValue])
+    onChange?.(field.value)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [field.value])
 
-  const handleRegenerate = () => {
-    setValue(name, genUseCode(), { shouldValidate: true, shouldDirty: true })
-    setCopied(false)
-  }
-
-  const handleCopy = async () => {
-    const code = getValues(name)
-    if (!code) return
-    await navigator.clipboard.writeText(code)
-    setCopied(true)
-    toast.success(`Use code ${code} copied`)
-    // Reset icon after a tick so the affordance stays discoverable.
-    window.setTimeout(() => setCopied(false), 1500)
-  }
+  const id = `${name}-input`
+  const errorId = `${name}-error`
+  const descriptionId = `${name}-description`
 
   return (
-    <FormField
-      name={name}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <InputRoot>
-              <Input
-                {...field}
-                value={field.value ?? ""}
-                maxLength={6}
-                autoComplete="off"
-                spellCheck={false}
-                // WHY font-mono + tracking: codes are case-sensitive so we
-                // intentionally do NOT apply CSS `uppercase` — that would
-                // visually deceive users into thinking case doesn't matter.
-                className="font-mono tracking-[0.3em]"
-                // WHY no .toUpperCase() in onChange: case is significant per
-                // spec. The BE compares the trimmed value verbatim.
-                onChange={(e) => field.onChange(e.target.value)}
-              />
-              <IconButton
-                type="button"
-                size="xs"
-                aria-label="Regenerate use code"
-                onClick={handleRegenerate}
-              >
-                <Refresh />
-              </IconButton>
-              <IconButton
-                type="button"
-                size="xs"
-                aria-label="Copy use code"
-                onClick={handleCopy}
-              >
-                {copied ? <Check /> : <Copy />}
-              </IconButton>
-            </InputRoot>
-          </FormControl>
-          {description ? <FormDescription>{description}</FormDescription> : null}
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <div className="space-y-1">
+      <label
+        htmlFor={id}
+        className="block text-sm font-medium text-text-strong-950"
+      >
+        {label}
+      </label>
+      <InputRoot>
+        <Input
+          id={id}
+          name={name}
+          value={field.value}
+          onChange={field.setValue}
+          maxLength={6}
+          autoComplete="off"
+          spellCheck={false}
+          aria-invalid={field.error != null}
+          aria-describedby={
+            field.error ? errorId : description ? descriptionId : undefined
+          }
+          // WHY font-mono + tracking: codes are case-sensitive so we
+          // intentionally do NOT apply CSS `uppercase` — that would
+          // visually deceive users into thinking case doesn't matter.
+          className="font-mono tracking-[0.3em]"
+        />
+        <IconButton
+          type="button"
+          size="xs"
+          aria-label="Regenerate use code"
+          onClick={field.regenerate}
+        >
+          <Refresh />
+        </IconButton>
+        <IconButton
+          type="button"
+          size="xs"
+          aria-label="Copy use code"
+          onClick={field.copy}
+        >
+          {field.copied ? <Check /> : <Copy />}
+        </IconButton>
+      </InputRoot>
+      {field.error ? (
+        <p id={errorId} className="text-xs text-error-base">
+          {field.error}
+        </p>
+      ) : description ? (
+        <p id={descriptionId} className="text-xs text-text-sub-600">
+          {description}
+        </p>
+      ) : null}
+    </div>
   )
 }
