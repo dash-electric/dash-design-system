@@ -1,0 +1,24 @@
+{
+  "id": "fe-backoffice-list-04",
+  "stack": "backoffice",
+  "prompt": "Show a paginated table of all deliveries in the Control Tower with sortable columns and a status filter chip row",
+  "expected_avoid": [
+    "@tanstack/react-table v8 introduced direct (use @dash/data-table primitive instead)",
+    "ag-grid",
+    "react-table v7 standalone",
+    "TanStack Query for the fetch",
+    "TypeScript",
+    "assuming flat array — envelope is { status: 'Success', data, pagination }"
+  ],
+  "expected_use": [
+    "@dash/data-table primitive (TanStack v8 internally is OK — encapsulated)",
+    "@dash/pagination",
+    "@dash/tag for removable filter chips, @dash/filter (Popover+Command+Tag) for chip row",
+    "@dash/badge appearance='light' for status cell",
+    "axios + manual setLoading for the fetch",
+    "MUI / antd table swap is tolerated if page already uses them — do not force-replace"
+  ],
+  "expected_pattern_ref": "Decision tree — Tables (rules L31-35); Tag vs Badge naming (rules L144); Refuse anti-pattern #8 'force MUI/antd' (rules L584); next-backoffice-web envelope (rules L394)",
+  "context_notes": "Control Tower is THE flagship surface in backoffice. There may already be a MUI/antd table on adjacent pages — do not force-swap on existing code. New table = @dash/data-table. Filter chips use @dash/tag (removable) + @dash/filter pattern, not antd Tag.",
+  "severity": "medium"
+}

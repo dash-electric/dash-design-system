@@ -1,0 +1,24 @@
+{
+  "id": "fe-react-fleet-fetch-02",
+  "stack": "react-fleet",
+  "prompt": "Add a hook to fetch the vehicle list from the fleet service so the Vehicles page can render it with status filters",
+  "expected_avoid": [
+    "@tanstack/react-query",
+    "swr",
+    "native fetch() (repo uses axios via per-resource service modules in src/services/api/*.ts)",
+    "assuming top-level pagination (nest-fleet-service has pagination NESTED inside data!)",
+    "assuming numeric status field (nest-fleet uses STRING 'Success'|'Failed')",
+    "Next-style data hooks"
+  ],
+  "expected_use": [
+    "axios via the existing per-resource service module pattern (src/services/api/vehicles.ts)",
+    "Bearer token from crossDomainStorage helper, 401 refresh+retry queue is shared infra",
+    "useState({ loading, error, data, pagination })",
+    "envelope: { status: 'Success'|'Failed', data: { items, pagination }, error?, errors? } — pagination is INSIDE data for nest-fleet-service",
+    "BaseAuthType WEB (admin) identity on the auth side",
+    "React Router DOM v7 useNavigate for redirects"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — react-fleet-management-web data fetch (rules L431); Per-service envelope nest-fleet-service nested pagination (rules L500, L623); Backend dependency nest-fleet (rules L445)",
+  "context_notes": "CRITICAL: nest-fleet-service uses BaseApiResponse<T> with STRING status, and pagination is NESTED inside data. nest-express-service has the SAME class name BaseApiResponse<T> but numeric status and top-level pagination — discriminate by SERVICE, not class name. Code that reads response.pagination at top level will be undefined here.",
+  "severity": "high"
+}

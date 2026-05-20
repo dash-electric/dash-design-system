@@ -1,0 +1,26 @@
+{
+  "id": "fe-backoffice-image-edit-04",
+  "stack": "backoffice",
+  "prompt": "Add edit reason dropdown — orientasi salah / kurang terang / crop tidak pas / lainnya",
+  "expected_avoid": [
+    "free-text input only (no enum validation — operator types 'idk' and submits)",
+    "missing 'lainnya' free-text fallback (forces operators to lie about the reason)",
+    "react-hook-form / zod for this single field",
+    "uncontrolled input (defaultValue + ref) — must be controlled useState",
+    "TypeScript syntax — backoffice is JS",
+    "submitting without selecting any reason (must be required)",
+    "rendering the dropdown options in English (operators read Bahasa)"
+  ],
+  "expected_use": [
+    "Controlled <select> OR @dash/select OR MUI/antd Select (page-consistent) with 4 enum options: 'orientasi_salah' (label 'Orientasi salah'), 'kurang_terang' (label 'Kurang terang'), 'crop_tidak_pas' (label 'Crop tidak pas'), 'lainnya' (label 'Lainnya')",
+    "useState for reasonValue (enum key) and reasonOther (free-text)",
+    "Conditional reveal: when reasonValue === 'lainnya', render an additional <textarea> bound to reasonOther — required, min length 10 chars",
+    "Required validation: hand-rolled validate() in submit handler. Bahasa error message ('Alasan wajib dipilih', 'Mohon jelaskan alasan minimal 10 karakter')",
+    "Submit payload: { edit_reason: reasonValue, edit_reason_other: reasonValue === 'lainnya' ? reasonOther : null }",
+    "Field-level error state object for inline error display",
+    ".js extension"
+  ],
+  "expected_pattern_ref": "Cross-cutting validation pattern (rules L544-554); Refuse anti-pattern #1 RHF (rules L577); Anti-Pattern Catalog 'Free-text where enum belongs' (Phase 0.1 implication); Audit trail rule edit_reason schema (Phase 0.2 addition)",
+  "context_notes": "The four enum keys match the BE validation in fe-backoffice-image-edit-02. 'Lainnya' must always have a free-text companion field — silently allowing empty 'lainnya' defeats the audit purpose. Min 10 chars is a soft anti-spam threshold (operators can't just type 'x' and submit). Dropdown primitive choice is page-consistent: if surrounding form uses MUI TextField select, match it; if greenfield section, use @dash/select. Backoffice is JS so prefer .js extension.",
+  "severity": "medium"
+}

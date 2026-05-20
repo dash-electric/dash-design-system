@@ -1,0 +1,30 @@
+{
+  "id": "fe-backoffice-image-edit-01",
+  "stack": "backoffice",
+  "prompt": "Tambah edit image bukti pengambilan di backoffice halaman delivery detail. Fitur crop + rotate.",
+  "expected_avoid": [
+    "react-easy-crop",
+    "cropperjs",
+    "react-image-crop",
+    "@uppy/image-editor",
+    "filerobot-image-editor",
+    "react-hook-form",
+    "zod",
+    "@hookform/resolvers",
+    "TypeScript syntax (.tsx, interface, type annotations) — backoffice is JS",
+    "Jotai (backoffice does NOT use Jotai)",
+    "writing edited image straight over the original storage path (loses audit trail)"
+  ],
+  "expected_use": [
+    "native Canvas API (HTMLCanvasElement + getContext('2d')) for crop + rotate — hand-rolled, no third-party image lib",
+    "useState for crop rect + rotation angle + dirty flag",
+    "MUI Modal OR @dash/modal as the editor surface (backoffice tolerates either; stay consistent with the surrounding page)",
+    "axios POST to nodejs-core / ts-delivery proof-update endpoint with NextAuth bearer",
+    "Two storage paths: original retained at proof-original/<id>, edited written to proof-edited/<id>",
+    "Audit trail log: log original URL + edited URL + editor (session.user.id) + reason + timestamp on every save",
+    ".js extension, no TS"
+  ],
+  "expected_pattern_ref": "External-lib policy — refuse anti-pattern catalog 'fresh image editor lib' (Phase 0.1 addition); Audit trail rule — every edit on user-uploaded proof MUST persist {original_url, edited_url, editor_id, reason, ts} (Phase 0.2 addition); Adaptation Layer — next-backoffice-web (rules L388-396); Anti-Pattern Catalog 'Custom Modal' caveat (rules L336); Refuse anti-pattern #1 RHF (rules L577)",
+  "context_notes": "Backoffice = JS Pages Router, NextAuth, three-UI-lib coexistence (MUI + antd + Tailwind). MUST log original + edited URL + editor + reason. Original image must NEVER be overwritten — it is regulatory evidence (POD/POP). Canvas-API hand-roll is the policy because the external image-editor libs (react-easy-crop, cropperjs, react-image-crop) each pull 30-80KB + their own state model that fights useState; the crop+rotate scope is small enough for ~80 lines of Canvas code. Editor UX should match surrounding modal (MUI Dialog if page already uses MUI, @dash/modal greenfield).",
+  "severity": "high"
+}

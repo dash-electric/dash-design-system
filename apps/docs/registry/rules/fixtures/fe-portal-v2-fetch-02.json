@@ -1,0 +1,24 @@
+{
+  "id": "fe-portal-v2-fetch-02",
+  "stack": "portal-v2",
+  "prompt": "Add a hook useDeliveries() to fetch the current user's deliveries from /client-user/v1/deliveries and return loading, error, data",
+  "expected_avoid": [
+    "@tanstack/react-query",
+    "useQuery",
+    "useMutation",
+    "swr",
+    "useSWR",
+    "fetch() native (portal uses configured axios client)",
+    "QueryClient"
+  ],
+  "expected_use": [
+    "axios via the existing utils/axios.ts client (cookie auth interceptor)",
+    "custom hook using useState + useEffect",
+    "loading / error / data state triplet",
+    "envelope destructure: { status: 200, message, data, pagination }",
+    "X-Channel / X-Api-Mode / X-Client-Time-Zone headers honored by the client"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-portal-v2-web data fetch (rules L382); Per-service envelope discrimination — nodejs-core-service numeric status (rules L620); Refuse anti-pattern #3 TanStack (rules L579); Auth header injection (rules L561-564)",
+  "context_notes": "portal-v2 talks to nodejs-core-service which uses numeric status field and top-level pagination. axios client at utils/axios.ts already injects auth cookie + Dash custom headers. Do NOT introduce TanStack/SWR — banned in all 5 FE repos.",
+  "severity": "high"
+}

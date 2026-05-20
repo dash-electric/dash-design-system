@@ -1,0 +1,23 @@
+{
+  "id": "fe-portal-v2-list-04",
+  "stack": "portal-v2",
+  "prompt": "Show a paginated list of outlets with columns: name, city, status, last sync. 20 rows per page.",
+  "expected_avoid": [
+    "@tanstack/react-table v8 introduced fresh (not currently in portal-v2)",
+    "react-table v7",
+    "ag-grid",
+    "MUI DataGrid (portal-v2 is not MUI)",
+    "@tanstack/react-query for fetching the page"
+  ],
+  "expected_use": [
+    "@dash/data-table OR @dash/table primitive (per decision tree)",
+    "@dash/pagination component",
+    "axios custom hook (useOutlets({ page, size })) using utils/axios.ts",
+    "pagination cursor read from envelope { pagination: { page, size, total, lastPage } }",
+    "@dash/badge with status + appearance for status column",
+    "nuqs for ?page= URL state (portal-v2 already uses nuqs)"
+  ],
+  "expected_pattern_ref": "Decision tree — Tables (rules L31-35); Decision tree — Pagination (rules L85); next-portal-v2-web data fetch + nuqs (rules L382, glossary L37); Per-service envelope nodejs-core-service (rules L620)",
+  "context_notes": "If @dash/data-table is chosen it ships TanStack Table v8 under the hood — that is allowed inside the DS primitive, but the consumer code in portal-v2 must NOT directly import @tanstack/react-table. URL state for page belongs in nuqs (already a portal-v2 dep), not useState, so a refresh keeps the page.",
+  "severity": "medium"
+}

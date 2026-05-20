@@ -1,0 +1,23 @@
+{
+  "id": "fe-backoffice-modal-03",
+  "stack": "backoffice",
+  "prompt": "Add a confirmation modal to approve a mitra application from the Control Tower row action",
+  "expected_avoid": [
+    "writing a custom modal from scratch",
+    "shadcn Dialog name (Dash uses Modal)",
+    "MUI Dialog freshly introduced just for this (allowed if already used in this page, but prefer @dash primitive)",
+    "antd Modal freshly introduced just for this (same reasoning)",
+    "react-modal package",
+    "TypeScript"
+  ],
+  "expected_use": [
+    "@dash/modal (or @dash/alert-dialog if framed as approval/destructive confirmation)",
+    "useState boolean for open/close",
+    "@dash/button tone='primary' style='filled' for Approve, tone='neutral' style='stroke' for Cancel",
+    ".js file extension",
+    "axios call on confirm hitting /mgmt/v1/mitra/:id/approve with NextAuth bearer"
+  ],
+  "expected_pattern_ref": "Decision tree — Overlays (rules L69-77); Anti-Pattern Catalog 'Custom Modal' (rules L336); Refuse anti-pattern #8 'force MUI/antd' (rules L584); Button anatomy (rules L150-164)",
+  "context_notes": "backoffice tolerates MUI+antd+Tailwind coexistence — if the page already uses MUI Dialog, swapping mid-page can cause visual mismatch. Greenfield section here should use @dash/modal; existing MUI/antd modals should be left alone (no force-convert). Approval is not strictly destructive — modal is fine, alert-dialog optional.",
+  "severity": "medium"
+}

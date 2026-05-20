@@ -1,0 +1,22 @@
+{
+  "id": "fe-basecamp-modal-03",
+  "stack": "basecamp",
+  "prompt": "Add a modal to confirm rejecting a spend request from the row action",
+  "expected_avoid": [
+    "writing a custom modal from scratch",
+    "@radix-ui/react-dialog imported directly (shadcn already wraps it)",
+    "AlignUI Modal (basecamp uses shadcn, not AlignUI)",
+    "Zustand store for a simple boolean toggle",
+    "shadcn Dialog name when referencing Dash semantics (we say Modal)"
+  ],
+  "expected_use": [
+    "shadcn AlertDialog primitive from @/components/ui/alert-dialog for destructive reject confirmation",
+    "OR shadcn Dialog from @/components/ui/dialog if framing as non-destructive review modal — but reject is destructive",
+    "useState boolean for open/close (local state)",
+    "shadcn Button with destructive variant for confirm (NOTE: shadcn API differs from Dash's tone × style — basecamp lives in shadcn-land)",
+    "TypeScript, App Router conventions"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-basecamp-web shadcn (rules L416); Refuse anti-pattern #9 'AlignUI to basecamp' (rules L585); Decision tree — Overlays (rules L69-77)",
+  "context_notes": "AMBIGUITY: basecamp uses shadcn/ui directly, so shadcn Button API (variant='destructive') applies HERE — Dash Button's tone × style API does NOT. The rules tell us 'use Dash Modal not shadcn Dialog' generally, but basecamp's UI lib IS shadcn — so on basecamp, shadcn Dialog/AlertDialog is the canonical primitive, not Dash @dash/modal. This is a tension the AI should resolve toward 'follow the repo's existing UI lib' per the 'kita gabisa ngubah existing' mandate.",
+  "severity": "medium"
+}

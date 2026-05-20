@@ -1,0 +1,22 @@
+{
+  "id": "fe-halo-dash-fe-modal-03",
+  "stack": "halo-dash-fe",
+  "prompt": "Add a modal to confirm closing a support thread from the 3-pane support page",
+  "expected_avoid": [
+    "writing a custom modal from scratch",
+    "shadcn Dialog name",
+    "@radix-ui/react-dialog imported directly (AlignUI already wraps this)",
+    "TypeScript",
+    "Jotai for open state"
+  ],
+  "expected_use": [
+    "@dash/modal (or @dash/alert-dialog for destructive close-thread confirm)",
+    "AlignUI Modal IF that's the existing pattern on adjacent panes (do not force-swap mid-pane)",
+    "useState boolean for open/close",
+    "@dash/button tone='destructive' or tone='primary' depending on framing",
+    ".js file"
+  ],
+  "expected_pattern_ref": "Decision tree — Overlays (rules L69-77); Anti-Pattern Catalog 'Custom Modal' (rules L336); halo 3-pane template ref (rules L121); Naming divergence Dialog→Modal (rules L139)",
+  "context_notes": "halo has a 3-pane support shell template documented as @dash/templates/halo-dash-3pane. The shell may already mount an AlignUI modal somewhere; greenfield confirm dialogs in this repo should pick @dash/modal but stay consistent within a single pane. lg: breakpoint only — no mobile bottom drawer fallback needed.",
+  "severity": "medium"
+}

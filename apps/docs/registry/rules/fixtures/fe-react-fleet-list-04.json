@@ -1,0 +1,23 @@
+{
+  "id": "fe-react-fleet-list-04",
+  "stack": "react-fleet",
+  "prompt": "Show a paginated list of handovers with vehicle plate, driver, station, status, dates. 20 per page.",
+  "expected_avoid": [
+    "@tanstack/react-table v8 introduced fresh",
+    "TanStack Query for the fetch",
+    "AlignUI/shadcn Table",
+    "MUI 7 DataGrid fresh import (MUI is declared but partial usage — do not force expansion)",
+    "assuming top-level pagination (nest-fleet has pagination NESTED inside data)"
+  ],
+  "expected_use": [
+    "src/components/Table — the existing in-house Table component",
+    "axios via src/services/api/handovers.ts (or matching service module)",
+    "useState pagination cursor",
+    "envelope { data: { items, pagination } } from nest-fleet-service",
+    "Handover statuses ACTIVE / RETURNED — render as status pill via src/components/Badge equivalent",
+    "ApexCharts for any chart sidebars, react-toastify for errors, dayjs for date formatting (all existing deps)"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — react-fleet-management-web (rules L435-440); Handover entity (rules L513); nest-fleet envelope nested pagination (rules L500, L623)",
+  "context_notes": "Repo has MUI 7 declared but partial — sticking to in-house src/components/* keeps the surface consistent. Date formatting uses dayjs (already in repo), NOT moment or date-fns.",
+  "severity": "medium"
+}

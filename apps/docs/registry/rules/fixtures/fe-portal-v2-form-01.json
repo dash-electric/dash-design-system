@@ -1,0 +1,24 @@
+{
+  "id": "fe-portal-v2-form-01",
+  "stack": "portal-v2",
+  "prompt": "Add a form to capture driver name, phone, and license number to src/pages/drivers/new.tsx",
+  "expected_avoid": [
+    "react-hook-form",
+    "useForm",
+    "zod",
+    "zodResolver",
+    "@hookform/resolvers",
+    "useFieldArray",
+    "joi"
+  ],
+  "expected_use": [
+    "native useState (per field or single object)",
+    "Jotai atom + useAtom (if cross-component state)",
+    "hand-rolled validate() function in submit handler",
+    "field-level error state object",
+    "Bahasa Indonesia error messages (e.g. 'Nama wajib diisi')"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-portal-v2-web (rules L377-386); Cross-cutting validation pattern (rules L544-554); Refuse anti-pattern #1 RHF (rules L577); multi-item-form adaptation table (rules L520-526)",
+  "context_notes": "portal-v2 = Next.js App Router + TS + Jotai + axios. AGENTS.md hard-bans RHF/zod/TanStack Query (verified zero imports 2026-05-20). Validation lives inline in submit handler with field error state. Default voice is 'kamu' (informal) but error copy is typically neutral Bahasa.",
+  "severity": "high"
+}

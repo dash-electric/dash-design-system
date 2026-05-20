@@ -1,0 +1,24 @@
+{
+  "id": "fe-basecamp-list-04",
+  "stack": "basecamp",
+  "prompt": "Show a paginated list of vendors with name, category, total spend, status. Sortable.",
+  "expected_avoid": [
+    "@tanstack/react-table v8 fresh import (basecamp may not already have it)",
+    "TanStack Query for the fetch",
+    "axios",
+    "AlignUI Table",
+    "Firestore server-side composite sort (no composite indexes for these collections — in-memory only)",
+    "raw <table> for a sortable grid"
+  ],
+  "expected_use": [
+    "shadcn Table primitive from @/components/ui/table",
+    "in-memory sort/filter on the fetched array (capped ~1,000 docs)",
+    "useState pagination cursor (page index, size)",
+    "native fetch() to /api/vendors route handler",
+    "shadcn Badge variant for status",
+    "Plus Jakarta Sans (already wired via next/font/google)"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-basecamp-web shadcn + Firestore in-memory (rules L416, L423); Decision tree — Tables (rules L31-35)",
+  "context_notes": "On basecamp the canonical table is shadcn Table, not @dash/data-table — repo's resident UI lib wins. Pagination is necessary client-side because Firestore has no composite indexes for these collections.",
+  "severity": "medium"
+}

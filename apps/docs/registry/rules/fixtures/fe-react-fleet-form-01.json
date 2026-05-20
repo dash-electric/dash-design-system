@@ -1,0 +1,27 @@
+{
+  "id": "fe-react-fleet-form-01",
+  "stack": "react-fleet",
+  "prompt": "Add a form to create a new vehicle (plate, VIN, OEM, model, station) at src/pages/vehicles/new.tsx",
+  "expected_avoid": [
+    "react-hook-form (despite being in package.json, zero source imports — stale dep)",
+    "useForm hook from RHF",
+    "zod (also stale dep)",
+    "@hookform/resolvers (also stale dep)",
+    "Next.js conventions (this is CRA + CRACO, NOT Next!)",
+    "App Router / Pages Router / getServerSideProps",
+    "AlignUI or shadcn (this repo uses custom in-house components)",
+    "axios call without Bearer token from crossDomainStorage"
+  ],
+  "expected_use": [
+    "native useState (or the local custom hook `useFormValidation` already in repo)",
+    "manual inline validation, mirror RepoModal.tsx existing pattern",
+    "custom in-house components from src/components/{Input,Button,Modal,…} — NOT AlignUI/shadcn",
+    "React Router DOM v7 for navigation (useNavigate, not next/navigation)",
+    "axios with Bearer token from crossDomainStorage helper, 401 refresh+retry queue",
+    "TypeScript 4.9.5 strict",
+    "@/* path alias via CRACO+tsconfig"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — react-fleet-management-web (rules L425-448); Refuse anti-pattern #1 RHF — react-fleet stale-deps note (rules L577); Refuse anti-pattern #10 'AlignUI/shadcn to react-fleet' (rules L586); Refuse anti-pattern #11 'CRA→Next' (rules L587); Drift inventory note (rules L820-828)",
+  "context_notes": "react-fleet is the ONLY non-Next FE repo. CRA+CRACO+React Router v7. The package.json has RHF/zod/@hookform/resolvers declared but ZERO source imports (verified 2026-05-20) — those are stale and can be removed, NOT canonical. RepoModal.tsx uses a local custom hook `useFormValidation` (useState-based) — match that pattern. No AGENTS.md exists for this repo; conventions inferred from ARCHITECTURE.md.",
+  "severity": "high"
+}

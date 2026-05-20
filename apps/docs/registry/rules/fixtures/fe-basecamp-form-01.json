@@ -1,0 +1,26 @@
+{
+  "id": "fe-basecamp-form-01",
+  "stack": "basecamp",
+  "prompt": "Add a spend-request form (title, amount IDR, vendor, category, notes, receipt upload) at app/(app)/spend-requests/new/page.tsx",
+  "expected_avoid": [
+    "react-hook-form",
+    "useForm",
+    "zod",
+    "@hookform/resolvers",
+    "Jotai (basecamp uses Zustand 5, not Jotai)",
+    "AlignUI components (basecamp uses shadcn/ui new-york style)",
+    "next-intl / i18n wrapping (basecamp has no i18n — only toLocaleString('id-ID') for IDR)"
+  ],
+  "expected_use": [
+    "native useState controlled inputs",
+    "manual inline validation",
+    "shadcn/ui primitives at @/components/ui/* (Input, Label, Textarea, Button)",
+    "Zustand 5 from lib/stores/app-store.ts ONLY if cross-component (per-form local state stays useState)",
+    "Firebase Auth user via AuthProvider context — domain-locked @dashelectric.co",
+    "amount displayed with new Intl.NumberFormat('id-ID') or value.toLocaleString('id-ID')",
+    "native fetch() to app/api/spend-requests/route.ts (Next route handler — no Bearer needed in trusted env)"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-basecamp-web (rules L407-422); Refuse anti-pattern #1 RHF (rules L577); Refuse anti-pattern #9 'AlignUI to basecamp' (rules L585); route-groups (app)/(public) (rules L408)",
+  "context_notes": "basecamp is unique: TS + App Router but Zustand instead of Jotai, shadcn instead of AlignUI, Firebase Auth instead of cookieStorage trio, native fetch to local API route handlers (not axios to external services), no i18n, no test runner. spend-requests do in-memory sort/filter — no Firestore composite indexes (cap ~1,000 docs).",
+  "severity": "high"
+}

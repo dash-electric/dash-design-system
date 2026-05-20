@@ -1,0 +1,20 @@
+{
+  "id": "fe-halo-dash-fe-style-05",
+  "stack": "halo-dash-fe",
+  "prompt": "Style the 'Mark as resolved' header chip to match Dash purple brand",
+  "expected_avoid": [
+    "style={{ backgroundColor: '#5e2aac' }} inline literal",
+    "className='bg-[#5e2aac]' arbitrary-value Tailwind",
+    "raw AlignUI color override that bypasses tokens",
+    "TypeScript .ts(x)",
+    "shadcn variant API (Dash uses tone × style)"
+  ],
+  "expected_use": [
+    "@dash/badge appearance='filled' OR @dash/tag if removable",
+    "Tailwind semantic class bg-primary / text-primary via @dash/base-theme",
+    "AlignUI token consumption if surrounding chips already use AlignUI tokens (consistency within pane)"
+  ],
+  "expected_pattern_ref": "Token usage (rules L192-227); Brand token (rules L218-219); Tag vs Badge naming (rules L144); Anti-Pattern Catalog 'Hardcode hex color' (rules L335); Badge appearance prop (rules L182-189)",
+  "context_notes": "halo uses AlignUI vendored locally; the @dash registry tokens are compatible (the DS targets Tailwind-variants 0.2.1 which is halo's pinned version). Badge in Dash uses `appearance` prop NOT `style` (renamed Batch 13). Canonical Dash Purple = `#5e2aac` (matches DS token `--dash-purple-500`); always reach for the token, never the literal.",
+  "severity": "medium"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "fe-basecamp-style-05",
+  "stack": "basecamp",
+  "prompt": "Style the Submit button on the spend-request form to match Dash purple brand",
+  "expected_avoid": [
+    "scattering raw `#5e2aac` literals across components",
+    "className='bg-[#5e2aac]' arbitrary-value Tailwind in component code (define once in theme)",
+    "AlignUI tokens",
+    "@dash/button tone/style API (basecamp uses shadcn Button — different surface)"
+  ],
+  "expected_use": [
+    "shadcn Button default variant when the theme primary IS the brand purple",
+    "Tailwind v4 token resolving to `#5e2aac` via the project's tailwind/postcss config (basecamp's brand color is `#5e2aac` hard-coded hex, matches DS token `--dash-purple-500`)",
+    "Plus Jakarta Sans for typography (already wired)",
+    "lucide / Remix icons (basecamp's icon set)"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-basecamp-web brand `#5e2aac` hard-coded hex (rules L417); Refuse anti-pattern #12 'Change basecamp brand color' (rules L588); Token usage (rules L192-227)",
+  "context_notes": "basecamp's brand color is `#5e2aac` (hard-coded hex) at the THEME level — that single literal lives in the Tailwind v4 config / globals.css, not scattered in components. This matches the DS token `bg-primary` in @dash/base-theme (`--dash-purple-500` = `#5e2aac`). basecamp should keep its theme-level definition (per 'kita gabisa ngubah existing'); the DS theme should not be force-installed if it would duplicate the project's brand. (Older docs that referenced `#7C4FC4` are deprecated — synced 2026-05-20.)",
+  "severity": "medium"
+}

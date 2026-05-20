@@ -1,0 +1,26 @@
+{
+  "id": "fe-backoffice-image-edit-05",
+  "stack": "backoffice",
+  "prompt": "Show toast notification when proof image successfully updated",
+  "expected_avoid": [
+    "alert() — blocking browser primitive, not a toast",
+    "window.confirm() / window.alert() as success feedback",
+    "generic 'Success' / 'Done' / 'Updated' English-only message",
+    "console.log as the user-facing feedback",
+    "react-toastify imported fresh when @dash/toast already exists in the registry — prefer Dash registry",
+    "TypeScript syntax — backoffice is JS",
+    "permanent toast with no auto-dismiss (clutters the screen)",
+    "error-variant toast for a success outcome"
+  ],
+  "expected_use": [
+    "toast() from the Dash registry (@dash/toast) OR the resident react-toastify if surrounding page already uses it (page-consistent)",
+    "Bahasa Indonesia message — e.g. 'Bukti pengambilan ter-update' for pickup proof, 'Bukti pengantaran ter-update' for delivery proof (context-aware)",
+    "success variant (green semantic) — toast.success(...) or @dash/toast variant='success'",
+    "Auto-dismiss after ~3-4 seconds (default toast lifetime is fine)",
+    "Triggered on the resolved Promise of the axios POST to the proof-update endpoint, not optimistically before the response lands",
+    ".js extension"
+  ],
+  "expected_pattern_ref": "Decision tree — Feedback / Notifications (rules L78-83 family); Anti-Pattern Catalog 'alert() as feedback' (Phase 0.1 implication); Dash voice — Bahasa default for backoffice operator UI; next-backoffice-web react-toastify residency (rules L394)",
+  "context_notes": "Backoffice operators are Indonesian-speaking — English-only success messages are a recurring drift. Pickup vs delivery proof context comes from the parent page (delivery detail knows which type it's editing). Toast must fire on the resolved Promise only — premature optimistic toast misleads operators when the BE actually rejected the update (e.g., audit log insert failed). Severity low because the failure mode here is mostly cosmetic — the audit trail and the storage paths from fixtures 01-04 are what carry the regulatory weight.",
+  "severity": "low"
+}

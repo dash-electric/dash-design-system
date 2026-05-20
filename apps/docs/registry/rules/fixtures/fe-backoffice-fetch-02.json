@@ -1,0 +1,23 @@
+{
+  "id": "fe-backoffice-fetch-02",
+  "stack": "backoffice",
+  "prompt": "Add a hook to fetch the list of pending mitra approvals from /mgmt/v1/mitra/pending so the Control Tower page can render them",
+  "expected_avoid": [
+    "@tanstack/react-query",
+    "useQuery / useMutation",
+    "swr",
+    "native fetch() (backoffice uses axios)",
+    "TypeScript (this repo is JS)",
+    "assuming { data: [] } flat shape — envelope has { status: 'Success', data, pagination }"
+  ],
+  "expected_use": [
+    "axios + manual setLoading boolean (per AGENTS.md pattern)",
+    "useState({ loading, error, data, pagination })",
+    "NextAuth session.accessToken in Authorization header",
+    "destructure backoffice envelope: { status: 'Success'|'Error', data, pagination }",
+    "react-toastify for error toast (already in repo)"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-backoffice-web data fetch (rules L391-396); Per-service envelope discrimination (rules L618-624); Auth header injection backoffice NextAuth (rules L562); glossary L280 mandated envelope",
+  "context_notes": "backoffice Control Tower lives in this repo. Envelope uses STRING status ('Success'/'Error', sometimes legacy 'Failed'). NextAuth bearer is the auth source, NOT cookieStorage (backoffice is NOT in the SSO trio). react-toastify is the resident toast lib.",
+  "severity": "high"
+}

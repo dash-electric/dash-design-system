@@ -1,0 +1,23 @@
+{
+  "id": "fe-halo-dash-fe-fetch-02",
+  "stack": "halo-dash-fe",
+  "prompt": "Add a hook to fetch the open support threads from /v1/agent/threads and refresh the list every 3 seconds while the page is open",
+  "expected_avoid": [
+    "@tanstack/react-query refetchInterval",
+    "swr refreshInterval",
+    "TypeScript",
+    "websocket / SSE (halo uses polling)",
+    "fetch() native (halo uses axios)",
+    "skipping cleanup of the polling interval on unmount"
+  ],
+  "expected_use": [
+    "axios via src/utils/axios.js (cross-domain cookie auth)",
+    "useEffect + setInterval(3000) + clearInterval cleanup",
+    "useState({ loading, error, data })",
+    "halo-dash-be envelope { status: 'Success'|'Failed', message, data } (string status)",
+    "path prefix /v1/agent/* per halo-dash-be (rules L453)"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — halo-dash-fe data fetch + 3s polling (rules L402); halo-dash-be path prefix (rules L453); Per-service envelope halo-dash-be (rules L622)",
+  "context_notes": "3-second polling is a documented halo pattern (NOT a guess). Interval cleanup is critical — easy bug. Auth header is injected via the axios util reading cross-domain cookie storage. halo is part of the SSO trio (portal + halo + fleet-mgmt).",
+  "severity": "high"
+}

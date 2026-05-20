@@ -1,0 +1,24 @@
+{
+  "id": "fe-basecamp-fetch-02",
+  "stack": "basecamp",
+  "prompt": "Add a hook useSpendRequests() to fetch the current quarter's spend requests for the dashboard",
+  "expected_avoid": [
+    "@tanstack/react-query",
+    "useQuery / useMutation",
+    "swr",
+    "axios (basecamp does NOT use axios — uses native fetch to internal route handlers)",
+    "Bearer token header (open within trusted env, basecamp's own API routes)",
+    "Jotai",
+    "AlignUI"
+  ],
+  "expected_use": [
+    "native fetch() to /api/spend-requests (Next App Router route handler)",
+    "useEffect + useState({ loading, error, data })",
+    "Zustand 5 store at lib/stores/app-store.ts ONLY if the data should be cached globally",
+    "in-memory sort/filter on the result (no Firestore composite indexes for spend-requests)",
+    "Firestore basecamp-db (non-default) is hit server-side from the route handler — client just consumes JSON"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-basecamp-web data fetch (rules L412); Firestore in-memory sort note (rules L423); Refuse anti-pattern #3 TanStack (rules L579)",
+  "context_notes": "Critical distinction: basecamp talks to its OWN Next API routes (app/api/*/route.ts), NOT the cross-service Dash mesh. So envelope rules for nodejs-core / ts-delivery / nest-* do NOT apply here — shape is whatever the route handler returns. Firestore composite index cap is ~1,000 docs; AI should NOT suggest a server-side filtered query.",
+  "severity": "high"
+}

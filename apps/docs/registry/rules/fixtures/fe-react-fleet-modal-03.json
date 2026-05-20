@@ -1,0 +1,24 @@
+{
+  "id": "fe-react-fleet-modal-03",
+  "stack": "react-fleet",
+  "prompt": "Add a modal to confirm marking a vehicle as LOST from the vehicle detail page",
+  "expected_avoid": [
+    "AlignUI Modal (not used in react-fleet)",
+    "shadcn Dialog (not used in react-fleet)",
+    "@radix-ui/react-dialog imported directly",
+    "react-modal package",
+    "writing a brand-new Modal from scratch when src/components/Modal exists",
+    "next/navigation"
+  ],
+  "expected_use": [
+    "src/components/Modal — the existing in-house Modal component",
+    "follow RepoModal.tsx existing pattern as the reference",
+    "useState boolean for open/close",
+    "useFormValidation hook ONLY if the modal has form fields (some confirms might just need a Confirm/Cancel pair)",
+    "src/components/Button for the action buttons",
+    "marking a vehicle LOST should hit nest-fleet vehicle service via src/services/api/vehicles.ts and respect the 6×6 (status × processType) matrix — do not directly set status, call the service method"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — react-fleet-management-web custom in-house components (rules L435); Drift inventory awareness — RepoModal.tsx pattern reuse (rules L825-826); Vehicle 6×6 state matrix (rules L728-733)",
+  "context_notes": "Marking LOST changes Vehicle.status — must NOT be a direct status set, the BE service derives the new (status, processType) pair from the LOST event. From the FE side, just hit the appropriate endpoint and trust the BE state machine. UI-wise, reuse src/components/Modal — do NOT add a new modal library.",
+  "severity": "medium"
+}

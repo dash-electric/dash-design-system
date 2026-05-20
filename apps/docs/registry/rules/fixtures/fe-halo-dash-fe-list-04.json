@@ -1,0 +1,22 @@
+{
+  "id": "fe-halo-dash-fe-list-04",
+  "stack": "halo-dash-fe",
+  "prompt": "Show a paginated list of closed support threads in the right pane, 25 per page",
+  "expected_avoid": [
+    "@tanstack/react-table v8 introduced fresh",
+    "TanStack Query for the fetch",
+    "TypeScript",
+    "true-mobile-first responsive design",
+    "fresh AlignUI table that bypasses the @dash registry"
+  ],
+  "expected_use": [
+    "@dash/data-table OR @dash/table primitive (per decision tree, depending on sort/filter need)",
+    "@dash/pagination",
+    "axios + useState pagination cursor (no TanStack)",
+    "halo-dash-be envelope { status: 'Success'|'Failed', data, pagination } string status",
+    "lg: breakpoint as primary, no mobile drawer fallback"
+  ],
+  "expected_pattern_ref": "Decision tree — Tables (rules L31-35); halo-dash-be envelope (rules L622); halo desktop-first policy (glossary L120)",
+  "context_notes": "Closed-threads list = read-only with sort optional. If no sort/filter, use the simpler @dash/table primitive instead of @dash/data-table. Pagination state local to right pane (useState) — does not warrant Jotai/Zustand here.",
+  "severity": "medium"
+}

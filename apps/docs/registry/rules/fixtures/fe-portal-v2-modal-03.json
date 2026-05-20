@@ -1,0 +1,22 @@
+{
+  "id": "fe-portal-v2-modal-03",
+  "stack": "portal-v2",
+  "prompt": "Add a modal to confirm cancelling a delivery on the deliveries detail page",
+  "expected_avoid": [
+    "custom <div role='dialog'> from scratch",
+    "shadcn Dialog name (Dash uses Modal)",
+    "@radix-ui/react-dialog imported directly",
+    "react-modal package",
+    "Jotai for open/close (overkill — useState is canonical for local toggle)"
+  ],
+  "expected_use": [
+    "@dash/modal primitive (dash add modal)",
+    "@dash/alert-dialog if framing as destructive confirmation (no overlay-click dismiss)",
+    "useState<boolean> for open state local to the page",
+    "@dash/button with tone='destructive' style='filled' for confirm",
+    "@dash/button with tone='neutral' style='stroke' for cancel"
+  ],
+  "expected_pattern_ref": "Decision tree — Overlays (rules L69-77); Anti-Pattern Catalog 'Custom Modal from scratch' (rules L336); Button anatomy (rules L150-164); Naming divergence Dialog→Modal (rules L139)",
+  "context_notes": "Cancelling a delivery is destructive — alert-dialog is preferred over modal because alert-dialog blocks overlay-click dismiss. portal-v2 already uses Jotai elsewhere but a single open/close boolean is a local-state case. Confirm button must be destructive tone, not primary.",
+  "severity": "medium"
+}

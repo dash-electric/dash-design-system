@@ -1,0 +1,25 @@
+{
+  "id": "fe-halo-dash-fe-form-01",
+  "stack": "halo-dash-fe",
+  "prompt": "Add a form for the agent to file a new support ticket: ticket title, mitra ID, category, severity, description",
+  "expected_avoid": [
+    "react-hook-form",
+    "useForm",
+    "zod",
+    "@hookform/resolvers",
+    "TypeScript syntax (this repo was deliberately migrated TS→JS on 2026-05-07 — do NOT revert)",
+    "Jotai (not the halo stack)",
+    "true-mobile responsive design (halo is desktop-first, lg: breakpoint)"
+  ],
+  "expected_use": [
+    "native useState",
+    "manual validate() in submit",
+    "AlignUI Form components (vendored locally via file: path)",
+    "axios POST + cross-domain auth cookie headers",
+    "mtr-XXXX format for mitra ID input validation",
+    ".js extension"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — halo-dash-fe (rules L398-405); Refuse anti-pattern #5 'Switch halo-dash to TypeScript' (rules L581); multi-item-form adaptation halo row (rules L520-526); mitra ID format glossary (rules L302)",
+  "context_notes": "halo-dash-fe was intentionally JS Pages Router after a regression migration on 2026-05-07 to mirror backoffice for a future merge. AlignUI is vendored at a local file: path. No test runner is configured. Primary breakpoint is lg: (1024+) — backoffice tool, mobile not supported.",
+  "severity": "high"
+}

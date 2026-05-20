@@ -1,0 +1,24 @@
+{
+  "id": "fe-react-fleet-style-05",
+  "stack": "react-fleet",
+  "prompt": "Style the primary CTA on the Handover wizard to match Dash purple brand",
+  "expected_avoid": [
+    "silently rewriting the project's primary blue `#3b82f6 / #2563eb` to `#5e2aac` without flagging — this is documented drift, not a bug to fix in passing",
+    "scattering raw `#5e2aac` literals inline",
+    "style={{ backgroundColor: '#5e2aac' }} or `#3b82f6` inline",
+    "className='bg-[#5e2aac]' arbitrary-value Tailwind in component code",
+    "@dash/button tone/style API (react-fleet uses in-house Button with its own variant prop)",
+    "MUI 7 sx prop with raw hex",
+    "Tailwind v4 syntax (this repo is on Tailwind v3.4.18)"
+  ],
+  "expected_use": [
+    "src/components/Button (in-house, with its own variant prop) using the project's current `primary` token",
+    "the project's current `primary` Tailwind token (`#3b82f6 / #2563eb` blue, NOT Dash Purple) — this is acknowledged drift item E.1.2",
+    "SURFACE the drift to the user: 'fleet-mgmt\\'s `primary` is blue, not Dash Purple `#5e2aac`. Align now (theme-wide change) or preserve drift?'",
+    "Plus Jakarta Sans (consistent)",
+    "Remix Icons / Material Symbols (the repo's icon sets)"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — react-fleet-management-web brand DRIFT `#3b82f6` (rules L437); Refuse anti-pattern #12 'Use blue primary in fleet-mgmt' surfacing rule (rules L588); Drift inventory awareness (rules L820-828)",
+  "context_notes": "This is the highest-value fixture for testing 'do not silently fix drift'. The rules explicitly say: surface as a recommendation, do not silently fix. A correct AI response REFUSES to just swap colors, EXPLAINS the drift, ASKS whether to align project-wide or preserve. Tailwind here is v3.4.18 (not v4 like basecamp). Canonical Dash Purple = `#5e2aac` (matches DS token `--dash-purple-500`); older `#7C4FC4` references are deprecated (synced 2026-05-20).",
+  "severity": "medium"
+}

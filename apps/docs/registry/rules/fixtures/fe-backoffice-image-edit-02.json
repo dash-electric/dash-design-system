@@ -1,0 +1,27 @@
+{
+  "id": "fe-backoffice-image-edit-02",
+  "stack": "backoffice",
+  "prompt": "Add backend endpoint to update delivery proof image with audit log",
+  "expected_avoid": [
+    "direct UPDATE on t_delivery_proof.image_url without inserting an audit row first",
+    "missing edit_reason validation (free-form empty string allowed)",
+    "single storage path for both original + edited (overwriting destroys evidence)",
+    "raw try/catch returning plain { error: '...' } instead of using createResponse / AppError envelope",
+    "skipping editor identity capture (session.user.id) on the audit row",
+    "performing update + audit insert in separate transactions (must be atomic)",
+    "TanStack Query / SWR on the FE caller side",
+    "writing to proof-edited/ without writing the audit row first (ordering matters for recovery)"
+  ],
+  "expected_use": [
+    "createResponse envelope helper for the success path",
+    "AppError thrown for validation + auth failures (typed error class)",
+    "t_proof_audit_log table INSERT FIRST (captures original_url, edited_url, editor_id, edit_reason, created_at) THEN UPDATE t_delivery_proof.image_url — both inside one DB transaction (BEGIN…COMMIT)",
+    "Separate storage paths: proof-original/<delivery_id>/<proof_id> (immutable, never overwritten) AND proof-edited/<delivery_id>/<proof_id>/<version_ts>",
+    "edit_reason validation: required, enum membership check (orientasi_salah / kurang_terang / crop_tidak_pas / lainnya), if 'lainnya' then edit_reason_other free-text required and min length 10 chars",
+    "Auth: NextAuth bearer extracted, role check for backoffice operator scope",
+    "Returns envelope { status: 'Success', data: { proof_id, edited_url, audit_id, version } }"
+  ],
+  "expected_pattern_ref": "Audit trail rule (Phase 0.2 addition — every proof edit logs original + edited + editor + reason); ts-delivery-service patterns (rules L457-464); Per-service envelope ts-delivery (rules L621); AppError class hierarchy (rules L599-608); createResponse helper (rules L611-616); Cross-cutting validation (rules L544-554)",
+  "context_notes": "This is the BE counterpart to fe-backoffice-image-edit-01. Lives in nodejs-core-service OR ts-delivery-service (whichever owns t_delivery_proof — likely ts-delivery). The audit row + the update MUST be in the same DB transaction; otherwise a crash between the two leaves the system in a state where the new image_url is live but there's no record of who changed it or why. proof-original/ is write-once, proof-edited/ is versioned by timestamp suffix so multiple edits don't collide. The edit_reason enum is the same one the FE dropdown (fe-backoffice-image-edit-04) renders.",
+  "severity": "high"
+}

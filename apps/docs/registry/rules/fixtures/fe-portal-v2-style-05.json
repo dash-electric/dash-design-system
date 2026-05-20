@@ -1,0 +1,21 @@
+{
+  "id": "fe-portal-v2-style-05",
+  "stack": "portal-v2",
+  "prompt": "Style the new dispatch CTA on the deliveries page to match Dash purple brand",
+  "expected_avoid": [
+    "style={{ backgroundColor: '#5e2aac' }} inline",
+    "className='bg-[#5e2aac]' arbitrary value",
+    "scattering raw hex literals across components",
+    "tailwind config color override without going through @dash/base-theme",
+    "shadcn variant='default' (Dash Button uses tone × style not variant)"
+  ],
+  "expected_use": [
+    "@dash/button with tone='primary' style='filled'",
+    "semantic Tailwind tokens like bg-primary / text-primary / bg-primary-base",
+    "tokens from @dash/base-theme installed via `dash add base-theme`",
+    "if a raw brand reference is unavoidable, the canonical Dash Purple is `#5e2aac` (matches DS token `--dash-purple-500`); always prefer the token over the literal"
+  ],
+  "expected_pattern_ref": "Token usage (rules L192-227); Brand token (rules L218-219); Anti-Pattern Catalog 'Hardcode hex color' (rules L335); Button anatomy (rules L150-164); next-basecamp-web brand `#5e2aac` (rules L417)",
+  "context_notes": "Canonical Dash Purple primary = `#5e2aac` (matches DS token `--dash-purple-500`). Older docs referencing `#7C4FC4` are deprecated and have been synced to `#5e2aac` (2026-05-20). AI should reach for the token, never the literal. portal-v2 default voice 'kamu' does not affect a CTA label here.",
+  "severity": "medium"
+}

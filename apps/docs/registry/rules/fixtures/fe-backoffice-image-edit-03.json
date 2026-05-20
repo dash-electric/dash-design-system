@@ -1,0 +1,28 @@
+{
+  "id": "fe-backoffice-image-edit-03",
+  "stack": "backoffice",
+  "prompt": "Show edit history for a proof image — original vs edited side-by-side",
+  "expected_avoid": [
+    "rendering only the latest version (loses prior audit context)",
+    "rendering edited image only with no original to compare",
+    "omitting editor identity (anonymous edit history is useless for accountability)",
+    "omitting edit_reason from each row",
+    "raw inline hex for the Dash purple accent (must use @dash/base-theme token)",
+    "TanStack Query for the audit fetch",
+    "TypeScript syntax (.tsx) — backoffice is JS",
+    "lossy compression on the original thumbnail (preserve evidence fidelity)"
+  ],
+  "expected_use": [
+    "axios GET /mgmt/v1/delivery-proof/:id/audit (or equivalent) to fetch t_proof_audit_log rows",
+    "Render each audit entry as a row with: original image (left) + edited image (right) side-by-side",
+    "Each row shows: editor name (resolve user_id → display name), edit_reason (mapped to Bahasa label), timestamp formatted via dayjs id-ID locale",
+    "Use @dash/badge appearance='light' for the reason chip, or @dash/tag if removable filter chips are wanted above the list",
+    "Dash purple via Tailwind semantic class bg-primary / text-primary (token from @dash/base-theme) — NOT raw hex",
+    "useState({ loading, error, data, pagination }) — manual axios pattern per backoffice AGENTS.md",
+    "Envelope destructure { status: 'Success', data, pagination } string-status",
+    ".js extension, NextAuth bearer for auth"
+  ],
+  "expected_pattern_ref": "Audit trail rule (Phase 0.2 addition); Token usage (rules L192-227); Brand token (rules L218-219); Tag vs Badge naming (rules L144); next-backoffice-web envelope (rules L394)",
+  "context_notes": "This view is auditor-facing — a backoffice operator or compliance reviewer needs to see the full edit chain for a single proof image, ordered newest-first. Side-by-side layout (not stacked) is mandated so the reviewer can visually compare original vs edited at a glance. Editor identity must resolve to a human-readable name — raw user_id is insufficient for auditability. Bahasa labels for edit_reason: orientasi_salah → 'Orientasi salah', kurang_terang → 'Kurang terang', crop_tidak_pas → 'Crop tidak pas', lainnya → 'Lainnya'. If the audit list is long, paginate with @dash/pagination (envelope's pagination block).",
+  "severity": "medium"
+}

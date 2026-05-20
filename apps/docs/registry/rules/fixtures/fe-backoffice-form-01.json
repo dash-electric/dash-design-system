@@ -1,0 +1,25 @@
+{
+  "id": "fe-backoffice-form-01",
+  "stack": "backoffice",
+  "prompt": "Add a form to create a new outlet (name, city, address, operating hours) to pages/outlets/new.js",
+  "expected_avoid": [
+    "react-hook-form",
+    "useForm",
+    "zod",
+    "@hookform/resolvers",
+    "TypeScript syntax (.tsx, interface, type annotations) — backoffice is JS",
+    "Jotai (backoffice does NOT use Jotai — that's portal-v2)",
+    "force-converting to a single UI lib (MUI + antd + Tailwind coexist)"
+  ],
+  "expected_use": [
+    "native useState per field (or one object)",
+    "manual validate() helper in submit handler",
+    "axios POST with NextAuth session.accessToken bearer",
+    "MUI OR antd form components are tolerated as drop-in alongside @dash primitives",
+    "envelope on response: { status: 'Success' | 'Error', data, pagination } (STRING status)",
+    ".js extension, no TS"
+  ],
+  "expected_pattern_ref": "Adaptation Layer — next-backoffice-web (rules L388-396); Refuse anti-pattern #1 RHF (rules L577); Refuse anti-pattern #8 'force MUI/antd' (rules L584); multi-item-form adaptation backoffice row (rules L520-526)",
+  "context_notes": "backoffice is JavaScript (NOT TS), Pages Router, NextAuth. Three UI libs (MUI 5, antd 5, Tailwind) co-exist and that's allowed — DS components drop in without forcing migration. String-status envelope here, different from portal-v2's numeric status. Tests via Jest+RTL exist here (only FE repo with tests).",
+  "severity": "high"
+}
