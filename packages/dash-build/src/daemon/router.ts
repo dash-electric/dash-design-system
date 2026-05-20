@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
 import type { Store } from "./state/store.js"
 import type { Broadcaster } from "./ws/broadcaster.js"
+import type { Orchestrator } from "../pipeline/orchestrator.js"
 import { handleDashboard } from "./routes/dashboard.js"
 import { handleHealth } from "./routes/health.js"
 import { handleStatus } from "./routes/status.js"
@@ -13,6 +14,7 @@ import { notFound, sendJson, sendRedirect } from "./routes/_helpers.js"
 export interface RouterDeps {
   store: Store
   broadcaster: Broadcaster
+  orchestrator?: Orchestrator
 }
 
 export async function router(
@@ -44,7 +46,14 @@ export async function router(
       return handleReposRoute(req, res, deps.store)
     }
     if (pathname === "/api/prompt" || pathname.startsWith("/api/prompts/")) {
-      return await handlePromptsRoute(req, res, pathname, deps.store, deps.broadcaster)
+      return await handlePromptsRoute(
+        req,
+        res,
+        pathname,
+        deps.store,
+        deps.broadcaster,
+        deps.orchestrator,
+      )
     }
     if (pathname.startsWith("/api/auth/")) {
       return handleAuthRoute(req, res, pathname, deps.store, deps.broadcaster)

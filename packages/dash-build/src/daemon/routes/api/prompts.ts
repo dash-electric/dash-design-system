@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
 import type { Store } from "../../state/store.js"
 import type { Broadcaster } from "../../ws/broadcaster.js"
+import type { Orchestrator } from "../../../pipeline/orchestrator.js"
 import {
   badRequest,
   methodNotAllowed,
@@ -17,15 +18,17 @@ interface PromptBody {
 
 interface ApproveBody {
   approved?: boolean
+  branch?: string
+  commitMessage?: string
 }
 
 /**
- * POST /api/prompt — create prompt
- * GET  /api/prompts/:id — fetch by id
+ * POST /api/prompt — create prompt, kick off pipeline
+ * GET  /api/prompts/:id — fetch by id (includes artifact when generated)
  * POST /api/prompts/:id/approve — user approves PR creation
  *
- * STUB: real prompt → PR pipeline is owned by Agent E. We expose the records
- * and lifecycle hooks here so Agent E can drive state transitions.
+ * When `orchestrator` is provided, real pipeline runs. When omitted, falls
+ * back to the legacy stub for tests that haven't migrated.
  */
 export async function handlePromptsRoute(
   req: IncomingMessage,
@@ -33,6 +36,7 @@ export async function handlePromptsRoute(
   pathname: string,
   store: Store,
   broadcaster: Broadcaster,
+  orchestrator?: Orchestrator,
 ): Promise<void> {
   // POST /api/prompt — create
   if (pathname === "/api/prompt") {
@@ -46,12 +50,34 @@ export async function handlePromptsRoute(
     if (!body.text || typeof body.text !== "string") {
       return badRequest(res, "text_required")
     }
+
+    if (orchestrator) {
+      try {
+        const result = await orchestrator.submitPrompt({
+          text: body.text,
+          repo: body.repo ?? null,
+          branch: body.branch ?? null,
+        })
+        return sendJson(res, 201, {
+          ok: true,
+          id: result.promptId,
+          status: result.status,
+        })
+      } catch (err) {
+        return badRequest(res, (err as Error).message)
+      }
+    }
+
+    // Legacy fallback
     const prompt = store.addPrompt({
       text: body.text,
       repo: body.repo ?? null,
       branch: body.branch ?? null,
     })
-    broadcaster.broadcast("prompts:changed", { id: prompt.id, status: prompt.status })
+    broadcaster.broadcast("prompts:changed", {
+      id: prompt.id,
+      status: prompt.status,
+    })
     return sendJson(res, 201, { ok: true, id: prompt.id, status: prompt.status })
   }
 
@@ -80,8 +106,29 @@ export async function handlePromptsRoute(
       })
       return sendJson(res, 200, { ok: true, id, status: "cancelled" })
     }
-    // Agent E will wire the real PR-creation pipeline. For now, we just mark it
-    // generating and rely on E to advance state.
+    if (orchestrator) {
+      try {
+        const result = await orchestrator.approvePR({
+          promptId: id,
+          branch: body.branch,
+          commitMessage: body.commitMessage,
+        })
+        return sendJson(res, 200, {
+          ok: true,
+          id,
+          status: "pr_created",
+          prUrl: result.prUrl,
+          prNumber: result.prNumber,
+        })
+      } catch (err) {
+        return sendJson(res, 409, {
+          ok: false,
+          error: "approve_failed",
+          message: (err as Error).message,
+        })
+      }
+    }
+    // Legacy stub
     const updated = await store.updatePromptStatus(id, "generating")
     broadcaster.broadcast("prompts:changed", {
       id,
@@ -93,5 +140,17 @@ export async function handlePromptsRoute(
   if (req.method !== "GET") return methodNotAllowed(res)
   const prompt = store.getPrompt(id)
   if (!prompt) return notFound(res)
-  return sendJson(res, 200, { ok: true, prompt })
+  const artifact = orchestrator?.getArtifact(id)
+  return sendJson(res, 200, {
+    ok: true,
+    prompt,
+    artifact: artifact
+      ? {
+          files: artifact.files.map((f) => ({ path: f.path, language: f.language })),
+          explanation: artifact.explanation,
+          validation: artifact.validation,
+          generatedAt: artifact.generatedAt,
+        }
+      : null,
+  })
 }

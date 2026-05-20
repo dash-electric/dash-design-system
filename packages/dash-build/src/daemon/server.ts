@@ -4,6 +4,18 @@ import { Store } from "./state/store.js"
 import { Broadcaster } from "./ws/broadcaster.js"
 import { handleUpgrade } from "./ws/server.js"
 import { writePidFile, deletePidFile } from "./pid-file.js"
+import {
+  Orchestrator,
+  defaultAnthropicProvider,
+  defaultClarificationGateway,
+  defaultGithubProvider,
+  defaultSkillChainRunner,
+  Worker,
+} from "../pipeline/index.js"
+import { AuthenticatedAnthropicClient } from "../auth/anthropic/index.js"
+import { GitHubAppClient } from "../integrations/github/index.js"
+import { SessionStore } from "../clarification/session-store.js"
+import { registerClarificationRoutes } from "../clarification/api-routes.js"
 // pid-file lives alongside this file in src/daemon/pid-file.ts
 
 export interface DaemonServerOptions {
@@ -11,12 +23,18 @@ export interface DaemonServerOptions {
   host?: string
   statePath?: string
   writePid?: boolean
+  /** Disable the worker poll loop (used in tests that drive the orchestrator directly). */
+  enableWorker?: boolean
+  /** Disable the real pipeline (tests that exercise only HTTP shape). */
+  enablePipeline?: boolean
 }
 
 export interface RunningDaemon {
   server: Server
   store: Store
   broadcaster: Broadcaster
+  orchestrator: Orchestrator | null
+  worker: Worker | null
   port: number
   host: string
   close: () => Promise<void>
@@ -29,13 +47,53 @@ export interface RunningDaemon {
 export async function startDaemon(opts: DaemonServerOptions = {}): Promise<RunningDaemon> {
   const port = opts.port ?? Number(process.env.DASH_BUILD_PORT ?? 7777)
   const host = opts.host ?? "127.0.0.1"
+  const enablePipeline = opts.enablePipeline ?? true
+  const enableWorker = opts.enableWorker ?? enablePipeline
 
   const store = await Store.load({ path: opts.statePath })
   const broadcaster = new Broadcaster()
 
+  // ── Pipeline wiring ─────────────────────────────────────────────────────
+  let orchestrator: Orchestrator | null = null
+  let worker: Worker | null = null
+  let clarificationStore: SessionStore | null = null
+
+  if (enablePipeline) {
+    clarificationStore = new SessionStore()
+    await clarificationStore.reload().catch(() => 0)
+
+    const anthropicClient = new AuthenticatedAnthropicClient()
+    const githubClient = new GitHubAppClient()
+
+    orchestrator = new Orchestrator({
+      store,
+      broadcaster,
+      clarification: defaultClarificationGateway(clarificationStore),
+      anthropic: defaultAnthropicProvider(anthropicClient),
+      github: defaultGithubProvider(githubClient),
+      skillChain: defaultSkillChainRunner(),
+    })
+
+    if (enableWorker) {
+      worker = new Worker({ store, orchestrator })
+    }
+  }
+
   const server = createServer((req, res) => {
-    void router(req, res, { store, broadcaster })
+    void router(req, res, { store, broadcaster, orchestrator: orchestrator ?? undefined })
   })
+
+  // Mount Agent F's clarification routes. They listen on the same server's
+  // "request" event and complete the response themselves.
+  if (clarificationStore && orchestrator) {
+    registerClarificationRoutes(server, clarificationStore, {
+      onComplete: async (promptId, outcome) => {
+        if (outcome === "answered") {
+          await orchestrator!.resumeAfterClarification(promptId).catch(() => {})
+        }
+      },
+    })
+  }
 
   server.on("upgrade", (req, socket, head) => {
     handleUpgrade(req, socket as never, head, { broadcaster })
@@ -53,7 +111,11 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
     await writePidFile(process.pid)
   }
 
+  // Start worker after server is listening
+  worker?.start()
+
   const close = async () => {
+    worker?.stop()
     broadcaster.closeAll()
     await new Promise<void>((resolve) => server.close(() => resolve()))
     if (opts.writePid !== false) {
@@ -62,7 +124,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
     await store.persist()
   }
 
-  return { server, store, broadcaster, port, host, close }
+  return { server, store, broadcaster, orchestrator, worker, port, host, close }
 }
 
 /**

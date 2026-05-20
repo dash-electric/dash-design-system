@@ -15,6 +15,7 @@ beforeAll(async () => {
     host: "127.0.0.1",
     statePath: join(workDir, "state.json"),
     writePid: false,
+    enablePipeline: false,
   })
   const addr = daemon.server.address()
   const port =
@@ -58,7 +59,9 @@ describe("HTTP routes", () => {
     expect(r.headers.get("content-type")).toMatch(/text\/html/)
     const html = await r.text()
     expect(html).toContain("Dash Build")
-    expect(html).toContain("db-prompt-input")
+    // Dashboard chrome always renders, regardless of auth state.
+    expect(html).toContain("db-ws-indicator")
+    expect(html).toContain("db-prompts-region")
   })
 
   it("GET /static/app.css returns CSS", async () => {
