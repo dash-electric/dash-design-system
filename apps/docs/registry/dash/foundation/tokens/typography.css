@@ -1,0 +1,177 @@
+/*
+ * Dash Foundation — Layer 0 Typography
+ * Family: Plus Jakarta Sans (canonical, all products + Trellis)
+ *
+ * Extracted from apps/docs/app/globals.css (2026-05-20). Additive — does NOT
+ * modify globals.css.
+ *
+ * Scale: 6 titles + 5 labels + 5 paragraphs + 4 subheadings + docs
+ */
+
+:root {
+  --dash-font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.text-title-h1 {
+  font-family: var(--dash-font-family);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  letter-spacing: -0.56px;
+}
+
+.text-title-h2 {
+  font-family: var(--dash-font-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: -0.48px;
+}
+
+.text-title-h3 {
+  font-family: var(--dash-font-family);
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 48px;
+  letter-spacing: -0.4px;
+}
+
+.text-title-h4 {
+  font-family: var(--dash-font-family);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 40px;
+  letter-spacing: -0.16px;
+}
+
+.text-title-h5 {
+  font-family: var(--dash-font-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+}
+
+.text-title-h6 {
+  font-family: var(--dash-font-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.text-label-x-large {
+  font-family: var(--dash-font-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: -0.36px;
+}
+
+.text-label-large {
+  font-family: var(--dash-font-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.27px;
+}
+
+.text-label-medium {
+  font-family: var(--dash-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.176px;
+}
+
+.text-label-small {
+  font-family: var(--dash-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.084px;
+}
+
+.text-label-x-small {
+  font-family: var(--dash-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.text-paragraph-x-large {
+  font-family: var(--dash-font-family);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+  letter-spacing: -0.36px;
+}
+
+.text-paragraph-large {
+  font-family: var(--dash-font-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.27px;
+}
+
+.text-paragraph-medium {
+  font-family: var(--dash-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.176px;
+}
+
+.text-paragraph-small {
+  font-family: var(--dash-font-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.084px;
+}
+
+.text-paragraph-x-small {
+  font-family: var(--dash-font-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.text-subheading-medium {
+  font-family: var(--dash-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.96px;
+}
+
+.text-subheading-small {
+  font-family: var(--dash-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.84px;
+}
+
+.text-subheading-x-small {
+  font-family: var(--dash-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.48px;
+}
+
+.text-subheading-2x-small {
+  font-family: var(--dash-font-family);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 12px;
+  letter-spacing: 0.22px;
+}
+
+.text-docs {
+  font-family: var(--dash-font-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 32px;
+  letter-spacing: -0.27px;
+}

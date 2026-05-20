@@ -1,0 +1,36 @@
+/*
+ * Dash Foundation — Layer 0 Spacing + Radius
+ * Scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 + extras (Figma 1:1).
+ * Extracted from apps/docs/app/globals.css (2026-05-20). Additive.
+ */
+
+:root {
+  /* ------ Spacing ------ */
+  --spacing-0: 0px;
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-10: 10px;
+  --spacing-12: 12px;
+  --spacing-14: 14px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+
+  /* ------ Radius ------ */
+  --radius-0: 0px;
+  --radius-2: 2px;
+  --radius-4: 4px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-10: 10px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-24: 24px;
+  --radius-28: 28px;
+  --radius-full: 9999px;
+}

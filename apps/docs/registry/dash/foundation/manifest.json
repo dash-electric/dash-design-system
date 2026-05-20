@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "name": "@dash/foundation",
+  "version": "0.1.0",
+  "description": "Layer 0 — shared brand foundation for all Dash products + Trellis tenants. Tokens + voice + cardinal rules. LOCKED layer; changes require multi-product review.",
+  "locked": true,
+  "extractedFrom": [
+    "apps/docs/app/globals.css",
+    "apps/docs/registry/rules/dash-ai-rules.md",
+    "CLAUDE.md"
+  ],
+  "extractedAt": "2026-05-20",
+  "brand": {
+    "name": "Dash",
+    "primaryHex": "#5e2aac",
+    "primaryToken": "--dash-purple-500",
+    "fontFamily": "Plus Jakarta Sans"
+  },
+  "tokens": [
+    {
+      "category": "color",
+      "path": "tokens/colors.css",
+      "rampCount": 12,
+      "stopsPerRamp": 12,
+      "alphaStops": 3,
+      "stateTones": 10,
+      "stateSurfaces": 4,
+      "exports": [
+        "--dash-purple-500",
+        "--dash-slate-{0..950}",
+        "--dash-gray-{0..950}",
+        "--dash-red-{50..950}",
+        "--dash-orange-{50..950}",
+        "--dash-yellow-{50..950}",
+        "--dash-green-{50..950}",
+        "--dash-teal-{50..950}",
+        "--dash-sky-{50..950}",
+        "--dash-blue-{50..950}",
+        "--dash-purple-{50..950}",
+        "--dash-pink-{50..950}",
+        "--primary-base",
+        "--primary-dark",
+        "--primary-darker",
+        "--state-{error|warning|success|information|feature|highlighted|stable|verified|away|faded}-{dark|base|light|lighter}",
+        "--bg-{white-0|weak-50|strong-950|surface-800|soft-200|sub-300}",
+        "--text-{strong-950|sub-600|disabled-300|white-0|soft-400}",
+        "--icon-{sub-600|strong-950|soft-400|disabled-300|white-0}",
+        "--stroke-{soft-200|strong-950|white-0|sub-300}",
+        "--static-{white|black}",
+        "--overlay-overlay-{gray|slate}"
+      ]
+    },
+    {
+      "category": "typography",
+      "path": "tokens/typography.css",
+      "fontFamily": "Plus Jakarta Sans",
+      "scales": {
+        "title": 6,
+        "label": 5,
+        "paragraph": 5,
+        "subheading": 4,
+        "docs": 1
+      },
+      "exports": [
+        "--dash-font-family",
+        ".text-title-h{1..6}",
+        ".text-label-{x-large|large|medium|small|x-small}",
+        ".text-paragraph-{x-large|large|medium|small|x-small}",
+        ".text-subheading-{medium|small|x-small|2x-small}",
+        ".text-docs"
+      ]
+    },
+    {
+      "category": "spacing",
+      "path": "tokens/spacing.css",
+      "baseScale": [4, 8, 12, 16, 24, 32, 48],
+      "exports": [
+        "--spacing-{0|2|4|6|8|10|12|14|16|24|32|40|48}",
+        "--radius-{0|2|4|6|8|10|12|16|20|24|28|full}"
+      ]
+    },
+    {
+      "category": "motion",
+      "path": "tokens/motion.css",
+      "exports": [
+        "--duration-fast",
+        "--duration-base",
+        "--duration-slow",
+        "--ease-out",
+        "--ease-in-out"
+      ]
+    },
+    {
+      "category": "shadow",
+      "path": "tokens/shadow.css",
+      "exports": [
+        "--shadow-custom-shadows-large",
+        "--shadow-custom-shadows-medium",
+        "--shadow-custom-shadows-small",
+        "--shadow-custom-shadows-x-small",
+        "--shadow-tooltip"
+      ]
+    }
+  ],
+  "voice": {
+    "path": "voice/voice-rules.md",
+    "default": "formal-anda",
+    "summary": "Formal 'Anda' mitra-facing baseline; Layer 1+ may opt down for non-legal flows only."
+  },
+  "rules": {
+    "path": "rules/cardinal-rules.md",
+    "cardinalRules": [
+      "CR-1 Additive only",
+      "CR-2 Audit trail mandatory",
+      "CR-3 Banned libraries",
+      "CR-4 Voice formal Anda",
+      "CR-5 Token usage (no raw hex)",
+      "CR-6 File conventions (registry, not copy-paste)",
+      "CR-7 Cross-repo sync via dash sync",
+      "CR-8 Audit trail UI on disputable entities"
+    ]
+  },
+  "consumers": {
+    "internal": ["dash-ride", "dash-logistic", "dash-travel", "dash-marketplace"],
+    "external": ["trellis"]
+  },
+  "changeReviewPolicy": "Locked. Modifications require multi-product review + migration plan + ADR entry."
+}

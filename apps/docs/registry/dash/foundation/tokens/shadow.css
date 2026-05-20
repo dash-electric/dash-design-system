@@ -1,0 +1,12 @@
+/*
+ * Dash Foundation — Layer 0 Shadow
+ * Figma effect.* (5 ramps). Extracted from apps/docs/app/globals.css (2026-05-20). Additive.
+ */
+
+:root {
+  --shadow-custom-shadows-large: 0px 96px 96px -32px #3333330f, 0px 48px 48px -24px #3333330a, 0px 24px 24px -12px #3333330a, 0px 12px 12px -6px #3333330a, 0px 6px 6px -3px #3333330a, 0px 3px 3px -1.5px #33333305, 0px 1px 1px 0.5px #3333330a, 0px 0px 0px 1px #3333330a, inset 0px -1px 1px -0.5px #3333330f;
+  --shadow-custom-shadows-medium: 0px 48px 48px -24px #3333330a, 0px 24px 24px -12px #3333330a, 0px 12px 12px -6px #3333330a, 0px 6px 6px -3px #3333330a, 0px 3px 3px -1.5px #33333305, 0px 1px 1px 0.5px #3333330a, 0px 0px 0px 1px #3333330a, inset 0px -1px 1px -0.5px #3333330f;
+  --shadow-custom-shadows-small: 0px 1px 3px -1.5px #33333329, 0px 5px 5px -2.5px #33333314, 0px 12px 6px -6px #33333305, 0px 16px 8px -8px #33333303, 0px 0px 0px 1px #3333330a, inset 0px -0.5px 0.5px 0px #33333314;
+  --shadow-custom-shadows-x-small: 0px 1px 2px 0px #3333330a, 0px 2px 4px 0px #3333330a, 0px 4px 8px -2px #3333330f, 0px 0px 0px 1px #3333330a, inset 0px -1px 1px -0.5px #3333330f;
+  --shadow-tooltip: inset 0px -1px 1px -0.5px #1717170f, 0px 0px 0px 1px #ebebebff, 0px 48px 48px -24px #1717170a, 0px 24px 24px -12px #1717170a, 0px 12px 12px -6px #1717170a, 0px 6px 6px -3px #1717170a, 0px 3px 3px -1.5px #17171705, 0px 1px 1px 0.5px #1717170a;
+}
