@@ -306,11 +306,10 @@ export function PaymentWidget() {
     })
     const outcomes = await runOnce(config, harness.deps)
     expect(outcomes).toHaveLength(1)
-    // Still vendored from the pipeline's POV (validator passed), but PR is
-    // stubbed because GitHub rejected. Queue reflects vendored status — this
-    // is an open gap in the design worth flagging.
-    expect(outcomes[0].kind).toBe("vendored")
-    if (outcomes[0].kind === "vendored") {
+    // Per pipeline.ts post-Wave5-fix: stubbed PR auto-downgrades outcome
+    // to needs-review (no ghost "vendored without PR" rows in dashboard).
+    expect(outcomes[0].kind).toBe("needs-review")
+    if (outcomes[0].kind === "needs-review") {
       expect(outcomes[0].pr.stubbed).toBe(true)
       expect(outcomes[0].pr.url).toBeNull()
     }

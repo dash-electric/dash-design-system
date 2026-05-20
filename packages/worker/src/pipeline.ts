@@ -133,7 +133,19 @@ export async function processGap(
       config,
       deps.prCreator,
     )
-    outcome = { kind: "vendored", gap, score: validation.score, pr }
+    // GH 422 (or any failure that returns stubbed PR): downgrade outcome
+    // so dashboard ga punya ghost row "vendored without PR url".
+    if (pr.stubbed) {
+      outcome = {
+        kind: "needs-review",
+        gap,
+        score: validation.score,
+        pr,
+        reason: `PR creation failed (stubbed). Manual review required.`,
+      }
+    } else {
+      outcome = { kind: "vendored", gap, score: validation.score, pr }
+    }
   } else {
     const reason = !gatesPassed
       ? `validation gates failed (tc=${validation.typecheckPassed} test=${validation.testsPassed} audit=${validation.auditClean})`
