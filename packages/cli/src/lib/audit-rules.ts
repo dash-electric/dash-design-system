@@ -22,17 +22,25 @@ export type AuditRule = {
   /** Short human label printed in reports. */
   label: string
   /** Category bucket for the --only filter. */
-  category: "imports" | "style"
+  category: "imports" | "style" | "layer"
   /** Filename suffixes the rule applies to (e.g. [".tsx", ".ts"]). */
   fileExt: readonly string[]
   /** Pattern matched per-line; must be a fresh regex per call (no /g). */
   regex: RegExp
   /** If the file path contains any of these substrings, skip the rule. */
   allowlistPathContains?: readonly string[]
+  /**
+   * If set, the rule only applies to files whose normalized (posix) path
+   * contains at least one of these substrings. Used for the Layered
+   * Architecture rules that scope by directory (e.g. only Layer 1 ui/).
+   */
+  pathMustContain?: readonly string[]
   /** If set, only fail when the per-file match count exceeds the threshold. */
   warnAboveCount?: number
   /** Per-line extra filter: return true to count the match as drift. */
   lineFilter?: (line: string) => boolean
+  /** Marks this rule as a Layered Architecture compliance check. */
+  layerCompliance?: boolean
 }
 
 /**
@@ -125,7 +133,89 @@ export const AUDIT_RULES: readonly AuditRule[] = [
     // for dynamic transforms and not worth flagging.
     warnAboveCount: 10,
   },
+  // ─── Layered Architecture rules (L-1 … L-5; L-6/L-7 handled in audit.ts) ───
+  {
+    id: "L-1",
+    severity: "high",
+    label: "Layer 1 primitive references theme-specific accent var",
+    category: "layer",
+    fileExt: [".tsx", ".ts", ".css"],
+    regex: /--theme-accent-/,
+    pathMustContain: ["/registry/dash/ui/"],
+    layerCompliance: true,
+  },
+  {
+    id: "L-2",
+    severity: "high",
+    label: "Layer 2 theme imports Layer 1 source",
+    category: "layer",
+    fileExt: [".ts", ".tsx", ".js", ".jsx"],
+    // Match common ways themes might reach back into ui/:
+    //   from "@/registry/dash/ui"
+    //   from "@/registry/dash/ui/button"
+    //   from "../../ui"
+    //   from "../../ui/button"
+    regex: /from\s+['"](?:@\/registry\/dash\/ui(?:\/[^'"]*)?|(?:\.\.\/){1,5}ui(?:\/[^'"]*)?)['"]/,
+    pathMustContain: ["/registry/dash/themes/"],
+    layerCompliance: true,
+  },
+  {
+    id: "L-3",
+    severity: "high",
+    label: "Shared block imports product-specific block",
+    category: "layer",
+    fileExt: [".ts", ".tsx", ".js", ".jsx"],
+    regex: /from\s+['"](?:@\/registry\/dash\/blocks\/(?:ride|logistic)(?:\/[^'"]*)?|(?:\.\.\/){1,5}(?:ride|logistic)(?:\/[^'"]*)?)['"]/,
+    pathMustContain: ["/registry/dash/blocks/shared/"],
+    layerCompliance: true,
+  },
+  {
+    id: "L-4",
+    severity: "high",
+    label: "Cross-product block import (ride ↔ logistic drift)",
+    category: "layer",
+    fileExt: [".ts", ".tsx", ".js", ".jsx"],
+    // We rely on lineFilter + the file's own product to decide rival direction;
+    // the regex matches any import of a rival product, lineFilter inspects path
+    // via closure-free heuristic encoded in the line text alone is impossible —
+    // so we accept both directions here and the file scope (pathMustContain)
+    // narrows to product dirs. The cross-check (ride file importing logistic
+    // and vice-versa) is enforced via two rules below.
+    regex: /from\s+['"](?:@\/registry\/dash\/blocks\/logistic(?:\/[^'"]*)?|(?:\.\.\/){1,5}logistic(?:\/[^'"]*)?)['"]/,
+    pathMustContain: ["/registry/dash/blocks/ride/"],
+    layerCompliance: true,
+  },
+  {
+    id: "L-4b",
+    severity: "high",
+    label: "Cross-product block import (logistic ↔ ride drift)",
+    category: "layer",
+    fileExt: [".ts", ".tsx", ".js", ".jsx"],
+    regex: /from\s+['"](?:@\/registry\/dash\/blocks\/ride(?:\/[^'"]*)?|(?:\.\.\/){1,5}ride(?:\/[^'"]*)?)['"]/,
+    pathMustContain: ["/registry/dash/blocks/logistic/"],
+    layerCompliance: true,
+  },
+  {
+    id: "L-5",
+    severity: "medium",
+    label: "Theme example introduces raw hex outside theme tokens",
+    category: "layer",
+    fileExt: [".tsx", ".ts", ".md", ".mdx", ".css"],
+    regex: /#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6})\b/,
+    pathMustContain: ["/registry/dash/themes/"],
+    // Allow raw hex in token definitions (colors.css, tokens.css, tokens.ts).
+    allowlistPathContains: [
+      "/colors.css",
+      "/tokens.css",
+      "/tokens.ts",
+      "/manifest.json",
+    ],
+    layerCompliance: true,
+  },
 ] as const
 
-export const AUDIT_CATEGORIES = ["imports", "style"] as const
+export const AUDIT_CATEGORIES = ["imports", "style", "layer"] as const
 export type AuditCategory = (typeof AUDIT_CATEGORIES)[number]
+
+/** Rule IDs that participate in the Layered Architecture check set. */
+export const LAYER_RULE_IDS = ["L-1", "L-2", "L-3", "L-4", "L-4b", "L-5"] as const

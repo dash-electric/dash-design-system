@@ -18,6 +18,11 @@ import { runSync } from "./commands/sync.js"
 import { runDoctor } from "./commands/doctor.js"
 import { runAudit } from "./commands/audit.js"
 import { runGapReport, runGapSync } from "./commands/gap.js"
+import {
+  runFeedbackLog,
+  runFeedbackList,
+  runFeedbackSync,
+} from "./commands/feedback.js"
 
 const program = new Command()
 
@@ -33,12 +38,17 @@ program
   .option("--token <token>", "Registry Bearer token (saved to .env.local)")
   .option("--framework <framework>", "next-app | next-pages | vite | remix | astro | cra | react")
   .option("--registry-url <url>", "Override registry URL")
+  .option(
+    "--theme <theme>",
+    "Layer-2 tenant theme: ride | logistic | travel | marketplace | trellis-<id>",
+  )
   .action(async (opts) => {
     await runInit({
       yes: opts.yes,
       token: opts.token,
       framework: opts.framework,
       registryUrl: opts.registryUrl,
+      theme: opts.theme,
     })
   })
 
@@ -220,8 +230,10 @@ program
   .option("--path <dir>", "Scan a specific directory (defaults to cwd)")
   .option("--json", "Emit machine-readable JSON report")
   .option("--fail-on-error", "Exit 1 if any HIGH severity drift is found (CI mode)")
-  .option("--only <category>", "Limit to one rule category (imports | style) or a rule id")
+  .option("--only <category>", "Limit to one rule category (imports | style | layer) or a rule id")
   .option("--theme <name>", "Validate against a specific Layer-2 theme")
+  .option("--layer-only", "Run only Layered Architecture rules (L-1 … L-7)")
+  .option("--explain-layer", "Print the Layered Architecture rule summary and exit")
   .action((opts) => {
     runAudit({
       path: opts.path,
@@ -229,6 +241,8 @@ program
       failOnError: opts.failOnError,
       only: opts.only,
       theme: opts.theme,
+      layerOnly: opts.layerOnly,
+      explainLayer: opts.explainLayer,
     })
   })
 
@@ -276,6 +290,71 @@ gap
       json: opts.json,
       yes: opts.yes,
       nonInteractive: opts.nonInteractive,
+    })
+  })
+
+// ─────────────────────────────────────────────────────────────────────────
+// `dash feedback` — Wave 5 pilot signal capture
+// ─────────────────────────────────────────────────────────────────────────
+
+const feedback = program
+  .command("feedback")
+  .description("Capture Wave 5 pilot signal (bugs, UX, missing pieces, praise, drift)")
+
+feedback
+  .command("log [text]")
+  .description("Append a feedback entry to ~/.dash/feedback-log.jsonl")
+  .option("--category <name>", "bug | ux | missing | praise | drift | other", "other")
+  .option("--severity <level>", "low | med | high")
+  .option("--pilot <name>", "Pilot tag (default: wave-5)")
+  .option("--pe <name>", "PE name (auto-detected from git config user.name if omitted)")
+  .option("--command <cmd>", "Command that triggered the feedback (context)")
+  .option("--component <name>", "Component related to the feedback (context)")
+  .option("--repo <name>", "Repo where the feedback originated (context)")
+  .option("--json", "Read structured entry from stdin / emit JSON")
+  .action(async (text: string | undefined, opts) => {
+    await runFeedbackLog({
+      text,
+      category: opts.category,
+      severity: opts.severity,
+      pilot: opts.pilot,
+      pe: opts.pe,
+      command: opts.command,
+      component: opts.component,
+      repo: opts.repo,
+      json: opts.json,
+    })
+  })
+
+feedback
+  .command("list")
+  .description("Print local feedback entries as a table")
+  .option("--pilot <name>", "Filter by pilot tag")
+  .option("--pe <name>", "Filter by PE name")
+  .option("--category <name>", "Filter by category")
+  .option("--json", "Emit machine-readable JSON")
+  .action((opts) => {
+    runFeedbackList({
+      pilot: opts.pilot,
+      pe: opts.pe,
+      category: opts.category,
+      json: opts.json,
+    })
+  })
+
+feedback
+  .command("sync")
+  .description("Push pending feedback entries to the admin pilot API")
+  .option("--url <url>", "Dashboard base URL (defaults to DASH_DASHBOARD_URL env)")
+  .option("--token <token>", "Bearer token (defaults to DASH_CEO_TOKEN env)")
+  .option("--dry-run", "Print what would be sent without uploading")
+  .option("--json", "Emit machine-readable JSON")
+  .action(async (opts) => {
+    await runFeedbackSync({
+      url: opts.url,
+      token: opts.token,
+      dryRun: opts.dryRun,
+      json: opts.json,
     })
   })
 

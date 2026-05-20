@@ -16,6 +16,7 @@ import kleur from "kleur"
 import {
   AUDIT_CATEGORIES,
   AUDIT_RULES,
+  LAYER_RULE_IDS,
   type AuditCategory,
   type AuditRule,
   type AuditSeverity,
@@ -30,6 +31,10 @@ export type AuditOpts = {
   cwd?: string
   /** Layer-2 theme override (`ride` | `logistic` | …). Currently advisory. */
   theme?: string
+  /** Run only Layered Architecture rules (L-1 … L-7). */
+  layerOnly?: boolean
+  /** Print Layered Architecture summary and exit without scanning. */
+  explainLayer?: boolean
 }
 
 export type AuditFinding = {
@@ -113,9 +118,16 @@ function pathAllowlisted(file: string, rule: AuditRule): boolean {
   return rule.allowlistPathContains.some((tok) => normalized.includes(tok))
 }
 
+function pathMatchesScope(file: string, rule: AuditRule): boolean {
+  if (!rule.pathMustContain || rule.pathMustContain.length === 0) return true
+  const normalized = file.split(path.sep).join("/")
+  return rule.pathMustContain.some((tok) => normalized.includes(tok))
+}
+
 function ruleAppliesToFile(file: string, rule: AuditRule): boolean {
   if (!rule.fileExt.some((ext) => file.endsWith(ext))) return false
   if (pathAllowlisted(file, rule)) return false
+  if (!pathMatchesScope(file, rule)) return false
   return true
 }
 
@@ -183,9 +195,155 @@ function scanFile(
   return findings
 }
 
-function selectRules(only: string | undefined): readonly AuditRule[] {
-  if (!only) return AUDIT_RULES
-  return AUDIT_RULES.filter((r) => r.category === only || r.id === only)
+function selectRules(
+  only: string | undefined,
+  layerOnly: boolean | undefined,
+): readonly AuditRule[] {
+  let rules: readonly AuditRule[] = AUDIT_RULES
+  if (layerOnly) {
+    rules = rules.filter((r) => r.layerCompliance === true)
+  }
+  if (only) {
+    rules = rules.filter((r) => r.category === only || r.id === only)
+  }
+  return rules
+}
+
+/**
+ * Locate the canonical registry.json for L-6/L-7 metadata checks.
+ *
+ * Prefers `apps/docs/registry.json` (DS monorepo layout) and falls back to a
+ * top-level `registry.json` (consumer repos that vendored one). Returns null
+ * if neither exists — the layer-metadata checks then simply no-op so we don't
+ * false-positive on repos that just don't ship a registry.
+ */
+function findRegistryJson(scanRoot: string): string | null {
+  const candidates = [
+    path.join(scanRoot, "apps", "docs", "registry.json"),
+    path.join(scanRoot, "registry.json"),
+  ]
+  for (const c of candidates) {
+    try {
+      if (fs.statSync(c).isFile()) return c
+    } catch {
+      // try next
+    }
+  }
+  return null
+}
+
+type RegistryItem = {
+  name?: unknown
+  type?: unknown
+  // The task spec mandates `meta.layer` / `meta.theme` — we read those fields
+  // explicitly even if the current schema also surfaces `theme` at top level.
+  meta?: { layer?: unknown; theme?: unknown } | unknown
+  files?: Array<{ path?: unknown }> | unknown
+}
+
+function getMeta(item: RegistryItem): { layer?: unknown; theme?: unknown } {
+  if (item && typeof item.meta === "object" && item.meta !== null) {
+    return item.meta as { layer?: unknown; theme?: unknown }
+  }
+  return {}
+}
+
+/**
+ * L-6 + L-7: parse registry.json and validate per-block layer metadata.
+ *
+ *  - L-6: every block-typed entry must declare `meta.layer`.
+ *  - L-7: blocks whose source file lives under `blocks/<product>/` must have
+ *    `meta.theme === "<product>"` (mismatch = silent drift).
+ *
+ * Findings reference the registry.json file with a best-effort line lookup
+ * via the entry's `name` field, so editors can jump straight to the item.
+ */
+export function checkRegistryLayerMetadata(scanRoot: string): AuditFinding[] {
+  const registryPath = findRegistryJson(scanRoot)
+  if (!registryPath) return []
+
+  let raw: string
+  try {
+    raw = fs.readFileSync(registryPath, "utf-8")
+  } catch {
+    return []
+  }
+  let parsed: { items?: unknown } | unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    return []
+  }
+  if (!parsed || typeof parsed !== "object") return []
+  const items = (parsed as { items?: unknown }).items
+  if (!Array.isArray(items)) return []
+
+  const rawLines = raw.split(/\r?\n/)
+  const findLineForName = (name: string): number => {
+    const needle = `"name": "${name}"`
+    for (let i = 0; i < rawLines.length; i++) {
+      if (rawLines[i].includes(needle)) return i + 1
+    }
+    return 1
+  }
+
+  const rel = path.relative(scanRoot, registryPath) || path.basename(registryPath)
+  const findings: AuditFinding[] = []
+
+  // Product subdirs we recognize under blocks/.
+  const KNOWN_PRODUCTS = new Set(["ride", "logistic", "travel", "marketplace"])
+
+  for (const item of items as RegistryItem[]) {
+    if (!item || typeof item !== "object") continue
+    const type = item.type
+    if (typeof type !== "string" || !type.startsWith("registry:block")) continue
+    if (type !== "registry:block") continue
+
+    const name = typeof item.name === "string" ? item.name : "<unnamed>"
+    const meta = getMeta(item)
+    const line = findLineForName(name)
+
+    // L-6: meta.layer required.
+    if (meta.layer === undefined) {
+      findings.push({
+        severity: "high",
+        rule: "L-6",
+        label: "Block registry entry missing meta.layer",
+        file: rel,
+        line,
+        match: name,
+      })
+    }
+
+    // L-7: block file under blocks/<product>/ → meta.theme must match.
+    const files = Array.isArray(item.files) ? item.files : []
+    for (const f of files) {
+      if (!f || typeof f !== "object") continue
+      const fp = (f as { path?: unknown }).path
+      if (typeof fp !== "string") continue
+      // Normalize to posix for substring scan.
+      const norm = fp.split(path.sep).join("/")
+      const m = norm.match(/registry\/dash\/blocks\/([^/]+)\//)
+      if (!m) continue
+      const product = m[1]
+      if (!KNOWN_PRODUCTS.has(product)) continue
+      const themeVal = meta.theme
+      if (themeVal !== product) {
+        findings.push({
+          severity: "high",
+          rule: "L-7",
+          label: `Block in blocks/${product}/ has meta.theme="${
+            themeVal === undefined ? "missing" : String(themeVal)
+          }" (expected "${product}")`,
+          file: rel,
+          line,
+          match: name,
+        })
+      }
+    }
+  }
+
+  return findings
 }
 
 export function collectAudit(opts: AuditOpts = {}): AuditReport {
@@ -198,7 +356,7 @@ export function collectAudit(opts: AuditOpts = {}): AuditReport {
     ? path.resolve(opts.cwd ?? process.cwd(), opts.path)
     : scanRoot
 
-  const rules = selectRules(opts.only)
+  const rules = selectRules(opts.only, opts.layerOnly)
   const allExts = new Set<string>()
   for (const r of rules) for (const ext of r.fileExt) allExts.add(ext)
 
@@ -206,6 +364,27 @@ export function collectAudit(opts: AuditOpts = {}): AuditReport {
   const findings: AuditFinding[] = []
   for (const f of files) {
     findings.push(...scanFile(f, finalRoot, rules))
+  }
+
+  // L-6 / L-7 — registry.json metadata. Run when layer rules are in scope:
+  //  - default (no filters) → run
+  //  - --layer-only → run
+  //  - --only layer | --only L-6 | --only L-7 → run
+  //  - otherwise (e.g. --only imports) → skip
+  const registryCheckActive = (() => {
+    if (opts.layerOnly) return true
+    if (!opts.only) return true
+    if (opts.only === "layer") return true
+    if (opts.only === "L-6" || opts.only === "L-7") return true
+    return false
+  })()
+  if (registryCheckActive) {
+    const registryFindings = checkRegistryLayerMetadata(finalRoot).filter((f) => {
+      if (!opts.only) return true
+      if (opts.only === "layer") return true
+      return f.rule === opts.only
+    })
+    findings.push(...registryFindings)
   }
 
   const summary = findings.reduce(
@@ -293,12 +472,51 @@ function printPretty(report: AuditReport): void {
   console.log()
 }
 
+/**
+ * Print a short Layered Architecture summary. Mirrors the schema in
+ * LAYERED-ARCHITECTURE.md so PEs can recall the rules without leaving the
+ * terminal. Triggered by `dash audit --explain-layer`.
+ */
+function printLayerExplain(): void {
+  console.log()
+  console.log(kleur.bold().cyan("Dash Layered Architecture — audit rules"))
+  console.log()
+  console.log("  " + kleur.bold("Layer 0 — Brand Foundation") + " (RFC-gated)")
+  console.log("    Type ramp, spacing, radius, motion, semantic tokens, a11y floor.")
+  console.log()
+  console.log("  " + kleur.bold("Layer 1 — Common Primitives") + " (registry/dash/ui/)")
+  console.log("    Always consume Layer 0 tokens. No hard-coded theme accents.")
+  console.log()
+  console.log("  " + kleur.bold("Layer 2 — Product / Tenant Theme") + " (registry/dash/themes/<name>/)")
+  console.log("    Pure CSS + tokens + voice docs. Must NOT import Layer 1 source.")
+  console.log()
+  console.log("  " + kleur.bold("Layer 3 — Workflow Blocks") + " (registry/dash/blocks/{shared,ride,logistic,…}/)")
+  console.log("    Shared blocks upstream of product blocks. No cross-product imports.")
+  console.log()
+  console.log(kleur.bold("Audit rules"))
+  console.log(`  ${kleur.red("L-1")}  Layer 1 primitive references --theme-accent-* var`)
+  console.log(`  ${kleur.red("L-2")}  Layer 2 theme imports from registry/dash/ui/`)
+  console.log(`  ${kleur.red("L-3")}  Shared block imports product-specific block`)
+  console.log(`  ${kleur.red("L-4")}  Cross-product block import (ride ↔ logistic)`)
+  console.log(`  ${kleur.yellow("L-5")}  Theme example introduces raw hex outside theme tokens`)
+  console.log(`  ${kleur.red("L-6")}  Block registry entry missing meta.layer`)
+  console.log(`  ${kleur.red("L-7")}  Block file location mismatches meta.theme`)
+  console.log()
+}
+
 export function runAudit(opts: AuditOpts): void {
+  if (opts.explainLayer) {
+    printLayerExplain()
+    return
+  }
+
   // Validate --only early so users get a useful error.
   if (opts.only) {
     const known = new Set<string>([
       ...AUDIT_CATEGORIES,
       ...AUDIT_RULES.map((r) => r.id),
+      "L-6",
+      "L-7",
     ])
     if (!known.has(opts.only)) {
       const choices = [...AUDIT_CATEGORIES].join(", ")
