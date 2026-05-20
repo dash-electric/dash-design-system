@@ -1,7 +1,7 @@
 export type NavItem = {
   title: string
   href: string
-  status?: "shipped" | "wip" | "planned"
+  status?: "shipped" | "wip" | "planned" | "new"
   /** Optional 1-line tagline for overview-page cards. */
   blurb?: string
 }
@@ -44,6 +44,22 @@ export const navSections: NavSection[] = [
           { title: "Dash CLI",       href: "/docs/tools/cli", status: "shipped" },
           { title: "AI Rules",       href: "/docs/tools/ai-rules", status: "shipped" },
           { title: "Changelog",      href: "/docs/changelog", status: "shipped" },
+        ],
+      },
+    ],
+  },
+
+  /* ----- Architecture (platform layering + theme contract + scoreboard) */
+  {
+    title: "Architecture",
+    groups: [
+      {
+        title: "",
+        items: [
+          { title: "Layered Architecture", href: "/docs/architecture/layered", status: "shipped" },
+          { title: "Theme Gallery",        href: "/docs/architecture/themes", status: "shipped" },
+          { title: "Theme Studio",         href: "/docs/architecture/theme-studio", status: "new" },
+          { title: "Metrics",              href: "/docs/architecture/metrics", status: "new" },
         ],
       },
     ],
