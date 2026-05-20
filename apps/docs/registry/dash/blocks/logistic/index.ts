@@ -1,14 +1,25 @@
 /**
  * Logistic Workflow Blocks — Layer 3, Logistic-product-specific.
  *
- * Placeholder for Dash Logistic launch. No members yet.
+ * Namespace re-exports for theme-scoped discovery. Canonical metadata lives
+ * in `apps/docs/registry.json` under each item's `theme: "logistic"` field.
  *
- * When the first block lands, add `theme: "logistic"` + `products: ["logistic"]`
- * to its `registry.json` entry, then re-export below and append to
- * `LOGISTIC_BLOCK_NAMES`.
+ * Usage:
+ *   import { RoutePlanner } from "@/registry/dash/blocks/logistic"
+ *
+ * Filter by theme programmatically via `LOGISTIC_BLOCK_NAMES` against the
+ * registry manifest.
  */
 
+export * from "./route-planner"
+export * from "./batch-dispatch-grid"
+export * from "./package-tracking-timeline"
+
 /** Block names in this theme — useful for filtering against registry.json. */
-export const LOGISTIC_BLOCK_NAMES = [] as const
+export const LOGISTIC_BLOCK_NAMES = [
+  "route-planner",
+  "batch-dispatch-grid",
+  "package-tracking-timeline",
+] as const
 
 export type LogisticBlockName = (typeof LOGISTIC_BLOCK_NAMES)[number]
