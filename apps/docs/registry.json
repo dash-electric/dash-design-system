@@ -2790,6 +2790,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "base-theme",
       "type": "registry:theme",
+      "meta": { "theme": "base-theme", "layer": 2 },
       "title": "Dash Base Theme",
       "description": "Full Dash token system. Semantic tier (bg/text/stroke/icon \u00d7 strong/sub/soft/disabled/weak/white) + state colors (success/warning/error/information/feature/away/faded \u00d7 dark/base/light/lighter) + 11 color scales (gray/slate/blue/orange/red/green/yellow/purple/sky/pink/teal) + shadow + radius + motion tokens. Writes consumer's app/globals.css.",
       "categories": [
@@ -2811,6 +2812,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "login-01",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Login 01",
       "description": "Classic email + password centered with remember-me and forgot-link.",
       "categories": [
@@ -2838,6 +2840,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "login-02",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Login 02",
       "description": "Email + password with social SSO row (Google + Apple) above the form.",
       "categories": [
@@ -2866,6 +2869,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "login-03",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Login 03",
       "description": "Split-screen with branded hero panel + testimonial on the left.",
       "categories": [
@@ -2893,6 +2897,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "signup-01",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Signup 01",
       "description": "Name + email + phone + password centered form with T&C checkbox.",
       "categories": [
@@ -2920,6 +2925,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "signup-02",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Signup 02",
       "description": "Social SSO row above email signup form.",
       "categories": [
@@ -2948,6 +2954,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "signup-03",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Signup 03",
       "description": "Split-screen with feature bullets in left hero panel.",
       "categories": [
@@ -2974,6 +2981,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "forgot-password-01",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Forgot Password 01",
       "description": "Email-only reset request form with back-to-login link.",
       "categories": [
@@ -3000,6 +3008,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "verification-otp",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Verification OTP",
       "description": "6-digit OTP via InputOTP with resend timer.",
       "categories": [
@@ -3074,6 +3083,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "auth-register-aurora",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Auth Register Aurora",
       "description": "source Aurora \u2014 brand mark \u2192 single Google SSO \u2192 OR divider \u2192 first/last/email/password form \u2192 FancyButton CTA \u2192 footer link.",
       "categories": [
@@ -3106,6 +3116,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "auth-register-solaris",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Auth Register Solaris",
       "description": "source Solaris \u2014 brand mark \u2192 2 stacked SSO (Google + Apple) \u2192 OR divider \u2192 single email \u2192 FancyButton CTA \u2192 footer.",
       "categories": [
@@ -3137,6 +3148,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "auth-login-phoenix",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Auth Login Phoenix",
       "description": "source Phoenix \u2014 brand mark \u2192 email + password (inline forgot) \u2192 FancyButton CTA \u2192 OR divider \u2192 2 side-by-side SSO \u2192 footer.",
       "categories": [
@@ -3169,6 +3181,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "auth-login-apex",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Auth Login Apex",
       "description": "source Apex \u2014 brand mark \u2192 3 side-by-side SSO (Google/Apple/Microsoft) \u2192 OR divider \u2192 email + password \u2192 remember + forgot \u2192 FancyButton CTA \u2192 footer.",
       "categories": [
@@ -3202,6 +3215,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "auth-login-key",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Auth Login (Key icon)",
       "description": "source Login Key \u2014 96\u00d796 key-icon header \u2192 email + password \u2192 remember + forgot \u2192 FancyButton CTA. Minimal no-SSO variant.",
       "categories": [
@@ -3234,6 +3248,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "auth-register-key",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Auth Register (Key icon)",
       "description": "source Register Key \u2014 96\u00d796 key-icon header \u2192 first/last/email/password \u2192 FancyButton CTA \u2192 T&C / privacy legal copy.",
       "categories": [
@@ -3265,6 +3280,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "auth-reset-password-key",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Auth Reset Password (Key icon)",
       "description": "source Reset Password Key \u2014 96\u00d796 key-icon header \u2192 email \u2192 FancyButton CTA \u2192 support link.",
       "categories": [
@@ -3295,6 +3311,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "auth-verification-key",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Auth Verification (Key icon)",
       "description": "source Verification Key \u2014 96\u00d796 shield-icon header \u2192 4-digit OTP grid \u2192 FancyButton CTA (disabled until complete) \u2192 resend link.",
       "categories": [
@@ -3326,6 +3343,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "transactions-table",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Transactions Table",
       "description": "Filter row + transaction rows with status badge + amount + Pagination.",
       "categories": [
@@ -3354,6 +3372,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "team-grid",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Team Grid",
       "description": "Avatar grid with role + tribe tags + live status indicator.",
       "categories": [
@@ -3382,6 +3401,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "orders-table",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Orders Table",
       "description": "Dispatch table with bulk-select row + status filter + multi-action bar.",
       "categories": [
@@ -3409,6 +3429,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "products-grid",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Products Grid",
       "description": "Dispatch pool cards with stock progress + status badge + tribe accent.",
       "categories": [
@@ -3436,6 +3457,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "stat-card-grid",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Stat Card Grid",
       "description": "3-4 KPI tiles in responsive grid with optional trend deltas.",
       "categories": [
@@ -3460,6 +3482,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "empty-state-collection",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Empty State Collection",
       "description": "4 empty-state patterns: inbox / search / filter / 404.",
       "categories": [
@@ -3488,6 +3511,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "analytics-grid",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Analytics Grid",
       "description": "KPI strip + Chart row (Area + Bar) \u2014 2-column on desktop.",
       "categories": [
@@ -3516,6 +3540,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "audit-history-table",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Audit History Table",
       "description": "Render edit history for any user-editable legal/financial field. Sortable, filterable, paginated. Per Dash audit trail rule.",
       "categories": [
@@ -3548,6 +3573,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "multi-stage-approval",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Multi-Stage Approval",
       "description": "N-stage approval workflow with sequential gating, role-based action lock, and rollback-or-dead-end rejection. Use for Maintenance, Repossession, Mitra-reinstate, payment-adjustment.",
       "categories": [
@@ -3580,6 +3606,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "repossession-action-sheet",
       "type": "registry:block",
+      "meta": { "product": "ride", "theme": "ride", "layer": 3 },
       "title": "Repossession Action Sheet",
       "description": "Mobile-first bottom drawer for the 7-state repossession workflow (OPEN/IN_PROGRESS/FOUND/POTENTIAL_LOSS/PENDING_APPROVAL/WRITTEN_OFF/CLOSED). Role-aware actions, required note + optional photos + GPS capture, confirm dialog for irreversible transitions, audit-ready payload.",
       "categories": [
@@ -3615,6 +3642,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "activity-timeline",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Activity Timeline",
       "description": "Vertical timeline with icon + actor + action + meta tag.",
       "categories": [
@@ -3643,6 +3671,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "delivery-status-timeline",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Delivery Status Timeline",
       "description": "Visual timeline for 26-status ts-delivery-service state machine — category-coded badges, current-status pulse, expandable middle, id/en locale.",
       "categories": [
@@ -3674,6 +3703,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "my-cards-stack",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "My Cards Stack",
       "description": "Banking-card visualization for mitra payout methods, click to swap.",
       "categories": [
@@ -3699,6 +3729,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "settings-profile",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Settings \u2014 Profile",
       "description": "Avatar upload + name/email/phone/bio fields + Save/Cancel footer.",
       "categories": [
@@ -3728,6 +3759,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "settings-notifications",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Settings \u2014 Notifications",
       "description": "Switch matrix (email \u00d7 push \u00d7 SMS) per event type + DND toggle.",
       "categories": [
@@ -3752,6 +3784,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "settings-integrations",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Settings \u2014 Integrations",
       "description": "Cards grid (Slack/WA/Email/BCA/GitHub/BMKG) with connect/disconnect button.",
       "categories": [
@@ -3778,6 +3811,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "settings-team",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Settings \u2014 Team",
       "description": "Team member list with role Select + Invite button.",
       "categories": [
@@ -3807,6 +3841,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "settings-privacy-security",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Settings \u2014 Privacy & Security",
       "description": "2FA toggle + active sessions list + password change form.",
       "categories": [
@@ -3936,6 +3971,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "badge-upvote-card",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Badge — Week's Top Contributor",
       "description": "Ranked contributor list with avatar rows and upvote button (filled when upvoted, stroke otherwise). Ported from Figma Badge [Examples] :: id 2939:19644.",
       "categories": ["block", "example", "badge"],
@@ -3947,6 +3983,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "badge-profile-account",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Badge — Profile Account Dropdown",
       "description": "User account dropdown with Badge plan indicator (FREE/PRO/TEAM/ENTERPRISE), keyboard shortcut, Dark Mode switch row, and destructive logout. Ported from Figma Badge [Examples] :: id 2950:5586.",
       "categories": ["block", "example", "badge"],
@@ -3958,6 +3995,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "avatar-recipient-selection",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Avatar — Saved Recipients",
       "description": "Transfer-recipient selection card with avatar rows, account number, keyboard shortcut affordance, and primary New Recipient CTA. Ported from Figma Avatar :: Examples id 2937:14646.",
       "categories": ["block", "example", "avatar"],
@@ -3969,6 +4007,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "button-export-settings",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Button — Export Settings Modal",
       "description": "Settings modal with inline upsell card (NEW Badge + Upgrade CTA), Cancel + Export footer. Ported from Figma Button [Examples] :: id 167874:113157.",
       "categories": ["block", "example", "button"],
@@ -3980,6 +4019,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "button-email-verification",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Button — Email Verification Modal",
       "description": "Verification dialog with header icon, 6-slot OTP input, two link-style buttons (Enter code manually / Resend the link), and primary Verify CTA. Ported from Figma Button [Examples] :: id 167874:113174.",
       "categories": ["block", "example", "button"],
@@ -3991,6 +4031,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "hr-widgets",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "HR Widgets",
       "description": "Six HR Management dashboard widgets ported from Figma Widgets [HR Management] [1.1]: ScheduleWidget, TimeOffWidget, EmployeeSpotlightWidget, TimeTrackerWidget, NotesWidget, StatusTrackerWidget. Each is a card-wrapped composition built on Dash primitives (Card / Avatar / Badge / ProgressBar / IconButton).",
       "categories": [
@@ -4022,6 +4063,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "finance-widgets",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Finance Widgets",
       "description": "Six Finance & Banking dashboard widgets ported from Figma Widgets [Finance & Banking] [1.1]: MyCardsWidget, RecentTransactionsWidget, TotalBalanceWidget, QuickTransferWidget, BudgetOverviewWidget, MySubscriptionsWidget. Card-wrapped compositions on Dash primitives with inline sparkline + bar chart fallback (no external chart lib).",
       "categories": [
@@ -4052,6 +4094,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "page-header",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Page Header",
       "description": "Backoffice page-level title block with optional leading slot (avatar / icon / brand / company), search + notification topbar icons, primary controls slot, and action button row. Figma parity Headers [1.1] :: Page Header.",
       "categories": [
@@ -4081,6 +4124,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "section-header",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Section Header",
       "description": "Content-section heading with optional leading slot, inline title compact button (dropdown chevron), search icon, and action button row. Figma parity Headers [1.1] :: Section Header.",
       "categories": [
@@ -4296,6 +4340,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "use-code-field",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Use Code Field",
       "description": "Single-purpose 6-digit alphanumeric use-code field for delivery dispatch. Auto-generate via genUseCode(), regenerate button, copy-to-clipboard, RHF-wired. Works standalone or nested inside useFieldArray rows.",
       "categories": ["pattern", "form"],
@@ -4307,6 +4352,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "multi-item-form",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Multi-Item Form",
       "description": "Reference pattern: react-hook-form useFieldArray + per-row card + batch submit. Anchors the canonical shape for refactors like 'single-order to multi-order' delivery creation.",
       "categories": ["pattern", "form"],
@@ -4318,6 +4364,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "bulk-submit",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Bulk Submit",
       "description": "Pattern for batch endpoint dispatch. Per-row status (idle/pending/success/error), optimistic UI with rollback on individual failure, per-row retry, end-of-run summary toast.",
       "categories": ["pattern", "form"],
@@ -4329,6 +4376,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "bulk-upload-with-status",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Bulk Upload with Per-File Status",
       "description": "N-file batch upload, parallel with concurrency limit, per-file status + retry, summary toast. Common: delivery proof batch, KYC docs, vehicle photos.",
       "categories": ["block", "form"],
@@ -4342,6 +4390,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "image-editor-with-audit",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Image Editor with Audit Trail",
       "description": "Canvas-based crop + rotate for proof images. Audit trail built-in. POD/POP/KYC/vehicle-condition support. No external image lib.",
       "categories": ["block", "composite"],
@@ -4355,6 +4404,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "inline-edit-with-audit",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Inline Edit with Audit Trail",
       "description": "Click-to-edit single-field block. Save/cancel + optional reason, validation, char cap, custom read renderer. Audit payload mandatory. For mitra display name, vehicle description, outlet contact, etc.",
       "categories": ["block", "form"],
@@ -4368,6 +4418,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "mitra-dispute-flow",
       "type": "registry:block",
+      "meta": { "product": "ride", "theme": "ride", "layer": 3 },
       "title": "Mitra Dispute Flow",
       "description": "Mitra (driver) dispute submission flow. Evidence display + reason picker + detail + supervisor escalation + confirm modal + audit-trail payload. Delivery/payment/suspension/maintenance.",
       "categories": ["block", "composite"],
@@ -4426,6 +4477,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "proof-image-viewer",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Proof Image Viewer",
       "description": "Display proof image (POD/POP/KYC/vehicle-condition) with native zoom + pan + side-by-side compare (original vs edited). Audit history cycling, geolocation map link, keyboard a11y. No external zoom lib.",
       "categories": ["block", "composite"],
@@ -4439,6 +4491,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "incident-form-with-attach",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Incident Form with Attachments",
       "description": "Incident report form (vehicle accident, mitra injury, customer complaint) with photo/PDF attachments. Role-gated type dropdown, formal 'Anda' voice for mitra-facing, audit-ready payload, OPEN-state entry to incident lifecycle.",
       "categories": ["block", "form"],
@@ -4452,6 +4505,7 @@
       "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "payment-receipt-edit",
       "type": "registry:block",
+      "meta": { "theme": "shared", "layer": 3 },
       "title": "Payment Receipt Edit",
       "description": "Edit payment amount on existing receipt/transaction with mandatory audit + Fleet Manager approver gate above Rp 500.000 diff. IDR-cents internally, formatted-as-you-type input, before/after confirm modal. High-stakes financial field.",
       "categories": ["block", "form"],
