@@ -17,7 +17,7 @@ import { runInfo } from "./commands/info.js"
 import { runSync } from "./commands/sync.js"
 import { runDoctor } from "./commands/doctor.js"
 import { runAudit } from "./commands/audit.js"
-import { runGapReport } from "./commands/gap.js"
+import { runGapReport, runGapSync } from "./commands/gap.js"
 
 const program = new Command()
 
@@ -220,6 +220,22 @@ program
 const gap = program
   .command("gap")
   .description("Log Dash design-system coverage gaps for the DS maintainer queue")
+
+gap
+  .command("sync")
+  .description("Push pending local gap entries to the dashboard API")
+  .option("--url <url>", "Dashboard base URL (defaults to DASH_DASHBOARD_URL env)")
+  .option("--token <token>", "Bearer token (defaults to DASH_CEO_TOKEN env)")
+  .option("--dry-run", "Print what would be sent without uploading")
+  .option("--json", "Emit machine-readable JSON")
+  .action(async (opts) => {
+    await runGapSync({
+      url: opts.url,
+      token: opts.token,
+      dryRun: opts.dryRun,
+      json: opts.json,
+    })
+  })
 
 gap
   .command("report [description]")

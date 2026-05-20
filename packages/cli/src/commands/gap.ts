@@ -24,6 +24,7 @@ import {
   clearQueue,
   defaultQueuePath,
   readQueue,
+  writeQueue,
   type GapEntry,
   type GapSeverity,
 } from "../lib/gap-queue.js"
@@ -384,6 +385,148 @@ export async function runGapReport(opts: GapReportOpts): Promise<void> {
   if (opts.clear) return runClearMode(opts)
   if (typeof opts.export === "string") return runExportMode(opts)
   return runLogMode(opts)
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// `dash gap sync` — push local queue to dashboard API
+// ─────────────────────────────────────────────────────────────────────────
+
+export type GapSyncOpts = {
+  /** Override dashboard URL. Defaults to DASH_DASHBOARD_URL env. */
+  url?: string
+  /** Bearer token. Defaults to DASH_CEO_TOKEN env. */
+  token?: string
+  /** Skip the upload step and just print what would be sent. */
+  dryRun?: boolean
+  /** JSON output (for scripted use). */
+  json?: boolean
+  /** Override queue path (tests). */
+  queuePath?: string
+}
+
+/**
+ * POST pending entries to `<url>/api/dashboard/requests` in a single bulk call.
+ *
+ * On success, flips each entry's local status from "pending" to "synced" so
+ * subsequent runs are no-ops. Already-synced entries are skipped.
+ *
+ * The dashboard endpoint is idempotent on `id` — replaying a sync that
+ * partially succeeded is safe.
+ */
+export async function runGapSync(opts: GapSyncOpts): Promise<void> {
+  const queuePath = opts.queuePath ?? defaultQueuePath()
+  const url = opts.url ?? process.env.DASH_DASHBOARD_URL
+  const token = opts.token ?? process.env.DASH_CEO_TOKEN
+
+  if (!url) {
+    console.error(
+      kleur.red(
+        "✗ dashboard URL not configured. Set --url or DASH_DASHBOARD_URL.",
+      ),
+    )
+    process.exitCode = 2
+    return
+  }
+  if (!token) {
+    console.error(
+      kleur.red("✗ bearer token not configured. Set --token or DASH_CEO_TOKEN."),
+    )
+    process.exitCode = 2
+    return
+  }
+
+  const queue = readQueue(queuePath)
+  const pending = queue.entries.filter((e) => e.status === "pending")
+
+  if (pending.length === 0) {
+    if (opts.json) {
+      process.stdout.write(
+        JSON.stringify({ synced: 0, skipped: queue.entries.length }, null, 2) +
+          "\n",
+      )
+      return
+    }
+    console.log(
+      kleur.dim(
+        `Nothing to sync (${queue.entries.length} total, all already synced).`,
+      ),
+    )
+    return
+  }
+
+  if (opts.dryRun) {
+    if (opts.json) {
+      process.stdout.write(
+        JSON.stringify({ wouldSync: pending.length, entries: pending }, null, 2) +
+          "\n",
+      )
+      return
+    }
+    console.log(kleur.dim(`Would sync ${pending.length} entries to ${url}`))
+    for (const e of pending) {
+      console.log(`  ${shortId(e.id)}  ${e.severity}  ${truncate(e.description, 60)}`)
+    }
+    return
+  }
+
+  const endpoint = url.replace(/\/$/, "") + "/api/dashboard/requests"
+  let res: Response
+  try {
+    res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ entries: pending }),
+    })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error(kleur.red(`✗ network error contacting ${endpoint}: ${msg}`))
+    process.exitCode = 1
+    return
+  }
+
+  if (!res.ok) {
+    let detail = ""
+    try {
+      detail = await res.text()
+    } catch {
+      /* ignore */
+    }
+    if (res.status === 409 || res.status === 200) {
+      // Conflict (entries already exist server-side) is tolerable — bump
+      // statuses locally so we don't retry forever.
+      console.log(
+        kleur.yellow(
+          `! server reported conflict (${res.status}). Marking local entries synced anyway.`,
+        ),
+      )
+    } else {
+      console.error(
+        kleur.red(`✗ dashboard rejected sync (${res.status}): ${detail.slice(0, 200)}`),
+      )
+      process.exitCode = 1
+      return
+    }
+  }
+
+  // Mark local entries as synced.
+  const syncedIds = new Set(pending.map((e) => e.id))
+  for (const e of queue.entries) {
+    if (syncedIds.has(e.id)) e.status = "synced"
+  }
+  writeQueue(queue, queuePath)
+
+  if (opts.json) {
+    process.stdout.write(
+      JSON.stringify({ synced: pending.length, endpoint }, null, 2) + "\n",
+    )
+    return
+  }
+  console.log(
+    kleur.green(`✓ Synced ${pending.length} gap${pending.length === 1 ? "" : "s"} to ${endpoint}`),
+  )
 }
 
 /** Re-export for the dispatcher in index.ts. */
