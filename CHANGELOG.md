@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-20 (Phase 0 + Wave 1-4 — Governance, AI rules, workflow library)
+
+### Added
+- **Rules sections (4 new)** in `dash-ai-rules.md`: Audit Trail, External Library Policy, Cross-Repo Coupling, Update Propagation (`c90d58b`).
+- **Skill v2** — priority-pinned context blocks + per-repo scoping, compressed rules default (`637dbfb`).
+- **30 AI validation fixtures** covering banned-import refusals, audit-trail prompts, voice/locale, envelope shape, useCode case sensitivity + execution report (`b7cd699`).
+- **`dash audit` + `dash doctor` CLI** — banned-import scan, repo health check, with tests (`e0540f2`).
+- **`dash gap report`** standalone command — Wave 4 Agent M (`55ac4ab`).
+- **`dash gap sync`** + dashboard API endpoints `/api/dashboard/requests` — Wave 4 Agent L (`62e3c9a`).
+- **CEO-only gap request review UI** at `/dashboard/requests` — Wave 4 Agent K (`f2b35c4`).
+- **`@dash/worker` package** — Hermes autonomous generator + `/health` endpoint + deployment configs — Wave 4 Agent N (`f0aa15c`, `78dc40d`).
+- **6 scaffold templates** — image-action, bulk-action, table-with-filter, form-with-audit, multi-stage, inline-edit — Wave 4 Agent O (`c1454df`).
+- **11 workflow blocks**:
+  - `image-editor-with-audit` — Canvas crop+rotate with audit (`c5eaa0a`)
+  - `audit-history-table` — render edit history for any field (`7b4bfca`)
+  - `bulk-upload-with-status` — N-file batch upload + retry (`a981515`)
+  - `multi-stage-approval` — N-approver workflow (`98bda4c`)
+  - `mitra-dispute-flow` — formal Anda voice dispute submit (`186aa01`)
+  - `proof-image-viewer` — zoom + side-by-side compare (`45c9305`)
+  - `delivery-status-timeline` — 26-status visual timeline (`890c45b`)
+  - `incident-form-with-attach` — role-gated incident report (`d8d992d`)
+  - `repossession-action-sheet` — 7-state mobile workflow (`6dae79f`)
+  - `payment-receipt-edit` — IDR amount edit with multi-approver (`7ccd20a`)
+  - `inline-edit-with-audit` — click-to-edit with optional reason (`2688ee2`)
+- **`dash-prd` skill** — internal PRD skill, BSD-3 fork from NatPRD, vendored at `skills/dash-prd/` (`bfd2f82`).
+- **Component page schema spec + audit + DocsStep primitive** (`b810b81`).
+- **Repo `CLAUDE.md`** — auto-context for Claude Code sessions (`f8b0495`).
+- **Master Execution Plan + Kill Criteria + Drift Baseline + self-critique** governance docs (`b0cdd52`, `c90d58b`, `86ad30f`).
+
+### Changed
+- Dash CLI: v0.4.0 → **v0.5.0** (audit, doctor, gap report, gap sync).
+- **Dash Purple canonical hex locked to `#5e2aac`** (`c90d58b`). Prior `#7C4FC4` references corrected.
+- **Component page schema unified across 97 pages** — `status` pill + `kind` props codemod (`3c55e47`).
+
+### Fixed
+- **`form` block rewritten** vanilla `useState` — RHF + zod removed to match Dash ban (`a05e463`).
+- **`multi-item-form` + `use-code-field` patterns** — banned RHF/zod imports removed (`03efbc0`).
+- **Maintenance state machine** corrected 10 → 9 states (verified against ts-fleet) (`c90d58b`).
+- **`react-fleet` "RHF outlier" myth** — stale `package.json` deps only, no runtime usage; rule note corrected (`c90d58b`).
+- **Telemetry audit log** now writes JSONL so `/admin/usage` dashboard updates correctly (`abf47e2`).
+
+### Removed
+- `/docs/forms/react-hook-form` + `/docs/forms/tanstack-form` doc pages — contradicted the ban (`3ac8a2b`).
+
 ## [0.2.0] - 2026-05-20 (Wave 6 — Adoption hardening)
 
 ### Added
@@ -61,6 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **BE envelope inconsistency** (1): 3 string vs 2 numeric envelopes across 5 BE services, `BaseApiResponse<T>` class name shared between nest-express (numeric) and nest-fleet (string).
   - **Schema notes** (3): `m_provider` multiple secret patterns (`client_secret`/`client_key` deprecated + `auth_key`/`auth_value` + `ProviderAPIKey` new) · typo `DelliveryTypes.ts` filename (should be `DeliveryTypes.ts`) · `sandbox-dash-electric` deprecating w/o enumerated dependent repos.
 
-[Unreleased]: https://github.com/irfanputra-design/dash/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/irfanputra-design/dash/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/irfanputra-design/dash/releases/tag/v0.5.0
 [0.2.0]: https://github.com/irfanputra-design/dash/releases/tag/v0.2.0
 [0.1.0]: https://github.com/irfanputra-design/dash/releases/tag/v0.1.0
