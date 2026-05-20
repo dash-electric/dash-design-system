@@ -6,6 +6,24 @@
 
 Dash Design System — internal sovereign DS for 10+ PE at Dash (PT Dash Elektrik Indonesia). Custom CLI + MCP + Skill stack. Distributes 214+ registry items (atoms, blocks, templates, patterns) to consumer Dash repos via `dash add <name>`.
 
+## Layered Architecture
+
+Dash is a **platform**, not a single product. The DS is structured as 4 layers so Ride, Logistic, Travel, Marketplace, and external Trellis tenants can share one foundation without forking.
+
+- **Layer 0 — Brand Foundation** (shared, locked): type ramp, spacing, radius, motion, semantic tokens, a11y floor. Changing Layer 0 requires a Head of Design RFC.
+- **Layer 1 — Common Primitives** (shared, atom-level): ~76 components (Button, Input, Modal, …). Always consume Layer 0 tokens, never hard-code accent hex. CI-enforced by `dash audit`.
+- **Layer 2 — Product / Tenant Theme** (divergent, ~30 lines): accent tokens, voice register, density, optional radius overrides. The layer that bends. Themes today: `ride`, `logistic`, `travel`, `marketplace`, `trellis-{tenantId}`.
+- **Layer 3 — Workflow Blocks** (divergent, product-owned): composites like `ride-dispatch-board`, `logistic-route-planner`. Registered with a `theme:` field; new blocks default to `theme: "shared"` unless declared product-specific.
+
+**Decision tree when adding a component:**
+
+1. Atom reusable across products (Button, Input, …) → Layer 1 under `registry/dash/ui/`, `theme: "shared"`.
+2. Composite tied to one product's workflow → Layer 3 under `registry/dash/blocks/<product>/`, `theme: "<product>"`.
+3. Brand/voice/density tweak → Layer 2 manifest in `registry/dash/themes/`. Do NOT touch Layer 1 source.
+4. Touching type ramp, spacing, motion, or token tier → Layer 0 RFC required. Stop and ask.
+
+Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showcase: `/docs/architecture/layered` and `/docs/architecture/themes` on the docs site.
+
 ## Cardinal rules
 
 1. **Existing Dash production code is NEVER modified.** This repo is purely ADDITIVE. Generate new patterns + components here; consumer repos pull via CLI.
@@ -18,6 +36,7 @@ Dash Design System — internal sovereign DS for 10+ PE at Dash (PT Dash Elektri
 
 | Need | File |
 |------|------|
+| Layered Architecture spec | `LAYERED-ARCHITECTURE.md` |
 | Per-repo stack mandates | `apps/docs/registry/rules/dash-ai-rules.md` |
 | Domain entities, table names, state machines | `apps/docs/registry/rules/dash-domain-glossary.md` |
 | Compressed rules (Skill v2 default) | `apps/docs/registry/rules/dash-ai-rules.compressed.md` |

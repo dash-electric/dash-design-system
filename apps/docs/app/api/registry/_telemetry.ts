@@ -142,7 +142,7 @@ export function logAudit(record: AuditRecord): void {
 
   // Append to local audit JSONL for /admin/usage dashboard (local/self-host only).
   // Non-blocking, error-swallowed (matches "never crash request" pattern).
-  if (typeof process !== "undefined" && process.cwd) {
+  if (typeof process !== "undefined" && typeof process.cwd === "function") {
     void appendAuditLine(record).catch(() => {})
   }
 

@@ -10,6 +10,12 @@ One `pnpm install`, one CI pipeline, one place to ship registry + tooling change
 
 This is an internal-only repository. Components, branding, and tooling are licensed for use within PT Dash Elektrik Indonesia product teams only. See `NOTICE.md` in `apps/docs` for full terms.
 
+## Architecture
+
+Dash is a **platform** serving Ride, Logistic, Travel, Marketplace, and external Trellis tenants on one foundation. The DS is structured as 4 layers — Brand Foundation (locked) → Common Primitives (shared) → Product Theme (divergent) → Workflow Blocks (divergent) — so the family stays unified while each product expresses its own personality.
+
+See [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md) for the full spec, migration case studies, and showcase angles for business, design, engineering, and external audiences. Visual showcase lives on the docs site at `/docs/architecture/layered` and `/docs/architecture/themes`.
+
 ## Quick start
 
 ```bash
