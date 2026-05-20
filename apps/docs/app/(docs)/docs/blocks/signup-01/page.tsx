@@ -46,7 +46,7 @@ export default function SignupBlock01DocsPage() {
 
       <DocsSection title="When to use">
         <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
-          <li><strong>Use</strong> for internal Dash account creation (PE invitations).</li>
+          <li><strong>Use</strong> for internal Dash account creation (developer invitations).</li>
           <li><strong>Use</strong> when KYC is handled later in a separate flow.</li>
           <li><strong>Don't</strong> use for mitra signup — they need tribe selection inline; reach for <code>FormStepperPage</code>.</li>
           <li><strong>Don't</strong> use when SSO covers 100% of signups — go straight to <code>Signup 02</code>.</li>

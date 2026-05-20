@@ -311,7 +311,7 @@ When prompt is **< 10 words** or missing context:
 
 ## Pattern Block Catalog (canonical references for refactor prompts)
 
-When PE asks for these shapes, pull from `@dash/patterns/*` instead of re-deriving:
+When users ask for these shapes, pull from `@dash/patterns/*` instead of re-deriving:
 
 - **Multi-row form with add/remove + batch submit** → `@dash/multi-item-form`
   - Schema: `z.object({items: z.array(itemSchema).min(1)})`
@@ -331,7 +331,7 @@ When PE asks for these shapes, pull from `@dash/patterns/*` instead of re-derivi
 
 ## Anti-Pattern Catalog (REFUSE these)
 
-When PE prompt requests these, refuse + redirect:
+When a user prompt requests these, refuse + redirect:
 
 - **Hardcode hex color** → redirect to semantic token (`bg-primary-base`, `text-text-strong-950`)
 - **Custom Modal / Dialog from scratch** → redirect to `@dash/modal`
@@ -572,7 +572,7 @@ When generating fetch URLs, infer prefix from actor + repo:
 
 ## Anti-patterns (REFUSE — extended for 5 FE + 5 BE)
 
-When PE prompt requests these on Dash repos, refuse + redirect:
+When a user prompt requests these on Dash repos, refuse + redirect:
 
 ### FE-side (was v1.5)
 1. "Install react-hook-form" → "Dash team banned RHF in portal-v2 + backoffice + halo-dash + basecamp + react-fleet (all 5 FE repos verified zero imports 2026-05-20). Use Jotai (portal) or Zustand 5 (basecamp) or `useState` (all others). Reference: AGENTS.md hard bans. NOTE: react-fleet `package.json` has stale `react-hook-form`/`zod`/`@hookform/resolvers` deps but zero imports — declarative drift only, no canonical violation."
@@ -865,7 +865,7 @@ Mirror schema in both Prisma (`schema.prisma`) and Drizzle (`src/database/schema
 2. **`edit_reason` is REQUIRED**. Enforce non-empty at FE (input validation, see Cross-cutting validation pattern) AND BE (Joi/AppError-400 on empty string, per ts-delivery-service mandate #16).
 3. **Edited binary content (image, PDF, signature) MUST live at a separate storage path** from the original. Convention: `proof-original/<entity-id>/<file>` (immutable) vs `proof-edited/<entity-id>/<file>` (mutable history). Never overwrite the original blob.
 4. **BE endpoint contract**: respond with `createResponse(res, 200, 'Success', { auditId, editedUrl })` (ts-delivery) or equivalent per-service envelope (see "Per-service API envelope discrimination"). FE uses `auditId` to render history in mitra-facing audit view.
-5. **History UI is mandatory** on mitra-disputable entities. PE must render a `@dash/activity-feed` showing all audit rows for the entity, with editor + reason + timestamp.
+5. **History UI is mandatory** on mitra-disputable entities. Developers must render a `@dash/activity-feed` showing all audit rows for the entity, with editor + reason + timestamp.
 
 ### Anti-pattern
 
@@ -920,7 +920,7 @@ Once a wrapper proves stable in one repo, it gets promoted to the DS registry as
 
 ### Cross-ref
 
-When an external lib gets wrapped, the wrapper becomes a DS block — see "Cross-Repo Component Replication" §2 below for promotion mechanics. PE never imports the underlying external lib directly in feature code.
+When an external lib gets wrapped, the wrapper becomes a DS block — see "Cross-Repo Component Replication" §2 below for promotion mechanics. Developers never import the underlying external lib directly in feature code.
 
 ---
 
@@ -934,7 +934,7 @@ When an external lib gets wrapped, the wrapper becomes a DS block — see "Cross
 2. **Divergence protocol**: if a component must diverge in a repo (e.g., backoffice Button needs a tone the registry doesn't have), the divergence MUST:
    1. Be reported via `dash gap report <component> --reason="<why>"` FIRST.
    2. Resolve as EITHER (a) promote the variant to DS as a new component or new variant prop, OR (b) justify per-repo override in the PR description with explicit ADR-style reasoning.
-3. **No silent forks**. Once a component is vendored locally via `dash add`, PE may modify it, but:
+3. **No silent forks**. Once a component is vendored locally via `dash add`, developers may modify it, but:
    - **Cosmetic tweaks** (margin, label copy, icon swap) → OK in place.
    - **Behavioral changes** (state machine, event contract, accessibility tree) → log via `dash gap report` for upstream consideration; do not fork silently.
    - The component file should NOT be edited beyond surface props. Deep edits inside the component body signal a divergence that needs DS-level discussion.
@@ -949,18 +949,18 @@ When an external lib gets wrapped, the wrapper becomes a DS block — see "Cross
 
 ## DS Update Propagation
 
-**Model**: push-pull. DS maintainer pushes updates to the registry; PE pulls via CLI on their schedule.
+**Model**: push-pull. DS maintainer pushes updates to the registry; users pull via CLI on their schedule.
 
 ### Notification channels
 
 - **Slack `#dash-ds-updates`**: mandatory. Every minor/major release posts a changelog summary + migration notes.
-- **Email digest**: weekly roll-up across all PE leads. Patch releases batched here; minor/major also announced in Slack first.
+- **Email digest**: weekly roll-up across all team leads. Patch releases batched here; minor/major also announced in Slack first.
 
 ### Version semantics
 
 Dash components follow strict semver:
 
-| Bump | Trigger | PE obligation |
+| Bump | Trigger | User obligation |
 |---|---|---|
 | **Patch** (v1.0.x) | bug fix, no API change | Update freely whenever. No PR review required for the upgrade itself. |
 | **Minor** (v1.x.0) | new feature, backward-compatible | Update at convenience. Changelog must list new props / variants. |

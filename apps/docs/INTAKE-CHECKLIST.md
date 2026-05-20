@@ -60,7 +60,7 @@ Default: gua auto-skip `*.env*`, `*.pem`, `*.key`, `secrets/*`, anything in `.gi
 
 ## 4. Domain priority
 
-Pilih top-3 domain yang PE paling sering kerja. Gua fokus extraction di sana dulu (sisa = stretch goal).
+Pilih top-3 domain yang team paling sering kerja. Gua fokus extraction di sana dulu (sisa = stretch goal).
 
 | Domain | Description | Priority |
 |---|---|---|
@@ -103,7 +103,7 @@ Buat speed-up Phase 1. Skip kalau ga inget — gua scan sendiri.
 Kalau lu sempet, tulis 3-5 kalimat free-form context. Saves gua 2 jam scanning.
 
 **Example:**
-> "Dash Express portal = main backoffice. PE paling sering edit list-detail pages (mitra/delivery/order). Backend pakai NestJS + Postgres, JWT bearer 1hr expiry + refresh 30d. Forms semua RHF + zod. Use-code = 6-digit alphanum, generated frontend via `lib/use-code.ts genUseCode()`, validated backend di dispatch endpoint. Error envelope shape `{error: {code, message, details}}`. List API pagination `{data, meta: {total, page, perPage}}`."
+> "Dash Express portal = main backoffice. Team paling sering edit list-detail pages (mitra/delivery/order). Backend pakai NestJS + Postgres, JWT bearer 1hr expiry + refresh 30d. Forms semua RHF + zod. Use-code = 6-digit alphanum, generated frontend via `lib/use-code.ts genUseCode()`, validated backend di dispatch endpoint. Error envelope shape `{error: {code, message, details}}`. List API pagination `{data, meta: {total, page, perPage}}`."
 
 **Lu nulis di sini:**
 
@@ -163,4 +163,4 @@ What I WILL do:
 | Day 2 | Refine glossary + build entity-to-component map + docs page |
 | (then) | Phase 2 — build `@dash/skill` package using these rules as content |
 
-After Phase 2 done → 1 PE pilot test with real "orang bodoh prompt".
+After Phase 2 done → 1 user pilot test with real "orang bodoh prompt".

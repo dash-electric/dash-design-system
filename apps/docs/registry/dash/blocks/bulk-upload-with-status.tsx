@@ -250,7 +250,7 @@ export function BulkUploadWithStatus({
         return true
       } catch (err) {
         // WHY catch-all: a thrown network error and a rejected promise should
-        // reach the user the same way. PE shouldn't have to think about which.
+        // reach the user the same way. Developers shouldn't have to think about which.
         setFileStatus(id, {
           status: "error",
           error: err instanceof Error ? err.message : "Upload gagal.",

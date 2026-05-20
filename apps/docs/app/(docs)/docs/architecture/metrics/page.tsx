@@ -153,7 +153,7 @@ const readiness: Status[] = [
   {
     state: "ready",
     label: "Pilot infrastructure",
-    detail: "3 PE ready to invite — CLI + Skill + onboarding playbook live",
+    detail: "3 users ready to invite — CLI + Skill + onboarding playbook live",
   },
   {
     state: "ready",
@@ -174,7 +174,7 @@ const readiness: Status[] = [
   {
     state: "pending",
     label: "Pilot execution",
-    detail: "Awaiting PE invite — Wave 5 staged this week",
+    detail: "Awaiting user invite — Wave 5 staged this week",
   },
   {
     state: "pending",
@@ -226,7 +226,7 @@ const timeline: Phase[] = [
 /* ---------- Section 6 — What's next --------------------------------------- */
 
 const nextSteps: string[] = [
-  "Wave 5 pilot (3 PE this week) — validate adoption hypothesis under real load",
+  "Wave 5 pilot (3 users this week) — validate adoption hypothesis under real load",
   "Hermes Railway deploy — autonomous gap-vendor pipeline live",
   "Dash Logistic theme buildout when launch nears",
   "Trellis Phase 1 — first external tenant onboarding post-pilot success",
@@ -493,9 +493,9 @@ export default function MetricsPage() {
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"
               href="/docs/onboarding"
             >
-              PE Onboarding Playbook
+              User Onboarding Playbook
             </Link>{" "}
-            — how a Dash PE goes from clone to first <code className="text-xs">dash add</code>.
+            — how a Dash user goes from clone to first <code className="text-xs">dash add</code>.
           </li>
           <li>
             <Link

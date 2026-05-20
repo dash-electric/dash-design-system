@@ -75,7 +75,7 @@ export function UsageDashboard({
       <DocsHeader
         category="Admin / Adoption"
         title="Usage Dashboard"
-        description="Per-PE Claude Max usage, registry install events, and top installed components. Aggregated from Bearer-gated /api/admin/usage. Anonymous — no PII, no emails, hashed clients only."
+        description="Per-user Claude Max usage, registry install events, and top installed components. Aggregated from Bearer-gated /api/admin/usage. Anonymous — no PII, no emails, hashed clients only."
         status="wip"
       />
 
@@ -88,7 +88,7 @@ export function UsageDashboard({
       ) : null}
 
       <DocsSection
-        title="Per-PE Claude Max usage"
+        title="Per-user Claude Max usage"
         description="Aggregate Bearer client install volume. One hashed client ≈ one consumer repo (the @dash registry has no per-user identity)."
       >
         <div className="overflow-x-auto rounded-xl border border-stroke-soft-200 bg-bg-white-0">

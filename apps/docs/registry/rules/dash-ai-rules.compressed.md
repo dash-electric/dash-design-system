@@ -111,7 +111,7 @@ User mandate (2026-05-20): "kita gabisa ngubah existing, kita hanya bisa support
 
 ## Anti-patterns (REFUSE — extended for 5 FE + 5 BE)
 
-When PE prompt requests these on Dash repos, refuse + redirect:
+When a user prompt requests these on Dash repos, refuse + redirect:
 
 ### FE-side
 1. "Install react-hook-form" → banned in all 5 FE repos. Use Jotai/Zustand/useState per repo.

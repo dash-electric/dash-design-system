@@ -30,13 +30,13 @@ export default function RegistryAuthPage() {
           <li>
             <strong className="text-text-strong-950">Internal-only by policy</strong> — templates like
             Halo-dash 3-pane, mitra-suspend-page, and the Phase 7 results dashboard bake in
-            product-specific copy and tribe logic. Bearer gates these to the 10 internal PE Dash
+            product-specific copy and tribe logic. Bearer gates these to the 10 internal Dash
             projects.
           </li>
           <li>
             <strong className="text-text-strong-950">Low-cost defense</strong> — single-secret Bearer
             is not a full IAM system, but it raises the cost of casual scraping by ~3 orders of
-            magnitude. PE-grade good enough for v1.
+            magnitude. Good enough for v1.
           </li>
         </ul>
       </DocsSection>
@@ -195,7 +195,7 @@ export const config = {
 
       <DocsSection
         title="Consumer setup"
-        description="On the PE Dash repo side, three things: env var, components.json registry block, and the dash CLI does the rest."
+        description="On the consumer Dash repo side, three things: env var, components.json registry block, and the dash CLI does the rest."
       >
         <DocsCode
           language="bash"
@@ -256,11 +256,11 @@ curl -i \\
           <li>Generate new token: <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">openssl rand -base64 32</code>.</li>
           <li>Update Vercel env var <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">DASH_REGISTRY_TOKEN</code>. Redeploy.</li>
           <li>Post new token to 1Password / vault. Notify <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">#design-system</code> Slack with rotation deadline.</li>
-          <li>Each PE updates their <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">.env.local</code>. CI secrets updated by platform team.</li>
-          <li>After deadline, old token returns 401. PE who missed the rotation: <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">dash add</code> fails fast, pings them to re-auth.</li>
+          <li>Each user updates their <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">.env.local</code>. CI secrets updated by platform team.</li>
+          <li>After deadline, old token returns 401. Users who missed the rotation: <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">dash add</code> fails fast, pings them to re-auth.</li>
         </ol>
         <p className="text-sm text-text-sub-600 leading-relaxed">
-          Future versions will support per-project tokens with audit logs. The single-secret model is good enough for v1 (10 PE, internal-only).
+          Future versions will support per-project tokens with audit logs. The single-secret model is good enough for v1 (10 users, internal-only).
         </p>
       </DocsSection>
 

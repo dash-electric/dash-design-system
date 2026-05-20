@@ -2,9 +2,9 @@
 
 How to demo Dash DS live in front of the team Thursday. Memorize the 5-step flow, keep this file open on a second screen as a safety net.
 
-> **Audience**: Irfan, demoing to 10 PE Dash on **2026-05-21 Thursday**.
+> **Audience**: Irfan, demoing to 10 team members at Dash on **2026-05-21 Thursday**.
 >
-> **Goal**: PE leaves wanting to install today. Not theoretical — they SEE the workflow drop ship-time from 2.5 days to half a day.
+> **Goal**: team leaves wanting to install today. Not theoretical — they SEE the workflow drop ship-time from 2.5 days to half a day.
 
 ---
 
@@ -46,7 +46,7 @@ echo "DASH_REGISTRY_TOKEN=$DASH_REGISTRY_TOKEN" > .env.local
 
 > "Berapa lama lu ngerjain fitur baru di repo Dash sekarang? Halaman list mitra, table dengan filter, modal detail. Beneran ngitung dari kosong sampai PR merge."
 
-Wait. Let one PE answer "2 hari? 3 hari?". Nod.
+Wait. Let one team member answer "2 hari? 3 hari?". Nod.
 
 > "Sekarang berapa lama buat warnanya match Dash brand kalau Claude / Cursor generate dari scratch? Berapa kali revisi `coba pakai biru Dash` `biru yang di Figma` `bukan itu`?"
 
@@ -139,13 +139,13 @@ Open browser http://localhost:3000/mitra.
 
 ### Act 5 — The math + the ask (2 min)
 
-Switch back to pitch deck (slide 11 — 45 PE-days/week).
+Switch back to pitch deck (slide 11 — 45 dev-days/week).
 
-> "10 PE × 3 fitur/minggu × 1.5 hari saved per fitur = 45 PE-days saved per minggu. Setara 2 engineer full-time, balik tiap Senin."
+> "10 developer × 3 fitur/minggu × 1.5 hari saved per fitur = 45 dev-days saved per minggu. Setara 2 engineer full-time, balik tiap Senin."
 
 Slide 10 (roadmap 4 weeks):
 
-> "Minggu ini deploy. Minggu depan gua shadow 1 PE pioneer pakai workflow ini. Minggu ke-3 kita roll ke 5 PE. Minggu ke-4 full rollout."
+> "Minggu ini deploy. Minggu depan gua shadow 1 user pioneer pakai workflow ini. Minggu ke-3 kita roll ke 5 user. Minggu ke-4 full rollout."
 
 Slide 14 (closing):
 
@@ -172,12 +172,12 @@ Skip Act 4 Claude part. Manually show `dash add data-table` files landing + open
 
 | Don't | Why |
 |---|---|
-| Don't open with "Let me explain the architecture" | PE care about their day getting faster, not your design choices. Open with their pain. |
+| Don't open with "Let me explain the architecture" | Team members care about their day getting faster, not your design choices. Open with their pain. |
 | Don't apologize for tooling gaps ("we still need to build...") | You closed the gap yesterday. Talk about what shipped. |
 | Don't demo every component | Boring. Pick 1 killer flow (data-table page) and drive it deep. |
 | Don't read slides verbatim | Slides are eyebrow context. You're the narrator. |
 | Don't take questions during demo | Ask "save questions for end" up front. Mid-flow Q&A kills timing. |
-| Don't promise dates you don't control | Vercel rollout = "this week", PE pilot = "next week", full rollout = "by mid-June". Don't over-promise. |
+| Don't promise dates you don't control | Vercel rollout = "this week", user pilot = "next week", full rollout = "by mid-June". Don't over-promise. |
 
 ---
 
@@ -185,15 +185,15 @@ Skip Act 4 Claude part. Manually show `dash add data-table` files landing + open
 
 ### Same-day
 - Pin install instructions in `#design-system` Slack
-- DM the 1-2 PE who looked most enthusiastic — schedule shadow session within 48 hours
+- DM the 1-2 team members who looked most enthusiastic — schedule shadow session within 48 hours
 - Update vault `06-Adoption-Metrics.md` with attendance + reactions
 
 ### Week 1
-- Shadow the 1 PE pioneer. Capture every friction point ("dash init prompt confusing", "Claude tried to install non-existent variant", etc.).
+- Shadow the 1 pilot user. Capture every friction point ("dash init prompt confusing", "Claude tried to install non-existent variant", etc.).
 - Friction → GitHub issue or vault `07-Ideas-Backlog.md`.
 
 ### Week 2
-- 1 PE → 5 PE. Slack thread per PE: "Liat workflow ini, mau coba minggu ini?"
+- 1 user → 5 users. Slack thread per user: "Liat workflow ini, mau coba minggu ini?"
 - Track install events in Vercel logs.
 
 ---
@@ -204,7 +204,7 @@ Skip Act 4 Claude part. Manually show `dash add data-table` files landing + open
 # health
 curl -s https://ds.dash.com/api/health | jq
 
-# install CLI (PE laptop, one-time)
+# install CLI (user laptop, one-time)
 pnpm i -g dash
 
 # new consumer repo
@@ -233,8 +233,8 @@ vercel rollback <url> --prod           # rollback
 | Symptom | First move |
 |---|---|
 | Demo crashes mid-flow | Switch to slide 11 ROI math, finish on math + commitment, schedule individual demos for next week |
-| PE asks "kenapa ga pakai shadcn langsung?" | "Sama foundation, tapi @dash udah brand-match Dash sejak Day 1. ga perlu re-skin tiap komponen. Plus MCP integration custom buat workflow Dash." |
-| PE asks "lisensi?" | "Internal Dash team only. AlignUI Pro license covers this. External redistribution prohibited per NOTICE.md." |
-| PE asks "kapan multi-stack (Vite, Remix)?" | "Next.js first-class hari ini. Multi-stack Skill package ETA 3 minggu. Kalau ada repo urgent yang non-Next, ping gua, gua scaffold manual sambil package siap." |
-| PE asks "bisa contribute komponen baru?" | "Yes — PR ke `dash-tech/design-system`. Anatomy guide di docs. Gua review + merge dalam 1 hari kerja." |
-| PE asks "berapa cost?" | "$20/bulan Vercel. Token + auth gratis. Dependencies semua open-source." |
+| User asks "kenapa ga pakai shadcn langsung?" | "Sama foundation, tapi @dash udah brand-match Dash sejak Day 1. ga perlu re-skin tiap komponen. Plus MCP integration custom buat workflow Dash." |
+| User asks "lisensi?" | "Internal Dash team only. AlignUI Pro license covers this. External redistribution prohibited per NOTICE.md." |
+| User asks "kapan multi-stack (Vite, Remix)?" | "Next.js first-class hari ini. Multi-stack Skill package ETA 3 minggu. Kalau ada repo urgent yang non-Next, ping gua, gua scaffold manual sambil package siap." |
+| User asks "bisa contribute komponen baru?" | "Yes — PR ke `dash-tech/design-system`. Anatomy guide di docs. Gua review + merge dalam 1 hari kerja." |
+| User asks "berapa cost?" | "$20/bulan Vercel. Token + auth gratis. Dependencies semua open-source." |

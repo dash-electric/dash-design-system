@@ -125,11 +125,11 @@ Honest audit against full-stack reality (frontend / API / DB / auth /
 hosting / cloud / CI/CD / security / rate-limit / cache / scaling /
 error-tracking / availability). Current state: 1.5/13 strong, 4/13
 partial, 7.5/13 missing. Below items close the critical gap for an
-internal-only 10-PE Dash deployment.
+internal-only 10-user Dash deployment.
 
 ### 🔥 P0 — Production blockers (must-do before ds.dash.com goes live)
 - [ ] **Vercel deploy + ds.dash.com DNS** (~2 jam) — without this, Dash DS
-  only exists on Irfan's laptop. Block all PE adoption. Closes layer
+  only exists on Irfan's laptop. Block all user adoption. Closes layer
   5 (Hosting) + 6 (Cloud) + 11 (Scaling, free via Vercel auto-scale).
   - [ ] Push to GitHub `dash-ev/dash-ds` private repo
   - [ ] Vercel project connect + `DASH_REGISTRY_TOKEN` env var
@@ -142,7 +142,7 @@ internal-only 10-PE Dash deployment.
 
 - [ ] **Rate limiting** (~2 jam) — protect against Bearer brute-force +
   Vercel invocations bill amplification. Closes layer 9.
-  - [ ] Upstash Redis free tier (10k commands/day enough for 10 PE)
+  - [ ] Upstash Redis free tier (10k commands/day enough for 10 users)
   - [ ] Middleware: max 60 req/min per IP, max 1000 req/hr per token
   - [ ] 429 response with Retry-After header
 
@@ -159,15 +159,15 @@ internal-only 10-PE Dash deployment.
 
 ### 🟡 P1 — Feature work (post-deploy)
 - [ ] **`@dash/mcp-server` package** (~6 jam) — Claude Code integration.
-  Tools: `list_components`, `get_component`, `search`. PE Claude
+  Tools: `list_components`, `get_component`, `search`. User Claude
   auto-discovers blocks as they ship.
 - [ ] **CLI publish to GitHub Packages** (~3 jam) — `pnpm i -g dash`
-  for all 10 PE. CI release workflow on git tag.
+  for all 10 users. CI release workflow on git tag.
 - [ ] **Multi-stack `dash init` templates** (~4 jam) — Vite/Remix/Astro
   variants alongside the Next.js default.
 - [ ] **`@dash/skill` package** (~6 jam) — Claude Code skill format
   with `dash info --json` introspection. Depends on MCP done.
-- [ ] **Smoke test campaign** — 1 PE (Andi or similar) ships a feature
+- [ ] **Smoke test campaign** — 1 user (Andi or similar) ships a feature
   using ≥3 @dash items in <1 day. Document ROI.
 
 ### 🟢 P2 — Nice-to-have (post-adoption)
@@ -184,10 +184,10 @@ internal-only 10-PE Dash deployment.
 
 ---
 
-## ⏸ DEFERRED — Out of scope for v1 (10 PE internal)
+## ⏸ DEFERRED — Out of scope for v1 (10 users internal)
 
 These layers are valid full-stack concerns but the cost/benefit doesn't
-justify them yet. Revisit when team grows past 30 PE or use case shifts
+justify them yet. Revisit when team grows past 30 users or use case shifts
 to multi-tenant.
 
 - **Database & Storage (layer 3)** — registry stays file-based on disk
@@ -196,13 +196,13 @@ to multi-tenant.
 - **RLS / CSRF (layer 8 deep)** — no DB → no row-level concerns.
   Add when DB lands.
 - **Redis cache layer (layer 10 deep)** — current Cache-Control + Vercel
-  CDN sufficient for 10-PE traffic. Skip unless load test shows hotspots.
-- **Load testing + capacity planning (layer 11 deep)** — 10 PE × 100
+  CDN sufficient for 10-user traffic. Skip unless load test shows hotspots.
+- **Load testing + capacity planning (layer 11 deep)** — 10 users × 100
   installs/day = 0.01 req/sec average. Vercel free tier handles 1000x
   this comfortably. Skip until traffic 100x current projection.
 - **Multi-region failover (layer 13 deep)** — DR plan for single-region
   outage. Acceptable to wait until Dash DS is a hard dependency for
-  production releases (not yet — PE can fall back to local installs).
+  production releases (not yet — users can fall back to local installs).
 
 ---
 

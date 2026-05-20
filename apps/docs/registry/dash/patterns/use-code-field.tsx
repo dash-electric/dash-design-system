@@ -18,7 +18,7 @@ import { toast } from "@/registry/dash/ui/toaster"
  *    frontend-generated, validated server-side). They are NOT a generic input
  *    shape — they carry business rules (length, charset, regen affordance,
  *    copy-to-share).
- *  - PE engineers tend to reinvent this every screen. Anchoring it as a single
+ *  - Engineers tend to reinvent this every screen. Anchoring it as a single
  *    canonical pattern means refactor prompts can say "swap to use-code-field"
  *    instead of re-deriving the generator + clipboard + validation each time.
  *
@@ -38,7 +38,7 @@ import { toast } from "@/registry/dash/ui/toaster"
  * WHY this file ships ZERO banned deps (no react-hook-form, no zod):
  *  - Dash hard-bans RHF + zod across all 5 FE repos (portal-v2, backoffice,
  *    halo-dash, basecamp, fleet-mgmt). Earlier versions of this pattern
- *    leaked `useFormContext` + a zod-shaped JSDoc example — PE running
+ *    leaked `useFormContext` + a zod-shaped JSDoc example — users running
  *    `dash add use-code-field` would have inherited a self-contradiction.
  *  - The canonical shape is now: `useCodeField()` hook with
  *    `{ value, setValue, error, isValid, regenerate, copy, copied }` —
@@ -93,7 +93,7 @@ export function validateUseCode(value: string): string | null {
 
 export type UseCodeFieldState = {
   value: string
-  /** Pass either a raw string or a React change event — same shape PE writes. */
+  /** Pass either a raw string or a React change event — same shape consumers write. */
   setValue: (next: string | React.ChangeEvent<HTMLInputElement>) => void
   /** Inline validation error message in Bahasa. `null` when valid or untouched. */
   error: string | null
@@ -225,7 +225,7 @@ type UseCodeFieldProps = {
  * Caller is responsible for placing this inside their own native-`useState`
  * form (or Jotai atom in portal-v2). No FormProvider / RHF / zod required.
  *
- * WHY a wrapper exists at all: many PE screens just want a drop-in field
+ * WHY a wrapper exists at all: many consumer screens just want a drop-in field
  * without writing the hook glue. The hook stays the canonical primitive for
  * cases where the value needs to flow into a larger form object (e.g.
  * `useFieldArray`-style multi-row delivery list).

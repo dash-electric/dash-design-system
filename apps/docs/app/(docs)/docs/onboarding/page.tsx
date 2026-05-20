@@ -18,8 +18,8 @@ export default function OnboardingPage() {
     <DocsPageShell>
       <DocsHeader
         category="Getting Started · Wave 5 Pilot"
-        title="PE Onboarding Playbook"
-        description="Step-by-step onboarding for the first 3 Product Engineers piloting Dash DS. Target: laptop → first DS component in your repo → first vibe-coded screen, all under 45 minutes. Pair this page with the 1Password Bearer token DM you received from Irfan."
+        title="User Onboarding Playbook"
+        description="Step-by-step onboarding for the first 3 pilot users of Dash DS. Target: laptop → first DS component in your repo → first vibe-coded screen, all under 45 minutes. Pair this page with the 1Password Bearer token DM you received from Irfan."
         status="beta"
         kind="composite"
       />
@@ -43,11 +43,11 @@ export default function OnboardingPage() {
           items={[
             {
               title: "What is Dash DS",
-              body: "Internal sovereign design system for 10+ PE at Dash. You pull components by name via the dash CLI; the AI editor knows the registry through MCP + a Skill that teaches Dash conventions.",
+              body: "Internal sovereign design system for 10+ team members at Dash. You pull components by name via the dash CLI; the AI editor knows the registry through MCP + a Skill that teaches Dash conventions.",
             },
             {
               title: "Who this is for",
-              body: "Wave 5 = the first 3 PE on Ride tribe. Logistic, Travel, Marketplace pilots roll later. You should be comfortable shipping Next.js + Tailwind features and using Claude Code or Cursor daily.",
+              body: "Wave 5 = the first 3 pilot users on Ride tribe. Logistic, Travel, Marketplace pilots roll later. You should be comfortable shipping Next.js + Tailwind features and using Claude Code or Cursor daily.",
             },
             {
               title: "Time commitment",

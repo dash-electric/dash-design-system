@@ -1,7 +1,7 @@
 /**
- * `dash gap report` — log DS coverage gaps PEs hit while building features.
+ * `dash gap report` — log DS coverage gaps users hit while building features.
  *
- * Wave 4 Agent M (decoupled). PE encounters something the DS doesn't ship
+ * Wave 4 Agent M (decoupled). A user encounters something the DS doesn't ship
  * (e.g. no image-editor) → runs `dash gap report "image editor missing"` →
  * structured entry lands in `~/.dash/gap-queue.json`. Wave 4 dashboard
  * (separate session) will read the queue and surface backlog to the DS

@@ -18,7 +18,7 @@ const quickLinks = [
   {
     title: "Quick Start",
     href: "/docs/quick-start",
-    description: "PE onboarding — one-time setup, daily AI-first workflow, brand audit loop.",
+    description: "User onboarding — one-time setup, daily AI-first workflow, brand audit loop.",
   },
   {
     title: "Theming",
@@ -53,7 +53,7 @@ export default function IntroductionPage() {
 
       <DocsSection
         title="Pillars"
-        description="The five principles that shape every decision in Dash DS — adapted from shadcn/ui's open-code philosophy, sharpened for an internal 10-PE team that vibe-codes with AI."
+        description="The five principles that shape every decision in Dash DS — adapted from shadcn/ui's open-code philosophy, sharpened for an internal 10-person team that vibe-codes with AI."
       >
         <DocsPrinciples
           items={[
@@ -83,7 +83,7 @@ export default function IntroductionPage() {
 
       <DocsSection
         title="Why Dash DS exists"
-        description="The math behind the system — what happens when 10 PE ship in parallel without it."
+        description="The math behind the system — what happens when 10 team members ship in parallel without it."
       >
         <p className="text-base text-text-sub-600 leading-relaxed mb-3">
           Ten Product Engineers across Reservasi, Express, Eats, Halo, Mitra, Finance, HR, Marketing, Growth,
@@ -142,7 +142,7 @@ pnpm dlx dash add button card dashboard-shell`}
           See <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/installation">Installation</Link>{" "}
           for the full setup (components.json, base theme, bearer auth) and{" "}
           <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/quick-start">Quick Start</Link>{" "}
-          for the day-1 PE workflow.
+          for the day-1 user workflow.
         </p>
       </DocsSection>
 

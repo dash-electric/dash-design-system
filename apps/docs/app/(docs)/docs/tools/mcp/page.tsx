@@ -118,8 +118,8 @@ dash mcp init --check-only`}
           <li><strong className="text-text-strong-950">WK01</strong> — server shipped in the repo as <code className="text-xs">@dash/mcp-server</code> (6 tools, Bearer-gated registry queries).</li>
           <li><strong className="text-text-strong-950">WK02</strong> — Claude Code + Cursor wiring via <code className="text-xs">dash mcp init</code>. Both variants live.</li>
           <li><strong className="text-text-strong-950">WK03</strong> — Windsurf config docs, diff_versions tool, audit log integration.</li>
-          <li><strong className="text-text-strong-950">WK04</strong> — 5 PE scale pilot across Reservasi, Express, Halo, Finance, Mitra.</li>
-          <li><strong className="text-text-strong-950">WK05</strong> — full 10 PE rollout. Deploy ETA: this week 2026-05-21+.</li>
+          <li><strong className="text-text-strong-950">WK04</strong> — 5 user scale pilot across Reservasi, Express, Halo, Finance, Mitra.</li>
+          <li><strong className="text-text-strong-950">WK05</strong> — full 10 user rollout. Deploy ETA: this week 2026-05-21+.</li>
         </ul>
         <p className="text-sm text-text-sub-600 mt-3">
           If your editor isn&apos;t wired yet, fall back to the AI Rules markdown bundle (<code className="text-xs">dash add ai-rules</code>)

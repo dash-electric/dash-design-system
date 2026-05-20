@@ -162,7 +162,7 @@ export function PilotDashboard({
       <DocsHeader
         category="Admin / Pilot"
         title="Wave 5 Pilot"
-        description="3-PE smoke test of the Dash DS adoption hypothesis. Tracks T1.1 onboarding floor, T1.2 PR-penetration proxy, T1.3 drift placeholder, plus per-PE activity and feedback feed."
+        description="3-user smoke test of the Dash DS adoption hypothesis. Tracks T1.1 onboarding floor, T1.2 PR-penetration proxy, T1.3 drift placeholder, plus per-user activity and feedback feed."
         status="wip"
       />
 
@@ -210,15 +210,15 @@ export function PilotDashboard({
       </DocsSection>
 
       <DocsSection
-        title="Per-PE activity"
-        description="Status, onboarding step, component install count, and gap reports per cohort member. PE names are read from local pilot-cohort.json (gitignored)."
+        title="Per-user activity"
+        description="Status, onboarding step, component install count, and gap reports per cohort member. User names are read from local pilot-cohort.json (gitignored)."
       >
         <div className="overflow-x-auto rounded-xl border border-stroke-soft-200 bg-bg-white-0">
           <table className="w-full text-sm">
             <thead className="bg-bg-weak-50">
               <tr className="text-left">
                 <th className="px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">
-                  PE
+                  User
                 </th>
                 <th className="px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">
                   Status
@@ -284,7 +284,7 @@ export function PilotDashboard({
       >
         {data.feedback.length === 0 ? (
           <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-4 py-6 text-center text-sm text-text-sub-600">
-            No feedback yet. PE submit via <code>dash feedback log "&lt;text&gt;"</code> →{" "}
+            No feedback yet. Users submit via <code>dash feedback log "&lt;text&gt;"</code> →{" "}
             <code>dash feedback sync</code>.
           </div>
         ) : (

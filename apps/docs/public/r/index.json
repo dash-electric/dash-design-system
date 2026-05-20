@@ -1211,6 +1211,36 @@
       ]
     },
     {
+      "name": "surge-multiplier-card",
+      "type": "registry:block",
+      "title": "Surge Multiplier Card",
+      "description": "Real-time surge multiplier indicator for the Dash Ride mitra mobile app. Large multiplier hero, ride-theme accent color band, expiry countdown, IDR earning projection, waiting-order signal. Formal Anda voice. Layer 3 / ride-only.",
+      "theme": "ride",
+      "products": [
+        "ride"
+      ]
+    },
+    {
+      "name": "driver-assignment-board",
+      "type": "registry:block",
+      "title": "Driver Assignment Board",
+      "description": "Dispatcher split-pane to assign drivers to pending ride requests. Lazy-loaded driver list per request, distance + rating + acceptance-rate filter, bulk auto-match toggle, audit-trail payload via onAssign callback. Layer 3 / ride-only.",
+      "theme": "ride",
+      "products": [
+        "ride"
+      ]
+    },
+    {
+      "name": "polygon-shift-map",
+      "type": "registry:block",
+      "title": "Polygon Shift Map",
+      "description": "Mitra positioning vs polygon-shift supply table. Per-zone saturation classifier (under/balanced/over), point-in-polygon mitra count, broadcast-bonus action for under-supplied zones (audit-trail via onBroadcastBonus). No map library dep — table mode default, external map adapter optional. Layer 3 / ride-only.",
+      "theme": "ride",
+      "products": [
+        "ride"
+      ]
+    },
+    {
       "name": "proof-image-viewer",
       "type": "registry:block",
       "title": "Proof Image Viewer",
@@ -1240,6 +1270,36 @@
       "theme": "shared",
       "products": [
         "ride",
+        "logistic"
+      ]
+    },
+    {
+      "name": "route-planner",
+      "type": "registry:block",
+      "title": "Route Planner",
+      "description": "Delivery route planner: N pickup/dropoff stops sorted by ETA, manual reorder override, vehicle-constraint warning (truck-large in gang sempit), distance + ETA summary, audit-trail assignment payload. Caller owns TSP solver via onOptimize. Layer 3 / logistic-only.",
+      "theme": "logistic",
+      "products": [
+        "logistic"
+      ]
+    },
+    {
+      "name": "batch-dispatch-grid",
+      "type": "registry:block",
+      "title": "Batch Dispatch Grid",
+      "description": "Bulk N-packages × M-drivers assignment grid: per-cell toggle, multi-select + bulk-assign, per-driver capacity meter with warning threshold, zone-proximity auto-suggest, conflict highlight on over-capacity, confirm modal with per-driver summary, audited bulk submit. Layer 3 / logistic-only.",
+      "theme": "logistic",
+      "products": [
+        "logistic"
+      ]
+    },
+    {
+      "name": "package-tracking-timeline",
+      "type": "registry:block",
+      "title": "Package Tracking Timeline",
+      "description": "Logistic overlay over the shared 26-status delivery-status-timeline. Hero tracking number + status badge + live-ticking ETA countdown, COD panel with collection status, proof image thumbnail grid (opens shared proof-image-viewer), recipient panel with mobile call button. Read-only mitra/customer-facing view. Layer 3 / logistic-only.",
+      "theme": "logistic",
+      "products": [
         "logistic"
       ]
     }

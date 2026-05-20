@@ -59,7 +59,7 @@ Copy the output. Save to 1Password:
 - Tag: `dash-ds`, `infra`, `rotate-quarterly`
 - Notes: "Rotated 2026-05-20. Next rotation 2026-08-20."
 
-Share with the 10 PE later (Section 7).
+Share with the 10 users later (Section 7).
 
 ---
 
@@ -191,12 +191,12 @@ If `dash init` or `dash add` fails, capture the full error + tagged `@dud` in `#
 
 ---
 
-## 7. Distribute token to PE Dash (~5 min)
+## 7. Distribute token to Dash users (~5 min)
 
 In 1Password:
 
-1. Right-click the `Dash Registry — DASH_REGISTRY_TOKEN (prod)` item → Share → Vault → `Engineering / PE Access (read-only)`.
-2. Share that vault with the 10 PE.
+1. Right-click the `Dash Registry — DASH_REGISTRY_TOKEN (prod)` item → Share → Vault → `Engineering / User Access (read-only)`.
+2. Share that vault with the 10 users.
 3. Slack `#engineering`:
 
    > Dash DS is live at https://ds.dash.com 🟣
@@ -229,12 +229,12 @@ openssl rand -base64 32
 # 2. Update 1Password — keep OLD value in "Previous tokens" note for 7-day grace
 # 3. Update Vercel env var DASH_REGISTRY_TOKEN (both Production + Preview)
 # 4. Trigger redeploy: vercel --prod
-# 5. Update 1Password vault item, re-share with PE
+# 5. Update 1Password vault item, re-share with users
 # 6. Slack announcement: "Token rotated. Pull from 1Password, update .env.local, restart dev server."
 # 7. After 7 days, remove old token note from 1Password
 ```
 
-Stagger rotation away from sprint releases to avoid blocking PE mid-feature.
+Stagger rotation away from sprint releases to avoid blocking users mid-feature.
 
 ---
 
@@ -255,10 +255,10 @@ DNS does not need to change (still points at Vercel project; just the active dep
 
 We're intentionally NOT setting up:
 
-- Per-PE OAuth (10 users, Bearer token is fine; rotate quarterly)
+- Per-user OAuth (10 users, Bearer token is fine; rotate quarterly)
 - Public docs (license forbids; `NOTICE.md`)
 - Self-hosted npm registry (Vercel + raw URLs work; npm registry is Day-30+ work)
 - CI build matrix (Vercel handles it)
 - Per-tenant rate-limiting tiers (in-memory limit fine for 10 users)
 
-Add complexity only when 10 → 30 PE forces it. See `ROADMAP.md` for the trigger criteria.
+Add complexity only when 10 → 30 users forces it. See `ROADMAP.md` for the trigger criteria.

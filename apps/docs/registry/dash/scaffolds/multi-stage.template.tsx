@@ -30,7 +30,7 @@ import { toast } from "@/registry/dash/ui/toaster"
  * WHY this template:
  *  - Multi-approver workflows are everywhere in Dash (maintenance approval,
  *    repossession escalation, mitra reinstate, payment adjustment >Rp 1M).
- *    PE keeps modelling them as ad-hoc booleans (`isApprovedByLevel1`,
+ *    Teams keep modelling them as ad-hoc booleans (`isApprovedByLevel1`,
  *    `isApprovedByLevel2`...) which leaks into the schema and is impossible
  *    to reorder without a migration.
  *  - This scaffold treats stages as ORDERED DATA + a state machine

@@ -1,4 +1,4 @@
-# WAVE-5-PILOT.md — Dash DS 3-PE Pilot Smoke Test
+# WAVE-5-PILOT.md — Dash DS 3-User Pilot Smoke Test
 
 > Pilot infrastructure + operational playbook for the Wave 5 smoke test.
 > Validates the adoption hypothesis behind the Dash DS Master Plan before
@@ -9,50 +9,50 @@
 
 ## A. Pilot Charter
 
-**Goal:** validate the adoption hypothesis on three real Dash PE before
-committing to wider rollout. The DS dies fast if PE don't adopt — this
+**Goal:** validate the adoption hypothesis on three real Dash users before
+committing to wider rollout. The DS dies fast if users don't adopt — this
 pilot is the cheapest, sharpest signal we can get.
 
 **Duration:** 7 working days (one full work week + a weekend gap).
 **Start date:** TBD by Irfan (target: next Monday after invite acceptance).
-**Pilot cohort:** 3 PE — `[PE-A]`, `[PE-B]`, `[PE-C]` (placeholders;
+**Pilot cohort:** 3 users — `[User-A]`, `[User-B]`, `[User-C]` (placeholders;
 real names live in `~/.dash/pilot-cohort.json`, gitignored).
 
 ### Success criteria (concrete)
 
 | Metric | Threshold | Source |
 |---|---|---|
-| PE complete onboarding (steps 1–9 of `ONBOARDING-PLAYBOOK`) | ≥3 | Admin dashboard / per-PE checklist |
-| PE install ≥3 Dash components in their repo | ≥2 of 3 | `registry-audit.jsonl` byHashedClient |
+| Users complete onboarding (steps 1–9 of `ONBOARDING-PLAYBOOK`) | ≥3 | Admin dashboard / per-user checklist |
+| Users install ≥3 Dash components in their repo | ≥2 of 3 | `registry-audit.jsonl` byHashedClient |
 | Gap reports filed | ≥5 across cohort | `dash gap report` queue |
 | Successful Hermes auto-vendor runs (if Hermes deployed) | ≥1 | Hermes audit log |
-| Critical bugs blocking PE work | 0 | Slack #dash-ds-pilot triage |
+| Critical bugs blocking user work | 0 | Slack #dash-ds-pilot triage |
 
 ### Failure criteria (kill switch armed)
 
-- **<2 PE complete onboarding** within 7 days — adoption signal too
+- **<2 users complete onboarding** within 7 days — adoption signal too
   weak; pause and diagnose before reinvesting.
 - **<30% of AI prompts respect Dash rules** (sampled from `dash audit`
-  on PE PRs) — would require Skill v4 work before retrying.
-- **3+ critical bugs filed** in week one — stop accepting new PE,
+  on user PRs) — would require Skill v4 work before retrying.
+- **3+ critical bugs filed** in week one — stop accepting new users,
   triage, ship fixes, resume.
 
 A failure does NOT mean the DS is dead — it means the next wave must
-address the diagnosed cause before reinviting PE.
+address the diagnosed cause before reinviting users.
 
 ---
 
 ## B. Invite Sequence
 
-**Day -7 — Identify candidates.** Pick from senior Dash PE familiar
+**Day -7 — Identify candidates.** Pick from senior Dash developers familiar
 with `halo-dash-fe`, `portal-v2`, and `backoffice`. Cohort composition
 matters more than seniority — aim for a spread:
 
-- 1 **trust-heavy** PE who'll give DS the benefit of the doubt (signal
+- 1 **trust-heavy** user who'll give DS the benefit of the doubt (signal
   for "does it work when motivation is high?").
-- 1 **skeptical** PE who'll push back hard (signal for "does it survive
+- 1 **skeptical** user who'll push back hard (signal for "does it survive
   contact with friction?").
-- 1 **swing-vote** PE who's neutral (signal for "does it sell itself?").
+- 1 **swing-vote** user who's neutral (signal for "does it sell itself?").
 
 Mix TS-comfortable + JS-only so we see both ergonomics paths. Document
 choices in `~/.dash/pilot-cohort.json` (gitignored — keep names off
@@ -66,10 +66,10 @@ sentence on the ask ("7 working days, file feedback via `dash feedback
 log`, join #dash-ds-pilot").
 
 **Day -1 — Reminder + token.** Share the registry Bearer token via
-1Password (NEVER paste it in Slack). Confirm each PE has `pnpm`,
+1Password (NEVER paste it in Slack). Confirm each user has `pnpm`,
 Node 20+, and Claude Max.
 
-**Day 0 — Pilot starts.** Run the onboarding 1:1 with the first PE.
+**Day 0 — Pilot starts.** Run the onboarding 1:1 with the first user.
 
 **Day +7 — Pilot ends + retro.** Mandatory retro Sunday evening, async
 or 30-min sync.
@@ -80,16 +80,16 @@ or 30-min sync.
 
 | Day | Date | Activity |
 |---|---|---|
-| 1 (Mon) | TBD | Onboard [PE-A] (1:1, 60 min) |
-| 2 (Tue) | TBD | Onboard [PE-B] (1:1, 60 min) + 15-min check-in with [PE-A] |
-| 3 (Wed) | TBD | Onboard [PE-C] (1:1, 60 min) + 15-min check-in with [PE-B] |
-| 4 (Thu) | TBD | Group sync (30 min, all 3 PE) — surface shared blockers |
+| 1 (Mon) | TBD | Onboard [User-A] (1:1, 60 min) |
+| 2 (Tue) | TBD | Onboard [User-B] (1:1, 60 min) + 15-min check-in with [User-A] |
+| 3 (Wed) | TBD | Onboard [User-C] (1:1, 60 min) + 15-min check-in with [User-B] |
+| 4 (Thu) | TBD | Group sync (30 min, all 3 users) — surface shared blockers |
 | 5 (Fri) | TBD | Half-week retro — review `dash feedback list` + adjust plan |
-| 6 (Sat) | TBD | Solo day — PE work on their own, async Slack only |
+| 6 (Sat) | TBD | Solo day — users work on their own, async Slack only |
 | 7 (Sun) | TBD | Final retro + survey + go/no-go on Wave 6 |
 
 Each 1:1 records onboarding step number reached + first component
-installed. Logged via `dash feedback log "<PE> onboarded step 9"`.
+installed. Logged via `dash feedback log "<user> onboarded step 9"`.
 
 ---
 
@@ -107,21 +107,21 @@ Three channels, ranked by friction (lowest first):
    `dash feedback survey` prompt. See § Open Questions below.
 
 Every CLI feedback entry auto-tags `pilot: "wave-5"` and detects the
-PE via `git config user.name` (overridable with `--pe`). PE never have
+user via `git config user.name` (overridable with `--pe`). Users never have
 to remember which pilot they're in.
 
 ---
 
 ## E. Metrics Tracking
 
-Per PE per day, captured by the admin dashboard:
+Per user per day, captured by the admin dashboard:
 
 | Metric | Source | Aggregation |
 |---|---|---|
-| Onboarding step completed (0–9) | `dash feedback log "step N"` | latest per PE per day |
-| Components installed | `registry-audit.jsonl` (op=install, hashed client) | count per PE |
-| Components used in shipped PR | `dash audit` run on PE branch | count per PR |
-| Gap reports filed | `~/.dash/gap-queue.json` (synced) | count per PE |
+| Onboarding step completed (0–9) | `dash feedback log "step N"` | latest per user per day |
+| Components installed | `registry-audit.jsonl` (op=install, hashed client) | count per user |
+| Components used in shipped PR | `dash audit` run on user branch | count per PR |
+| Gap reports filed | `~/.dash/gap-queue.json` (synced) | count per user |
 | AI prompt count (proxy) | Skill telemetry (if wired) | rolling sum |
 | Time-to-first-component | install timestamp – onboarding start | minutes |
 | Time-to-first-feature-ship | first PR merge – onboarding start | hours |
@@ -136,7 +136,7 @@ Run once at Day +7. Two rounds: async (everyone fills it before sync),
 then 30-min sync to align on top decisions.
 
 ```
-## Retro — Wave 5 Pilot, [PE-X]
+## Retro — Wave 5 Pilot, [User-X]
 
 ### What worked
 - (one line per item)
@@ -165,7 +165,7 @@ CEO consolidates the three retros into a single Wave 6 decision memo.
 If the pilot trips a § A failure criterion mid-week:
 
 ```
-1. Pause new onboarding (don't recruit PE D, E…)
+1. Pause new onboarding (don't recruit User D, E…)
 2. Diagnose root cause:
    - Onboarding gap?       → Skill v3 / playbook revision
    - Disinterest?          → Re-validate problem with PM Dash
@@ -173,7 +173,7 @@ If the pilot trips a § A failure criterion mid-week:
    - Drift not measurable? → Wave 4 telemetry not deep enough
 3. Decide:
    a) Extend invite 1 week with fix shipped → continue cohort
-   b) Pivot to senior-PE 1:1 white-glove (skip self-serve onboarding)
+   b) Pivot to senior-user 1:1 white-glove (skip self-serve onboarding)
    c) Sunset Wave 5, retreat to Wave 4 telemetry-only
 4. Escalate to PM Dash + Head of Design for awareness BEFORE deciding
    between (b) and (c) — both have product-org implications.
@@ -192,10 +192,10 @@ clearing `~/.dash/pilot-frozen` on the server.
 - Survey format — Google Form (familiar, exports clean) vs `dash
   feedback survey` (zero context-switch but more build work). **Recommend
   Google Form for Wave 5** — survey is a 1× thing per pilot, build cost
-  doesn't amortize. Revisit if Wave 6 expands to 10+ PE.
+  doesn't amortize. Revisit if Wave 6 expands to 10+ users.
 - Hermes deploy status — if not deployed by Day 0, drop the Hermes
   success criterion (don't fail the pilot on absent infra).
-- Skill telemetry — confirm `dash usage` ships per-PE prompt count
+- Skill telemetry — confirm `dash usage` ships per-user prompt count
   before Day 0; otherwise drop AI-prompt-count metric.
 
 ---
@@ -205,7 +205,7 @@ clearing `~/.dash/pilot-frozen` on the server.
 - [ ] `dash feedback log` CLI shipped and `pnpm test` green
 - [ ] `/docs/admin/pilot` page deployed + Bearer-gated
 - [ ] 1Password vault entry for `DASH_REGISTRY_TOKEN` shared with cohort
-- [ ] #dash-ds-pilot Slack channel created + 3 PE invited
+- [ ] #dash-ds-pilot Slack channel created + 3 users invited
 - [ ] DM invite drafted (do NOT send before all 3 confirm verbally)
 - [ ] Calendar holds: Day 1/2/3 onboarding 1:1 (60 min each), Day 4
       group sync (30 min), Day 5 half-week retro (30 min), Day 7 final

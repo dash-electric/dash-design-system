@@ -24,7 +24,7 @@ git push origin v0.1.0
 GitHub will create the release page automatically. Add release notes via
 the web UI or `gh release create v0.1.0 --notes "Initial release"`.
 
-## 3. Distribute the install command to PE consumers
+## 3. Distribute the install command to users
 
 Once the repo is live, partners install the CLI globally directly from
 GitHub (no npm registry needed for v0.1.0):
@@ -46,17 +46,17 @@ After deploying `dash-ds` to Vercel:
 1. Generate a strong token: `openssl rand -hex 32`
 2. Add it to Vercel as `DASH_REGISTRY_TOKEN` (Production + Preview envs).
 3. Redeploy so the env var is picked up by the route handler.
-4. Share the token with PE leads through a secure channel (1Password vault
+4. Share the token with team leads through a secure channel (1Password vault
    item `dash/registry-token`). They paste it into their shell as
    `DASH_REGISTRY_TOKEN` — `dash` CLI forwards it as `Authorization:
    Bearer <token>` on every registry fetch.
 
 ## 5. Rotation
 
-Rotate the token quarterly (or immediately if a PE leaves). Steps:
+Rotate the token quarterly (or immediately if a user leaves). Steps:
 
 1. Generate new token, update Vercel env, redeploy.
 2. Update the 1Password vault item.
-3. Notify PEs to refresh their local env.
+3. Notify users to refresh their local env.
 
 Old token stops working the moment Vercel redeploys.

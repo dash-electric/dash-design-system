@@ -76,7 +76,7 @@ dash skill install`}
           <li><strong className="text-text-strong-950">WK01</strong> — Skill Phase 2 scaffold shipped as <code className="text-xs">@dash/skill</code> (SKILL.md + frontmatter, content pending pilot).</li>
           <li><strong className="text-text-strong-950">WK02</strong> — <code className="text-xs">dash info --json</code> introspection wired into the scaffold.</li>
           <li><strong className="text-text-strong-950">WK03</strong> — beta with 2 internal teams (Halo-dash + Express), measure correct &quot;reach for X&quot; rate.</li>
-          <li><strong className="text-text-strong-950">WK04</strong> — 5 PE scale pilot, cross-validate with MCP server.</li>
+          <li><strong className="text-text-strong-950">WK04</strong> — 5 user scale pilot, cross-validate with MCP server.</li>
           <li><strong className="text-text-strong-950">WK05</strong> — full rollout. Deploy ETA: this week 2026-05-21+.</li>
         </ul>
         <p className="text-sm text-text-sub-600 mt-3">

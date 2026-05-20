@@ -1,6 +1,6 @@
 # Maintenance Playbook — Dash Design System
 
-How to keep `ds.dash.com` healthy, add new components, rotate tokens, ship breaking changes, and onboard new PE — without breaking the 10 PE downstream.
+How to keep `ds.dash.com` healthy, add new components, rotate tokens, ship breaking changes, and onboard new users — without breaking the 10 users downstream.
 
 > **Audience**: Irfan (owner) Day 1. Hand to a hire when team grows past you.
 >
@@ -15,12 +15,12 @@ Dash DS has **3 surfaces** to maintain:
 | Surface | Repo | Hosted at | Who pulls it |
 |---|---|---|---|
 | Registry source | `dash-tech/design-system` | `ds.dash.com` (Vercel) | CLI (`dash add`) |
-| CLI tool | `dash-tech/dash-cli` | npm (private) or GH | PE laptops (`pnpm i -g dash`) |
-| MCP server | `dash-tech/dash-mcp` | npm (private) or GH | PE Claude Code config |
+| CLI tool | `dash-tech/dash-cli` | npm (private) or GH | User laptops (`pnpm i -g dash`) |
+| MCP server | `dash-tech/dash-mcp` | npm (private) or GH | User Claude Code config |
 
 The registry is the **source of truth**. CLI + MCP are thin clients that fetch from `ds.dash.com`.
 
-**Rule of thumb**: change shape (rename file, change export, breaking prop) = bump version + announce. Add new component = silent (PE pulls when they want it).
+**Rule of thumb**: change shape (rename file, change export, breaking prop) = bump version + announce. Add new component = silent (users pull when they want it).
 
 ---
 
@@ -45,7 +45,7 @@ vercel.com/dash/design-system → Deployments tab.
 |---|---|---|
 | Last deploy status | top of list | red X = check logs |
 | Function invocations | Analytics → Functions | sudden 10× spike = bot / leak |
-| 4xx rate | Analytics → Errors | 401 spike = leaked token or misconfigured PE |
+| 4xx rate | Analytics → Errors | 401 spike = leaked token or misconfigured user |
 | Bandwidth | Settings → Usage | nearing tier cap = upgrade |
 
 ### 1c. Slack `#design-system` skim
@@ -71,9 +71,9 @@ Note in vault `06-Adoption-Metrics.md`:
 
 ```markdown
 ## 2026-05-26 Week
-- 8/10 PE active (Andi, Budi, Citra, Dani, Edo, Fitri, Galih, Hanif)
+- 8/10 users active (Andi, Budi, Citra, Dani, Edo, Fitri, Galih, Hanif)
 - top: data-table (12), button (9), form (7), modal (6), avatar (5)
-- inactive: 2 PE (Indra, Joko) — Slack DM to find friction
+- inactive: 2 users (Indra, Joko) — Slack DM to find friction
 - 4xx rate: 0.3% (mostly token-not-set in fresh repos)
 ```
 
@@ -159,8 +159,8 @@ Workflow:
 2. `pnpm up next@latest`.
 3. Run smoke + 5 random component pages in browser.
 4. Fix breakages. Commit per package.
-5. Deploy preview. Send Vercel preview URL to 2 PE for smoke.
-6. Merge → main → prod after PE thumbs-up.
+5. Deploy preview. Send Vercel preview URL to 2 users for smoke.
+6. Merge → main → prod after user thumbs-up.
 
 ### 4c. Open questions sweep
 
@@ -252,7 +252,7 @@ vercel rollback https://design-system-<hash>-dash.vercel.app --prod
 
 Or via web: Vercel dashboard → Deployments → previous green deploy → `...` → Promote to Production.
 
-DNS stays pointed at the Vercel project. Active deploy alias swaps instantly. PE consumers see new (rolled-back) registry on their next `dash add`.
+DNS stays pointed at the Vercel project. Active deploy alias swaps instantly. Consumers see new (rolled-back) registry on their next `dash add`.
 
 After rollback: open the bad deploy logs, find root cause, fix on a branch, PR, re-deploy.
 
@@ -260,7 +260,7 @@ After rollback: open the bad deploy logs, find root cause, fix on a branch, PR, 
 
 ## 8. Breaking change protocol
 
-You renamed `Button.tsx`'s `loading` prop to `pending`. PE in 5 repos have `<Button loading>`.
+You renamed `Button.tsx`'s `loading` prop to `pending`. Users in 5 repos have `<Button loading>`.
 
 **DO NOT** ship to main and hope. Instead:
 
@@ -274,13 +274,13 @@ You renamed `Button.tsx`'s `loading` prop to `pending`. PE in 5 repos have `<But
 5. Slack `#engineering` 1 week before merge:
    > Heads up — `@dash/button` v0.2.0 next Monday. `loading` prop renamed to `pending`. Codemod: `find . -name "*.tsx" | xargs sed -i '' 's/loading=/pending=/g'` (review diff before commit).
 6. Merge after week of grace.
-7. After merge, monitor `4xx` rate in Vercel — spike = PE missed announcement, ping them direct.
+7. After merge, monitor `4xx` rate in Vercel — spike = users missed announcement, ping them direct.
 
 For nuclear-level changes (rename component, drop component): add 30-day deprecation banner on docs page first, then remove.
 
 ---
 
-## 9. Onboard a new PE
+## 9. Onboard a new user
 
 When a new engineer joins Dash:
 
@@ -302,12 +302,12 @@ Track in vault `06-Adoption-Metrics.md` under "Onboarded".
 
 ## 10. Decommission protocol (when DS evolves past current shape)
 
-If Dash team grows to 30+ PE and current Bearer model breaks (token sprawl), migrate:
-- Per-PE OAuth via Vercel SSO
+If Dash team grows to 30+ users and current Bearer model breaks (token sprawl), migrate:
+- Per-user OAuth via Vercel SSO
 - Self-hosted npm registry (Verdaccio at `npm.dash.com`)
 - CI-enforced consumer linting
 
-Not now. Trigger criteria: any PE complaints about token rotation friction OR 30+ PE OR external partner needs registry access.
+Not now. Trigger criteria: any user complaints about token rotation friction OR 30+ users OR external partner needs registry access.
 
 ---
 

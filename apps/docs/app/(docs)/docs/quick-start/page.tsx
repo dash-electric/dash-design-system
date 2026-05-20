@@ -18,7 +18,7 @@ export default function QuickStartPage() {
     <DocsPageShell>
       <DocsHeader
         category="Getting Started"
-        title="PE Quick Start"
+        title="User Quick Start"
         description="From a fresh laptop to a shipped Dash-themed page in eight steps. Follow the visual walkthrough — each step shows the command, the expected output, and the resulting UI."
         status="new"
       />
@@ -183,7 +183,7 @@ export default function MitraPage() {
 7. Reports diff for your review.
 
 Estimated time: ~3 hours → ~25 min (prompt → review → ship).`}
-            imagePlaceholder="Claude Code split view — left: PE prompt in chat, right: generated page.tsx diff with green additions highlighted."
+            imagePlaceholder="Claude Code split view — left: user prompt in chat, right: generated page.tsx diff with green additions highlighted."
             imageHeight="lg"
           />
 

@@ -49,7 +49,7 @@ export default function RegistryPage() {
 
       <DocsSection
         title="How distribution works"
-        description="One round trip per item, Bearer-auth gated. PE pulls JSON from ds.dash.com and writes files locally."
+        description="One round trip per item, Bearer-auth gated. Users pull JSON from ds.dash.com and write files locally."
       >
         <DocsCode
           language="text"
@@ -63,7 +63,7 @@ export default function RegistryPage() {
                   │   GET https://ds.dash.com/r/button.json
                   │   Authorization: Bearer <token>
                   ▼
-              dash add button                       (CLI on PE machine)
+              dash add button                       (CLI on user machine)
                   │
                   ▼
               registry/dash/ui/button.tsx           (consumer copy)`}

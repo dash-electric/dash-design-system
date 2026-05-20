@@ -18,7 +18,7 @@ import { toast } from "@/registry/dash/ui/toaster"
  *
  * WHY this is its own pattern (separate from multi-item-form):
  *  - The FORM (collecting N rows) and the SUBMIT (dispatching N rows to a
- *    batch endpoint) are different concerns. PE engineers often collapse
+ *    batch endpoint) are different concerns. Engineers often collapse
  *    them and end up with a form that can't recover from a partial-failure
  *    response — the dreaded "5/8 deliveries succeeded, please refresh"
  *    dead-end.
@@ -92,7 +92,7 @@ export function BulkSubmit<T extends BulkItem>({
         return false
       } catch (err) {
         // WHY catch-all: a thrown network error and a returned { ok: false }
-        // should reach the user the same way. Don't make PE think about which.
+        // should reach the user the same way. Don't make the developer think about which.
         setStatus(item.id, "error")
         setErrors((prev) => ({
           ...prev,

@@ -21,7 +21,7 @@ import { RequestsClient } from "./requests-client"
  * page itself trusts that the request got through the Bearer gate.
  *
  * Render policy:
- *   - Empty queue → friendly empty state with the PE CLI hint.
+ *   - Empty queue → friendly empty state with the user CLI hint.
  *   - Soft errors (API unavailable, corrupt file) → render a warning
  *     banner above the table but still draw whatever entries we got.
  *   - The page never throws on data issues; the CLI dashboard skill
@@ -39,7 +39,7 @@ export default async function RequestsPage() {
       <DocsHeader
         category="Dashboard / Wave 4"
         title="Gap Requests"
-        description="Review PE-logged DS coverage gaps. Approve vendoring, regenerate, decline, or merge duplicates. CEO-only — gated by DASH_CEO_TOKEN."
+        description="Review user-logged DS coverage gaps. Approve vendoring, regenerate, decline, or merge duplicates. CEO-only — gated by DASH_CEO_TOKEN."
         status="wip"
       />
 
@@ -75,7 +75,7 @@ export default async function RequestsPage() {
 
 /**
  * Empty-state block — shown when the queue exists but has zero entries
- * OR the file is missing entirely. The PE-facing CLI hint comes
+ * OR the file is missing entirely. The user-facing CLI hint comes
  * straight from `packages/cli/src/commands/gap.ts` so the message
  * stays accurate when the command name changes.
  */
@@ -86,7 +86,7 @@ function EmptyState({ filePath }: { filePath?: string }) {
         No gaps logged yet.
       </p>
       <p className="mt-2 text-sm text-text-sub-600">
-        PE can run{" "}
+        Users can run{" "}
         <code className="rounded bg-bg-white-0 px-1.5 py-0.5 text-xs">
           dash gap report &quot;&lt;description&gt;&quot;
         </code>{" "}

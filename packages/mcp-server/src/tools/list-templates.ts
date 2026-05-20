@@ -11,14 +11,14 @@ import { shortType } from "../lib/schema.js";
 export const LIST_TEMPLATES_TOOL = {
   name: "list_templates",
   description:
-    "List Dash page templates. Optionally filter by PE vertical (marketing, hr, finance, portal, custom).",
+    "List Dash page templates. Optionally filter by team vertical (marketing, hr, finance, portal, custom).",
   inputSchema: {
     type: "object",
     properties: {
       vertical: {
         type: "string",
         enum: ["marketing", "hr", "finance", "portal", "custom"],
-        description: "Filter by intended PE vertical.",
+        description: "Filter by intended team vertical.",
       },
     },
     additionalProperties: false,

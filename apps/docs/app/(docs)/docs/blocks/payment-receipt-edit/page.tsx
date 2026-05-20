@@ -95,7 +95,7 @@ export default function PaymentReceiptEditDocsPage() {
       <DocsSection title="Usage">
         <DocsCode
           language="tsx"
-          code={`// 3-line PE-friendly snippet
+          code={`// 3-line developer-friendly snippet
 const [open, setOpen] = useState(false)
 return open ? (
   <PaymentReceiptEdit

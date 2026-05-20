@@ -1,13 +1,13 @@
 /**
  * Local feedback log for `dash feedback log` — captures Wave 5 pilot signal
- * (bugs, UX issues, missing pieces, praise, drift sightings) from PE while
+ * (bugs, UX issues, missing pieces, praise, drift sightings) from users while
  * they're working. Written as JSONL to `~/.dash/feedback-log.jsonl` so
  * appends are cheap, atomic-enough, and the file streams nicely to the
  * /docs/admin/pilot dashboard.
  *
  * Decoupled from any network dependency — pure local I/O. Missing or
  * corrupt files recover to an empty list (losing a few entries beats
- * crashing a PE's terminal mid-thought).
+ * crashing a user's terminal mid-thought).
  *
  * Schema-versioned. Bumps require a migration here; the dashboard reader
  * fans out on schemaVersion.
@@ -174,7 +174,7 @@ export function writeLog(
 }
 
 /**
- * Best-effort PE auto-detect from local git config user.name. Falls back to
+ * Best-effort user auto-detect from local git config user.name. Falls back to
  * $USER and finally "unknown" so the entry is always log-able even outside
  * a repo.
  */

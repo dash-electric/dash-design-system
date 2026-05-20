@@ -47,7 +47,7 @@ export default function LoginBlock02DocsPage() {
 
       <DocsSection title="When to use">
         <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
-          <li><strong>Use</strong> when Dash users are on Google Workspace (default for PE + Ops).</li>
+          <li><strong>Use</strong> when Dash users are on Google Workspace (default for developers + Ops).</li>
           <li><strong>Use</strong> when password fatigue is a known support issue — SSO cuts password reset tickets.</li>
           <li><strong>Don't</strong> use when SSO infra isn't yet wired — show only what works.</li>
           <li><strong>Don't</strong> use for public mitra recruitment — they don't have <code>@dash.id</code> Google accounts.</li>

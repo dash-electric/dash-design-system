@@ -59,7 +59,7 @@ Each JSON file has the same shape:
 {
   "id": "fe-portal-v2-form-01",
   "stack": "portal-v2",
-  "prompt": "<the exact PE-style prompt to paste into the AI>",
+  "prompt": "<the exact user-style prompt to paste into the AI>",
   "expected_avoid": ["<imports / patterns / APIs the AI must NOT produce>"],
   "expected_use":  ["<imports / patterns / APIs the AI SHOULD produce>"],
   "expected_pattern_ref": "<rules section + line range so a human verifier can check>",
@@ -126,7 +126,7 @@ Documenting these because they came up repeatedly and the rules file does not fu
 
 - **BE / service / IaC fixtures.** This task covers the 5 FE repos. The 5 BE repos (nodejs-core, ts-delivery, nest-express, nest-fleet, halo-dash-be) and infrastructure each warrant a parallel fixture suite (ORM/envelope/state-machine/style mandates).
 - **Drift-detection-only fixtures.** No fixture currently tests a prompt that should produce *no code* and only a flag (e.g. "should the AI refuse and ask?"). Could be added later.
-- **Multi-turn fixtures.** All 30 are single-shot prompts. Real PE conversation has follow-ups; that's a v2 concern.
+- **Multi-turn fixtures.** All 30 are single-shot prompts. Real user conversation has follow-ups; that's a v2 concern.
 
 ## Next step
 

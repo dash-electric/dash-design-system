@@ -1,6 +1,6 @@
 # Contributing to Dash Design System
 
-Thanks for contributing. This repo houses the Dash registry, CLI, MCP server, and Skill package. All 10 PE Dash pull from this — every change ripples downstream. Read this once before your first PR.
+Thanks for contributing. This repo houses the Dash registry, CLI, MCP server, and Skill package. All 10 team members at Dash pull from this — every change ripples downstream. Read this once before your first PR.
 
 > **Internal only**: Dash Tech team. By contributing, you agree this work is internal-only per [`apps/docs/NOTICE.md`](apps/docs/NOTICE.md) and AlignUI Pro license. No external redistribution.
 
@@ -60,7 +60,7 @@ Examples:
 ```
 feat(rating-stars): add @dash/rating-stars component
 
-Adds the half-step rating input requested by the basecamp PE.
+Adds the half-step rating input requested by the basecamp team.
 Mirrors Figma node 4521:9018. Anatomy follows data-slot pattern.
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

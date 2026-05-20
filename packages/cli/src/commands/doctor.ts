@@ -1,11 +1,11 @@
 /**
- * `dash doctor` — end-to-end health check per PE laptop.
+ * `dash doctor` — end-to-end health check per user laptop.
  *
  * Runs registry reachability, token validity, MCP wiring (Claude Code + Cursor),
  * CLI version, framework detection, components.json presence, .env.local token,
  * Node version, package manager, and workspace-root detection.
  *
- * Designed to be a single command a PE runs when something feels off: it prints
+ * Designed to be a single command a user runs when something feels off: it prints
  * a 10-line status board and a Summary tally. `--json` for tooling. `--no-network`
  * for offline / pre-flight check.
  */

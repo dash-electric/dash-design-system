@@ -48,7 +48,7 @@ export default function LoginBlock01DocsPage() {
 
       <DocsSection title="When to use">
         <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
-          <li><strong>Use</strong> for internal Dash login (PE, Halo-dash Ops, tribe leadership).</li>
+          <li><strong>Use</strong> for internal Dash login (developers, Halo-dash Ops, tribe leadership).</li>
           <li><strong>Use</strong> when you have no SSO / IdP and email+password is the only path.</li>
           <li><strong>Don't</strong> use when SSO is preferred — reach for <code>Login 02</code> with social buttons.</li>
           <li><strong>Don't</strong> use for public signup — pair <code>Signup 01</code> with the split <code>AuthShell</code> variant.</li>

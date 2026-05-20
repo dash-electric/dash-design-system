@@ -2,12 +2,12 @@
  * `dash feedback` — Wave 5 pilot signal capture.
  *
  * Subcommands:
- *   - log "<text>"  : append a free-text entry, auto-detect PE via git
+ *   - log "<text>"  : append a free-text entry, auto-detect user via git
  *   - log --json    : read a single FeedbackEntry-shaped JSON from stdin
  *   - sync          : POST pending entries to the admin pilot API
  *   - list          : print entries in a compact table
  *
- * Mirrors the `dash gap` shape so PE who learned one already know the
+ * Mirrors the `dash gap` shape so users who learned one already know the
  * other. JSONL on disk (`~/.dash/feedback-log.jsonl`) so appends are
  * effectively atomic and the dashboard can tail-stream.
  */
@@ -40,7 +40,7 @@ export type FeedbackLogOpts = {
   json?: boolean
   /** Override log path (tests). */
   logPath?: string
-  /** Override cwd for PE auto-detection (tests). */
+  /** Override cwd for user auto-detection (tests). */
   cwd?: string
   /** Stdin payload as a string (tests); production reads from process.stdin. */
   stdinPayload?: string

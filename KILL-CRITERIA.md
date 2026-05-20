@@ -16,7 +16,7 @@ Self-critique in `feedback.md`:
 A pre-committed kill threshold:
 1. Removes emotional sunk-cost pressure from future decisions
 2. Forces measurement (you cannot kill what you cannot count)
-3. Signals to PE that DS is an experiment, not a mandate — encourages honest adoption
+3. Signals to users that DS is an experiment, not a mandate — encourages honest adoption
 
 ---
 
@@ -24,7 +24,7 @@ A pre-committed kill threshold:
 
 From Obsidian vault `02-Projects/Product-Design/Dash/Dash-Design-System/00-Overview.md`:
 
-1. **Eliminate brand drift** across 10 PE
+1. **Eliminate brand drift** across 10 team members
 2. **Drop ship-time** 2-3 days → 1 day per feature
 3. **100% Dash sovereign** (zero external dependencies in end-state)
 4. **AI-native** consumption via Claude Code / Cursor + Dash MCP
@@ -37,18 +37,18 @@ Each goal needs a measurable proxy. The thresholds below use the cleanest availa
 
 ### T1.1 — Adoption floor (Week 4)
 
-**Threshold:** If fewer than **3 PE** have installed at least 1 Dash DS component within 4 weeks of public launch, pivot or kill.
+**Threshold:** If fewer than **3 users** have installed at least 1 Dash DS component within 4 weeks of public launch, pivot or kill.
 
 **Why 3:**
-- 10 PE total. 3 = 30% = floor for "this is a thing some people use".
+- 10 team members total. 3 = 30% = floor for "this is a thing some people use".
 - Below 30% = signals that the boring incumbent (senior FE reviewer + 5-page README + Figma) is more attractive than DS.
 
 **How to measure:**
-- `dash audit --json` run weekly against each PE repo
+- `dash audit --json` run weekly against each user repo
 - OR explicit install telemetry from CLI `dash add` POST `/api/usage` (P1.15)
 - OR direct ask in `#design-system` Slack (lossy, last resort)
 
-**If failed:** spend 1 week on PE 1:1s to understand barrier. Either fix the barrier or pivot to senior-FE-review model.
+**If failed:** spend 1 week on user 1:1s to understand barrier. Either fix the barrier or pivot to senior-FE-review model.
 
 ---
 
@@ -57,7 +57,7 @@ Each goal needs a measurable proxy. The thresholds below use the cleanest availa
 **Threshold:** If fewer than **30%** of new UI PRs across the 10 Dash repos use any Dash DS component within 8 weeks of launch, kill the active build investment.
 
 **Why 30%:**
-- Baseline: 0% (no PE uses DS today). 30% in 8 weeks = ~4% weekly growth = realistic floor for a working tool.
+- Baseline: 0% (no one uses DS today). 30% in 8 weeks = ~4% weekly growth = realistic floor for a working tool.
 - Below 30% = DS is shelfware. The 60-70hr/wk maintenance burden (per backfill estimate from schema unification) doesn't pay back.
 
 **How to measure:**
@@ -96,8 +96,8 @@ Each goal needs a measurable proxy. The thresholds below use the cleanest availa
 
 These don't trigger immediate kill, but require explicit explanation if observed:
 
-### T2.1 — Single-PE adoption skew
-If 1 PE accounts for >70% of all installs, DS is being used by 1 person, not the team. Sign of personal preference, not team value.
+### T2.1 — Single-user adoption skew
+If 1 user accounts for >70% of all installs, DS is being used by 1 person, not the team. Sign of personal preference, not team value.
 
 ### T2.2 — Component drift in DS itself
 If `dash audit` run against `/dash-ds/` source itself produces HIGH findings (self-contradiction), the artifact has lost discipline. Wave 1+2+3 fixed the known cases — future regressions are signal of decay.
@@ -105,14 +105,14 @@ If `dash audit` run against `/dash-ds/` source itself produces HIGH findings (se
 ### T2.3 — CLI/MCP error rate
 If `dash add` failure rate exceeds 5% (per usage telemetry once instrumented), tool is too fragile to scale.
 
-### T2.4 — Time-to-resolution on PE issues
+### T2.4 — Time-to-resolution on user issues
 If median issue resolution time exceeds 5 working days, bus factor (1) is real and unsustainable.
 
 ---
 
 ## Explicitly NOT in kill criteria
 
-- **Aesthetic preference** — if PE "don't like the look", that's a UX iteration, not kill signal
+- **Aesthetic preference** — if users "don't like the look", that's a UX iteration, not kill signal
 - **Number of components** — 214 vs 30 doesn't matter if usage is real
 - **Token cost of build** — sunk
 - **Visibility / PR / external recognition** — DS is internal, not marketing
@@ -126,7 +126,7 @@ When any T1 threshold trips:
 
 1. **Pause active build** (no new components, no new docs) within 1 week of trip
 2. **Write a 1-page postmortem**: what happened, what hypothesis failed, what was learned
-3. **Hold 60-min decision meeting** with: Irfan + 1 senior PE + 1 design lead
+3. **Hold 60-min decision meeting** with: Irfan + 1 senior team member + 1 design lead
 4. **Choose ONE outcome:**
    - **Kill** — archive repo, freeze CLI, document migration path off `@dash/*`
    - **Pivot** — redefine scope (e.g., DS becomes "token-only" instead of components)
@@ -171,8 +171,8 @@ These must be in place before launch for kill criteria to be measurable:
 
 **Sign-off:**
 
-- [x] **Irfan (CEO) — approved 2026-05-20:** T1.1 = 3 PE / T1.2 = 30% PR / T1.3 = 20% drift reduction
-- [ ] Senior PE rep — deferred (bus factor = 1 currently; revisit Q3 2026 when deputy onboards)
+- [x] **Irfan (CEO) — approved 2026-05-20:** T1.1 = 3 users / T1.2 = 30% PR / T1.3 = 20% drift reduction
+- [ ] Senior user rep — deferred (bus factor = 1 currently; revisit Q3 2026 when deputy onboards)
 - [ ] Design lead — deferred (same — single-owner phase)
 
 **Note:** Per locked decision 2026-05-20, sole sign-off = CEO acceptable for Phase 0-2. Add additional approvers post-bus-factor mitigation.

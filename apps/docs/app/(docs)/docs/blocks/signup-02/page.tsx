@@ -47,7 +47,7 @@ export default function SignupBlock02DocsPage() {
       <DocsSection title="When to use">
         <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
           <li><strong>Use</strong> when SSO is the preferred signup path but you still accept fallback emails.</li>
-          <li><strong>Use</strong> for tribe leadership and PE invitations (Google Workspace).</li>
+          <li><strong>Use</strong> for tribe leadership and developer invitations (Google Workspace).</li>
           <li><strong>Don't</strong> use for mitra mass-recruitment — they don't have SSO; use <code>Signup 01</code> or stepper.</li>
         </ul>
       </DocsSection>

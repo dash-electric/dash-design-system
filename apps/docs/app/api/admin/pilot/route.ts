@@ -10,12 +10,12 @@ import { isAuthorized, unauthorized } from "@/app/api/registry/_auth"
  * sources (same JSONL-append pattern as /api/admin/usage):
  *
  *   1. `registry-audit.jsonl` — install events from the registry.
- *      Used to derive per-PE component-install counts. PE identity is
- *      mapped through `pilot-cohort.json` (hashed-client → PE name).
- *   2. `pilot-feedback.jsonl` — feedback entries synced from PE via
+ *      Used to derive per-user component-install counts. User identity is
+ *      mapped through `pilot-cohort.json` (hashed-client → user name).
+ *   2. `pilot-feedback.jsonl` — feedback entries synced from users via
  *      `dash feedback sync`. Drives the feedback feed.
- *   3. `pilot-cohort.json` — declares the 3 PE in this pilot. If
- *      missing, returns 3 placeholder PE so the dashboard renders.
+ *   3. `pilot-cohort.json` — declares the 3 users in this pilot. If
+ *      missing, returns 3 placeholder users so the dashboard renders.
  *
  * Response shape (stable contract — page.tsx + pilot-dashboard.tsx
  * depend on it):
@@ -26,7 +26,7 @@ import { isAuthorized, unauthorized } from "@/app/api/registry/_auth"
  *     feedback: [FeedbackEntry, …]  // newest-first, capped at 50
  *   }
  *
- * Privacy: PE names come from local pilot-cohort.json which is
+ * Privacy: user names come from local pilot-cohort.json which is
  * gitignored — never leaves the host. No emails, no IPs.
  */
 
@@ -86,9 +86,9 @@ async function loadCohort(): Promise<CohortFile> {
     name: "wave-5",
     startedAt: null,
     members: [
-      { pe: "[PE-A]", onboardingStep: 0 },
-      { pe: "[PE-B]", onboardingStep: 0 },
-      { pe: "[PE-C]", onboardingStep: 0 },
+      { pe: "[User-A]", onboardingStep: 0 },
+      { pe: "[User-B]", onboardingStep: 0 },
+      { pe: "[User-C]", onboardingStep: 0 },
     ],
   }
 }
@@ -144,10 +144,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       )
     : 0
 
-  // Per-PE counts. Component-install count is derived from feedback context
-  // (when PE logs `dash add X` as feedback) OR from audit when we add an
-  // explicit PE field to the audit line (future). For now: count distinct
-  // components per PE via feedback context.command + context.component.
+  // Per-user counts. Component-install count is derived from feedback context
+  // (when a user logs `dash add X` as feedback) OR from audit when we add an
+  // explicit user field to the audit line (future). For now: count distinct
+  // components per user via feedback context.command + context.component.
   const perPe = members.map((m) => {
     const peFeedback = feedback.filter((f) => f.pe === m.pe)
     const componentSet = new Set<string>()
@@ -193,7 +193,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   const T12_TARGET = 30 // 30% PR penetration target. Until we wire a per-PR
                        // analysis pipeline, surface install-density as a proxy:
-                       // share of PE who installed ≥3 components.
+                       // share of users who installed ≥3 components.
   const T12_ACTUAL = perPe.length
     ? Math.round(
         (perPe.filter((p) => p.components >= 3).length / perPe.length) * 100,
@@ -219,8 +219,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       },
       cohort: perPe,
       thresholds: {
-        t11: { target: T11_TARGET, actual: T11_ACTUAL, label: "PE onboarded" },
-        t12: { target: T12_TARGET, actual: T12_ACTUAL, label: "% PE with ≥3 components (PR proxy)" },
+        t11: { target: T11_TARGET, actual: T11_ACTUAL, label: "Users onboarded" },
+        t12: { target: T12_TARGET, actual: T12_ACTUAL, label: "% users with ≥3 components (PR proxy)" },
         t13: { target: T13_TARGET, actual: T13_ACTUAL, label: "% drift reduction (placeholder)" },
       },
       feedback: sortedFeedback,

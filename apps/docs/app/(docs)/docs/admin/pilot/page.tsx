@@ -18,13 +18,13 @@ export const dynamic = "force-dynamic"
 const EMPTY: PilotData = {
   pilot: { name: "wave-5", day: 0, status: "active", startedAt: null },
   cohort: [
-    { pe: "[PE-A]", components: 0, gaps: 0, daysActive: 0, onboardingStep: 0, status: "not-started" },
-    { pe: "[PE-B]", components: 0, gaps: 0, daysActive: 0, onboardingStep: 0, status: "not-started" },
-    { pe: "[PE-C]", components: 0, gaps: 0, daysActive: 0, onboardingStep: 0, status: "not-started" },
+    { pe: "[User-A]", components: 0, gaps: 0, daysActive: 0, onboardingStep: 0, status: "not-started" },
+    { pe: "[User-B]", components: 0, gaps: 0, daysActive: 0, onboardingStep: 0, status: "not-started" },
+    { pe: "[User-C]", components: 0, gaps: 0, daysActive: 0, onboardingStep: 0, status: "not-started" },
   ],
   thresholds: {
-    t11: { target: 3, actual: 0, label: "PE onboarded" },
-    t12: { target: 30, actual: 0, label: "% PE with ≥3 components (PR proxy)" },
+    t11: { target: 3, actual: 0, label: "Users onboarded" },
+    t12: { target: 30, actual: 0, label: "% users with ≥3 components (PR proxy)" },
     t13: { target: 20, actual: 0, label: "% drift reduction (placeholder)" },
   },
   feedback: [],

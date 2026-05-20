@@ -41,7 +41,7 @@ export type FormState<T extends Record<string, unknown>> = {
 
 /**
  * Hand-rolled form state. One useState per concern (values, errors) keeps the
- * re-render footprint identical to what PE would write by hand — no hidden
+ * re-render footprint identical to what a developer would write by hand — no hidden
  * context updates, no proxy magic.
  */
 export function useDashForm<T extends Record<string, unknown>>(

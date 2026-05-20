@@ -92,7 +92,7 @@ export default function ImageEditorWithAuditDocsPage() {
       <DocsSection title="Usage">
         <DocsCode
           language="tsx"
-          code={`// 3-line PE-friendly snippet
+          code={`// 3-line developer-friendly snippet
 const [open, setOpen] = useState(false)
 return open ? <ImageEditorWithAudit proofUrl={url} proofType="pickup" editorId={uid} onSave={save} onCancel={() => setOpen(false)} /> : null`}
         />

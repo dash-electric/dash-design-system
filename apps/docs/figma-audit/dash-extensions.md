@@ -37,7 +37,7 @@ Components/blocks/templates/tokens that **diverge** from AlignUI Pro Figma sourc
 
 All use Dash UI components + semantic tokens. Sector-specific auth (`hr-login.tsx`, `finance-login.tsx`, `marketing-login.tsx`) are Figma-sourced from respective sector pages.
 
-**Strategy**: Keep both layers. Generic auth-* / login-* / signup-* serve as Dash defaults; sector-specific override per industry. PE picks based on context.
+**Strategy**: Keep both layers. Generic auth-* / login-* / signup-* serve as Dash defaults; sector-specific override per industry. Users pick based on context.
 
 ## Form/composite primitives (no Figma source)
 

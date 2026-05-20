@@ -2,9 +2,9 @@
 
 How to demo Dash DS live in front of the team Thursday. Memorize the 5-act flow, keep this file open on a second screen as a safety net.
 
-> **Audience**: Irfan, demoing to 10 PE Dash on **2026-05-21 Thursday**.
+> **Audience**: Irfan, demoing to 10 team members at Dash on **2026-05-21 Thursday**.
 >
-> **Goal**: PE leaves wanting to install today. Not theoretical — they SEE the workflow drop ship-time from 2.5 days to half a day, on the actual Dash codebase they touch every day.
+> **Goal**: team leaves wanting to install today. Not theoretical — they SEE the workflow drop ship-time from 2.5 days to half a day, on the actual Dash codebase they touch every day.
 
 ---
 
@@ -56,7 +56,7 @@ echo "DASH_REGISTRY_TOKEN=$DASH_REGISTRY_TOKEN" > .env.local
 
 > "Berapa lama lu ngerjain fitur baru di `next-portal-v2-web`? Misal halaman buat bulk-create delivery — 5 order sekaligus, masing-masing punya useCode 6-digit. Beneran ngitung dari kosong sampai PR merge."
 
-Wait. Let one PE answer "2 hari? 3 hari?". Nod.
+Wait. Let one team member answer "2 hari? 3 hari?". Nod.
 
 > "Sekarang berapa lama buat warnanya match Dash brand kalau Claude / Cursor generate dari scratch? Berapa kali revisi `coba pakai biru Dash` `biru yang di Figma` `bukan itu`? Atau worse — AI generate pakai RHF + zod padahal repo Dash pakai Jotai + native state, terus harus refactor."
 
@@ -78,7 +78,7 @@ Tab: https://ds.dash.com/docs/components/data-table
 
 Tab: https://ds.dash.com/docs/patterns/multi-item-form
 
-> "Dan ini yang beda dari shadcn — kita punya **patterns**. Multi-item form, bulk-submit, use-code-field. Pattern-pattern khas Dash yang tiap PE pasti ketemu."
+> "Dan ini yang beda dari shadcn — kita punya **patterns**. Multi-item form, bulk-submit, use-code-field. Pattern-pattern khas Dash yang tiap developer pasti ketemu."
 
 **Don't dwell.** This is just establishing "the thing exists". Move on.
 
@@ -164,13 +164,13 @@ Open browser → /deliveries/create.
 
 ### Act 5 — The math + the ask (2 min)
 
-Switch back to pitch deck (slide 11 — 45 PE-days/week).
+Switch back to pitch deck (slide 11 — 45 dev-days/week).
 
-> "10 PE × 3 fitur/minggu × 1.5 hari saved per fitur = 45 PE-days saved per minggu. Setara 2 engineer full-time, balik tiap Senin."
+> "10 developer × 3 fitur/minggu × 1.5 hari saved per fitur = 45 dev-days saved per minggu. Setara 2 engineer full-time, balik tiap Senin."
 
 Slide 10 (5-week roadmap):
 
-> "Minggu ini deploy. Minggu depan gua shadow 1 PE pioneer pakai workflow ini. Minggu ke-3 kita roll ke 5 PE. Minggu ke-4 full rollout. Minggu ke-5 contribute-back loop terbuka."
+> "Minggu ini deploy. Minggu depan gua shadow 1 user pioneer pakai workflow ini. Minggu ke-3 kita roll ke 5 user. Minggu ke-4 full rollout. Minggu ke-5 contribute-back loop terbuka."
 
 Slide 14 (closing):
 
@@ -227,12 +227,12 @@ If still failing → skip MCP narration in Act 4. Manually instruct Claude `"fir
 
 | Don't | Why |
 |---|---|
-| Don't open with "Let me explain the architecture" | PE care about their day getting faster, not your design choices. Open with their pain. |
+| Don't open with "Let me explain the architecture" | Team members care about their day getting faster, not your design choices. Open with their pain. |
 | Don't apologize for tooling gaps ("we still need to build...") | You closed the gap yesterday. Talk about what shipped. |
 | Don't demo every component | Boring. Pick 1 killer flow (multi-order delivery page) and drive it deep. |
 | Don't read slides verbatim | Slides are eyebrow context. You're the narrator. |
 | Don't take questions during demo | Ask "save questions for end" up front. Mid-flow Q&A kills timing. |
-| Don't promise dates you don't control | Vercel rollout = "this week", PE pilot = "next week", full rollout = "by mid-June". Don't over-promise. |
+| Don't promise dates you don't control | Vercel rollout = "this week", user pilot = "next week", full rollout = "by mid-June". Don't over-promise. |
 
 ---
 
@@ -257,15 +257,15 @@ If still failing → skip MCP narration in Act 4. Manually instruct Claude `"fir
 
 ### Same-day
 - Pin install instructions in `#design-system` Slack
-- DM the 1-2 PE who looked most enthusiastic — schedule shadow session within 48 hours
+- DM the 1-2 team members who looked most enthusiastic — schedule shadow session within 48 hours
 - Update vault `06-Adoption-Metrics.md` with attendance + reactions
 
 ### Week 1
-- Shadow the 1 PE pioneer. Capture every friction point ("dash init prompt confusing", "Claude tried to install non-existent variant", etc.).
+- Shadow the 1 pilot user. Capture every friction point ("dash init prompt confusing", "Claude tried to install non-existent variant", etc.).
 - Friction → GitHub issue or vault `07-Ideas-Backlog.md`.
 
 ### Week 2
-- 1 PE → 5 PE. Slack thread per PE: "Liat workflow ini, mau coba minggu ini?"
+- 1 user → 5 users. Slack thread per user: "Liat workflow ini, mau coba minggu ini?"
 - Track install events in Vercel logs.
 
 ---
@@ -276,7 +276,7 @@ If still failing → skip MCP narration in Act 4. Manually instruct Claude `"fir
 # health
 curl -s https://ds.dash.com/api/health | jq
 
-# install CLI (PE laptop, one-time)
+# install CLI (user laptop, one-time)
 pnpm i -g dash
 
 # new consumer repo
@@ -311,4 +311,4 @@ vercel rollback <url> --prod           # rollback (from apps/docs)
 | `dash doctor` red mid-prep | Re-run `dash mcp init --force`, restart Claude Code, re-verify. If still red, fallback to manual `dash search` narration. |
 | Claude generates RHF anyway | Stop, say "look — without Adaptation Layer that's exactly what you'd get". Type `"first run dash search and check stack via dash info"` as a follow-up. Shows the layer in action by absence vs presence. |
 | Vercel deploy down | Demo against localhost — `pnpm --filter @dash/docs dev` + `bash apps/docs/scripts/smoke.sh http://localhost:3000`. Tell team "Vercel hiccup, live registry sama, host beda". |
-| PE asks deep BE question (envelope/state machine) | Open `apps/docs/dash-domain-glossary.md` — 1,982 lines, 22+ entities, 4 state machines. Answer from source. |
+| User asks deep BE question (envelope/state machine) | Open `apps/docs/dash-domain-glossary.md` — 1,982 lines, 22+ entities, 4 state machines. Answer from source. |

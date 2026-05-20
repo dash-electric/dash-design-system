@@ -35,7 +35,7 @@ import {
  *
  * WHY this template:
  *  - 80%+ of Dash backoffice screens are "table + filter bar + paginate + row
- *    click → detail modal". PE rewrites this skeleton 10× per quarter — same
+ *    click → detail modal". Developers rewrite this skeleton 10× per quarter — same
  *    bugs each time (filter doesn't reset page; debounce missing; empty state
  *    renders BEFORE first fetch returns and looks like a broken endpoint).
  *  - Locking the filter ↔ fetch ↔ pagination wiring in the scaffold means

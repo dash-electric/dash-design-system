@@ -1,6 +1,6 @@
-# Dash DS — PE Onboarding Playbook (Wave 5 Pilot)
+# Dash DS — User Onboarding Playbook (Wave 5 Pilot)
 
-> Pilot version for the first 3 Product Engineers. Target end-to-end onboarding: **under 45 minutes** from a clean laptop to a vibe-coded screen committed to a Dash repo.
+> Pilot version for the first 3 pilot users. Target end-to-end onboarding: **under 45 minutes** from a clean laptop to a vibe-coded screen committed to a Dash repo.
 
 Web version of this same playbook (with screenshot slots, navigation, search):
 **https://ds.dash.com/docs/onboarding**
@@ -15,9 +15,9 @@ Companion docs:
 
 ## A. Pre-flight (5 min)
 
-**What is Dash DS.** Internal sovereign design system for 10+ PE at Dash. You pull components by name with the `dash` CLI; your AI editor learns the registry through MCP + a Skill that enforces Dash conventions (tokens, voice, audit trail).
+**What is Dash DS.** Internal sovereign design system for 10+ team members at Dash. You pull components by name with the `dash` CLI; your AI editor learns the registry through MCP + a Skill that enforces Dash conventions (tokens, voice, audit trail).
 
-**Who this is for.** Wave 5 = the first 3 PE on Ride tribe. Logistic, Travel, Marketplace pilots come later. You should already be comfortable shipping Next.js + Tailwind features and using Claude Code or Cursor daily.
+**Who this is for.** Wave 5 = the first 3 pilot users on Ride tribe. Logistic, Travel, Marketplace pilots come later. You should already be comfortable shipping Next.js + Tailwind features and using Claude Code or Cursor daily.
 
 **Time commitment.** ~30–45 min onboarding (this doc). ~1 hour for your first real ticket. ~15 min/week giving feedback in `#dash-ds-pilot`. Pilot window: 1 week.
 
@@ -230,7 +230,7 @@ Honest critique > polite agreement.
 
 ## Appendix — Wave 5 invite Slack DM template
 
-Paste-ready for inviting one of the 3 pilot PE. Fill in `[name]`, dates, and 1Password share link.
+Paste-ready for inviting one of the 3 pilot users. Fill in `[name]`, dates, and 1Password share link.
 
 ```
 Halo [name],

@@ -1,6 +1,6 @@
 # Dash DS — Honest Feedback (For Fresh-Eyes Review)
 
-> **Audience:** new conversation / external reviewer / future PE pioneer.
+> **Audience:** new conversation / external reviewer / future user pioneer.
 >
 > **Purpose:** brutal critique, not marketing. We built this fast. Half of it is fragile. Some of it is theatre. This file lists what we shipped, what's actually solid, what's likely to fail, and where we'd cut if we had to ship Thursday with confidence.
 >
@@ -39,7 +39,7 @@
 - 12 drift items inventoried (zero action — user mandate "respect existing").
 
 ### Outside this work
-- Lu have NOT yet: deployed to Vercel, distributed token to PE, run the actual demo, captured friction logs.
+- Lu have NOT yet: deployed to Vercel, distributed token to users, run the actual demo, captured friction logs.
 
 ---
 
@@ -65,8 +65,8 @@ The 3 canonical pattern blocks (`multi-item-form`, `bulk-submit`, `use-code-fiel
 This is theatre. Reality:
 - AI is statistically likely to copy-paste pattern code verbatim when it sees it in registry.
 - The translation layer is text in a rules file. AI may follow it or may not. Untested.
-- PE reading the pattern source will be confused: "Why does Dash DS recommend RHF if we banned it?"
-- The "canonical reference" framing is engineer-speak. PE on deadline will use the code as written.
+- Users reading the pattern source will be confused: "Why does Dash DS recommend RHF if we banned it?"
+- The "canonical reference" framing is engineer-speak. Users on deadline will use the code as written.
 
 **Honest call:** patterns should have been rewritten in vanilla `useState` + manual validation matching the actual stack. We optimized for pattern elegance over adoption reality.
 
@@ -74,7 +74,7 @@ This is theatre. Reality:
 
 The whole "AI auto-detects repo + adapts" story depends on the Skill package programmatically loading project state into AI context. We shipped a 6-file scaffold with stubs that return `"TODO Phase 2"`.
 
-Without Skill, PE must manually paste context into every prompt or AI works blind. The Adaptation Layer rules markdown is only useful if AI actually reads it, which it does only when something injects it. That something is Skill. Which does not exist.
+Without Skill, users must manually paste context into every prompt or AI works blind. The Adaptation Layer rules markdown is only useful if AI actually reads it, which it does only when something injects it. That something is Skill. Which does not exist.
 
 **Honest call:** we should have built Skill v1 even minimal (read `dash info --json` + inject into a sticky system prompt) before pattern blocks or Codex-style docs. Wrong priority order.
 
@@ -97,13 +97,13 @@ We tested the server has 6 tools and responds to JSON-RPC fixtures. We never:
 - Watched an AI use the tools to solve a real prompt.
 - Measured whether `search_components` query results actually inform code generation.
 
-The dev loop "PE prompts → AI queries MCP → AI gets right snippet → AI ships right code" was never observed end-to-end. We assumed it works.
+The dev loop "user prompts → AI queries MCP → AI gets right snippet → AI ships right code" was never observed end-to-end. We assumed it works.
 
 **Honest call:** run the 12 test prompt fixtures against a real Claude Code session with MCP wired. Capture diff between AI output and expected. We have the harness shape but no actual runs.
 
 ### Pattern validator is decorative
 
-The `validate-patterns.ts` script checks 3 patterns against the ban list. It is wired into CI as non-blocking. There is no mechanism to validate **PE-generated code** against the ban list during their PR. We only check our own edges.
+The `validate-patterns.ts` script checks 3 patterns against the ban list. It is wired into CI as non-blocking. There is no mechanism to validate **user-generated code** against the ban list during their PR. We only check our own edges.
 
 A drift in fleet-mgmt's `RepoModal.tsx` exists today (RHF + zod, against the ban). We documented it. We have no way to detect the next one automatically.
 
@@ -121,7 +121,7 @@ Pattern Do/Don't examples use IDs like `mtr-9412`, `DLV-7821`, `DASH42`. We neve
 
 Also: voice rule ("kamu" default for mitra-facing) is sourced from a single `halo-dash-fe/docs/design/voice.md` file. Other Dash apps may have different voice conventions we did not extract.
 
-**Honest call:** verify ID format with 1 PE before Thursday. Replace example IDs with confirmed-real format.
+**Honest call:** verify ID format with 1 user before Thursday. Replace example IDs with confirmed-real format.
 
 ### CHANGELOG drift section was hallucinated initially
 
@@ -133,7 +133,7 @@ The agent writing CHANGELOG.md invented repo names ("claim-portal", "driver-app-
 
 Quick Start (8 steps) and Installation (6 steps) were rebuilt with `<DocsStep>` primitives that render dotted-grid boxes labeled "Screenshot: ..." where real images should be. Zero screenshots exist.
 
-This looks polished in light review (numbered steps + descriptions + code blocks). It is empty calories until real screenshots ship. PE skimming the docs will think "image-rich onboarding" when there is no image.
+This looks polished in light review (numbered steps + descriptions + code blocks). It is empty calories until real screenshots ship. Users skimming the docs will think "image-rich onboarding" when there is no image.
 
 **Honest call:** either capture screenshots now (15 minutes with a real `dash init` flow) or drop the placeholders and ship text-only. Halfway is misleading.
 
@@ -147,9 +147,9 @@ Removing tabs hid the symptom. The disease is: doc page schema is not standardiz
 
 ### Adoption score is fan fiction
 
-We claim 8.0/10 post-Wave 7. This is a number we invented based on structural fit, weighted by guessed PE-segment distribution, projected over guessed timeline. Zero PE have tried this. The first real adoption datapoint will be Week 1 post-deploy.
+We claim 8.0/10 post-Wave 7. This is a number we invented based on structural fit, weighted by guessed user-segment distribution, projected over guessed timeline. Zero users have tried this. The first real adoption datapoint will be Week 1 post-deploy.
 
-**Honest call:** drop the score. Replace with "this is structurally consistent and looks adoptable. Validate Week 1 with 1 PE before claiming anything."
+**Honest call:** drop the score. Replace with "this is structurally consistent and looks adoptable. Validate Week 1 with 1 user before claiming anything."
 
 ### Process inefficiency
 
@@ -167,8 +167,8 @@ This session ran ~5M tokens across 15+ agent dispatches. Multiple corrections ca
 
 ### Single point of failure
 - Sole-owner Irfan. No deputy maintainer. If you leave, DS stops.
-- All Adaptation Layer logic exists in my head + the rules file. PE reading rules cold will misinterpret.
-- Token rotation is manual via 1Password. No automation. New PE mid-quarter = friction.
+- All Adaptation Layer logic exists in my head + the rules file. Users reading rules cold will misinterpret.
+- Token rotation is manual via 1Password. No automation. New users mid-quarter = friction.
 
 ### License (clarification — NOT a real risk)
 - **Code is 100% Dash-owned.** Zero runtime dependency on AlignUI. No `@alignui/*` npm package, no imports — every component written from scratch in this repo.
@@ -176,19 +176,19 @@ This session ran ~5M tokens across 15+ agent dispatches. Multiple corrections ca
 - License affects ONLY external redistribution of original Figma assets (not derivative code). Dash internal use is uncapped.
 
 ### Security model has ceiling
-- Bearer token works for 10 PE. Does not scale to 30+.
+- Bearer token works for 10 users. Does not scale to 30+.
 - No tenant isolation.
-- Audit log records IP hash only — cannot prove which PE pulled which item, only "some hashed client did".
-- If token leaks, every PE in vault must rotate simultaneously.
+- Audit log records IP hash only — cannot prove which user pulled which item, only "some hashed client did".
+- If token leaks, every user in vault must rotate simultaneously.
 
 ### CEO time misallocation
 - Lu spent 8+ hours this session on implementation oversight. Most of that could have been delegated cleanly to a single big agent with explicit "do not ask me intermediate questions" mandate. We did not structure the work that way.
 - Real CEO value was the 2 redirects (mono > split, no-drift-action). The other 6 hours were observation.
 
 ### Adoption assumption is generous
-- We assume PE will trust + adopt. Reality: trust gap requires 2-3 features per PE before it sticks.
-- We assume PE will switch from familiar tools (Cursor users to Claude Code, manual prompts to MCP). Each switch = friction.
-- We have no contingency for "PE tries, fails once, never returns". This is the most likely failure mode.
+- We assume users will trust + adopt. Reality: trust gap requires 2-3 features per user before it sticks.
+- We assume users will switch from familiar tools (Cursor users to Claude Code, manual prompts to MCP). Each switch = friction.
+- We have no contingency for "user tries, fails once, never returns". This is the most likely failure mode.
 
 ### No measurement plan
 - Token usage dashboard exists as a page. No data flowing.
@@ -207,7 +207,7 @@ If lu had 4 hours instead of 4 weeks to make this real:
 4. **Build Skill v1 minimal:** runs `dash info --json` + appends to AI context. Skip everything else in skill scope.
 5. **Skip Codex-style docs.** Quick Start as 1-page text + 4 commands. No 8-step image walkthrough.
 
-This would shave 80% of the volume and lose maybe 10% of the actual adoption value. The remaining 90% is over-engineering for a 10-PE internal team.
+This would shave 80% of the volume and lose maybe 10% of the actual adoption value. The remaining 90% is over-engineering for a 10-person internal team.
 
 ---
 
@@ -217,19 +217,19 @@ This would shave 80% of the volume and lose maybe 10% of the actual adoption val
 
 2. Why monorepo instead of just one repo + npm-published CLI/MCP/Skill packages? Monorepo wins for atomic refactor but loses on independent versioning. Trade-off was assumed, not analyzed.
 
-3. Why custom registry distribution at all? `shadcn add` from public registry plus a wrapper script could have shipped Day 1. We built sovereign infrastructure for sovereignty's sake. Was the actual problem PE access control or pattern customization?
+3. Why custom registry distribution at all? `shadcn add` from public registry plus a wrapper script could have shipped Day 1. We built sovereign infrastructure for sovereignty's sake. Was the actual problem user access control or pattern customization?
 
-4. The "4-source context model" (PE intent + existing repo state + Dash DS registry + AI rules) is in the pitch deck. Does AI actually compose these four into useful output, or is this a slide that sounds good?
+4. The "4-source context model" (user intent + existing repo state + Dash DS registry + AI rules) is in the pitch deck. Does AI actually compose these four into useful output, or is this a slide that sounds good?
 
 5. Why did we not build `dash audit` as the primary tool? An audit command that scans a consumer repo and reports drift against rules would be more adoption-leveraged than 214 components no one has tried installing.
 
-6. Is "PE adoption" even the right success metric? Maybe the metric should be "feature ship time" or "% PRs with brand-consistent UI". We optimized for adoption assuming it leads to those, but it might not.
+6. Is "user adoption" even the right success metric? Maybe the metric should be "feature ship time" or "% PRs with brand-consistent UI". We optimized for adoption assuming it leads to those, but it might not.
 
 7. Why is "Skill" deferred? It is the only mechanism for AI to know what is installed. Without it, every other tool is partially blind.
 
 8. Why is the docs site this large (398 routes) for an internal team of 10? Most large docs sites exist for SEO and discovery. Neither applies here. Slack channel + 5-page README might serve the actual users better.
 
-9. Why did we accept the pattern-block-as-canonical-reference framing? It feels engineered to justify keeping RHF+zod patterns. A simpler framing: patterns use the stack PE actually use. Less elegant. More obvious.
+9. Why did we accept the pattern-block-as-canonical-reference framing? It feels engineered to justify keeping RHF+zod patterns. A simpler framing: patterns use the stack users actually use. Less elegant. More obvious.
 
 10. What is the kill criterion? At what adoption rate / failure mode do we admit Dash DS is not working and pivot? We have no kill criterion. Projects without one survive long past their value.
 
@@ -246,7 +246,7 @@ Tell the new reviewer:
 
 Specific prompts that might surface useful critique:
 - "If you had to argue against Dash DS existing, what would you say?"
-- "What is the smallest version of this that delivers the actual problem (brand drift across PE) without the rest?"
+- "What is the smallest version of this that delivers the actual problem (brand drift across the team) without the rest?"
 - "What did this team optimize for that they should not have?"
 - "Where would a senior engineer at a 50-person company laugh at this work?"
 - "What is the boring incumbent solution this is competing with, and why was it not chosen?"

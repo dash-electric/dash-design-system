@@ -287,7 +287,7 @@ export default function RadioDocsPage() {
                 checked={plan === "team"}
                 label="Team"
                 sublabel="— $96 / mo"
-                description="For up to 10 PE; includes priority support."
+                description="For up to 10 users; includes priority support."
               />
             </RadioGroup>
           }

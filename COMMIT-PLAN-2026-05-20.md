@@ -87,7 +87,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ```
 feat(governance): kill criteria + self-critique compilation
 
-KILL-CRITERIA.md: T1.1=3 PE installed by Wk4, T1.2=30% PRs use DS by
+KILL-CRITERIA.md: T1.1=3 users installed by Wk4, T1.2=30% PRs use DS by
 Wk8, T1.3=20% drift reduction by Q1. CEO-signed 2026-05-20.
 
 feedback.md: honest pass over what shipped vs what's fragile.
@@ -176,7 +176,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ```
 fix(patterns): remove banned RHF/zod from canonical patterns
 
-Wave 1 work. Pattern blocks ship via registry — PE running `dash add
+Wave 1 work. Pattern blocks ship via registry — users running `dash add
 multi-item-form` was getting react-hook-form + zod imports, which
 rules.md explicitly bans in 5 places. Self-contradiction eliminated.
 
@@ -305,7 +305,7 @@ BSD-3 attribution preserved (LICENSE + NOTICE.md). Original
 copyright intact. install.sh creates ~/.claude/skills/dash-prd
 symlink.
 
-Anyone at Dash (PE, PM, ops, designer, CEO) can now invoke
+Anyone at Dash (developer, PM, designer, ops, CEO) can now invoke
 "create a PRD" or "review my PRD" with Dash domain awareness.
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

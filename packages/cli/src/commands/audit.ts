@@ -3,7 +3,7 @@
  * rules (banned deps, off-token colors, etc.).
  *
  * Complements `apps/docs/scripts/validate-patterns.ts`, which validates the
- * docs repo's own pattern blocks. This command runs INSIDE PE consumer repos
+ * docs repo's own pattern blocks. This command runs INSIDE user consumer repos
  * (halo-dash-fe, react-fleet-management-web-main, basecamp, …) to catch drift
  * that ships in feature PRs.
  *

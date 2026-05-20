@@ -1,10 +1,10 @@
 # CLAUDE.md — Dash Design System Repo Instructions
 
-> Auto-loaded by Claude Code when working in `/dash-ds/`. Anyone (PE, PM, ops, designer, CEO) cloning + opening in Claude Code gets this context.
+> Auto-loaded by Claude Code when working in `/dash-ds/`. Anyone (developer, PM, designer, ops, CEO) cloning + opening in Claude Code gets this context.
 
 ## What this repo is
 
-Dash Design System — internal sovereign DS for 10+ PE at Dash (PT Dash Elektrik Indonesia). Custom CLI + MCP + Skill stack. Distributes 214+ registry items (atoms, blocks, templates, patterns) to consumer Dash repos via `dash add <name>`.
+Dash Design System — internal sovereign DS for 10+ team members at Dash (PT Dash Elektrik Indonesia). Custom CLI + MCP + Skill stack. Distributes 214+ registry items (atoms, blocks, templates, patterns) to consumer Dash repos via `dash add <name>`.
 
 ## Layered Architecture
 

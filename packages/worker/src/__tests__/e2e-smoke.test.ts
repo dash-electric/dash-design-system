@@ -46,10 +46,10 @@ describe("Hermes E2E smoke (Wave 4)", () => {
   })
 
   // -------------------------------------------------------------------------
-  // 1. Happy path — full PE→gap→worker→PR→Slack pipeline.
+  // 1. Happy path — full user→gap→worker→PR→Slack pipeline.
   // -------------------------------------------------------------------------
   it("processes pending gap end-to-end → vendored + PR + Slack", async () => {
-    // 1. PE drops a gap into the queue (simulating CLI `dash gap sync` having
+    // 1. User drops a gap into the queue (simulating CLI `dash gap sync` having
     //    POSTed to /api/dashboard/requests which writes the queue file).
     const gap = harness.seedGap({
       description: "no image-editor for mitra proof upload",

@@ -20,7 +20,7 @@ import { NextRequest, NextResponse } from "next/server"
  * the Retry-After header on 429.
  *
  * Failure mode: if the limiter itself throws, requests are ALLOWED
- * (fail-open). The alternative — locking out all PE on a Redis outage
+ * (fail-open). The alternative — locking out all users on a Redis outage
  * — is worse for an internal-only deployment.
  */
 
@@ -161,8 +161,8 @@ function getLimiter(): Limiter {
 const limiter = getLimiter()
 
 /**
- * Limit policy — picked to match a 10-PE internal deployment.
- * Adjust here when team grows past 30 PE or traffic 10x.
+ * Limit policy — picked to match a 10-user internal deployment.
+ * Adjust here when team grows past 30 users or traffic 10x.
  */
 const POLICY = {
   perIp: { limit: 60, windowSeconds: 60 },

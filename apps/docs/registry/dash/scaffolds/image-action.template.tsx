@@ -45,7 +45,7 @@ import { toast } from "@/registry/dash/ui/toaster"
 // Types — exported so Agent N can extend without re-typing the surface.
 // ---------------------------------------------------------------------------
 
-/** Identifies the entity whose image is being edited. PE supplies these. */
+/** Identifies the entity whose image is being edited. Consumer supplies these. */
 export type ImageActionEntity = {
   /** UUID of the parent row (delivery, mitra, kyc submission). */
   entityId: string
@@ -219,7 +219,7 @@ export function ImageActionTemplate({
       toast.success(`Perubahan tersimpan. Audit ID: ${result.auditId}`)
       onOpenChange(false)
     } catch (err) {
-      // Catch-all: thrown network error and BE 4xx surface identically to PE.
+      // Catch-all: thrown network error and BE 4xx surface identically to caller.
       const message = err instanceof Error ? err.message : "Terjadi kesalahan."
       toast.error(`Gagal menyimpan perubahan: ${message}`)
     } finally {

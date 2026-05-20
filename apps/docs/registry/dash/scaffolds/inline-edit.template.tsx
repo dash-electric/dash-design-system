@@ -20,7 +20,7 @@ import { toast } from "@/registry/dash/ui/toaster"
  *
  * WHY this template:
  *  - Inline editable cells (delivery note, mitra nickname, vehicle plate) are
- *    a high-traffic Dash pattern. PE keeps copying the wrong shape: missing
+ *    a high-traffic Dash pattern. Developers keep copying the wrong shape: missing
  *    audit, no escape-to-cancel, no min tap target on mobile.
  *  - Scaffolding the read/edit toggle + audit POST + validate + a11y wiring
  *    means Agent N just fills FIELD_NAME + ON_SAVE.

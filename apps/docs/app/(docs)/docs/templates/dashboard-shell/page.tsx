@@ -179,7 +179,7 @@ export default function DashboardShellDocsPage() {
 
       <DocsSection title="When to use">
         <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
-          <li><strong>Use</strong> as the layout for any signed-in backoffice route — Halo-dash, Tribe-Express, PE admin.</li>
+          <li><strong>Use</strong> as the layout for any signed-in backoffice route — Halo-dash, Tribe-Express, developer admin.</li>
           <li><strong>Use</strong> when you need a persistent sidebar nav across pages.</li>
           <li><strong>Use</strong> when the page has a single primary content area (KPIs, tables, forms).</li>
           <li><strong>Don't</strong> use for 3-pane workflows (list / thread / inspector) — reach for <code>HaloDash3Pane</code>.</li>

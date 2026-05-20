@@ -58,7 +58,7 @@ CSV has 9 columns:
 
 All sub-flows (Settings/Onboarding/Verification per sector). User can choose to:
 - A: Port all 43 in Phase 3c via more agents
-- B: Skip — sector-specific PE teams compose ad-hoc
+- B: Skip — sector-specific teams compose ad-hoc
 - C: Hybrid — port Settings sub-flows (high reuse), skip onboarding (one-shot)
 
 ## Maintenance

@@ -39,12 +39,12 @@ export default function AuthShellDocsPage() {
         <DocsExample
           bare
           title="Centered — Masuk Dash"
-          description="Default centered card. Used for internal PE + Ops + mitra leadership login."
+          description="Default centered card. Used for internal developers + Ops + mitra leadership login."
           preview={
             <DocsTemplatePreview>
               <AuthShell
                 title="Masuk Dash"
-                description="Akun internal hanya untuk PE + Ops + mitra leadership."
+                description="Akun internal hanya untuk developers + Ops + mitra leadership."
                 footer={
                   <>
                     Belum punya akun? <LinkButton href="#">Daftar sekarang</LinkButton>
@@ -76,7 +76,7 @@ export default function AuthShellDocsPage() {
           }
           code={`<AuthShell
   title="Masuk Dash"
-  description="Akun internal hanya untuk PE + Ops + mitra leadership."
+  description="Akun internal hanya untuk developers + Ops + mitra leadership."
   footer={<>Belum punya akun? <LinkButton href="/signup">Daftar</LinkButton></>}
 >
   <form>{/* email, password, remember, submit */}</form>
@@ -166,7 +166,7 @@ export default function AuthShellDocsPage() {
       <DocsSection title="When to use">
         <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
           <li><strong>Use</strong> for any unauthenticated route — <code>/login</code>, <code>/signup</code>, <code>/forgot-password</code>, <code>/verify</code>.</li>
-          <li><strong>Use</strong> centered variant for internal tools where speed-to-form matters (Halo-dash, PE backoffice).</li>
+          <li><strong>Use</strong> centered variant for internal tools where speed-to-form matters (Halo-dash, developer backoffice).</li>
           <li><strong>Use</strong> split variant for public-facing signup where brand storytelling helps conversion (Tribe-Express mitra recruitment).</li>
           <li><strong>Don't</strong> use for in-app re-auth modals — use a <code>Modal</code> with the same form inside instead.</li>
           <li><strong>Don't</strong> use for multi-step onboarding — reach for <code>FormStepperPage</code> which carries a step indicator.</li>

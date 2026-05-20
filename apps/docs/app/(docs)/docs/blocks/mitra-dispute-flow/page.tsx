@@ -109,7 +109,7 @@ export default function MitraDisputeFlowDocsPage() {
       <DocsSection title="Usage">
         <DocsCode
           language="tsx"
-          code={`// PE-friendly snippet — consumer owns the audit-row write inside onSubmit
+          code={`// Developer-friendly snippet — consumer owns the audit-row write inside onSubmit
 const [open, setOpen] = useState(false)
 return open ? (
   <MitraDisputeFlow

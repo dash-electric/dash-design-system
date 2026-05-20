@@ -22,8 +22,8 @@ Checklist sebelum masuk ruangan:
 
 - [ ] Buka `localhost:3000/docs/architecture/layered` (live demo siap)
 - [ ] Buka `localhost:3000/docs/architecture/themes` (side-by-side proof, tab terpisah)
-- [ ] `ONBOARDING-PLAYBOOK.md` ready to scroll (PE journey)
-- [ ] 3 PE candidates names siap di kepala (jangan freeze waktu ditanya)
+- [ ] `ONBOARDING-PLAYBOOK.md` ready to scroll (user journey)
+- [ ] 3 pilot user candidates names siap di kepala (jangan freeze waktu ditanya)
 - [ ] `KILL-CRITERIA.md` open di tab — transparency signal, bukan dihindari
 - [ ] 1Password Bearer token (pilot dashboard auth) shared via Slack DM saat meeting mulai
 - [ ] Slack channel `#dash-ds-pilot` pre-created (tunjukin kalau pilot real, bukan slide-only)
@@ -48,9 +48,9 @@ Pilih satu — tergantung mood Head of Design saat masuk:
 
 ### Problem (60s)
 
-- 10+ PE vibe-code paralel, no shared foundation
+- 10+ team members vibe-code paralel, no shared foundation
 - Brand drift sudah akumulasi: **1,913 hex hardcodes** di backoffice saja (baseline scan, `BASELINE-DRIFT-2026-05-20.md`)
-- Product baru launching (Logistic, Travel, Marketplace) = setiap PE re-derive everything = waste 240+ jam per launch
+- Product baru launching (Logistic, Travel, Marketplace) = setiap team re-derive everything = waste 240+ jam per launch
 - AI tools (Claude/Cursor/Lovable) generate generic code — gak ngerti konteks Dash, Indonesia, OJK regulation, mitra voice
 
 ### Solution (90s)
@@ -74,7 +74,7 @@ Pilih satu — tergantung mood Head of Design saat masuk:
 
 ### Next (60s)
 
-- **This week:** Wave 5 pilot 3 PE
+- **This week:** Wave 5 pilot 3 users
 - **Q3 2026:** Dash Logistic launches with DS Day 1 (zero re-derive cost)
 - **Q4 2026:** Travel + Marketplace onboard
 - **2027:** Trellis external tenant pilot (SaaS arm, deferred decision)
@@ -89,7 +89,7 @@ Pre-ordered, tab sudah dibuka semua sebelum meeting:
 2. **`/docs/architecture/themes`** — click Ride → Logistic → Travel side-by-side (45s) ⭐ *moment paling visual*
 3. **`/docs/architecture/metrics`** — scoreboard scan, angka real (30s)
 4. **`/docs/components/button`** — show 1 component doc page, polish level (15s)
-5. **`/docs/onboarding`** — PE onboarding flow, "ini yang PE alamin Day 1" (45s)
+5. **`/docs/onboarding`** — user onboarding flow, "ini yang user alamin Day 1" (45s)
 6. **Terminal:** `dash add button` live (30s) — *AI-native moment*
 7. **Terminal:** `dash audit --layer-only` → 0 violations (15s)
 8. **`/docs/admin/pilot`** — pilot tracking dashboard, Bearer auth required (30s)
@@ -112,16 +112,16 @@ A: Mereka greenfield single-player. Dash DS ship ke existing brownfield codebase
 A: Hermes autonomous deputy handle 95% operational. Irfan strategic only (~50h/year vs 240h/year manual). Deputy human optional post-Wave 5 success.
 
 **Q4: Tau dari mana ini works?**
-A: 462 tests + E2E smoke verified loop. **Tapi jujur — real PE adoption unproven.** Wave 5 pilot = critical validation. Live AI behavior simulated, real API test deferred ke pilot week.
+A: 462 tests + E2E smoke verified loop. **Tapi jujur — real user adoption unproven.** Wave 5 pilot = critical validation. Live AI behavior simulated, real API test deferred ke pilot week.
 
 **Q5: Risk-nya apa?**
 A: Tiga utama:
 - **Bus factor 1** — Irfan sole owner. Hermes mitigates ops, strategic ownership masih risk.
-- **AI behavior under context pressure** — Skill v3 estimate +15–25pp accuracy, belum validated real PE workflow.
+- **AI behavior under context pressure** — Skill v3 estimate +15–25pp accuracy, belum validated real user workflow.
 - **Trellis productization timeline** — separate side project, defer post-Dash internal proof.
 
 **Q6: Cost-nya berapa?**
-A: 1 month single-developer + ~5M Claude API tokens build phase. Compare: 10 PE × 1 month re-derive per launch = 240 person-hours saved per product family launch (~Rp 250M opportunity cost).
+A: 1 month single-developer + ~5M Claude API tokens build phase. Compare: 10 team members × 1 month re-derive per launch = 240 person-hours saved per product family launch (~Rp 250M opportunity cost).
 
 **Q7: Kapan Dash Logistic dapet ini?**
 A: Theme scaffold ready sekarang. Real blocks built saat launch ETA locked. ~2 minggu effort begitu timeline confirmed.
@@ -131,7 +131,7 @@ A: Trellis = future SaaS arm. Free untuk internal client pertama (Dash + Dash pr
 
 **Q9: Lu butuh apa dari gue (Head of Design)?**
 A:
-- Sponsor Wave 5 pilot (3 PE blockless 1 minggu)
+- Sponsor Wave 5 pilot (3 users blockless 1 minggu)
 - Decision: Trellis stays under Dash atau eventual spin-off?
 - Quarterly review cadence on kill criteria
 - Brand exposure: present Dash DS di Indonesian design community talk?
@@ -146,7 +146,7 @@ A: `KILL-CRITERIA.md` ada — honest exit thresholds. T1.1/T1.2/T1.3 trip → pi
 Tiga eksplisit, ranked by urgency:
 
 1. **Approve Wave 5 pilot kick-off minggu ini.** (decision needed today)
-2. **Designate 3 PE candidates** — atau approve list yang sudah disiapkan. (decision needed within 48h)
+2. **Designate 3 pilot user candidates** — atau approve list yang sudah disiapkan. (decision needed within 48h)
 3. **Schedule monthly review** — Wave 5 retro Day +7 sebagai checkpoint pertama. (calendar invite follow-up)
 
 **Backup ask (kalau time allows):** brand exposure di komunitas designer Indonesia — Dash DS as case study talk. Low-effort high-reach.
@@ -158,7 +158,7 @@ Tiga eksplisit, ranked by urgency:
 **Bawa ke meeting:**
 - [ ] Laptop dengan localhost docs running (port 3000 confirmed before walk-in)
 - [ ] `LAYERED-ARCHITECTURE.md` printed (optional, kalau dia tipe baca paper)
-- [ ] `ONBOARDING-PLAYBOOK.md` printed (PE journey reference)
+- [ ] `ONBOARDING-PLAYBOOK.md` printed (user journey reference)
 - [ ] `KILL-CRITERIA.md` printed (transparency signal — taruh di atas tumpukan)
 - [ ] 1Password Bearer token ready to share via DM
 - [ ] `#dash-ds-pilot` Slack channel pre-created + invite link siap
