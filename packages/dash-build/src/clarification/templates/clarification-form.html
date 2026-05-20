@@ -1,0 +1,63 @@
+<!--
+  Reference template for the clarification form. The runtime renderer in
+  ../form-renderer.ts emits an equivalent (already-interpolated) document.
+  This file is kept as a designer-readable snapshot of the markup contract
+  and is NOT imported at runtime.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Dash Build — Clarification</title>
+</head>
+<body>
+  <form class="clarification-form" data-prompt-id="{{prompt_id}}">
+    <header>
+      <h2>I need a bit more info before generating</h2>
+      <p class="mute">{{question_count}} quick questions</p>
+    </header>
+
+    <div class="original-prompt">{{original_prompt}}</div>
+
+    <!-- repeated per question -->
+    <div class="question" data-id="{{question.id}}">
+      <label class="q-label">
+        {{question.text}}
+        <!-- if required -->
+        <span class="required">*</span>
+      </label>
+      <p class="rationale">{{question.rationale}}</p>
+
+      <!-- single-choice / multi-choice -->
+      <div class="options">
+        <label class="option">
+          <input type="radio" name="{{question.id}}" value="{{option}}" data-question="{{question.id}}" />
+          <span>{{option}}</span>
+        </label>
+      </div>
+
+      <!-- yes-no -->
+      <div class="options yes-no">
+        <label class="option">
+          <input type="radio" name="{{question.id}}" value="yes" data-question="{{question.id}}" />
+          <span>Yes</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="{{question.id}}" value="no" data-question="{{question.id}}" />
+          <span>No</span>
+        </label>
+      </div>
+
+      <!-- free-text -->
+      <textarea name="{{question.id}}" data-question="{{question.id}}" rows="3"></textarea>
+    </div>
+
+    <footer>
+      <button type="button" class="primary" data-action="submit">Submit answers → Generate</button>
+      <button type="button" data-action="skip">Skip — generate anyway</button>
+    </footer>
+
+    <div class="status" data-role="status"></div>
+  </form>
+</body>
+</html>
