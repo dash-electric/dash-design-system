@@ -37,6 +37,7 @@ import { SERVER_NAME, VERSION } from "./version.js";
 
 import {
   GET_AI_RULES_TOOL,
+  GET_RULES_TOOL,
   runGetAiRules,
 } from "./tools/get-ai-rules.js";
 import {
@@ -74,6 +75,8 @@ const TOOLS = [
   LIST_CATEGORIES_TOOL,
   LIST_TEMPLATES_TOOL,
   SEARCH_TOKENS_TOOL,
+  GET_RULES_TOOL,
+  // Deprecated alias — same handler. Remove in v0.3.
   GET_AI_RULES_TOOL,
   GET_AUDIT_CHECKLIST_TOOL,
 ];
@@ -155,6 +158,15 @@ async function dispatch(
       return formatTokenList(result, { query: input.query });
     }
     case "get_ai_rules": {
+      // Deprecated alias for `get_rules`. Logs a one-line warning to stderr
+      // (stdout is reserved for MCP protocol traffic). Remove in v0.3.
+      process.stderr.write(
+        `[${SERVER_NAME}] DEPRECATED: tool "get_ai_rules" renamed to "get_rules" — will be removed in v0.3\n`,
+      );
+      const markdown = await runGetAiRules(client);
+      return formatAiRules(markdown);
+    }
+    case "get_rules": {
       const markdown = await runGetAiRules(client);
       return formatAiRules(markdown);
     }

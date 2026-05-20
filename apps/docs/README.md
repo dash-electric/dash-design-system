@@ -158,6 +158,25 @@ To point a consumer project at your local registry instead of production:
 DASH_REGISTRY_URL=http://localhost:3000 dash add button
 ```
 
+## JSON Schemas (for editor validation)
+
+Public JSON-Schemas are served at:
+
+- `https://ds.dash.com/api/schema/registry-item.json` — schema for a single registry item.
+- `https://ds.dash.com/api/schema/registry.json` — schema for the top-level `registry.json` manifest.
+
+Reference them from a consumer file:
+
+```json
+{
+  "$schema": "https://ds.dash.com/api/schema/registry-item.json",
+  "name": "my-component",
+  "type": "registry:ui"
+}
+```
+
+CORS is open (`Access-Control-Allow-Origin: *`) so editors and tooling can fetch them from anywhere. Cached for 5 minutes at the CDN edge.
+
 ## Licensing — read this before forking
 
 This repo contains components derived from **AlignUI Pro**, a paid license held by Dash. The license permits internal use across Dash entities and portfolio products. It does **not** permit:

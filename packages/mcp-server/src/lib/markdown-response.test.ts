@@ -44,6 +44,9 @@ describe("formatComponentList", () => {
     expect(out).toContain("**Type:** `ui`");
     expect(out).toContain("**Type:** `block`");
     expect(out).toContain("```bash\ndash add <component-name>\n```");
+    // Each row has an "Open in Dash Docs" link with the install-style name
+    expect(out).toContain("[Open in Dash Docs](https://ds.dash.com/docs/components/button)");
+    expect(out).toContain("[Open in Dash Docs](https://ds.dash.com/docs/components/data-table)");
   });
 
   it("includes type filter in heading", () => {

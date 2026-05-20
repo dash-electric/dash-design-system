@@ -15,8 +15,10 @@ Seven tools:
 | `list_categories` | Group the registry by category, with sample items |
 | `list_templates` | Filter `registry:page` items, optionally by vertical |
 | `search_tokens` | Find a CSS var by name or value (`--dash-purple-500`, `#5e2aac`) |
-| `get_ai_rules` | Return `dash-ai-rules.md` — the convention guide for AI editing |
-| `get_audit_checklist` | Return Layer 0 Cardinal Rules (banned imports, audit trail, voice, tokens). Smaller than `get_ai_rules`; read BEFORE code-gen. |
+| `get_rules` | Return `dash-ai-rules.md` — the convention guide for AI editing |
+| `get_audit_checklist` | Return Layer 0 Cardinal Rules (banned imports, audit trail, voice, tokens). Smaller than `get_rules`; read BEFORE code-gen. |
+
+> **Migration:** `get_ai_rules` → renamed to `get_rules`. The old name is still registered (with `deprecated: true`) and routes to the same handler, but will be removed in v0.3. Please migrate.
 
 All input schemas are JSON Schema (Draft 2020-12), discoverable via the standard MCP `tools/list` method.
 
@@ -111,7 +113,7 @@ With the server wired up, prompts like these route through real tool calls inste
 - *"Find me a finance dashboard template."* → `search_components({ query: "finance dashboard" })`
 - *"What CSS var is Dash purple?"* → `search_tokens({ query: "purple" })`
 - *"Show me the anatomy of `dashboard-shell`."* → `get_component({ name: "dashboard-shell" })`
-- *"How should I structure forms in Dash?"* → `get_ai_rules({})`
+- *"How should I structure forms in Dash?"* → `get_rules({})`
 - *"What categories exist?"* → `list_categories({})`
 - *"What are the cardinal rules before I touch this code?"* → `get_audit_checklist({})`
 

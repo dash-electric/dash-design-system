@@ -128,11 +128,13 @@ function formatComponentRow(item: ComponentSummary): string {
   const title = item.title ?? item.name;
   const cats = item.categories?.length ? ` _(${item.categories.join(", ")})_` : "";
   const desc = item.description?.trim() || "_No description_";
+  const installName = stripScope(item.name);
   return dedent`
     ### \`${item.name}\` — ${title}${cats}
     ${desc}
 
-    **Type:** \`${item.type}\` · **Install:** \`dash add ${stripScope(item.name)}\`
+    **Type:** \`${item.type}\` · **Install:** \`dash add ${installName}\`
+    [Open in Dash Docs](https://ds.dash.com/docs/components/${installName})
   `;
 }
 
