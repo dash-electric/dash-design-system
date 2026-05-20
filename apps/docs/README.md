@@ -148,6 +148,7 @@ pnpm dev                       # docs site on :3000
 pnpm registry:build            # rebuild public/r/*.json after registry/ edits
 pnpm typecheck                 # tsc --noEmit
 pnpm test:visual               # Playwright visual diffs
+pnpm screenshots               # capture key pages → public/screenshots/ (see SCREENSHOT-CAPTURE.md)
 ```
 
 To point a consumer project at your local registry instead of production:

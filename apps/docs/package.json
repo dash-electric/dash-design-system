@@ -21,7 +21,8 @@
     "test:prompts": "vitest run tests/prompts",
     "test:unit": "vitest run tests/lib tests/prompts",
     "validate:prompts": "tsx scripts/validate-prompts.ts",
-    "validate:patterns": "tsx scripts/validate-patterns.ts"
+    "validate:patterns": "tsx scripts/validate-patterns.ts",
+    "screenshots": "tsx scripts/capture-screenshots.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
