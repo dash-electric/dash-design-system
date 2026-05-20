@@ -39,6 +39,14 @@ export type PipelineDeps = {
   logger?: PipelineLogger
   /** Override queue path (default `~/.dash/gap-queue.json`). */
   queuePath?: string
+  /**
+   * Optional health-server tap. When provided, `runWatch` calls these after
+   * each iteration so the /health endpoint reflects fresh state.
+   */
+  health?: {
+    recordPoll: (pendingGaps: number) => void
+    incrementProcessed: (n?: number) => void
+  }
 }
 
 function updateGapStatus(
@@ -187,11 +195,21 @@ export async function runWatch(
   log.info("watch.start", { intervalMs: config.pollIntervalMs })
   while (!deps.signal?.aborted) {
     try {
-      await runOnce(config, deps)
+      const outcomes = await runOnce(config, deps)
+      if (deps.health) {
+        // Pending gaps remaining = whatever's still pending after this pass.
+        const queue = readQueue(deps.queuePath ?? defaultQueuePath())
+        const pending = queue.entries.filter((e) => e.status === "pending").length
+        deps.health.recordPoll(pending)
+        deps.health.incrementProcessed(outcomes.length)
+      }
     } catch (err) {
       log.error("watch.iteration.error", {
         reason: err instanceof Error ? err.message : String(err),
       })
+      // Still record the poll attempt — operationally we want /health to
+      // distinguish "stuck" (no polls landing) from "iteration errored".
+      if (deps.health) deps.health.recordPoll(-1)
     }
     await sleep(config.pollIntervalMs, deps.signal)
   }

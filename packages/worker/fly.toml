@@ -1,0 +1,73 @@
+# Fly.io config for Hermes worker (@dash/worker).
+# Build context = repo root; reference packages/worker/Dockerfile.
+# Deploy via:  fly deploy --config packages/worker/fly.toml --dockerfile packages/worker/Dockerfile
+#
+# Region: Singapore (sin) — closest to Jakarta (ID), keeps Anthropic + GitHub
+# round-trip latency reasonable for an Indonesia-operated team.
+
+app          = "dash-hermes"
+primary_region = "sin"
+kill_signal  = "SIGINT"
+kill_timeout = "15s"
+
+[build]
+  dockerfile = "packages/worker/Dockerfile"
+
+# Env defaults baked into the image. Secrets (ANTHROPIC_API_KEY, GITHUB_TOKEN,
+# SLACK_WEBHOOK_URL, DASH_CEO_TOKEN) MUST be set via `fly secrets set` — never
+# checked in.
+[env]
+  NODE_ENV         = "production"
+  PORT             = "8080"
+  POLL_INTERVAL_MS = "60000"
+  GITHUB_REPO      = "irfanputra-design/dash"
+  ANTHROPIC_MODEL  = "claude-opus-4-7"
+  REGISTRY_ROOT    = "/app/dash-ds"
+  DASH_API_URL     = "https://ds.dash.com"
+
+# Hermes is a long-running daemon — DO NOT auto-stop. Always-on, single
+# instance. Multiple instances would race on the same gap queue.
+[[services]]
+  protocol      = "tcp"
+  internal_port = 8080
+  auto_stop_machines  = false
+  auto_start_machines = false
+  min_machines_running = 1
+
+  [[services.ports]]
+    port     = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port     = 443
+    handlers = ["tls", "http"]
+
+  [[services.http_checks]]
+    interval     = "30s"
+    timeout      = "5s"
+    grace_period = "30s"
+    method       = "GET"
+    path         = "/health"
+    protocol     = "http"
+
+[[vm]]
+  size      = "shared-cpu-1x"
+  memory    = "256mb"
+  cpu_kind  = "shared"
+  cpus      = 1
+
+# Single global concurrency cap — gap pipeline is serialized so this just
+# protects the /health endpoint from accidental floods.
+[http_service]
+  internal_port       = 8080
+  force_https         = true
+  auto_stop_machines  = false
+  auto_start_machines = false
+  min_machines_running = 1
+  processes           = ["app"]
+
+  [http_service.concurrency]
+    type       = "requests"
+    soft_limit = 50
+    hard_limit = 100

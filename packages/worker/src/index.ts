@@ -22,6 +22,7 @@
  */
 import process from "node:process"
 import { loadConfig } from "./config.js"
+import { startHealthServer } from "./health-server.js"
 import {
   processGapById,
   runOnce,
@@ -180,7 +181,27 @@ async function main(): Promise<number> {
     const onSig = () => ctrl.abort()
     process.on("SIGINT", onSig)
     process.on("SIGTERM", onSig)
-    await runWatch(config, { generator, queuePath, signal: ctrl.signal })
+    // Spin up /health on PORT (default 8080) for Railway/Fly healthchecks.
+    const port = Number.parseInt(process.env.PORT ?? "8080", 10) || 8080
+    const health = startHealthServer({
+      port,
+      pollIntervalMs: config.pollIntervalMs,
+    })
+    await health.ready
+    console.log(`[hermes] /health listening on :${health.port()}`)
+    try {
+      await runWatch(config, {
+        generator,
+        queuePath,
+        signal: ctrl.signal,
+        health: {
+          recordPoll: health.recordPoll,
+          incrementProcessed: health.incrementProcessed,
+        },
+      })
+    } finally {
+      await health.close()
+    }
     return 0
   }
 
