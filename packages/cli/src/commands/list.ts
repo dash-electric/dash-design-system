@@ -5,6 +5,10 @@ import kleur from "kleur"
 import { DEFAULT_REGISTRY_URL, readComponentsJson } from "../lib/components-json.js"
 import { fetchRegistryIndex } from "../lib/registry-fetch.js"
 import { resolveTheme } from "../lib/theme-resolver.js"
+import {
+  resolveRegistryUrl,
+  resolveRegistryToken,
+} from "../lib/namespace-dispatch.js"
 
 export type ListOpts = {
   type?: "ui" | "theme" | "block" | "template" | "file"
@@ -13,15 +17,21 @@ export type ListOpts = {
   cwd?: string
   /** Layer-2 theme filter (`ride` | `logistic` | …). */
   theme?: string
+  /** Registry namespace filter (`dash` | `trellis` | `logistic` | …). */
+  namespace?: string
 }
 
 export async function runList(opts: ListOpts): Promise<void> {
   const cwd = opts.cwd ?? process.cwd()
   const config = readComponentsJson(cwd)
-  const registryUrl =
-    opts.registryUrl ?? config?.registries?.["@dash"]?.url ?? DEFAULT_REGISTRY_URL
+  const ns = opts.namespace?.toLowerCase()
+  const registryUrl = ns
+    ? resolveRegistryUrl(ns, config)
+    : (opts.registryUrl ?? config?.registries?.["@dash"]?.url ?? DEFAULT_REGISTRY_URL)
+  const token =
+    opts.token ?? (ns ? resolveRegistryToken(ns, config) : undefined)
 
-  const index = await fetchRegistryIndex({ registryUrl, token: opts.token })
+  const index = await fetchRegistryIndex({ registryUrl, token })
   const theme = resolveTheme({ cliFlag: opts.theme, componentsJson: config })
   const filter = opts.type ? `registry:${opts.type}` : null
   let items = filter ? index.items.filter((i) => i.type === filter) : index.items

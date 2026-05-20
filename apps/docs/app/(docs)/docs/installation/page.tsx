@@ -170,6 +170,51 @@ DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
       </DocsSection>
 
       <DocsSection
+        title="Multi-registry namespaces"
+        description="Dash supports shadcn's @namespace/item protocol so one CLI can install from many registries. Bare names default to @dash (canonical); namespaced names (@trellis/foo, @logistic/bar) route to per-tenant or per-product registries declared in components.json."
+      >
+        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+          <li>
+            <code className="text-xs">dash add button</code> — installs <code className="text-xs">@dash/button</code> (default namespace, backward compatible)
+          </li>
+          <li>
+            <code className="text-xs">dash add @dash/button</code> — explicit form, identical behavior
+          </li>
+          <li>
+            <code className="text-xs">dash add @trellis/tenant-block</code> — routes to the Trellis tenant registry
+          </li>
+          <li>
+            <code className="text-xs">dash add @logistic/route-planner</code> — Dash Logistic-specific partition
+          </li>
+          <li>
+            <code className="text-xs">dash list --namespace trellis</code> — list a single namespace
+          </li>
+          <li>
+            <code className="text-xs">dash search button</code> — searches every known namespace and tags results with their <code className="text-xs">@&lt;ns&gt;/</code> prefix
+          </li>
+        </ul>
+        <p className="mt-3 text-sm text-text-sub-600">
+          To register a new namespace, add an entry to <code className="text-xs">components.json</code> under <code className="text-xs">registries</code>:
+        </p>
+        <pre className="mt-2 overflow-x-auto rounded-lg bg-bg-soft-200 p-3 text-xs">
+{`"registries": {
+  "@dash":    { "url": "https://ds.dash.com",       "headers": { "Authorization": "Bearer \${DASH_REGISTRY_TOKEN}" } },
+  "@trellis": { "url": "https://trellis.ds.dash.com","headers": { "Authorization": "Bearer \${TRELLIS_REGISTRY_TOKEN}" } }
+}`}
+        </pre>
+        <p className="mt-3 text-sm text-text-sub-600">
+          Pattern follows the{" "}
+          <Link
+            href="https://ui.shadcn.com/docs/registry"
+            className="text-(--dash-purple-600) underline underline-offset-4"
+          >
+            shadcn registry protocol
+          </Link>{" "}
+          so existing shadcn tooling and IDE plugins recognize the syntax.
+        </p>
+      </DocsSection>
+
+      <DocsSection
         title="Troubleshooting"
         description="If dash list returns 0 items: check that the bearer token isn't URL-encoded, your registry URL matches https://ds.dash.com/r/{name}.json, and your shell environment exports the token (not just the .env.local file — Next.js loads .env.local, but the CLI reads process.env)."
       >

@@ -12,6 +12,11 @@ import {
 } from "../lib/components-json.js"
 import { resolveItemTree } from "../lib/registry-fetch.js"
 import {
+  parseItemName,
+  resolveRegistryUrl,
+  resolveRegistryToken,
+} from "../lib/namespace-dispatch.js"
+import {
   writeRegistryFile,
   collectCssVars,
   mergeCssVars,
@@ -43,7 +48,7 @@ export type AddOpts = {
 export async function runAdd(opts: AddOpts): Promise<void> {
   const cwd = opts.cwd ?? process.cwd()
   const config = readComponentsJson(cwd)
-  const registryUrl =
+  const fallbackRegistryUrl =
     opts.registryUrl ??
     config?.registries?.["@dash"]?.url ??
     DEFAULT_REGISTRY_URL
@@ -67,14 +72,29 @@ export async function runAdd(opts: AddOpts): Promise<void> {
     ),
   )
 
-  // Resolve all items + dedupe across requests
+  // Resolve all items + dedupe across requests.
+  // Each name is parsed for an `@<ns>/` prefix; the namespace selects which
+  // registry URL + token the item is fetched from. Bare names default to
+  // `@dash`. Backward compat: `dash add button` === `dash add @dash/button`.
   const seen = new Map<string, RegistryItem>()
   const spinner = ora("Resolving registry items").start()
   try {
-    for (const name of opts.names) {
-      const tree = await resolveItemTree(name, {
+    for (const rawName of opts.names) {
+      const { namespace, item: bareName } = parseItemName(rawName)
+      // For the default `@dash` namespace, honor legacy precedence:
+      // --registry-url flag > components.json["@dash"].url > built-in default.
+      // For non-default namespaces, --registry-url applies only if there's
+      // no per-namespace override (so a multi-namespace `add` call doesn't
+      // accidentally point every namespace at the same URL).
+      const registryUrl =
+        namespace === "dash"
+          ? fallbackRegistryUrl
+          : resolveRegistryUrl(namespace, config)
+      const token =
+        opts.token ?? resolveRegistryToken(namespace, config) ?? undefined
+      const tree = await resolveItemTree(bareName, {
         registryUrl,
-        token: opts.token,
+        token,
         noCache: opts.noCache,
         cwd,
       })

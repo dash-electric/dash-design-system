@@ -87,34 +87,47 @@ function buildHeaders(opts: FetchOpts): Record<string, string> {
   return headers
 }
 
+/**
+ * Strip a leading `@<ns>/` prefix so the bare item name reaches the
+ * registry. The dispatch layer in `commands/add.ts` already picked the
+ * correct registry URL from the namespace — by the time we fetch, the
+ * remote registry only knows items by their bare names.
+ */
+function stripNamespace(name: string): string {
+  if (!name.startsWith("@")) return name
+  const slash = name.indexOf("/")
+  return slash < 0 ? name : name.slice(slash + 1)
+}
+
 export async function fetchRegistryItem(
   name: string,
   opts: FetchOpts,
 ): Promise<RegistryItem> {
-  const cacheKey = `${opts.registryUrl}::${name}`
+  const bareName = stripNamespace(name)
+  const cacheKey = `${opts.registryUrl}::${bareName}`
   const memHit = cacheGet<RegistryItem>(cacheKey)
   if (memHit) return memHit
 
   if (!opts.noCache) {
-    const diskHit = diskCacheGet<RegistryItem>(opts.registryUrl, name)
+    const diskHit = diskCacheGet<RegistryItem>(opts.registryUrl, bareName)
     if (diskHit) {
       cacheSet(cacheKey, diskHit)
       return diskHit
     }
   }
 
-  const url = `${opts.registryUrl.replace(/\/$/, "")}/r/${name}.json`
+  const url = `${opts.registryUrl.replace(/\/$/, "")}/r/${bareName}.json`
   const res = await fetch(url, { headers: buildHeaders(opts) })
   if (!res.ok) {
     throw new Error(
-      `Failed to fetch ${name} from ${url}: ${res.status} ${res.statusText}`,
+      `Failed to fetch ${bareName} from ${url}: ${res.status} ${res.statusText}`,
     )
   }
   const raw = await res.json()
   const parsed = RegistryItemSchema.safeParse(raw)
   if (!parsed.success) {
     throw new RegistryError(
-      `Registry item "${name}" failed schema validation`,
+      `Registry item "${bareName}" failed schema validation`,
       {
         cause: parsed.error,
         issues: parsed.error.issues,
@@ -125,7 +138,7 @@ export async function fetchRegistryItem(
   }
   const item = parsed.data as unknown as RegistryItem
   cacheSet(cacheKey, item)
-  if (!opts.noCache) diskCacheSet(opts.registryUrl, name, item)
+  if (!opts.noCache) diskCacheSet(opts.registryUrl, bareName, item)
   return item
 }
 
@@ -171,6 +184,17 @@ export async function fetchRegistryIndex(opts: FetchOpts): Promise<RegistryIndex
 /**
  * Recursively resolve item + all registryDependencies. Returns items in
  * topological order (deps before dependents). Cycle-safe via visited set.
+ *
+ * `rootName` accepts both bare names (e.g. `button`) and namespaced names
+ * (e.g. `@dash/button`, `@trellis/some-block`). Namespace-resolution is
+ * handled by the caller (commands/add.ts) — by the time we reach this fn,
+ * `opts.registryUrl` already points at the correct namespace's registry.
+ *
+ * Note: `registryDependencies` declared inside an item are resolved against
+ * the same registry URL — cross-namespace deps must be expressed as
+ * `@<ns>/<name>` in the dependency string itself. (Future work; for now
+ * tenant items SHOULD copy any shared deps inline or reference @dash items
+ * by full `@dash/<name>` form.)
  */
 export async function resolveItemTree(
   rootName: string,
