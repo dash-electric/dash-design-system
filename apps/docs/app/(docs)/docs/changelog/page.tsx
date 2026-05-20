@@ -18,6 +18,55 @@ type ChangelogEntry = {
 
 const entries: ChangelogEntry[] = [
   {
+    version: "2.0.0",
+    date: "2026-05-20",
+    summary: "Wave 4-6 — Adaptation Layer for 11 Dash repos + repo consolidation + Adoption hardening.",
+    groups: [
+      {
+        kind: "Added",
+        items: [
+          "Adaptation Layer in dash-ai-rules.md v2 (829 lines, 30 anti-patterns) — covers 5 FE + 5 BE Dash repos with per-repo stack mandates so AI translates canonical patterns to each repo's real stack (portal Jotai, backoffice NextAuth+MUI, halo cookie SSO, basecamp Firebase+Zustand+shadcn, fleet-mgmt CRA+custom UI).",
+          "dash-domain-glossary.md (1,982 lines) — 22+ entities, 4 state machines (Delivery 26-status, Maintenance 10-state, Repossession 7-state, Vehicle 6x6), BE envelope discrimination, cross-domain SSO trio, code style per service.",
+          "3 canonical pattern blocks: @dash/multi-item-form, @dash/bulk-submit, @dash/use-code-field (case-sensitive charset per real PolicyOneTimeCode spec).",
+          "Repo consolidation: apps/docs + packages/{cli,mcp-server,skill,registry-schema} + root pnpm workspace + vercel.json + 3 GH Actions workflows (ci + preview + release).",
+          "Dash CLI v0.4.0: dash doctor (10-check health diagnostic), dash sync (upgrade installed items), dash info (project introspection), Cursor MCP variant in dash mcp init, 7 framework templates (next-app/next-pages/vite/remix/astro/cra/react), framework-detector lib.",
+          "@dash/mcp-server with 6 tools (Bearer-gated registry queries).",
+          "@dash/skill Phase 2 scaffold (project-aware AI knowledge package, content pending pilot).",
+          "Token usage dashboard at /docs/admin/usage (Bearer-gated, anonymized hashed-client metrics, ready for Vercel log ingestion post-deploy).",
+          "Codex-style image-rich onboarding: Quick Start 8-step + Installation 6-step visual walkthroughs with <DocsStep> primitive (real screenshots swap-in via imageSrc prop).",
+          "Vitest prompt harness (12 fixtures across 4 categories: cold-start/refactor-existing/domain-specific/anti-pattern detection) + dash-stack-detector lib + pattern-vs-real-repo validator script.",
+          "Real Dash logo registry component (<DashLogo variant='mark|wordmark' />) Figma-verified 1:1.",
+          "Bearer auth + audit log + rate limit on /r/* and /api/registry/*.",
+          "Repo docs: README, CONTRIBUTING.md (branch/commit/PR/code style), CHANGELOG.md (this), DEPLOY.md (10-step Vercel runbook), MAINTENANCE.md (daily/weekly/monthly/quarterly cadence), DEMO-CHEATSHEET.md (5-act 12-min Thursday script with real Dash domain prompt), INTAKE-CHECKLIST.md.",
+        ],
+      },
+      {
+        kind: "Changed",
+        items: [
+          "Homepage app/page.tsx: theme-stable static-black/static-white (no swap-token + literal-white-opacity mixing).",
+          "Sidebar IA: shadcn-style 8 top-level sections, 40 page-level routes (was 115 — dropped firehose dump, detail inventories live behind overview + cmd+K).",
+          "Pitch HTML slide 08 (Plan vs Reality): overflow fixed (35px safety margin), other slides height-verified.",
+          "use-code-field charset: case-SENSITIVE [A-Za-z0-9] (was uppercase-only) — matches real PolicyOneTimeCode spec.",
+          "Memory feedback_dash_mobile_voice_formal: scoped 'Anda' override to Auto Suspend feature only; default mitra-facing voice is 'kamu'.",
+        ],
+      },
+      {
+        kind: "Fixed",
+        items: [
+          "/docs/foundations and /docs/product overview pages added (was 404).",
+          "Topbar logo: real <DashLogo /> swapped in (was placeholder rounded-square initial).",
+          "Nav cleanup: MCP + Skill kept with yellow WIP badge (real-but-incomplete pages), Usage Dashboard flipped to shipped, Install via CLI confirmed shipped.",
+        ],
+      },
+      {
+        kind: "Deprecated",
+        items: [
+          "4 pre-consolidation separate directories (dash-ds, dash-cli, dash-mcp, dash-skill) — moved to /tmp backup. GitHub equivalents archived at irfanputra-design/{dash-ds, dash-cli, dash-mcp, dash-skill} (read-only).",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.0.0",
     date: "2026-05-16",
     summary: "Polish Phase 2 — 19 missing docs routes shipped, full shadcn-style parity.",
@@ -27,7 +76,7 @@ const entries: ChangelogEntry[] = [
         items: [
           "Getting Started: /docs/installation (rewrite), /docs/installation/cli, /docs/quick-start, /docs/changelog.",
           "Foundations: /docs/foundations/dark-mode completed.",
-          "Forms: /docs/forms/react-hook-form, /docs/forms/tanstack-form.",
+          "Forms: /docs/components/form (vanilla useState — RHF + TanStack removed 2026-05-20 per Dash AI rules ban).",
           "Theming: /docs/theming overview, /docs/theming/colors swatch reference.",
           "Registry: /docs/registry intro, /docs/registry/registry-json, /docs/registry/registry-item-json, /docs/registry/authentication, /docs/registry/examples.",
           "Tools: /docs/tools/mcp (WIP placeholder), /docs/tools/skill (WIP placeholder).",

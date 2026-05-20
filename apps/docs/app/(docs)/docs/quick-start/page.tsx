@@ -6,9 +6,12 @@ import {
   DocsHeader,
   DocsSection,
   DocsPrinciples,
-  DocsVariantTable,
 } from "@/components/docs/page-shell"
-import { DocsCode } from "@/components/docs/code-block"
+import {
+  DocsStep,
+  DocsStepList,
+  DocsWorkflowDiagram,
+} from "@/components/docs/docs-step"
 
 export default function QuickStartPage() {
   return (
@@ -16,13 +19,27 @@ export default function QuickStartPage() {
       <DocsHeader
         category="Getting Started"
         title="PE Quick Start"
-        description="Onboarding for the 10 Product Engineers across Dash tribes. One-time machine setup, one-time per-repo setup, then a daily AI-first workflow: PE → Claude Code → dash add → shipped page."
+        description="From a fresh laptop to a shipped Dash-themed page in eight steps. Follow the visual walkthrough — each step shows the command, the expected output, and the resulting UI."
         status="new"
+      />
+
+      {/* Hero workflow diagram — at-a-glance view of the journey */}
+      <DocsWorkflowDiagram
+        steps={[
+          { label: "Install CLI", sub: "pnpm i -g dash" },
+          { label: "Initialize repo", sub: "dash init" },
+          { label: "Add component", sub: "dash add button" },
+          { label: "Use in code", sub: "<Button />" },
+          { label: "Wire MCP", sub: "dash mcp init" },
+          { label: "Install skill", sub: "dash skill add" },
+          { label: "Ask Claude", sub: "Build me a page" },
+          { label: "Ship PR", sub: "Verify + merge" },
+        ]}
       />
 
       <DocsSection
         title="Who this is for"
-        description="The 10 PE across Reservasi, Express, Eats, Halo, Mitra, Finance, HR, Marketing, Growth, and Platform tribes. Read this once on day 1, then refer back when wiring up a new repo or AI tool."
+        description="The 10 Product Engineers across Reservasi, Express, Eats, Halo, Mitra, Finance, HR, Marketing, Growth, and Platform tribes. Read this once on day 1, then refer back when wiring up a new repo or AI tool."
       >
         <DocsPrinciples
           items={[
@@ -43,110 +60,81 @@ export default function QuickStartPage() {
       </DocsSection>
 
       <DocsSection
-        title="One-time machine setup"
-        description="Install the dash CLI globally. CLI v1 is currently in flight at /Users/<you>/dash-cli/ — until the npm publish lands, link locally."
+        title="The 8-step walkthrough"
+        description="Each step is independent — you can stop after step 4 and have a working component, or push through to step 8 for the full AI-first workflow."
       >
-        <DocsCode
-          language="bash"
-          code={`# Option A — once published to npm
-npm i -g @dash/cli
+        <DocsStepList>
+          <DocsStep
+            number={1}
+            title="Install the dash CLI"
+            description="One-time machine setup. Installs the dash binary globally so every Dash repo can call dash init / dash add."
+            code={`# Once published to npm
+pnpm i -g dash
 
-# Option B — local dev (current state, May 2026)
-cd ~/dash-cli && pnpm install && pnpm build && npm link
-# now \`dash\` is available globally`}
-        />
-        <p className="text-sm text-text-sub-600 mt-3">
-          Verify with <code className="text-xs">dash --version</code>. You should see{" "}
-          <code className="text-xs">dash@1.x.x</code>. If you see &ldquo;command not
-          found&rdquo;, your <code className="text-xs">$PATH</code> is missing the npm
-          global bin — run <code className="text-xs">npm bin -g</code> and add the
-          output to your shell rc file.
-        </p>
-      </DocsSection>
+# Verify
+dash --version
+# → dash@1.x.x`}
+            output={`✔ Installed dash@1.0.0 to /usr/local/bin/dash
+✔ Registry: https://ds.dash.com/r/
+ℹ Run \`dash init\` inside any Dash repo to wire it up.`}
+            imagePlaceholder="Terminal showing successful global install of dash CLI and version output."
+          />
 
-      <DocsSection
-        title="One-time per Dash repo setup"
-        description="Run dash init once at the root of every Dash repo (Halo-dash, Tribe-Express, Tribe-Reservasi, etc.). Idempotent — safe to re-run."
-      >
-        <DocsCode
-          language="bash"
-          code={`cd ~/halo-dash      # or whichever Dash repo
+          <DocsStep
+            number={2}
+            title="Initialize the repo"
+            description="One-time per Dash repo. Writes components.json, .env.local, AGENTS.md, and merges the @dash tailwind preset. Idempotent — safe to re-run."
+            code={`cd ~/halo-dash
 dash init --token sk-dash-xxxx`}
-        />
-        <p className="text-sm text-text-sub-600 mt-3">
-          What this writes:
-        </p>
-        <DocsVariantTable
-          nameHeader="File"
-          descHeader="Purpose"
-          rows={[
-            { name: "components.json", description: "Registry pointer (@dash → https://dash-ds.vercel.app/registry)." },
-            { name: ".env.local", description: "DASH_REGISTRY_TOKEN — auth for private registry." },
-            { name: "app/globals.css", description: "Imports @dash/tokens base theme (radii, spacing scale, color tokens)." },
-            { name: "tailwind.config.ts", description: "Merges @dash preset (semantic tokens like bg-bg-weak-50, text-text-sub-600)." },
-            { name: "AGENTS.md", description: "Universal AI rules — Claude, Cursor, Codex all read this." },
-            { name: ".cursorrules", description: "Cursor-specific rules file pointing to AGENTS.md." },
-          ]}
-        />
-      </DocsSection>
+            output={`✔ Detected Next.js 15 (App Router) + Tailwind v4
+✔ Wrote components.json
+✔ Wrote .env.local (DASH_REGISTRY_TOKEN)
+✔ Wrote AGENTS.md (universal AI rules)
+✔ Wrote .cursorrules (re-exports AGENTS.md)
+✔ Imported @dash/tokens into app/globals.css
+✔ Extended tailwind.config.ts with @dash preset
+ℹ Next: dash add button`}
+            imagePlaceholder="Terminal after dash init — six green checkmarks confirming the scaffold, plus the next-step hint."
+          />
 
-      <DocsSection
-        title="Daily workflow"
-        description="The happy path you should aim for on every ticket: chat → AI proposes registry items → dash add → review → commit."
-      >
-        <ol className="text-sm text-text-sub-600 list-decimal pl-5 space-y-2">
-          <li>
-            Open the ticket in Linear / Jira. Read the acceptance criteria.
-          </li>
-          <li>
-            In Claude Code (or Cursor), describe the screen in plain Indonesian or
-            English. Example:{" "}
-            <em>
-              &ldquo;Buatin halaman riwayat trip mitra di halo-dash. Filter
-              tanggal, status, tribe. Empty state. Pagination 20/halaman.&rdquo;
-            </em>
-          </li>
-          <li>
-            The AI queries Dash DS via MCP, proposes a template (e.g.{" "}
-            <code className="text-xs">list-detail-page</code>) + blocks (
-            <code className="text-xs">data-table</code>,{" "}
-            <code className="text-xs">filter-bar</code>,{" "}
-            <code className="text-xs">empty-state</code>) + atoms.
-          </li>
-          <li>
-            AI runs <code className="text-xs">dash add list-detail-page data-table filter-bar empty-state</code>.
-            Components land in <code className="text-xs">registry/dash/</code> as source.
-          </li>
-          <li>
-            AI wires the page in <code className="text-xs">app/(internal)/mitra/[id]/trips/page.tsx</code>{" "}
-            using semantic tokens only.
-          </li>
-          <li>
-            You review the diff, run <code className="text-xs">pnpm dev</code>, screenshot, ship PR.
-          </li>
-        </ol>
-        <p className="text-sm text-text-sub-600 mt-3">
-          Target velocity: 1 medium page (table + filter + empty state) in{" "}
-          <strong>~20 minutes</strong> from prompt to PR.
-        </p>
-      </DocsSection>
+          <DocsStep
+            number={3}
+            title="Install your first component"
+            description="Pulls the button source into registry/dash/ui/button.tsx — you own the file, no version pinning. Re-run anytime to refresh."
+            code={`dash add button`}
+            output={`✔ Resolved button (4 deps)
+✔ Wrote registry/dash/ui/button.tsx
+✔ Wrote registry/dash/ui/button.stories.tsx
+✔ Wrote registry/dash/lib/utils.ts (already up to date)
+ℹ Import: import { Button } from "@/registry/dash/ui/button"`}
+            imagePlaceholder="Terminal output of dash add button — files written list and the suggested import path."
+          />
 
-      <DocsSection
-        title="AI Tool Configuration"
-        description="Three tools, three config files. They all read the same source of truth — AGENTS.md — and all query the same MCP server."
-      >
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950">
-          Claude Code
-        </h3>
-        <p className="text-sm text-text-sub-600">
-          Recommended primary. Has the best MCP integration and the longest context window.
-        </p>
-        <DocsCode
-          language="bash"
-          code={`# Once dash CLI is installed, run inside your repo:
-dash mcp init
+          <DocsStep
+            number={4}
+            title="Use it in your code"
+            description="Standard React import. Variants and sizes come from the Dash design tokens — no className overrides needed for the common cases."
+            codeLanguage="tsx"
+            code={`import { Button } from "@/registry/dash/ui/button"
 
-# This writes to ~/.claude/mcp.json:
+export default function MitraPage() {
+  return (
+    <div className="p-6 space-y-3">
+      <Button variant="primary">Suspend mitra</Button>
+      <Button variant="ghost">Cancel</Button>
+    </div>
+  )
+}`}
+            imagePlaceholder="Mitra page in the browser with a primary purple Suspend button and a ghost Cancel button — Dash brand styling applied."
+          />
+
+          <DocsStep
+            number={5}
+            title="Wire the MCP server"
+            description="Lets Claude Code / Cursor query the Dash registry by name during chat. After init, restart Claude and run /mcp — you should see dash-ds connected."
+            code={`dash mcp init
+
+# Writes ~/.claude/mcp.json:
 # {
 #   "mcpServers": {
 #     "dash-ds": {
@@ -156,284 +144,155 @@ dash mcp init
 #     }
 #   }
 # }`}
-        />
-        <p className="text-sm text-text-sub-600 mt-3">
-          Manual fallback — edit <code className="text-xs">~/.claude/mcp.json</code>{" "}
-          yourself with the snippet above. Restart Claude Code. Verify with{" "}
-          <code className="text-xs">/mcp</code> — you should see{" "}
-          <code className="text-xs">dash-ds</code> listed as connected.
-        </p>
-        <p className="text-sm text-text-sub-600 mt-3">
-          CLAUDE.md installation: at the root of every Dash repo, ensure{" "}
-          <code className="text-xs">CLAUDE.md</code> contains a single line
-          re-exporting AGENTS.md:
-        </p>
-        <DocsCode
-          language="markdown"
-          code={`@AGENTS.md`}
-        />
-        <p className="text-sm text-text-sub-600 mt-3">
-          Sample prompts that work well:
-        </p>
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
-          <li>
-            <em>&ldquo;Use Dash DS. Build a trip history page for mitra detail.&rdquo;</em>
-          </li>
-          <li>
-            <em>&ldquo;Refactor app/(internal)/mitra/page.tsx to use the Dash list-detail-page template.&rdquo;</em>
-          </li>
-          <li>
-            <em>&ldquo;Which Dash component should I use for a multi-step suspend confirmation modal?&rdquo;</em>
-          </li>
-          <li>
-            <em>&ldquo;Check this PR diff against Dash brand audit rules. Flag any raw hex colors or px values.&rdquo;</em>
-          </li>
-        </ul>
+            output={`✔ Wrote ~/.claude/mcp.json
+✔ Wrote ~/.cursor/mcp.json
+ℹ Restart Claude Code to pick up the new server.
+ℹ Verify with /mcp once Claude is back online.`}
+            imagePlaceholder="Claude Code /mcp panel showing dash-ds as a connected MCP server with 4 tools listed (search, get, list, install)."
+          />
 
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          Cursor
-        </h3>
-        <p className="text-sm text-text-sub-600">
-          Cursor reads <code className="text-xs">.cursorrules</code> at repo root.
-          <code className="text-xs">dash init</code> writes a stub that re-exports{" "}
-          <code className="text-xs">AGENTS.md</code> so you only maintain one rules file:
-        </p>
-        <DocsCode
-          language="markdown"
-          code={`# .cursorrules
-# Single source of truth lives in AGENTS.md.
-# Read it first, every chat, before proposing code.
-@AGENTS.md
+          <DocsStep
+            number={6}
+            title="Install the Dash skill"
+            description="Skills are the prompt-engineering layer — they teach Claude when to use which Dash template, which anatomy to pick, and how to phrase prompts back to you."
+            code={`dash skill add dash-ds-pe`}
+            output={`✔ Resolved dash-ds-pe (skill v1.4.0)
+✔ Wrote .claude/skills/dash-ds-pe/SKILL.md
+✔ Wrote .claude/skills/dash-ds-pe/templates.md
+✔ Wrote .claude/skills/dash-ds-pe/anatomy-rules.md
+ℹ Claude will auto-load this skill when the prompt mentions Dash.`}
+            imagePlaceholder="File tree showing .claude/skills/dash-ds-pe/ with SKILL.md, templates.md, and anatomy-rules.md highlighted."
+          />
 
-# Hard rules (also in AGENTS.md, repeated for emphasis):
-# 1. NEVER use raw hex / rgb / px. Always use Dash semantic tokens.
-# 2. Always run \`dash add <name>\` before importing anything from @/registry/dash.
-# 3. Prefer existing templates (list-detail-page, dashboard-shell) over hand-rolled layouts.`}
-        />
-        <p className="text-sm text-text-sub-600 mt-3">
-          MCP in Cursor: Settings → Features → MCP → Add Server. Paste the same{" "}
-          <code className="text-xs">dash-ds</code> block from the Claude config.
-        </p>
-
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          Codex / OpenAI agents
-        </h3>
-        <p className="text-sm text-text-sub-600">
-          Codex CLI and most OpenAI-based agent runners now read{" "}
-          <code className="text-xs">AGENTS.md</code> as the universal rules file. No
-          extra config needed beyond what <code className="text-xs">dash init</code>{" "}
-          already wrote.
-        </p>
-        <p className="text-sm text-text-sub-600 mt-3">
-          For raw API integration (custom internal tooling), expose the registry as a
-          tool:
-        </p>
-        <DocsCode
-          language="ts"
-          code={`// tools/dash-ds.ts
-export const dashRegistryTool = {
-  name: "dash_registry_lookup",
-  description: "Search Dash Design System registry for components, blocks, templates.",
-  input_schema: {
-    type: "object",
-    properties: {
-      query: { type: "string", description: "Natural language query, e.g. 'multi-step form'" },
-      kind: { type: "string", enum: ["ui", "blocks", "templates", "all"], default: "all" },
-    },
-    required: ["query"],
-  },
-  async execute({ query, kind }) {
-    const r = await fetch(
-      \`https://dash-ds.vercel.app/api/registry/search?q=\${encodeURIComponent(query)}&kind=\${kind}\`,
-      { headers: { Authorization: \`Bearer \${process.env.DASH_REGISTRY_TOKEN}\` } },
-    )
-    return r.json()
-  },
-}`}
-        />
-      </DocsSection>
-
-      <DocsSection
-        title="Workflow Cookbook"
-        description="Three realistic walkthroughs. Real prompts, real AI behavior, real time saved vs hand-coding."
-      >
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950">
-          Use case 1 — Build halaman riwayat trip (Halo-dash, existing repo)
-        </h3>
-        <p className="text-sm text-text-sub-600">
-          PE: Yudi (Halo-dash). Ticket: HALO-412. AC: mitra detail page needs a Trip
-          History tab — table of last 90 days, filter by tanggal/status/tribe, empty
-          state when no trips.
-        </p>
-        <DocsCode
-          language="markdown"
-          code={`PE prompt to Claude:
-> Halo-dash repo. Tambah halaman trip history di route
+          <DocsStep
+            number={7}
+            title="Ask Claude to build a page"
+            description="Now describe the screen in plain Indonesian or English. Claude reads AGENTS.md, queries MCP, runs dash add for missing pieces, and writes the route — you only review the diff."
+            codeLanguage="markdown"
+            code={`> Halo-dash repo. Tambah halaman trip history di route
 > /mitra/[id]/trips. Pakai Dash DS — table data, filter
 > tanggal + status + tribe, empty state, pagination 20/halaman.
-> Dummy data dulu pakai 30 row di mocks/trips.json.
-
-Claude behavior:
+> Dummy data dulu pakai 30 row di mocks/trips.json.`}
+            output={`Claude:
 1. Reads AGENTS.md → confirms Dash DS rules
-2. Queries MCP: \`dash_registry_lookup query="list-detail with filters and table"\`
-3. Returns plan:
-   - Template: list-detail-page
-   - Blocks: data-table, filter-bar, empty-state, pagination
-   - Atoms: badge, button, date-range-picker, select
+2. Queries MCP: dash_registry_lookup "list-detail with filters"
+3. Plan: template=list-detail-page, blocks=[data-table, filter-bar, empty-state, pagination]
 4. Runs: dash add list-detail-page data-table filter-bar empty-state pagination
 5. Writes app/(internal)/mitra/[id]/trips/page.tsx (~80 LOC)
 6. Writes mocks/trips.json (30 rows)
-7. Reports diff for review
+7. Reports diff for your review.
 
-Expected output:
-- 1 new route, 1 new mock file
-- 0 raw hex / px in the diff (all semantic tokens)
-- Empty state hits the canonical Dash illustration
+Estimated time: ~3 hours → ~25 min (prompt → review → ship).`}
+            imagePlaceholder="Claude Code split view — left: PE prompt in chat, right: generated page.tsx diff with green additions highlighted."
+            imageHeight="lg"
+          />
 
-Time saved: ~3 hours → ~25 min (PE review + minor tweaks)`}
-        />
+          <DocsStep
+            number={8}
+            title="Ship it"
+            description="Review the diff, run pnpm dev to eyeball the page, push, open PR. The auto-attached brand audit checks spacing / color / anatomy / semantic tokens for you."
+            code={`pnpm dev
+# → http://localhost:3000/mitra/9412/trips
 
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          Use case 2 — Refactor mitra-suspend page (existing, drifted from DS)
-        </h3>
-        <p className="text-sm text-text-sub-600">
-          PE: Nadia (Mitra Ops). The page was built pre-DS, uses raw hex colors and
-          inline px values. Brand audit caught it. Need to bring it back inside the DS.
-        </p>
-        <DocsCode
-          language="markdown"
-          code={`PE prompt to Claude:
-> Refactor app/(internal)/mitra/suspend/page.tsx ke Dash DS.
-> Audit dulu — apa yang nggak compliant? Lalu apply fix.
-> Pertahanin business logic, hanya ganti styling + struktur jadi
-> Dash template.
+# happy with it?
+git add -A && git commit -m "feat(halo): trip history page (Dash DS)"
+git push -u origin feat/halo-trip-history
+gh pr create --fill`}
+            output={`✓ Dash brand audit — 0 issues
+  ✓ Spacing: tokens only (no raw px)
+  ✓ Color: semantic tokens only (no raw hex)
+  ✓ Anatomy: list-detail-page template
+  ✓ Semantic Dash tokens used
+✓ Ready to merge`}
+            imagePlaceholder="GitHub PR view — Dash brand audit check passing with 4 green ticks, diff stats showing +218 / -0 lines."
+            imageHeight="lg"
+          />
+        </DocsStepList>
+      </DocsSection>
 
-Claude behavior:
-1. Reads the existing file. Audits:
-   - 7 raw hex values (e.g. #FF5A5F → bg-error-base)
-   - 12 px-based spacings (e.g. padding: 16px → p-4)
-   - Custom Card div → should use Dash Card atom
-   - Hand-rolled stepper → should use Dash stepper block
-2. Proposes the diff as 3 atomic commits:
-   commit 1: token swap (hex → semantic)
-   commit 2: spacing scale swap (px → spacing tokens)
-   commit 3: structural refactor to list-detail-page + stepper
-3. Runs dash add stepper card
-4. Applies. Reports.
-
-Expected output:
-- Same visual outcome (or closer to design)
-- 0 raw values
-- 3 commits, each independently revertable
-
-Time saved: ~4 hours → ~30 min`}
-        />
-
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          Use case 3 — Spin up Phase 8 Tribe-Express (new repo)
-        </h3>
-        <p className="text-sm text-text-sub-600">
-          PE: Fayzul (Express). Brand new repo for the Express tribe. From{" "}
-          <code className="text-xs">npx create-next-app</code> to first 3 shipped pages.
-        </p>
-        <DocsCode
-          language="markdown"
-          code={`PE workflow:
-
-# Terminal
-npx create-next-app@latest tribe-express --typescript --tailwind --app
-cd tribe-express
-dash init --token sk-dash-xxxx
-
-# Now ask Claude:
-> Tribe-Express adalah backoffice driver Dash Express. Phase 8.
-> Bootstrap 3 halaman: (1) dashboard ops, (2) auto-suspend
-> mitra list, (3) settings tribe. Pakai Dash dashboard-shell
-> sebagai layout root. Sidebar nav harus include 3 halaman ini.
-
-Claude behavior:
-1. Reads AGENTS.md from \`dash init\`
-2. Queries MCP for dashboard-shell + 3 page templates
-3. Runs: dash add dashboard-shell stats-dashboard list-detail-page settings-page
-4. Writes app/layout.tsx with dashboard-shell wrapper + sidebar config
-5. Writes 3 route folders, each with seeded mocks
-6. Wires sidebar nav-config to all 3 routes
-7. Reports: "Ready to dev. Run pnpm dev → http://localhost:3000"
-
-Expected output:
-- Fresh repo → 3 functional pages in 1 command
-- Dashboard shell auto-wired
-- Sidebar nav populated
-
-Time saved: ~1 full day → ~45 min`}
+      <DocsSection
+        title="AI tool configuration cheat-sheet"
+        description="All three editors read the same source of truth — AGENTS.md — and all query the same MCP server. Pick your primary, the rest fall into place."
+      >
+        <DocsPrinciples
+          items={[
+            {
+              title: "Claude Code (recommended)",
+              body: "Best MCP integration, longest context. dash mcp init writes ~/.claude/mcp.json. Verify with /mcp.",
+            },
+            {
+              title: "Cursor",
+              body: ".cursorrules at repo root re-exports AGENTS.md. MCP added via Settings → Features → MCP → paste the dash-ds block.",
+            },
+            {
+              title: "Codex / OpenAI agents",
+              body: "Codex CLI auto-reads AGENTS.md. For raw API integration, expose the registry as a tool (dash_registry_lookup).",
+            },
+          ]}
         />
       </DocsSection>
 
       <DocsSection
         title="Troubleshooting"
-        description="The four pain points we've seen in dogfood week. Read this before pinging #dash-ds in Slack."
+        description="The four pain points we saw in dogfood week. Read this before pinging #dash-ds in Slack."
       >
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950">
-          Claude doesn&apos;t query Dash MCP automatically
-        </h3>
-        <ol className="text-sm text-text-sub-600 list-decimal pl-5 space-y-1">
-          <li>
-            Check <code className="text-xs">/mcp</code> in Claude Code. Is{" "}
-            <code className="text-xs">dash-ds</code> listed?
-          </li>
-          <li>
-            If not connected — verify <code className="text-xs">~/.claude/mcp.json</code>{" "}
-            is valid JSON and your <code className="text-xs">DASH_REGISTRY_TOKEN</code>{" "}
-            is set.
-          </li>
-          <li>
-            If connected but Claude ignores it — your prompt likely doesn&apos;t
-            mention Dash. Add <em>&ldquo;Use Dash DS&rdquo;</em> to the prompt or put
-            it in <code className="text-xs">AGENTS.md</code> as a hard rule.
-          </li>
-          <li>
-            Restart Claude Code. MCP servers don&apos;t hot-reload config.
-          </li>
-        </ol>
+        <DocsStepList>
+          <DocsStep
+            number={1}
+            title="Claude doesn't query Dash MCP automatically"
+            description="Symptom: Claude proposes raw Tailwind divs instead of running dash add. Usually one of four causes — MCP not connected, token missing, prompt unclear, or stale Claude session."
+            imagePlaceholder="Claude /mcp output showing dash-ds in 'connected' state with green dot — what success looks like."
+            imageHeight="sm"
+          >
+            <ol className="text-sm text-text-sub-600 list-decimal pl-5 space-y-1">
+              <li>
+                Check <code className="text-xs">/mcp</code> in Claude Code. Is{" "}
+                <code className="text-xs">dash-ds</code> listed?
+              </li>
+              <li>
+                If not connected — verify <code className="text-xs">~/.claude/mcp.json</code>{" "}
+                is valid JSON and <code className="text-xs">DASH_REGISTRY_TOKEN</code> is set.
+              </li>
+              <li>
+                If connected but Claude ignores it — add{" "}
+                <em>&ldquo;Use Dash DS&rdquo;</em> to your prompt, or move that rule into{" "}
+                <code className="text-xs">AGENTS.md</code>.
+              </li>
+              <li>Restart Claude Code. MCP servers don&apos;t hot-reload config.</li>
+            </ol>
+          </DocsStep>
 
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          dash add fails (network / auth / version mismatch)
-        </h3>
-        <DocsVariantTable
-          nameHeader="Symptom"
-          descHeader="Fix"
-          rows={[
-            {
-              name: "401 Unauthorized",
-              description: <>Token expired or wrong. Re-export <code className="text-xs">DASH_REGISTRY_TOKEN</code> from <code className="text-xs">.env.local</code> or ping #dash-ds for a fresh one.</>,
-            },
-            {
-              name: "ECONNRESET / ETIMEDOUT",
-              description: <>Registry hosted on Vercel — usually transient. Retry. If persistent, check <Link href="https://dash-ds.vercel.app/status" className="text-(--dash-purple-600) underline-offset-4 hover:underline">status page</Link>.</>,
-            },
-            {
-              name: "Component schema version mismatch",
-              description: <>Your CLI is older than the registry. <code className="text-xs">npm i -g @dash/cli@latest</code> (or rebuild local link).</>,
-            },
-            {
-              name: "Peer dep conflict",
-              description: <>Repo on Next 14, registry expects Next 15. Upgrade Next first — Dash DS only supports Next 15+.</>,
-            },
-          ]}
-        />
+          <DocsStep
+            number={2}
+            title="dash add fails (network / auth / version)"
+            description="The CLI prints a clear error code — match it to the table below."
+            imagePlaceholder="Terminal showing a 401 Unauthorized error from dash add — with the highlighted line for token mismatch."
+            imageHeight="sm"
+          >
+            <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+              <li>
+                <strong>401 Unauthorized</strong> — Token expired or wrong. Re-export{" "}
+                <code className="text-xs">DASH_REGISTRY_TOKEN</code> or ping #dash-ds for a fresh one.
+              </li>
+              <li>
+                <strong>ECONNRESET / ETIMEDOUT</strong> — Registry is hosted on Vercel and usually transient. Retry.
+              </li>
+              <li>
+                <strong>Schema mismatch</strong> — CLI older than registry. Run{" "}
+                <code className="text-xs">pnpm i -g dash@latest</code>.
+              </li>
+              <li>
+                <strong>Peer dep conflict</strong> — Repo on Next 14, Dash needs Next 15+. Upgrade Next first.
+              </li>
+            </ul>
+          </DocsStep>
 
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          Tailwind config conflicts with @dash tokens
-        </h3>
-        <p className="text-sm text-text-sub-600">
-          Symptom: <code className="text-xs">bg-bg-weak-50</code> renders as
-          transparent / unset. Cause: your repo has a hand-rolled{" "}
-          <code className="text-xs">tailwind.config.ts</code> that doesn&apos;t extend
-          the <code className="text-xs">@dash/tailwind-preset</code>.
-        </p>
-        <DocsCode
-          language="ts"
-          code={`// tailwind.config.ts
+          <DocsStep
+            number={3}
+            title="Tailwind config conflicts with @dash tokens"
+            description="Symptom: bg-bg-weak-50 renders transparent. Cause: your tailwind.config.ts doesn't extend the @dash preset."
+            codeLanguage="ts"
+            code={`// tailwind.config.ts
 import dashPreset from "@dash/tailwind-preset"
 
 export default {
@@ -445,132 +304,30 @@ export default {
   ],
   theme: { extend: { /* your overrides */ } },
 }`}
-        />
+            imagePlaceholder="Side-by-side: broken page on the left (gray boxes, no Dash purple) vs fixed page after preset import on the right."
+          />
 
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          Component already exists in target repo
-        </h3>
-        <p className="text-sm text-text-sub-600">
-          <code className="text-xs">dash add button</code> prompts before overwriting.
-          Three options:
-        </p>
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
-          <li>
-            <strong>Overwrite</strong> — accept the Dash version, port any
-            repo-specific logic on top in a follow-up commit.
-          </li>
-          <li>
-            <strong>Skip</strong> — keep your version, but flag it in the next brand
-            audit so we know it&apos;s diverged.
-          </li>
-          <li>
-            <strong>Rename</strong> — <code className="text-xs">dash add button --as legacy-button</code>{" "}
-            keeps both side-by-side during a migration.
-          </li>
-        </ul>
-      </DocsSection>
-
-      <DocsSection
-        title="Brand Audit Loop"
-        description="Every 2 weeks, each tribe runs a brand fidelity audit on the PRs shipped that sprint. The goal: catch drift early so the DS stays the source of truth, not a suggestion."
-      >
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950">
-          How to run the audit
-        </h3>
-        <ol className="text-sm text-text-sub-600 list-decimal pl-5 space-y-1">
-          <li>Pick the merged PRs from the last 2 weeks in your tribe&apos;s repo.</li>
-          <li>
-            For each PR, run the audit prompt against the diff (Claude Code with MCP).
-          </li>
-          <li>
-            Log issues in <code className="text-xs">AUDIT-LOG.md</code> at the repo root
-            (status: Clean / Minor / Major).
-          </li>
-          <li>
-            Open follow-up tickets for Major issues. Minor goes on the next sprint&apos;s
-            polish backlog.
-          </li>
-        </ol>
-        <DocsCode
-          language="markdown"
-          code={`Audit prompt (copy-paste into Claude):
-
-> Run a Dash DS brand fidelity audit on PRs #412, #418, #423 in this repo.
-> For each PR, check:
->   1. Spacing scale match (no raw px, only Dash spacing tokens)
->   2. Color tokens match (no raw hex / rgb, only semantic tokens like
->      bg-bg-weak-50, text-text-sub-600, border-stroke-soft-200)
->   3. Anatomy match (using Dash templates/blocks, not hand-rolled layouts)
->   4. Semantic tokens used (status="completed" not className="bg-green-500")
->
-> Output a markdown table: PR | Status | Issues | Recommended fix.
-> Save to AUDIT-LOG.md.`}
-        />
-
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          Checklist (run this manually for high-stakes PRs)
-        </h3>
-        <DocsVariantTable
-          nameHeader="Dimension"
-          descHeader="What to check"
-          rows={[
-            {
-              name: "Spacing scale",
-              description: <>No <code className="text-xs">px</code>, <code className="text-xs">rem</code>, or arbitrary <code className="text-xs">[12px]</code> values in className. Only <code className="text-xs">p-2 / p-3 / p-4 / p-6</code> etc.</>,
-            },
-            {
-              name: "Color tokens",
-              description: <>No <code className="text-xs">#</code> hex, no <code className="text-xs">rgb()</code>, no Tailwind raw scale (<code className="text-xs">bg-gray-100</code>). Only semantic Dash tokens.</>,
-            },
-            {
-              name: "Anatomy",
-              description: <>Page wrapped in a Dash template (list-detail-page, dashboard-shell, settings-page, etc.). No hand-rolled top-level layout divs.</>,
-            },
-            {
-              name: "Semantic Dash tokens",
-              description: <>Badge uses <code className="text-xs">status=&quot;completed&quot;</code> prop, not custom <code className="text-xs">className</code>. Button uses <code className="text-xs">variant</code> prop. No styling overrides on primitives.</>,
-            },
-            {
-              name: "Typography",
-              description: <>Heading sizes follow the docs scale (<code className="text-xs">text-5xl lg:text-7xl</code> for H1, etc.). No font-weight overrides on body copy.</>,
-            },
-            {
-              name: "Icons",
-              description: <>Remix icons via <code className="text-xs">@remixicon/react</code> only. No lucide / heroicons mixed in.</>,
-            },
-          ]}
-        />
-
-        <h3 className="text-base font-semibold tracking-tight text-text-strong-950 pt-6">
-          2-weekly cadence template
-        </h3>
-        <DocsCode
-          language="markdown"
-          code={`# Brand Audit — Sprint <NN>
-Tribe: <Reservasi | Express | Eats | Halo | Mitra | Finance | HR | Marketing | Growth | Platform>
-Date: <YYYY-MM-DD>
-Auditor: <PE name>
-
-## Scope
-PRs reviewed: #<a>, #<b>, #<c>, ...
-
-## Results
-
-| PR  | Status      | Spacing | Color | Anatomy | Sem.Token | Issues | Owner | ETA |
-| --- | ----------- | ------- | ----- | ------- | --------- | ------ | ----- | --- |
-| #412 | Clean       | ok      | ok    | ok      | ok        | —      | —     | —   |
-| #418 | Minor (2)   | ok      | ok    | ok      | drift     | Badge raw className | Yudi | sprint+1 |
-| #423 | Major (1)   | drift   | ok    | drift   | ok        | Hand-rolled layout, px spacing | Nadia | sprint+0 |
-
-## Follow-ups
-- [ ] HALO-512 — refactor mitra-suspend page anatomy (Nadia, sprint+0)
-- [ ] HALO-518 — Badge token sweep (Yudi, sprint+1)
-
-## Trend (last 3 sprints)
-- Sprint NN-2: 8 PRs, 1 Major, 3 Minor
-- Sprint NN-1: 7 PRs, 0 Major, 2 Minor
-- Sprint NN:   9 PRs, 1 Major, 2 Minor   ← this sprint`}
-        />
+          <DocsStep
+            number={4}
+            title="Component already exists in target repo"
+            description="dash add prompts before overwriting. Three options — pick the one that matches your migration mode."
+            imagePlaceholder="dash add prompt showing the three-option dialog: Overwrite / Skip / Rename (with arrow keys hint)."
+            imageHeight="sm"
+          >
+            <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+              <li>
+                <strong>Overwrite</strong> — accept the Dash version, port repo-specific logic on top in a follow-up commit.
+              </li>
+              <li>
+                <strong>Skip</strong> — keep your version, but flag it in the next brand audit.
+              </li>
+              <li>
+                <strong>Rename</strong> — <code className="text-xs">dash add button --as legacy-button</code>{" "}
+                keeps both side-by-side during migration.
+              </li>
+            </ul>
+          </DocsStep>
+        </DocsStepList>
       </DocsSection>
 
       <DocsSection title="Next steps">
@@ -588,10 +345,10 @@ PRs reviewed: #<a>, #<b>, #<c>, ...
             — full app shell with sidebar + topbar
           </li>
           <li>
-            <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/forms/react-hook-form">
-              Forms → React Hook Form
+            <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/components/form">
+              Forms → vanilla useState
             </Link>{" "}
-            — wire a mitra create/edit form
+            — wire a mitra create/edit form (RHF/zod banned per Dash rules)
           </li>
           <li>
             <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/foundations/color">
