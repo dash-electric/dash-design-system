@@ -103,7 +103,7 @@ export default function ProductWidgetsDocsPage() {
         <DocsExample
           title="Empty shell"
           preview={
-            <WidgetShell title="Widget title" seeAll>
+            <WidgetShell title="Widget title" seeAll showInstall={false}>
               <EmptyState text="No data yet. Please check back later." />
             </WidgetShell>
           }
@@ -115,13 +115,23 @@ export default function ProductWidgetsDocsPage() {
         />
       </DocsSection>
 
-      <DocsSection title="HR widget gallery">
-        <p className="text-sm text-text-sub-600 max-w-2xl">
-          12 widgets compose a typical Dash People Ops dashboard — mitra onboarding, suspension review, field coordinator schedules. Figma node 3851:32690.
-        </p>
+      <CategoryNav />
 
+      <DocsSection
+        id="hr-gallery"
+        title={
+          <span className="flex flex-col gap-1.5">
+            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--primary-base)">
+              <span className="inline-flex items-center justify-center size-5 rounded-full bg-(--primary-alpha-10) text-(--primary-base) text-[10px] font-bold">01</span>
+              HR · 12 widgets
+            </span>
+            <span>HR widget gallery</span>
+          </span>
+        }
+        description="Compose a typical Dash People Ops dashboard — mitra onboarding, suspension review, field coordinator schedules. Use when the surface owner is People Ops. Figma node 3851:32690."
+      >
         {/* Time Off + Notes + Time Tracker */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr">
           <WidgetShell title="Time Off" seeAll registrySlug="hr-time-off-widget">
             <div className="flex items-center justify-between">
               <DailyFeedbackGauge value={10} max={20} unit="DAYS" />
@@ -152,7 +162,7 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Employee Spotlight + Schedule */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 auto-rows-fr">
           <WidgetShell title="Employee Spotlight" seeAll registrySlug="hr-employee-spotlight-widget">
             <div className="text-center space-y-2">
               <Avatar size="lg" className="mx-auto ring-2 ring-(--primary-alpha-24)"><AvatarImage src="https://i.pravatar.cc/80?u=aldi" /><AvatarFallback>AP</AvatarFallback></Avatar>
@@ -215,7 +225,7 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Daily Feedback + Work Hours + Courses */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 auto-rows-fr">
           <WidgetShell title="Daily Feedback" seeAll registrySlug="hr-daily-feedback-widget">
             <div className="text-center space-y-3">
               <p className="text-sm text-text-strong-950">Bagaimana suasana hati Anda hari ini?</p>
@@ -273,7 +283,7 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Daily Work Hours + Training Analysis + Employee Rating + Course Progress */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3 auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 auto-rows-fr">
           <WidgetShell title="Daily Work Hours" seeAll registrySlug="hr-daily-work-hours-widget">
             <div className="grid grid-cols-7 gap-1.5 h-20 items-end">
               {[40, 60, 80, 50, 70, 90, 30].map((v, i) => (
@@ -311,15 +321,25 @@ export default function ProductWidgetsDocsPage() {
             </div>
           </WidgetShell>
         </div>
+
+        <SectionFooterLink href="#" label="See HR dashboard implementation" />
       </DocsSection>
 
-      <DocsSection title="Finance widget gallery">
-        <p className="text-sm text-text-sub-600 max-w-2xl">
-          14 widgets compose a typical fintech consumer dashboard. Figma node 3963:7181.
-        </p>
-
+      <DocsSection
+        id="finance-gallery"
+        title={
+          <span className="flex flex-col gap-1.5">
+            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--primary-base)">
+              <span className="inline-flex items-center justify-center size-5 rounded-full bg-(--primary-alpha-10) text-(--primary-base) text-[10px] font-bold">02</span>
+              Finance · 14 widgets
+            </span>
+            <span>Finance widget gallery</span>
+          </span>
+        }
+        description="Compose a typical fintech consumer dashboard — payroll mitra, expense breakdown, transfers. Use when the surface owner is Finance / Payments. Figma node 3963:7181."
+      >
         {/* Stock Market + My Cards + Spending */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr">
           <WidgetShell title="Stock Market Tracker" headerExtra={<Button style="stroke" tone="neutral" size="xs">ACME <ChevronDown className="size-3" /></Button>} headerNoTitle registrySlug="finance-stock-tracker-widget">
             <div className="space-y-2">
               <div className="text-xs font-medium">Stock Market Tracker</div>
@@ -359,7 +379,7 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Exchange + Currency + Recent Transactions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 auto-rows-fr">
           <WidgetShell title="Exchange" seeAll registrySlug="finance-exchange-widget">
             <SegmentedControl size="sm" defaultValue="rates" className="w-full mb-2">
               <SegmentedItem size="sm" value="rates" className="flex-1">Rates</SegmentedItem>
@@ -426,7 +446,7 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Subscriptions + Quick Transfer + Donation Profile */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 auto-rows-fr">
           <WidgetShell title="My Subscriptions" seeAll registrySlug="finance-subscriptions-widget">
             <div className="space-y-2">
               {[
@@ -483,7 +503,7 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Net Balance + Major Expenses + Credit Score + Budget Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3 auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 auto-rows-fr">
           <WidgetShell title="Net Balance" seeAll registrySlug="finance-net-balance-widget">
             <div className="text-xl font-semibold tabular-nums">Rp 14.460.240</div>
             <Badge size="sm" appearance="lighter" status="success">+5.32%</Badge>
@@ -528,6 +548,44 @@ export default function ProductWidgetsDocsPage() {
             </div>
             <StackedBars range={chartRange} onRangeChange={setChartRange} />
           </WidgetShell>
+        </div>
+
+        <SectionFooterLink href="#" label="See Finance dashboard implementation" />
+      </DocsSection>
+
+      <DocsSection
+        id="logistic-gallery"
+        title={
+          <span className="flex flex-col gap-1.5">
+            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--primary-base)">
+              <span className="inline-flex items-center justify-center size-5 rounded-full bg-(--primary-alpha-10) text-(--primary-base) text-[10px] font-bold">03</span>
+              Logistic · Coming Q3 2026
+            </span>
+            <span>Logistic widget gallery</span>
+          </span>
+        }
+        description="Dispatch board, fleet utilization, EV charging queue, mitra positioning. Reserved slot — surfaces the platform play."
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr">
+          {[
+            { title: "Dispatch Board", note: "Live order assignment" },
+            { title: "Fleet Utilization", note: "EV motor uptime" },
+            { title: "Charging Queue", note: "Station availability" },
+          ].map((p) => (
+            <div
+              key={p.title}
+              className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-dashed border-(--primary-alpha-24) bg-(--primary-alpha-10)/40 p-5 min-h-[160px]"
+            >
+              <div className="space-y-1.5">
+                <span className="inline-flex items-center gap-1 rounded-full bg-(--primary-alpha-16) px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-(--primary-base)">
+                  Coming Q3 2026
+                </span>
+                <div className="text-sm font-semibold text-text-strong-950">{p.title}</div>
+                <div className="text-xs text-text-sub-600">{p.note}</div>
+              </div>
+              <code className="text-[10px] text-text-soft-400 font-mono">dash add widget-shell</code>
+            </div>
+          ))}
         </div>
       </DocsSection>
 
@@ -740,7 +798,7 @@ export default function ProductWidgetsDocsPage() {
                 { icon: Gift, label: "events" },
                 { icon: Plane, label: "holiday" },
               ].map((s) => (
-                <WidgetShell key={s.label} title={`Schedule · ${s.label}`} headerNoTitle>
+                <WidgetShell key={s.label} title={`Schedule · ${s.label}`} headerNoTitle showInstall={false}>
                   <EmptyState
                     icon={s.icon}
                     text={`No records of ${s.label} yet. Please check back later.`}
@@ -783,6 +841,64 @@ export default function ProductWidgetsDocsPage() {
 /*  COMPONENTS                                                                  */
 /* ============================================================================ */
 
+function CategoryNav() {
+  const [active, setActive] = React.useState("hr-gallery")
+  const tabs: Array<{ id: string; label: string; count: string; disabled?: boolean }> = [
+    { id: "hr-gallery", label: "HR", count: "12" },
+    { id: "finance-gallery", label: "Finance", count: "14" },
+    { id: "logistic-gallery", label: "Logistic", count: "TBD", disabled: true },
+  ]
+  return (
+    <nav
+      className="sticky top-16 z-10 -mx-2 mb-2 flex flex-wrap items-center gap-1.5 rounded-full border border-stroke-soft-200 bg-bg-white-0/95 px-1.5 py-1.5 backdrop-blur"
+      aria-label="Widget category navigation"
+    >
+      {tabs.map((t) => {
+        const isActive = active === t.id
+        return (
+          <a
+            key={t.id}
+            href={`#${t.id}`}
+            onClick={() => setActive(t.id)}
+            aria-current={isActive ? "page" : undefined}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+              isActive
+                ? "bg-(--primary-base) text-static-white"
+                : "text-text-sub-600 hover:bg-bg-weak-50 hover:text-text-strong-950",
+              t.disabled && "opacity-60",
+            )}
+          >
+            {t.label}
+            <span
+              className={cn(
+                "tabular-nums text-[10px]",
+                isActive ? "text-static-white/80" : "text-text-soft-400",
+              )}
+            >
+              {t.count}
+            </span>
+          </a>
+        )
+      })}
+    </nav>
+  )
+}
+
+function SectionFooterLink({ href, label }: { href: string; label: string }) {
+  return (
+    <div className="mt-2 flex justify-end">
+      <a
+        href={href}
+        className="group inline-flex items-center gap-1 text-xs font-medium text-(--primary-base) hover:text-(--primary-darker) transition-colors"
+      >
+        {label}
+        <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+      </a>
+    </div>
+  )
+}
+
 function WidgetShell({
   title,
   seeAll,
@@ -790,36 +906,45 @@ function WidgetShell({
   headerNoTitle,
   children,
   registrySlug,
+  showInstall = true,
 }: {
   title: React.ReactNode
   seeAll?: boolean | string
   headerExtra?: React.ReactNode
   headerNoTitle?: boolean
   children: React.ReactNode
-  /** Optional registry slug — when set, renders an install command footer. */
+  /** Deprecated — kept for prop compatibility. Install command is now canonical `widget-shell`. */
   registrySlug?: string
+  /** Hide footer install hint (e.g. in shell-anatomy demo). */
+  showInstall?: boolean
 }) {
+  void registrySlug
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-3 shadow-sm">
-      <div className="flex items-center gap-2 mb-2">
-        {headerNoTitle ? title : <div className="text-sm font-medium text-text-strong-950">{title}</div>}
+    <div className="group/widget relative flex h-full flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5 shadow-regular-xs transition-all duration-150 hover:border-stroke-strong-950 hover:shadow-card-sm hover:ring-1 hover:ring-(--primary-alpha-16)">
+      <div className="flex items-center gap-2">
+        {headerNoTitle ? title : <div className="text-sm font-semibold text-text-strong-950 tracking-tight">{title}</div>}
         <div className="ml-auto inline-flex items-center gap-1.5">
           {headerExtra}
-          {seeAll ? (
-            <a
-              className="text-xs text-text-sub-600 hover:text-(--primary-base) transition-colors inline-flex items-center gap-0.5"
-              href="#"
-            >
-              {typeof seeAll === "string" ? seeAll : "See All"}
-              <ChevronRight className="size-3" />
-            </a>
-          ) : null}
         </div>
       </div>
-      <div className="flex-1 space-y-2">{children}</div>
-      {registrySlug ? (
-        <div className="mt-3 pt-2.5 border-t border-stroke-soft-200">
-          <code className="text-[10px] text-text-sub-600 font-mono">dash add {registrySlug}</code>
+      <div className="mt-3 flex-1 space-y-3">{children}</div>
+      {seeAll ? (
+        <div className="mt-3 flex justify-end">
+          <a
+            className="text-[11px] text-text-soft-400 hover:text-(--primary-base) transition-colors inline-flex items-center gap-0.5 group/seeall"
+            href="#"
+          >
+            {typeof seeAll === "string" ? seeAll : "See All"}
+            <ChevronRight className="size-3 transition-transform group-hover/seeall:translate-x-0.5" />
+          </a>
+        </div>
+      ) : null}
+      {showInstall ? (
+        <div className="mt-3 pt-2.5 border-t border-stroke-soft-200/70 flex items-center justify-between">
+          <code className="text-[10px] text-text-soft-400 font-mono">dash add widget-shell</code>
+          <span className="text-[10px] font-medium text-(--primary-base) opacity-0 transition-opacity group-hover/widget:opacity-100">
+            Install →
+          </span>
         </div>
       ) : null}
     </div>
