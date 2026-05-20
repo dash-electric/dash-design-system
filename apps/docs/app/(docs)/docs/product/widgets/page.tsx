@@ -84,7 +84,7 @@ export default function ProductWidgetsDocsPage() {
   const [cardTab, setCardTab] = React.useState("virtual")
   const [donTab, setDonTab] = React.useState("overview")
   const [schedTab, setSchedTab] = React.useState("meetings")
-  const [project, setProject] = React.useState("Monday.com Redesign")
+  const [project, setProject] = React.useState("Mitra Onboarding Sprint")
   const [tracker, setTracker] = React.useState<"awaiting" | "ongoing">("awaiting")
   const [chartRange, setChartRange] = React.useState("monthly")
 
@@ -107,20 +107,22 @@ export default function ProductWidgetsDocsPage() {
               <EmptyState text="No data yet. Please check back later." />
             </WidgetShell>
           }
-          code={`<WidgetShell title="Widget title" seeAll>
-  <Body />
+          code={`import { WidgetShell } from "@/registry/dash/product/widget-shell"
+
+<WidgetShell title="Time Off" seeAll>
+  {/* body content */}
 </WidgetShell>`}
         />
       </DocsSection>
 
       <DocsSection title="HR widget gallery">
         <p className="text-sm text-text-sub-600 max-w-2xl">
-          12 widgets compose a typical HR dashboard. Figma node 3851:32690.
+          12 widgets compose a typical Dash People Ops dashboard — mitra onboarding, suspension review, field coordinator schedules. Figma node 3851:32690.
         </p>
 
         {/* Time Off + Notes + Time Tracker */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <WidgetShell title="Time Off" seeAll>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-fr">
+          <WidgetShell title="Time Off" seeAll registrySlug="hr-time-off-widget">
             <div className="flex items-center justify-between">
               <DailyFeedbackGauge value={10} max={20} unit="DAYS" />
               <div className="space-y-1 text-xs">
@@ -131,10 +133,10 @@ export default function ProductWidgetsDocsPage() {
             </div>
           </WidgetShell>
 
-          <WidgetShell title="Notes" seeAll>
+          <WidgetShell title="Notes" seeAll registrySlug="hr-notes-widget">
             <div className="space-y-2">
-              <NoteRow done={false} title="Quarterly report prep" desc="Compile Q3 numbers." tags={["Today", "Waiting Feedback"]} date="Aug 02" />
-              <NoteRow done title="Update onboarding deck" desc="Refresh team slides." tags={["Today", "Waiting Feedback"]} date="Aug 02" />
+              <NoteRow done={false} title="Mitra suspension review" desc="Compile weekly cases." tags={["Today", "Waiting Feedback"]} date="Aug 02" />
+              <NoteRow done title="Update KYC playbook" desc="Refresh compliance guide." tags={["Today", "Waiting Feedback"]} date="Aug 02" />
             </div>
           </WidgetShell>
 
@@ -143,27 +145,29 @@ export default function ProductWidgetsDocsPage() {
               <ProjectPicker value={project} onChange={setProject} />
             }
             headerNoTitle
+            registrySlug="hr-time-tracker-widget"
           >
             <TimeTracker state={tracker} onToggle={() => setTracker((s) => (s === "awaiting" ? "ongoing" : "awaiting"))} />
           </WidgetShell>
         </div>
 
         {/* Employee Spotlight + Schedule */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-          <WidgetShell title="Employee Spotlight" seeAll>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 auto-rows-fr">
+          <WidgetShell title="Employee Spotlight" seeAll registrySlug="hr-employee-spotlight-widget">
             <div className="text-center space-y-2">
-              <Avatar size="lg" className="mx-auto"><AvatarImage src="https://i.pravatar.cc/80?u=mj" /><AvatarFallback>MJ</AvatarFallback></Avatar>
+              <Avatar size="lg" className="mx-auto ring-2 ring-(--primary-alpha-24)"><AvatarImage src="https://i.pravatar.cc/80?u=aldi" /><AvatarFallback>AP</AvatarFallback></Avatar>
               <div>
-                <div className="text-sm font-medium text-text-strong-950">Matthew Johnson</div>
-                <div className="text-xs text-text-sub-600">Software Engineer</div>
+                <div className="text-sm font-medium text-text-strong-950">Aldi Pratama</div>
+                <div className="text-xs text-text-sub-600">Driver Trainer</div>
               </div>
-              <p className="text-xs text-text-sub-600">Top-performing employee of January!</p>
+              <p className="text-xs text-text-sub-600">Mitra Trainer terbaik bulan ini!</p>
             </div>
           </WidgetShell>
 
           <WidgetShell
             title="Schedule"
             seeAll
+            registrySlug="hr-schedule-widget"
             headerExtra={
               <DateStrip
                 items={[
@@ -183,48 +187,56 @@ export default function ProductWidgetsDocsPage() {
             </SegmentedControl>
             {schedTab === "meetings" ? (
               <ScheduleCard
-                title="Meeting with James Brown"
-                time="8:00 - 8:45 AM (UTC)"
-                avatars={["jb", "lp", "at"]}
+                title="Pak Aditya · Operations Sync"
+                time="8:00 - 8:45 AM (WIB)"
+                avatars={["ad", "sw", "bh"]}
                 channel="On Google Meet"
-                badge={{ label: "Marketing", tone: "warning" }}
+                badge={{ label: "Ops Sync", tone: "purple" }}
               />
             ) : schedTab === "events" ? (
               <ScheduleCard
-                title="Tesla 4th year Celebration Party"
-                time="7:00 - 11:00 PM (UTC)"
-                location="341 Windy Ridge Road, LA"
+                title="Dash 4th Anniversary"
+                time="7:00 - 11:00 PM (WIB)"
+                location="Plaza Senayan, Jakarta"
                 attendees="16/25"
-                organizer="by Sofia Williams"
+                organizer="by Sari Wijaya"
               />
             ) : (
               <ScheduleCard
-                title="Christmas Holiday"
-                time="DEC 25 – DEC 27"
-                emoji="🎄"
-                description="Happy Christmas!"
-                subtitle="Religious Holiday"
-                badge={{ label: "2-days break", tone: "purple" }}
+                title="Hari Raya Idul Fitri"
+                time="APR 10 – APR 12"
+                emoji="🕌"
+                description="Selamat Hari Raya!"
+                subtitle="Cuti Bersama Nasional"
+                badge={{ label: "3-days break", tone: "purple" }}
               />
             )}
           </WidgetShell>
         </div>
 
         {/* Daily Feedback + Work Hours + Courses */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-          <WidgetShell title="Daily Feedback" seeAll>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 auto-rows-fr">
+          <WidgetShell title="Daily Feedback" seeAll registrySlug="hr-daily-feedback-widget">
             <div className="text-center space-y-3">
-              <p className="text-sm text-text-strong-950">How would you rate your mood today?</p>
+              <p className="text-sm text-text-strong-950">Bagaimana suasana hati Anda hari ini?</p>
               <div className="flex items-center justify-center gap-2 text-2xl">
-                {["😟", "😐", "🙂", "😀", "🤩"].map((e) => (
-                  <button key={e} className="hover:scale-110 transition-transform">{e}</button>
+                {["😟", "😐", "🙂", "😀", "🤩"].map((e, i) => (
+                  <button
+                    key={e}
+                    className={cn(
+                      "transition-all rounded-full size-9 inline-flex items-center justify-center hover:scale-110",
+                      i === 3 && "ring-2 ring-(--primary-base) bg-(--primary-alpha-10)",
+                    )}
+                  >
+                    {e}
+                  </button>
                 ))}
               </div>
               <Button size="sm">Next Question</Button>
             </div>
           </WidgetShell>
 
-          <WidgetShell title="Work Hours Analysis" seeAll>
+          <WidgetShell title="Work Hours Analysis" seeAll registrySlug="hr-work-hours-widget">
             <div className="text-xs text-text-sub-600">10 hours · 0 mins</div>
             <svg viewBox="0 0 240 80" className="w-full h-20 mt-2">
               <polyline
@@ -236,13 +248,13 @@ export default function ProductWidgetsDocsPage() {
             </svg>
           </WidgetShell>
 
-          <WidgetShell title="Courses" seeAll>
+          <WidgetShell title="Courses" seeAll registrySlug="hr-courses-widget">
             <ul className="divide-y divide-stroke-soft-200 text-xs">
               {[
-                { name: "Huxley Albury", course: "Talent Management", progress: 70, status: "In Progress", tone: "information" as const },
-                { name: "Ashlee Taylor", course: "Leadership Skills", progress: 55, status: "In Progress", tone: "information" as const },
-                { name: "Wei Chen", course: "Diversity Training", progress: 100, status: "Completed", tone: "success" as const },
-                { name: "Laura Müller", course: "Efficiency at Work", progress: 40, status: "In Progress", tone: "information" as const },
+                { name: "Sari Wijaya", course: "Mitra Onboarding", progress: 70, status: "In Progress", tone: "information" as const },
+                { name: "Budi Hartono", course: "Field Safety", progress: 55, status: "In Progress", tone: "information" as const },
+                { name: "Dewi Lestari", course: "Compliance UU PDP", progress: 100, status: "Completed", tone: "success" as const },
+                { name: "Rini Setiawan", course: "Performance Coaching", progress: 40, status: "In Progress", tone: "information" as const },
               ].map((c) => (
                 <li key={c.name} className="flex items-center gap-2 py-1.5">
                   <Avatar size="xs"><AvatarImage src={`https://i.pravatar.cc/40?u=${c.name}`} /></Avatar>
@@ -261,8 +273,8 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Daily Work Hours + Training Analysis + Employee Rating + Course Progress */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
-          <WidgetShell title="Daily Work Hours" seeAll>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3 auto-rows-fr">
+          <WidgetShell title="Daily Work Hours" seeAll registrySlug="hr-daily-work-hours-widget">
             <div className="grid grid-cols-7 gap-1.5 h-20 items-end">
               {[40, 60, 80, 50, 70, 90, 30].map((v, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
@@ -273,27 +285,27 @@ export default function ProductWidgetsDocsPage() {
             </div>
           </WidgetShell>
 
-          <WidgetShell title="Training Analysis" seeAll>
+          <WidgetShell title="Training Analysis" seeAll registrySlug="hr-training-analysis-widget">
             <div className="text-base font-semibold tabular-nums">12 trainees</div>
             <div className="grid grid-cols-12 gap-1 h-16 items-end mt-2">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className="w-full bg-(--primary-alpha-24) rounded-t-sm" style={{ height: `${20 + Math.random() * 60}%` }} />
+              {[42, 58, 71, 35, 65, 48, 80, 52, 60, 40, 72, 55].map((v, i) => (
+                <div key={i} className="w-full bg-(--primary-alpha-24) rounded-t-sm" style={{ height: `${v}%` }} />
               ))}
             </div>
           </WidgetShell>
 
-          <WidgetShell title="Employee Rating" seeAll>
+          <WidgetShell title="Employee Rating" seeAll registrySlug="hr-employee-rating-widget">
             <div className="text-xl font-semibold tabular-nums">⭐ 3.65 <span className="text-xs font-normal text-text-sub-600">overall</span></div>
             <svg viewBox="0 0 220 50" className="w-full h-12 mt-1.5">
               <path d="M0 30 Q40 10 80 20 T160 25 T220 15" fill="none" stroke={APEX_BLUE} strokeWidth="1.5" />
             </svg>
           </WidgetShell>
 
-          <WidgetShell title="Course Progress" seeAll>
+          <WidgetShell title="Course Progress" seeAll registrySlug="hr-course-progress-widget">
             <div className="flex items-center gap-3">
               <DailyFeedbackGauge value={68} max={100} unit="%" smaller />
               <div>
-                <div className="text-xs font-medium">Sam (Diversity Training)</div>
+                <div className="text-xs font-medium">Sam (KYC Compliance)</div>
                 <LinkButton size="sm">Progress Course</LinkButton>
               </div>
             </div>
@@ -307,8 +319,8 @@ export default function ProductWidgetsDocsPage() {
         </p>
 
         {/* Stock Market + My Cards + Spending */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <WidgetShell title="Stock Market Tracker" headerExtra={<Button style="stroke" tone="neutral" size="xs">ACME <ChevronDown className="size-3" /></Button>} headerNoTitle>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-fr">
+          <WidgetShell title="Stock Market Tracker" headerExtra={<Button style="stroke" tone="neutral" size="xs">ACME <ChevronDown className="size-3" /></Button>} headerNoTitle registrySlug="finance-stock-tracker-widget">
             <div className="space-y-2">
               <div className="text-xs font-medium">Stock Market Tracker</div>
               <SegmentedControl size="sm" defaultValue="1y" className="w-full">
@@ -316,14 +328,14 @@ export default function ProductWidgetsDocsPage() {
                   <SegmentedItem key={d} size="sm" value={d.toLowerCase()} className="flex-1">{d}</SegmentedItem>
                 ))}
               </SegmentedControl>
-              <div className="text-xl font-semibold tabular-nums">$440,364.20</div>
+              <div className="text-xl font-semibold tabular-nums">Rp 440.364.200</div>
               <svg viewBox="0 0 220 60" className="w-full h-14">
                 <polyline fill="none" stroke="#7C3AED" strokeWidth="1.5" points="0,40 10,30 20,45 30,35 40,50 50,30 60,40 70,25 80,45 90,30 100,40 110,20 120,40 130,30 140,40 150,20 160,35 170,25 180,45 190,30 200,45 210,30 220,40" />
               </svg>
             </div>
           </WidgetShell>
 
-          <WidgetShell title="My Cards" headerExtra={<Button style="stroke" tone="neutral" size="xs"><Plus className="size-3" />Add Card</Button>} headerNoTitle>
+          <WidgetShell title="My Cards" headerExtra={<Button style="stroke" tone="neutral" size="xs"><Plus className="size-3" />Add Card</Button>} headerNoTitle registrySlug="finance-my-cards-widget">
             <SegmentedControl size="sm" value={cardTab} onValueChange={setCardTab} className="w-full mb-2">
               <SegmentedItem size="sm" value="virtual" className="flex-1">Virtual <span className="text-text-soft-400 ml-1">(2)</span></SegmentedItem>
               <SegmentedItem size="sm" value="physical" className="flex-1">Physical</SegmentedItem>
@@ -331,8 +343,8 @@ export default function ProductWidgetsDocsPage() {
             <BankCard variant={cardTab === "virtual" ? "virtual" : "physical"} />
           </WidgetShell>
 
-          <WidgetShell title="Spending Summary" seeAll>
-            <div className="text-xl font-semibold tabular-nums">$1,900.00</div>
+          <WidgetShell title="Spending Summary" seeAll registrySlug="finance-spending-summary-widget">
+            <div className="text-xl font-semibold tabular-nums">Rp 1.900.000</div>
             <div className="relative h-20 mt-2">
               <svg viewBox="0 0 100 50" className="w-full h-full">
                 <path d="M10 40 A30 30 0 1 1 90 40" fill="none" stroke="#E5E5E5" strokeWidth="6" />
@@ -340,30 +352,30 @@ export default function ProductWidgetsDocsPage() {
               </svg>
             </div>
             <div className="flex justify-between text-[10px] text-text-sub-600 mt-1">
-              <span><span className="font-medium text-text-strong-950">$640</span> Food</span>
-              <span><span className="font-medium text-text-strong-950">$220</span> Drinks</span>
+              <span><span className="font-medium text-text-strong-950">Rp 640k</span> Makanan</span>
+              <span><span className="font-medium text-text-strong-950">Rp 220k</span> Minuman</span>
             </div>
           </WidgetShell>
         </div>
 
         {/* Exchange + Currency + Recent Transactions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-          <WidgetShell title="Exchange" seeAll>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 auto-rows-fr">
+          <WidgetShell title="Exchange" seeAll registrySlug="finance-exchange-widget">
             <SegmentedControl size="sm" defaultValue="rates" className="w-full mb-2">
               <SegmentedItem size="sm" value="rates" className="flex-1">Rates</SegmentedItem>
               <SegmentedItem size="sm" value="buy" className="flex-1">Buy</SegmentedItem>
             </SegmentedControl>
-            <div className="text-xl font-semibold tabular-nums">$100.00</div>
-            <div className="text-xs text-text-sub-600">Sold 0.0156 BTC</div>
+            <div className="text-xl font-semibold tabular-nums">Rp 1.580.000</div>
+            <div className="text-xs text-text-sub-600">Sold 100 USD</div>
             <Button className="w-full mt-2" size="sm">Exchange</Button>
           </WidgetShell>
 
-          <WidgetShell title="Currency List" seeAll>
+          <WidgetShell title="Currency List" seeAll registrySlug="finance-currency-list-widget">
             <ul className="divide-y divide-stroke-soft-200 text-xs">
               {[
-                { country: "🇨🇦", currency: "Canadian Dollar", rate: "11.77", change: "+0.46%" },
-                { country: "🇯🇵", currency: "Japanese Yen", rate: "157.31", change: "+0.13%" },
-                { country: "🇧🇷", currency: "Brazilian Real", rate: "5.34", change: "−0.21%" },
+                { country: "🇺🇸", currency: "US Dollar", rate: "15,820", change: "+0.46%" },
+                { country: "🇸🇬", currency: "Singapore Dollar", rate: "11,940", change: "+0.13%" },
+                { country: "🇯🇵", currency: "Japanese Yen", rate: "104.20", change: "−0.21%" },
               ].map((r) => (
                 <li key={r.currency} className="flex items-center gap-2 py-1.5">
                   <span className="text-base">{r.country}</span>
@@ -375,7 +387,7 @@ export default function ProductWidgetsDocsPage() {
             </ul>
           </WidgetShell>
 
-          <WidgetShell title="Recent Transactions" seeAll>
+          <WidgetShell title="Recent Transactions" seeAll registrySlug="finance-recent-transactions-widget">
             <SegmentedControl size="sm" value={trans} onValueChange={setTrans} className="w-full mb-2">
               <SegmentedItem size="sm" value="incoming" className="flex-1">Incoming</SegmentedItem>
               <SegmentedItem size="sm" value="outgoing" className="flex-1">Outgoing</SegmentedItem>
@@ -384,17 +396,17 @@ export default function ProductWidgetsDocsPage() {
             <ul className="divide-y divide-stroke-soft-200 text-xs">
               {(trans === "incoming"
                 ? [
-                    { brand: "Salary Deposit", desc: "Monthly salary from Apex…", amount: "$3,500.00", date: "Sep 18" },
-                    { brand: "Stock Dividend", desc: "Payment from stock invest…", amount: "$846.14", date: "Sep 18" },
+                    { brand: "Payroll Mitra", desc: "Gaji bulanan Dash Ops", amount: "Rp 9.000.000", date: "Sep 18" },
+                    { brand: "Bonus Performance", desc: "Insentif kuartal", amount: "Rp 1.250.000", date: "Sep 18" },
                   ]
                 : trans === "outgoing"
                   ? [
-                      { brand: "Baroque Painting", desc: "Order No #234122", amount: "-$124.00", date: "Sep 18" },
-                      { brand: "Mastercard Payment", desc: "Monthly Credit Card Paym…", amount: "-$963.62", date: "Sep 15" },
+                      { brand: "Top-up GoPay", desc: "Order No #234122", amount: "-Rp 250.000", date: "Sep 18" },
+                      { brand: "Mandiri Payment", desc: "Tagihan kartu kredit", amount: "-Rp 1.450.000", date: "Sep 15" },
                     ]
                   : [
-                      { brand: "Electricity Bill", desc: "3 days later", amount: "-$86.00", date: "Sep 21" },
-                      { brand: "Internet Service", desc: "4 days later", amount: "-$46.00", date: "Sep 22" },
+                      { brand: "Tagihan Listrik", desc: "3 hari lagi", amount: "-Rp 380.000", date: "Sep 21" },
+                      { brand: "IndiHome", desc: "4 hari lagi", amount: "-Rp 460.000", date: "Sep 22" },
                     ]
               ).map((r) => (
                 <li key={r.brand} className="flex items-center gap-2 py-2">
@@ -414,24 +426,24 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Subscriptions + Quick Transfer + Donation Profile */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-          <WidgetShell title="My Subscriptions" seeAll>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 auto-rows-fr">
+          <WidgetShell title="My Subscriptions" seeAll registrySlug="finance-subscriptions-widget">
             <div className="space-y-2">
               {[
-                { name: "Netflix", price: "$15.49", date: "May 03" },
-                { name: "Apple Music", price: "$9.99", date: "May 05" },
-                { name: "Spotify", price: "$9.99", date: "May 12" },
-                { name: "YouTube Premium", price: "$13.99", date: "May 19" },
+                { name: "Netflix", price: "Rp 169.000", date: "May 03" },
+                { name: "Apple Music", price: "Rp 99.000", date: "May 05" },
+                { name: "Spotify", price: "Rp 54.990", date: "May 12" },
+                { name: "YouTube Premium", price: "Rp 79.000", date: "May 19" },
               ].map((s) => (
                 <SubscriptionRow key={s.name} title={s.name} price={s.price} date={s.date} />
               ))}
             </div>
           </WidgetShell>
 
-          <WidgetShell title="Quick Transfer" headerExtra={<Button style="stroke" tone="neutral" size="xs"><Plus className="size-3" />Add</Button>} headerNoTitle>
+          <WidgetShell title="Quick Transfer" headerExtra={<Button style="stroke" tone="neutral" size="xs"><Plus className="size-3" />Add</Button>} headerNoTitle registrySlug="finance-quick-transfer-widget">
             <div className="text-xs font-medium mb-2">Quick Transfer</div>
             <div className="flex items-center gap-2 mb-3">
-              {["Sophia", "James", "Lena", "Arthur", "+5"].map((n, i) => (
+              {["Sari", "Aditya", "Dewi", "Budi", "+5"].map((n, i) => (
                 <div key={i} className="text-center">
                   <Avatar size="sm" className="mx-auto"><AvatarFallback>{n[0]}</AvatarFallback></Avatar>
                   <div className="text-[10px] text-text-sub-600 mt-1">{n}</div>
@@ -439,11 +451,11 @@ export default function ProductWidgetsDocsPage() {
               ))}
             </div>
             <div className="text-xs text-text-sub-600">Enter Amount</div>
-            <div className="text-xl font-semibold tabular-nums">$0.00</div>
+            <div className="text-xl font-semibold tabular-nums">Rp 0</div>
             <Button className="w-full mt-2" size="sm">Send</Button>
           </WidgetShell>
 
-          <WidgetShell title="Donation Profile" headerExtra={<Button style="stroke" tone="neutral" size="xs"><Plus className="size-3" />Donate</Button>} headerNoTitle>
+          <WidgetShell title="Donation Profile" headerExtra={<Button style="stroke" tone="neutral" size="xs"><Plus className="size-3" />Donate</Button>} headerNoTitle registrySlug="finance-donation-profile-widget">
             <div className="space-y-2">
               <div className="text-xs font-medium">Donation Profile</div>
               <SegmentedControl size="sm" value={donTab} onValueChange={setDonTab} className="w-full">
@@ -452,12 +464,12 @@ export default function ProductWidgetsDocsPage() {
                 <SegmentedItem size="sm" value="statistic" className="flex-1">Statistic</SegmentedItem>
               </SegmentedControl>
               <div className="text-center space-y-1">
-                <Avatar size="md" className="mx-auto"><AvatarImage src="https://i.pravatar.cc/40?u=arthur" /><AvatarFallback>AT</AvatarFallback></Avatar>
-                <div className="text-sm font-medium">Arthur Taylor</div>
+                <Avatar size="md" className="mx-auto"><AvatarImage src="https://i.pravatar.cc/40?u=adit" /><AvatarFallback>AT</AvatarFallback></Avatar>
+                <div className="text-sm font-medium">Aditya Brahmana</div>
                 <div className="text-[10px] text-text-sub-600">48 donations in the last year</div>
                 <div className="grid grid-cols-2 gap-1.5 mt-2">
                   <div className="rounded-lg border border-stroke-soft-200 p-2 text-center">
-                    <div className="text-xs font-medium">$12,000</div>
+                    <div className="text-xs font-medium">Rp 12.000.000</div>
                     <div className="text-[10px] text-text-soft-400">Total</div>
                   </div>
                   <div className="rounded-lg border border-stroke-soft-200 p-2 text-center">
@@ -471,22 +483,22 @@ export default function ProductWidgetsDocsPage() {
         </div>
 
         {/* Net Balance + Major Expenses + Credit Score + Budget Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
-          <WidgetShell title="Net Balance" seeAll>
-            <div className="text-xl font-semibold tabular-nums">$14,460.24</div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3 auto-rows-fr">
+          <WidgetShell title="Net Balance" seeAll registrySlug="finance-net-balance-widget">
+            <div className="text-xl font-semibold tabular-nums">Rp 14.460.240</div>
             <Badge size="sm" appearance="lighter" status="success">+5.32%</Badge>
             <svg viewBox="0 0 220 50" className="w-full h-12 mt-1.5">
               <path d="M0 30 Q40 10 80 20 T160 25 T220 15" fill="none" stroke={APEX_BLUE} strokeWidth="1.5" />
             </svg>
           </WidgetShell>
 
-          <WidgetShell title="Major Expenses" headerExtra={<Button style="stroke" tone="neutral" size="xs">Weekly <ChevronDown className="size-3" /></Button>} headerNoTitle>
+          <WidgetShell title="Major Expenses" headerExtra={<Button style="stroke" tone="neutral" size="xs">Weekly <ChevronDown className="size-3" /></Button>} headerNoTitle registrySlug="finance-major-expenses-widget">
             <div className="text-xs font-medium mb-2">Major Expenses</div>
             <div className="space-y-1.5">
               {[
-                { label: "Housing", v: 95, c: "#3F6FFF" },
-                { label: "Utilities", v: 60, c: "#5BC0EB" },
-                { label: "Food", v: 25, c: "#7C3AED" },
+                { label: "Sewa", v: 95, c: "#5e2aac" },
+                { label: "Utilitas", v: 60, c: "#5BC0EB" },
+                { label: "Makanan", v: 25, c: "#3F6FFF" },
               ].map((b) => (
                 <div key={b.label} className="flex items-center gap-2 text-xs">
                   <div className="w-12 text-text-sub-600">{b.label}</div>
@@ -496,7 +508,7 @@ export default function ProductWidgetsDocsPage() {
             </div>
           </WidgetShell>
 
-          <WidgetShell title="Credit Score" seeAll>
+          <WidgetShell title="Credit Score" seeAll registrySlug="finance-credit-score-widget">
             <div className="text-xs text-text-sub-600">Your credit score is</div>
             <div className="text-xl font-semibold tabular-nums">790 <Badge size="sm" appearance="lighter" status="success">+0.46%</Badge></div>
             <div className="grid grid-cols-5 gap-1 mt-2">
@@ -506,12 +518,12 @@ export default function ProductWidgetsDocsPage() {
             </div>
           </WidgetShell>
 
-          <WidgetShell title="Budget Overview" headerExtra={<Button style="stroke" tone="neutral" size="xs">Yearly <ChevronDown className="size-3" /></Button>} headerNoTitle>
+          <WidgetShell title="Budget Overview" headerExtra={<Button style="stroke" tone="neutral" size="xs">Yearly <ChevronDown className="size-3" /></Button>} headerNoTitle registrySlug="finance-budget-overview-widget">
             <div className="text-xs">
               <div className="flex items-center gap-3">
-                <KVDot color="#3F6FFF" label="$9,300.00" />
-                <KVDot color="#5BC0EB" label="$4,138.00" />
-                <KVDot color="#7C3AED" label="$1,200.00" />
+                <KVDot color="#5e2aac" label="Rp 9.300.000" />
+                <KVDot color="#5BC0EB" label="Rp 4.138.000" />
+                <KVDot color="#3F6FFF" label="Rp 1.200.000" />
               </div>
             </div>
             <StackedBars range={chartRange} onRangeChange={setChartRange} />
@@ -777,23 +789,39 @@ function WidgetShell({
   headerExtra,
   headerNoTitle,
   children,
+  registrySlug,
 }: {
   title: React.ReactNode
   seeAll?: boolean | string
   headerExtra?: React.ReactNode
   headerNoTitle?: boolean
   children: React.ReactNode
+  /** Optional registry slug — when set, renders an install command footer. */
+  registrySlug?: string
 }) {
   return (
-    <div className="rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-3 shadow-sm space-y-2">
-      <div className="flex items-center gap-2">
+    <div className="flex h-full flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-3 shadow-sm">
+      <div className="flex items-center gap-2 mb-2">
         {headerNoTitle ? title : <div className="text-sm font-medium text-text-strong-950">{title}</div>}
         <div className="ml-auto inline-flex items-center gap-1.5">
           {headerExtra}
-          {seeAll ? <LinkButton size="sm">{typeof seeAll === "string" ? seeAll : "See All"}</LinkButton> : null}
+          {seeAll ? (
+            <a
+              className="text-xs text-text-sub-600 hover:text-(--primary-base) transition-colors inline-flex items-center gap-0.5"
+              href="#"
+            >
+              {typeof seeAll === "string" ? seeAll : "See All"}
+              <ChevronRight className="size-3" />
+            </a>
+          ) : null}
         </div>
       </div>
-      {children}
+      <div className="flex-1 space-y-2">{children}</div>
+      {registrySlug ? (
+        <div className="mt-3 pt-2.5 border-t border-stroke-soft-200">
+          <code className="text-[10px] text-text-sub-600 font-mono">dash add {registrySlug}</code>
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -1015,7 +1043,7 @@ function BankCard({ variant = "virtual" }: { variant?: "virtual" | "physical" })
       </div>
       <div className="absolute bottom-3 left-3 right-3">
         <div className={cn("text-xs", dark ? "text-white/60" : "text-text-sub-600")}>{dark ? "Cardholder Name" : "Savings Card"}</div>
-        <div className="text-xl font-semibold tabular-nums">{dark ? "Arthur Taylor" : "$16,058.94"}</div>
+        <div className="text-xl font-semibold tabular-nums">{dark ? "Aditya Brahmana" : "Rp 16.058.940"}</div>
       </div>
       {!dark ? (
         <div className="absolute bottom-3 right-3 flex gap-1">
