@@ -1,0 +1,103 @@
+# CLAUDE.md — Dash Design System Repo Instructions
+
+> Auto-loaded by Claude Code when working in `/dash-ds/`. Anyone (PE, PM, ops, designer, CEO) cloning + opening in Claude Code gets this context.
+
+## What this repo is
+
+Dash Design System — internal sovereign DS for 10+ PE at Dash (PT Dash Elektrik Indonesia). Custom CLI + MCP + Skill stack. Distributes 214+ registry items (atoms, blocks, templates, patterns) to consumer Dash repos via `dash add <name>`.
+
+## Cardinal rules
+
+1. **Existing Dash production code is NEVER modified.** This repo is purely ADDITIVE. Generate new patterns + components here; consumer repos pull via CLI.
+2. **No external form libraries.** No `react-hook-form`, `zod`, `@hookform/resolvers`, `@tanstack/react-query`, `swr`. Use `useState` + hand-rolled validation. See `apps/docs/registry/rules/dash-ai-rules.md` § "Banned Imports".
+3. **Audit trail mandatory** for user-editable fields carrying legal/financial weight (image proof, payment, signature, KYC). Log original + edited + editor + reason. See rules § "Audit Trail".
+4. **Dash Purple canonical hex:** `#5e2aac`. Do not introduce `#7C4FC4` or any other purple variant.
+5. **Mitra-facing UI voice = formal "Anda"**, not casual "kamu". Per Dash voice rule.
+
+## Where to look for context
+
+| Need | File |
+|------|------|
+| Per-repo stack mandates | `apps/docs/registry/rules/dash-ai-rules.md` |
+| Domain entities, table names, state machines | `apps/docs/registry/rules/dash-domain-glossary.md` |
+| Compressed rules (Skill v2 default) | `apps/docs/registry/rules/dash-ai-rules.compressed.md` |
+| AI validation fixtures | `apps/docs/registry/rules/fixtures/` |
+| Component canonical sources | `apps/docs/registry/dash/{ui,blocks,templates,patterns,hooks,lib}/` |
+| Registry manifest | `apps/docs/registry.json` |
+| Strategic plan | `Documents/Obsidian/Irfan-Vault/02-Projects/Product-Design/Dash/Dash-Design-System/Master-Execution-Plan-2026-05-20.md` |
+| Kill criteria | `KILL-CRITERIA.md` |
+| Drift baseline | `BASELINE-DRIFT-2026-05-20.md` |
+| Honest self-critique | `feedback.md` |
+| Commit history reference | `COMMIT-PLAN-2026-05-20.md` |
+
+## Tooling
+
+- **CLI:** `dash` (located `packages/cli/`). Commands: `init`, `add`, `audit`, `build`, `diff`, `doctor`, `info`, `list`, `login`, `mcp`, `search`, `sync`.
+- **MCP server:** `packages/mcp-server/`. Bearer-gated. 6 tools.
+- **Skill:** `packages/skill/` (v2). Priority-pinned context blocks + per-repo scoping.
+- **PRD skill:** `skills/dash-prd/` (BSD-3 fork of NatPRD, vendored).
+
+## When generating code
+
+1. Check DS coverage first: `dash search <name>`. If hit, install via `dash add`. If miss, build custom matching Dash foundation.
+2. NEVER reach for external libraries without explicit user approval — see § External Library Policy in rules.
+3. Default stack per repo (auto-detected by Skill):
+   - portal-v2: Next App Router + TS + Jotai + axios
+   - backoffice: Next Pages Router + JS + useState + axios + NextAuth
+   - halo-dash-fe: Next Pages Router + JS + useState + axios + AuthContext
+   - basecamp: Next App Router + TS + Zustand 5 + Firebase + shadcn
+   - react-fleet: CRA + CRACO + TS + useState + custom `useFormValidation` hook
+4. Tokens: `bg-primary-500`, `text-text-strong-950`, `border-error-base`. Never raw hex.
+
+## When user asks for a new feature
+
+Default to **dash-prd skill** (`/dash-prd`) for spec-first approach. Skip to vibe-code only when:
+- Scope crystal clear (no audit/legal exposure)
+- 1-person execution
+- Throwaway prototype
+
+## Don't do
+
+- Modify Dash production repos (`/Users/irfanprimaputra.b/Dash/*`) — they are READ-ONLY references.
+- Ship code with banned imports (CI gate via `dash audit`).
+- Skip audit trail for legal/financial fields.
+- Introduce a second component library (MUI/antd in greenfield).
+- Bypass `dash add` (copy-paste between repos).
+- Modify `.compressed.md` directly (regenerate via Skill rebuild).
+
+## Common workflows
+
+### Add new component to DS
+```
+1. Build component in apps/docs/registry/dash/{ui,blocks,templates}/<name>.tsx
+2. Register in apps/docs/registry.json
+3. Add doc page apps/docs/app/(docs)/docs/components/<name>/page.tsx
+4. Run pnpm registry:build
+5. Verify dash audit clean
+```
+
+### Refactor pattern that violates rules
+```
+1. Check rules section that's violated
+2. Generate replacement matching canonical pattern (e.g., useState replacing RHF)
+3. Update registry.json deps (drop banned)
+4. Run pnpm test + typecheck
+```
+
+### Investigate Dash production behavior
+```
+1. READ-ONLY browse /Users/irfanprimaputra.b/Dash/<repo>
+2. NEVER edit Dash production
+3. Distill pattern → add to glossary or new block here
+```
+
+## Token budget awareness
+
+Rules + glossary are huge (829 + 1982 lines = ~2811 lines). Skill v2 pre-compresses to 18K chars + pins 4 critical blocks (refuse-list, envelope, audit trail, external-lib policy). Trust the compressed/pinned default; only read full files when debugging Skill behavior itself.
+
+## Open questions (verify before relying on)
+
+- Mitra suspension threshold (need Fayzul confirmation)
+- eKYC vendor (Verihubs assumed — verify)
+- Metric baselines (need analytics access)
+- Deputy maintainer (bus factor = 1 currently; Q3 2026 mandatory)
