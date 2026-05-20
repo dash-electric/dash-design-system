@@ -28,6 +28,7 @@ import {
   runSkillRefresh,
   runSkillStatus,
 } from "./commands/skill.js"
+import { runMigrate } from "./commands/migrate.js"
 
 const program = new Command()
 
@@ -96,8 +97,14 @@ program
   .description("Search registry items by name, title, description, or type")
   .option("--registry-url <url>", "Override registry URL")
   .option("--token <token>", "Bearer token")
+  .option("--namespace <ns>", "Restrict to a single registry namespace (dash | trellis | logistic | …)")
   .action(async (query: string, opts) => {
-    await runSearch({ query, registryUrl: opts.registryUrl, token: opts.token })
+    await runSearch({
+      query,
+      registryUrl: opts.registryUrl,
+      token: opts.token,
+      namespace: opts.namespace,
+    })
   })
 
 program
@@ -107,12 +114,14 @@ program
   .option("--registry-url <url>", "Override registry URL")
   .option("--token <token>", "Bearer token")
   .option("--theme <name>", "Filter by Layer-2 theme (ride | logistic | …)")
+  .option("--namespace <ns>", "Registry namespace to list (dash | trellis | logistic | …)")
   .action(async (opts) => {
     await runList({
       type: opts.type,
       registryUrl: opts.registryUrl,
       token: opts.token,
       theme: opts.theme,
+      namespace: opts.namespace,
     })
   })
 
@@ -397,6 +406,27 @@ skill
   .option("--json", "Emit machine-readable JSON")
   .action(async (opts) => {
     await runSkillClear({ cwd: opts.cwd, all: opts.all, json: opts.json })
+  })
+
+// ─────────────────────────────────────────────────────────────────────────
+// `dash migrate <name>` — apply codemods for breaking changes
+// ─────────────────────────────────────────────────────────────────────────
+
+program
+  .command("migrate [name]")
+  .description("Apply a Dash migration (codemod for a breaking change)")
+  .option("--list", "List available migrations")
+  .option("--dry-run", "Show what would change without writing")
+  .option("--yes", "Skip confirmation prompt")
+  .option("--cwd <path>", "Working directory (defaults to cwd)")
+  .action(async (name: string | undefined, opts) => {
+    await runMigrate({
+      name,
+      list: opts.list,
+      dryRun: opts.dryRun,
+      yes: opts.yes,
+      cwd: opts.cwd,
+    })
   })
 
 program.parseAsync(process.argv).catch((err: Error) => {

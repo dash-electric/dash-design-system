@@ -28,6 +28,12 @@ import {
   type Framework,
 } from "../lib/framework-detector.js"
 import type { ComponentsJson } from "../lib/schema.js"
+import {
+  startBackup,
+  backupFile,
+  commitBackup,
+  restoreBackup,
+} from "../lib/backup.js"
 
 export type InitOpts = {
   yes?: boolean
@@ -232,6 +238,13 @@ export async function runInit(opts: InitOpts): Promise<void> {
   const scaffold = scaffoldFor(framework)
   console.log(kleur.dim(`Framework: ${scaffold.label}`))
 
+  // Backup safety net: any existing files we're about to write are copied to
+  // `.dash-backup/<ISO-ts>/`. On unexpected exit, they're auto-restored. On
+  // success, the backup tree is cleaned up.
+  const backup = startBackup(cwd)
+  let initSucceeded = false
+  try {
+
   // 1. Write components.json from per-framework template
   console.log(kleur.bold("\n→ Writing components.json"))
   const template = loadComponentsJsonTemplate(framework)
@@ -259,6 +272,7 @@ export async function runInit(opts: InitOpts): Promise<void> {
       },
     },
   }
+  backupFile(backup, path.join(cwd, COMPONENTS_JSON))
   writeComponentsJson(config, cwd)
   console.log(kleur.green(`  + ${COMPONENTS_JSON}`))
 
@@ -269,6 +283,7 @@ export async function runInit(opts: InitOpts): Promise<void> {
     if (fs.existsSync(envFile)) {
       const cur = fs.readFileSync(envFile, "utf-8")
       if (!/^DASH_REGISTRY_TOKEN=/m.test(cur)) {
+        backupFile(backup, envFile)
         fs.writeFileSync(envFile, cur + (cur.endsWith("\n") ? "" : "\n") + line)
         console.log(kleur.green(`  ↻ .env.local (appended DASH_REGISTRY_TOKEN)`))
       } else {
@@ -288,6 +303,7 @@ export async function runInit(opts: InitOpts): Promise<void> {
     fs.writeFileSync(cssPath, DASH_BASE_CSS, "utf-8")
     console.log(kleur.green(`  + ${path.relative(cwd, cssPath)}`))
   } else {
+    backupFile(backup, cssPath)
     console.log(kleur.dim(`  · ${path.relative(cwd, cssPath)} exists (preserved)`))
   }
 
@@ -345,4 +361,15 @@ export async function runInit(opts: InitOpts): Promise<void> {
 
   console.log(kleur.bold().green("\n✓ Dash initialized"))
   console.log(kleur.dim(`Next: ${kleur.cyan("dash add button")}`))
+    initSucceeded = true
+  } catch (err) {
+    // Any failure mid-init → roll back to pre-init state.
+    console.error(kleur.red(`\n✗ Init failed — restoring backup`))
+    restoreBackup(backup)
+    throw err
+  } finally {
+    if (initSucceeded) {
+      commitBackup(backup, true)
+    }
+  }
 }
