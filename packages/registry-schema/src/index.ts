@@ -1,33 +1,23 @@
 // @dash/registry-schema — shared registry types
-// Phase 0 stub. Real schemas land when extracted from apps/docs/registry.json + scripts/build-registry.ts.
+//
+// PRIMARY (single source of truth): runtime zod schemas in `./zod-schemas`.
+// Use these at fetch / parse boundaries to runtime-validate untrusted JSON.
+// The inferred TS types (`RegistryItem`, `RegistryItemFile`, etc.) are
+// re-exported below.
+//
+// Legacy stub types (kept as `*Stub` aliases for any external imports that
+// existed before runtime validation landed) are exported with a deprecation
+// tag. New code should import from `./zod-schemas` directly.
 
-export type RegistryItemKind =
+export * from './zod-schemas.js';
+
+/** @deprecated Use `RegistryItemType` from `./zod-schemas`. */
+export type RegistryItemKindStub =
   | 'registry:ui'
   | 'registry:component'
   | 'registry:block'
   | 'registry:hook'
   | 'registry:lib';
 
-export interface RegistryItemFile {
-  path: string;
-  type: RegistryItemKind;
-  target?: string;
-}
-
-export interface RegistryItem {
-  name: string;
-  type: RegistryItemKind;
-  registryDependencies?: string[];
-  dependencies?: string[];
-  devDependencies?: string[];
-  files?: RegistryItemFile[];
-  tailwind?: Record<string, unknown>;
-  cssVars?: Record<string, Record<string, string>>;
-  meta?: Record<string, unknown>;
-}
-
-export interface RegistryIndexEntry {
-  name: string;
-  type: RegistryItemKind;
-  description?: string;
-}
+/** @deprecated Use `RegistryItemKindStub` (renamed for collision avoidance). */
+export type RegistryItemKind = RegistryItemKindStub;

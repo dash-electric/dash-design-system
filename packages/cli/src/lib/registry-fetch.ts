@@ -15,6 +15,10 @@
  */
 import fs from "node:fs"
 import path from "node:path"
+import {
+  RegistryItemSchema,
+  RegistryIndexSchema,
+} from "@dash/registry-schema"
 import { cacheGet, cacheSet } from "./cache.js"
 import { diskCacheGet, diskCacheSet } from "./disk-cache.js"
 import { getCredential } from "./credentials.js"
@@ -26,6 +30,25 @@ export type FetchOpts = {
   headers?: Record<string, string>
   noCache?: boolean
   cwd?: string
+}
+
+/**
+ * Thrown when registry data fails runtime schema validation.
+ * Carries the underlying zod issue list + an actionable suggestion.
+ */
+export class RegistryError extends Error {
+  public readonly suggestion?: string
+  public readonly issues?: unknown
+  constructor(
+    message: string,
+    opts?: { cause?: unknown; suggestion?: string; issues?: unknown },
+  ) {
+    super(message)
+    this.name = "RegistryError"
+    if (opts?.cause !== undefined) (this as { cause?: unknown }).cause = opts.cause
+    this.suggestion = opts?.suggestion
+    this.issues = opts?.issues
+  }
 }
 
 function readEnvLocalToken(cwd: string): string | undefined {
@@ -87,7 +110,20 @@ export async function fetchRegistryItem(
       `Failed to fetch ${name} from ${url}: ${res.status} ${res.statusText}`,
     )
   }
-  const item = (await res.json()) as RegistryItem
+  const raw = await res.json()
+  const parsed = RegistryItemSchema.safeParse(raw)
+  if (!parsed.success) {
+    throw new RegistryError(
+      `Registry item "${name}" failed schema validation`,
+      {
+        cause: parsed.error,
+        issues: parsed.error.issues,
+        suggestion:
+          "Registry server may be returning malformed data. Run `dash doctor --network` to diagnose, or check the registry build.",
+      },
+    )
+  }
+  const item = parsed.data as unknown as RegistryItem
   cacheSet(cacheKey, item)
   if (!opts.noCache) diskCacheSet(opts.registryUrl, name, item)
   return item
@@ -113,7 +149,20 @@ export async function fetchRegistryIndex(opts: FetchOpts): Promise<RegistryIndex
       `Failed to fetch index from ${url}: ${res.status} ${res.statusText}`,
     )
   }
-  const index = (await res.json()) as RegistryIndex
+  const raw = await res.json()
+  const parsed = RegistryIndexSchema.safeParse(raw)
+  if (!parsed.success) {
+    throw new RegistryError(
+      `Registry index failed schema validation`,
+      {
+        cause: parsed.error,
+        issues: parsed.error.issues,
+        suggestion:
+          "Registry server may be returning malformed data. Run `dash doctor --network` to diagnose, or check the registry build.",
+      },
+    )
+  }
+  const index = parsed.data as unknown as RegistryIndex
   cacheSet(cacheKey, index)
   if (!opts.noCache) diskCacheSet(opts.registryUrl, "__index__", index)
   return index
