@@ -1,0 +1,28 @@
+{
+  "vendored": {
+    "headerPrefix": "🤖 *Hermes Block Vendored*",
+    "requiredSubstrings": [
+      "gap:",
+      "repo:",
+      "score:",
+      "PR:",
+      "install: dash add"
+    ]
+  },
+  "needsReview": {
+    "headerPrefix": "⚠️ *Hermes Needs Review*",
+    "requiredSubstrings": [
+      "gap:",
+      "score:",
+      "reason:",
+      "draft PR:"
+    ]
+  },
+  "failed": {
+    "headerPrefix": "🔥 *Hermes Failed*",
+    "requiredSubstrings": [
+      "gap:",
+      "reason:"
+    ]
+  }
+}

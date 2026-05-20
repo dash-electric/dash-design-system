@@ -1,0 +1,6 @@
+{
+  "description": "bulk-upload KYC documents for mitra onboarding",
+  "severity": "medium",
+  "repo": "portal-v2",
+  "prompt": "Need a KYC bulk uploader (KTP + SIM) with validation per file."
+}

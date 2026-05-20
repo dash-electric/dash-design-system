@@ -1,0 +1,6 @@
+{
+  "description": "no image-editor for mitra proof upload",
+  "severity": "high",
+  "repo": "halo-dash-fe",
+  "prompt": "Mitra needs to crop + annotate a delivery proof photo before submission. Must include audit trail."
+}
