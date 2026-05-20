@@ -57,6 +57,13 @@ type HeaderProps = {
   kind?: "atom" | "composite" | "specialized"
   /** Sub-tabs row under hero — Usage / Spec / Status. */
   tabs?: Array<{ label: string; href?: string; active?: boolean }>
+  /**
+   * Render the colored status pill next to the title. Default `false` —
+   * status is still tracked in metadata, just not visualised by default
+   * (cuts header chrome noise). Opt-in per page when status is load-bearing
+   * (e.g. WIP/Deprecated callouts).
+   */
+  showStatus?: boolean
 }
 
 const STATUS_META: Record<
@@ -93,9 +100,10 @@ const STATUS_META: Record<
   },
 }
 
-export const DocsHeader = ({ category, title, description, status, kind, tabs }: HeaderProps) => {
+export const DocsHeader = ({ category, title, description, status, kind, tabs, showStatus = false }: HeaderProps) => {
   void kind // kind is reserved for the future manifest; no visual treatment yet.
-  const statusMeta = status ? STATUS_META[status] : null
+  void status // status is tracked in metadata even when not rendered.
+  const statusMeta = showStatus && status ? STATUS_META[status] : null
   return (
     <header className="space-y-6">
       {/* Auto breadcrumb derived from pathname */}
@@ -111,7 +119,7 @@ export const DocsHeader = ({ category, title, description, status, kind, tabs }:
 
       {/* Massive title + colored status pill */}
       <div className="flex items-center gap-4 flex-wrap">
-        <h1 className="text-5xl lg:text-7xl font-semibold tracking-tighter leading-[0.95] text-text-strong-950">
+        <h1 className="text-3xl lg:text-4xl font-semibold tracking-tight leading-tight text-text-strong-950">
           {title}
         </h1>
         {statusMeta ? (
@@ -162,15 +170,28 @@ type SectionProps = Omit<React.HTMLAttributes<HTMLElement>, "title"> & {
   description?: React.ReactNode
   /** Optional explicit anchor id (else derived from title text). */
   id?: string
+  /**
+   * Render a thin top-border separator above the section.
+   * Default `false` — rely on spacing alone for visual rhythm (cleaner,
+   * matches shadcn restraint). Opt in only when an explicit divider is needed.
+   */
+  withDivider?: boolean
 }
 
-/** DocsSection — large h2, top-border separator between sections. */
-export const DocsSection = ({ className, title, description, children, id, ...props }: SectionProps) => {
+/** DocsSection — large h2, optional top-border separator (opt-in via `withDivider`). */
+export const DocsSection = ({ className, title, description, children, id, withDivider = false, ...props }: SectionProps) => {
   const slug =
     id ??
     (typeof title === "string" ? slugify(title) : undefined)
   return (
-    <section className={cn("space-y-6 pt-6 border-t border-stroke-soft-200/60 first:border-t-0 first:pt-0", className)} {...props}>
+    <section
+      className={cn(
+        "space-y-6",
+        withDivider && "pt-6 border-t border-stroke-soft-200/60 first:border-t-0 first:pt-0",
+        className,
+      )}
+      {...props}
+    >
       <div className="space-y-3">
         <h2
           id={slug}

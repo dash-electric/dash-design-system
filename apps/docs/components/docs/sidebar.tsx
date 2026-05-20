@@ -3,22 +3,11 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/registry/dash/lib/utils"
-import { navSections, type NavItem } from "./nav-config"
+import { navSections } from "./nav-config"
 
-function StatusDot({ status }: { status?: NavItem["status"] }) {
-  if (!status || status === "shipped") return null
-  return (
-    <span
-      className={cn(
-        "ml-auto inline-flex items-center justify-center text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wider",
-        status === "wip" && "bg-(--dash-yellow-100) text-(--dash-yellow-800) dark:bg-(--dash-yellow-900) dark:text-(--dash-yellow-200)",
-        status === "planned" && "bg-muted text-muted-foreground",
-      )}
-    >
-      {status === "wip" ? "WIP" : "Soon"}
-    </span>
-  )
-}
+// StatusDot removed — sidebar is a clean list; status stays in nav-config
+// metadata but is not visualised inline. Re-introduce only if a status
+// indicator becomes load-bearing (e.g. deprecated callouts on hover).
 
 export function DocsSidebar() {
   const pathname = usePathname()
@@ -56,7 +45,6 @@ export function DocsSidebar() {
                             )}
                           >
                             <span className="truncate">{item.title}</span>
-                            <StatusDot status={item.status} />
                           </Link>
                         </li>
                       )
