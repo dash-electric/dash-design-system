@@ -1736,14 +1736,13 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "react-hook-form integration with accessible label/control/description/error wiring. Form/FormField/FormItem/FormLabel/FormControl/FormDescription/FormMessage + useFormField hook. Pair with zod via @hookform/resolvers.",
+      "description": "Vanilla useState + hand-rolled validation. No external form lib. Exports useDashForm hook + Form/FormField/FormItem/FormLabel/FormControl/FormDescription/FormMessage + useFormField + validateForm helper. Matches Dash AI rules (no react-hook-form, no zod).",
       "categories": [
         "component",
         "form"
       ],
       "dependencies": [
-        "@radix-ui/react-slot",
-        "react-hook-form"
+        "@radix-ui/react-slot"
       ],
       "registryDependencies": [
         "utils",
@@ -4158,7 +4157,7 @@
       "title": "Use Code Field",
       "description": "Single-purpose 6-digit alphanumeric use-code field for delivery dispatch. Auto-generate via genUseCode(), regenerate button, copy-to-clipboard, RHF-wired. Works standalone or nested inside useFieldArray rows.",
       "categories": ["pattern", "form"],
-      "dependencies": ["react-hook-form", "@remixicon/react"],
+      "dependencies": ["@remixicon/react"],
       "registryDependencies": ["utils", "form", "input", "icon-button", "toaster"],
       "files": [{ "path": "registry/dash/patterns/use-code-field.tsx", "type": "registry:block" }]
     },
@@ -4169,8 +4168,8 @@
       "title": "Multi-Item Form",
       "description": "Reference pattern: react-hook-form useFieldArray + per-row card + batch submit. Anchors the canonical shape for refactors like 'single-order to multi-order' delivery creation.",
       "categories": ["pattern", "form"],
-      "dependencies": ["react-hook-form", "@hookform/resolvers", "zod", "@remixicon/react"],
-      "registryDependencies": ["utils", "form", "field", "button", "input", "card", "icon-button", "toaster", "use-code-field"],
+      "dependencies": ["@remixicon/react"],
+      "registryDependencies": ["utils", "button", "input", "card", "icon-button", "toaster", "use-code-field"],
       "files": [{ "path": "registry/dash/patterns/multi-item-form.tsx", "type": "registry:block" }]
     },
     {
