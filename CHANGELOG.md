@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-05-21
+
+### Added — Dash Build MVP
+
+@dash/build package shipped. Browser-based AI builder for any Dash
+team member. 9router-style multi-interface, Anthropic OAuth via
+subscription, GitHub App PR creation, Skill chain (dash-prd → design
+→ Skill v3 → Claude), clarification gate, sandboxed iframe preview,
+dark mode, toast, skeleton states.
+
+9 agents dispatched parallel across 3 days. 225 tests passing zero
+flake. 6 packages typecheck clean. 129 files in packages/dash-build/.
+
+Bin entry: `dash-build` (after `npm i -g @dash/build`).
+Daemon: localhost:7777
+Storage: ~/.dash-build/{auth,sessions,preview,state.json,daemon.pid}
+Dashboard: dark mode + WS reconnect + toast + skeleton
+
 ## [0.5.0] - 2026-05-20 (Phase 0 + Wave 1-4 — Governance, AI rules, workflow library)
 
 ### Added

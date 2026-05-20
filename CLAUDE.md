@@ -56,6 +56,33 @@ Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showca
 - **Skill:** `packages/skill/` (v2). Priority-pinned context blocks + per-repo scoping.
 - **PRD skill:** `skills/dash-prd/` (BSD-3 fork of NatPRD, vendored).
 
+## Dash Build (Lovable-for-Dash Internal)
+
+Browser-based AI workflow at `packages/dash-build/`. Day 1-3 shipped 2026-05-21.
+
+**Install + use:**
+```bash
+npm install -g @dash/build
+dash-build
+# → opens browser at http://localhost:7777/dashboard
+```
+
+**Auth:** Anthropic OAuth via Pro/Team subscription (zero API key) + GitHub App (PR creation).
+
+**Capabilities (Day 1-3 shipped):**
+- 9router-style multi-interface menu (Web UI / Terminal / Tray / Exit)
+- Skill chain: dash-prd → design → Skill v3 → Claude
+- AI clarification gate (multi-turn questions when uncertain)
+- Sandboxed iframe preview (esbuild peer dep)
+- Foundation match score (0-100)
+- GitHub PR creation via Dash Build App
+- Dark mode + toast notifications + skeleton states
+- 225 tests, zero flake, 6 packages typecheck clean
+
+**Architecture:** see `packages/dash-build/README.md`
+
+**Pilot use case:** any Dash team member (PM, finance ops, designer, dev) can prompt feature → AI ships PR.
+
 ## When generating code
 
 1. Check DS coverage first: `dash search <name>`. If hit, install via `dash add`. If miss, build custom matching Dash foundation.
@@ -120,3 +147,4 @@ Rules + glossary are huge (829 + 1982 lines = ~2811 lines). Skill v2 pre-compres
 - eKYC vendor (Verihubs assumed — verify)
 - Metric baselines (need analytics access)
 - Deputy maintainer (bus factor = 1 currently; Q3 2026 mandatory)
+- Dash Build production GitHub App registration (currently per-user pilot)

@@ -183,6 +183,7 @@ export const navSections: NavSection[] = [
         title: "",
         items: [
           { title: "Install via CLI", href: "/docs/installation/cli", status: "shipped" },
+          { title: "Dash Build",      href: "/docs/tools/dash-build", status: "new", blurb: "Lovable for Dash internal — browser AI builder, anyone on team, prompt-to-PR at localhost:7777." },
           { title: "MCP Server",      href: "/docs/tools/mcp", status: "wip" },
           { title: "Skill",           href: "/docs/tools/skill", status: "wip" },
           { title: "Usage Dashboard", href: "/docs/admin/usage", status: "shipped" },
