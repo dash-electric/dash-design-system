@@ -47,17 +47,6 @@ export function renderLayout(opts: LayoutOptions): string {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/app.css" />
-    <script>
-      // Pre-paint theme application to avoid FOUC.
-      (function () {
-        try {
-          var stored = localStorage.getItem("dash-build-theme");
-          if (stored === "dark" || stored === "light") {
-            document.documentElement.setAttribute("data-theme", stored);
-          }
-        } catch (e) { /* localStorage may be blocked */ }
-      })();
-    </script>
   </head>
   <body>
     <a class="sr-only" href="#db-main">Skip to main content</a>

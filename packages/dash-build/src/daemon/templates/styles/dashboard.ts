@@ -52,103 +52,10 @@ export const DASHBOARD_CSS = `
   --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 }
 
-/* ----- Dark mode (system preference) ----- */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #f7f7f5;
-    --ink-2: #ffffff;
-    --paper: #1a1a1a;
-    --paper-2: #0e0e0e;
-    --paper-3: #161616;
-    --mute: #9a9a96;
-    --mute-2: #6b6b68;
-    --rule: #2a2a2a;
-    --rule-2: #1f1f1f;
-
-    --primary: #b589f0;
-    --primary-base: #b589f0;
-    --primary-strong: #c9a4f5;
-    --primary-soft: #2a1a4a;
-    --primary-card: #1f1238;
-    --primary-ring: rgba(181, 137, 240, 0.32);
-
-    --success: #4ade80;
-    --success-soft: #0f3a26;
-    --warn: #fbbf24;
-    --warn-soft: #3a2e0a;
-    --danger: #f87171;
-    --danger-soft: #3a1414;
-    --info: #60a5fa;
-    --info-soft: #14233f;
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.35);
-  }
-}
-
-/* ----- Dark mode (manual override via data-theme) ----- */
-[data-theme="dark"] {
-  --ink: #f7f7f5;
-  --ink-2: #ffffff;
-  --paper: #1a1a1a;
-  --paper-2: #0e0e0e;
-  --paper-3: #161616;
-  --mute: #9a9a96;
-  --mute-2: #6b6b68;
-  --rule: #2a2a2a;
-  --rule-2: #1f1f1f;
-
-  --primary: #b589f0;
-  --primary-base: #b589f0;
-  --primary-strong: #c9a4f5;
-  --primary-soft: #2a1a4a;
-  --primary-card: #1f1238;
-  --primary-ring: rgba(181, 137, 240, 0.32);
-
-  --success: #4ade80;
-  --success-soft: #0f3a26;
-  --warn: #fbbf24;
-  --warn-soft: #3a2e0a;
-  --danger: #f87171;
-  --danger-soft: #3a1414;
-  --info: #60a5fa;
-  --info-soft: #14233f;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.35);
-}
-
-/* ----- Light mode (manual override — force light even when system dark) ----- */
-[data-theme="light"] {
-  --ink: #1a1a1a;
-  --ink-2: #0e0e0e;
-  --paper: #f7f7f5;
-  --paper-2: #ffffff;
-  --paper-3: #fbfaf8;
-  --mute: #6b6b68;
-  --mute-2: #9a9a96;
-  --rule: #e4e3de;
-  --rule-2: #efeeea;
-
-  --primary: #5e2aac;
-  --primary-base: #5e2aac;
-  --primary-strong: #4a1f8a;
-  --primary-soft: #eee5fb;
-  --primary-card: #f1ecf9;
-  --primary-ring: rgba(94, 42, 172, 0.24);
-
-  --success: #0f6e56;
-  --success-soft: #def7ec;
-  --warn: #b08015;
-  --warn-soft: #fef3c7;
-  --danger: #a32d2d;
-  --danger-soft: #fde8e8;
-  --info: #2563eb;
-  --info-soft: #e0e7ff;
-
-  --shadow-sm: 0 1px 2px rgba(14, 14, 14, 0.04), 0 1px 1px rgba(14, 14, 14, 0.02);
-  --shadow-md: 0 4px 12px rgba(14, 14, 14, 0.06), 0 1px 2px rgba(14, 14, 14, 0.04);
-}
+/* Dashboard is LIGHT-ONLY per Dash DS direction. Dark-mode blocks were
+ * removed in May 2026 — surface follows pitch + halo-dash aesthetic. To
+ * re-enable a dark variant later, ship it as a Layer-2 theme, not
+ * inline media queries. */
 
 /* ----- Reset ----- */
 * { box-sizing: border-box; }
@@ -627,24 +534,7 @@ button { font-family: inherit; }
 }
 :focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 6px; }
 
-/* ----- Theme toggle ----- */
-.db-theme-toggle { position: relative; }
-.db-theme-toggle .db-theme-icon-light,
-.db-theme-toggle .db-theme-icon-dark {
-  display: inline-block;
-  font-size: 14px;
-  line-height: 1;
-  transition: opacity 120ms ease, transform 200ms ease;
-}
-.db-theme-toggle .db-theme-icon-dark { display: none; }
-[data-theme="dark"] .db-theme-toggle .db-theme-icon-light,
-:root:not([data-theme]) .db-theme-toggle .db-theme-icon-light { display: inline-block; }
-[data-theme="dark"] .db-theme-toggle .db-theme-icon-light { display: none; }
-[data-theme="dark"] .db-theme-toggle .db-theme-icon-dark { display: inline-block; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .db-theme-toggle .db-theme-icon-light { display: none; }
-  :root:not([data-theme="light"]) .db-theme-toggle .db-theme-icon-dark { display: inline-block; }
-}
+/* Theme-toggle CSS removed (May 2026) — dashboard is light-only. */
 
 /* ----- Toast notifications ----- */
 .db-toasts {
@@ -1227,17 +1117,17 @@ button { font-family: inherit; }
   gap: 14px;
   transition: border-color 0.16s ease;
 }
-.db-connect-card:hover { border-color: var(--accent); }
+.db-connect-card:hover { border-color: var(--primary); }
 .db-connect-card--active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 22%, transparent);
 }
 .db-connect-card-head { display: flex; flex-direction: column; gap: 6px; }
 .db-connect-card-tag {
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--primary);
   font-weight: 600;
 }
 .db-connect-card-title {
@@ -1258,7 +1148,7 @@ button { font-family: inherit; }
   font-weight: 500;
 }
 .db-connect-card-body a { text-decoration: underline; text-decoration-color: var(--rule); }
-.db-connect-card-body a:hover { text-decoration-color: var(--accent); }
+.db-connect-card-body a:hover { text-decoration-color: var(--primary); }
 .db-connect-form {
   display: flex;
   flex-direction: column;
@@ -1283,9 +1173,9 @@ button { font-family: inherit; }
   font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
 }
 .db-connect-input:focus {
-  outline: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--primary) 30%, transparent);
   outline-offset: 0;
-  border-color: var(--accent);
+  border-color: var(--primary);
 }
 .db-connect-submit {
   align-self: flex-start;

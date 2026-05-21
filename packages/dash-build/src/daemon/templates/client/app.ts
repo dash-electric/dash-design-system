@@ -51,28 +51,11 @@ export const DASHBOARD_JS = `
   // Expose for debugging / external triggers.
   window.dashBuildShowToast = showToast;
 
-  // ---------- Theme toggle (system + manual) ----------
-  (function initTheme() {
-    var stored = null;
-    try { stored = localStorage.getItem("dash-build-theme"); } catch (e) {}
-    if (stored === "dark" || stored === "light") {
-      document.documentElement.setAttribute("data-theme", stored);
-    }
-    var btn = document.getElementById("db-theme-toggle");
-    if (btn) {
-      btn.addEventListener("click", function () {
-        var current = document.documentElement.getAttribute("data-theme");
-        if (!current) {
-          current = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-        }
-        var next = current === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        try { localStorage.setItem("dash-build-theme", next); } catch (e) {}
-      });
-    }
-  })();
+  // Theme toggle removed — dashboard is light-only per Dash DS (May 2026).
+  // Force-clear any persisted preference so users who saw the toggle
+  // earlier don't get stuck on a now-undefined "dark" state.
+  try { localStorage.removeItem("dash-build-theme"); } catch (e) {}
+  document.documentElement.removeAttribute("data-theme");
 
   // ---------- WS indicator ----------
   var indicator = document.getElementById("db-ws-indicator");
