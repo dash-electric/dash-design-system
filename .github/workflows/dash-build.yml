@@ -1,0 +1,39 @@
+name: Dash Build CI
+
+on:
+  pull_request:
+    paths:
+      - 'packages/dash-build/**'
+      - '.github/workflows/dash-build.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/dash-build/**'
+
+concurrency:
+  group: dash-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test + typecheck + bundle budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm --filter @dash/build typecheck
+      - name: Test
+        run: pnpm --filter @dash/build test
+      - name: Build
+        run: pnpm --filter @dash/build build
+      - name: Bundle size check
+        run: pnpm --filter @dash/build run check-bundle-size
+      - name: Smoke test
+        run: pnpm --filter @dash/build test src/__tests__/smoke/

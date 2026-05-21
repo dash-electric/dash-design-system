@@ -18,7 +18,8 @@
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.scripts.json",
+    "check-bundle-size": "tsx scripts/check-bundle-size.ts"
   },
   "engines": {
     "node": ">=20"
