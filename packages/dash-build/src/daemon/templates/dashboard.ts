@@ -5,6 +5,7 @@ import { renderLayout } from "./layout.js"
 import { renderAuthChip } from "./components/auth-chip.js"
 import { renderBranchInput } from "./components/branch-input.js"
 import { renderEmptyState } from "./components/empty-state.js"
+import { renderAnthropicConnectForm } from "./components/anthropic-connect.js"
 import { renderPromptCard, renderPromptList } from "./components/prompt-card.js"
 import { renderPromptInput } from "./components/prompt-input.js"
 import { renderRepoSelect } from "./components/repo-select.js"
@@ -224,6 +225,7 @@ function previewStateFor(prompt: PromptRecord | undefined): PreviewPaneState {
 export function renderChatDashboard(
   store: Store,
   orchestrator?: Orchestrator,
+  opts: { claudeCliInstalled?: boolean; claudeCliVersion?: string | null } = {},
 ): string {
   const auth = store.getAuth()
   const workspace = store.getWorkspace()
@@ -270,14 +272,10 @@ export function renderChatDashboard(
       ? `<div class="db-chat-thread db-chat-thread--empty" id="db-chat-thread">
           ${
             needsAnthropic
-              ? // TODO(auth-agent): ensure the connect-anthropic form lands here.
-                renderEmptyState({
-                  icon: "✦",
-                  title: "Connect Claude Pro to start building",
-                  body: "Dash Build uses your Anthropic Pro subscription for generation. No API key required.",
-                  ctaLabel: "Connect Anthropic",
-                  ctaHref: "/api/auth/anthropic",
-                  variant: "primary",
+              ? renderAnthropicConnectForm({
+                  claudeCliInstalled: opts.claudeCliInstalled,
+                  claudeCliVersion: opts.claudeCliVersion,
+                  activeMode: opts.claudeCliInstalled ? "claude-cli" : "none",
                 })
               : renderEmptyState({
                   icon: "◆",
@@ -352,6 +350,7 @@ export function renderChatDashboard(
 export function renderClassicDashboard(
   store: Store,
   orchestrator?: Orchestrator,
+  opts: { claudeCliInstalled?: boolean; claudeCliVersion?: string | null } = {},
 ): string {
   const auth = store.getAuth()
   const workspace = store.getWorkspace()
@@ -393,14 +392,10 @@ export function renderClassicDashboard(
 
   let buildBody: string
   if (needsAnthropic) {
-    // TODO(auth-agent): ensure the connect-anthropic form lands here.
-    buildBody = renderEmptyState({
-      icon: "✦",
-      title: "Connect Claude Pro to start building",
-      body: "Dash Build uses your Anthropic Pro subscription for generation. No API key required.",
-      ctaLabel: "Connect Anthropic",
-      ctaHref: "/api/auth/anthropic",
-      variant: "primary",
+    buildBody = renderAnthropicConnectForm({
+      claudeCliInstalled: opts.claudeCliInstalled,
+      claudeCliVersion: opts.claudeCliVersion,
+      activeMode: opts.claudeCliInstalled ? "claude-cli" : "none",
     })
   } else if (needsGithub) {
     buildBody = renderEmptyState({
@@ -457,12 +452,24 @@ export function renderClassicDashboard(
   })
 }
 
+/**
+ * Opts threaded through to both chat + classic dashboards. Used by the
+ * connect-anthropic form to know whether the Claude Code subprocess
+ * path is ready (binary on PATH) — keeps the render sync while still
+ * showing accurate state. The probe runs in the dashboard route handler.
+ */
+export interface RenderDashboardOptions {
+  claudeCliInstalled?: boolean
+  claudeCliVersion?: string | null
+}
+
 // Default export — the chat-style dashboard.
 export function renderDashboard(
   store: Store,
   orchestrator?: Orchestrator,
+  opts: RenderDashboardOptions = {},
 ): string {
-  return renderChatDashboard(store, orchestrator)
+  return renderChatDashboard(store, orchestrator, opts)
 }
 
 // Re-export legacy helpers so existing callers (e.g. WS tests) keep working.

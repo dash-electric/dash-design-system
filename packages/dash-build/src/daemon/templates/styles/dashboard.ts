@@ -1185,4 +1185,152 @@ button { font-family: inherit; }
   }
   .db-chat-pane--left { border-bottom: 1px solid var(--rule); }
 }
+
+/* ── Anthropic connect form (two ToS-safe paths) ─────────────────────── */
+.db-connect-shell {
+  padding: 28px;
+  max-width: 880px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.db-connect-head { display: flex; flex-direction: column; gap: 8px; }
+.db-connect-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.db-connect-lede {
+  font-size: 14px;
+  color: var(--mute);
+  line-height: 1.5;
+  margin: 0;
+}
+.db-connect-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .db-connect-grid { grid-template-columns: 1fr; }
+}
+.db-connect-card {
+  padding: 24px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.16s ease;
+}
+.db-connect-card:hover { border-color: var(--accent); }
+.db-connect-card--active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.db-connect-card-head { display: flex; flex-direction: column; gap: 6px; }
+.db-connect-card-tag {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+.db-connect-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+.db-connect-card-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--mute);
+  margin: 0;
+}
+.db-connect-card-body code,
+.db-connect-card-body a {
+  color: var(--ink);
+  font-weight: 500;
+}
+.db-connect-card-body a { text-decoration: underline; text-decoration-color: var(--rule); }
+.db-connect-card-body a:hover { text-decoration-color: var(--accent); }
+.db-connect-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.db-connect-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+  font-weight: 600;
+}
+.db-connect-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  background: var(--paper-2);
+  color: var(--ink);
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+}
+.db-connect-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  outline-offset: 0;
+  border-color: var(--accent);
+}
+.db-connect-submit {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+.db-connect-form-msg {
+  font-size: 13px;
+  margin: 4px 0 0;
+  min-height: 1em;
+}
+.db-connect-form-msg--pending { color: var(--mute); }
+.db-connect-form-msg--ok { color: var(--success); }
+.db-connect-form-msg--err { color: var(--danger); }
+.db-connect-status {
+  font-size: 10px;
+  margin-right: 4px;
+}
+.db-connect-status--ok { color: var(--success); }
+.db-connect-status--pending { color: var(--warn); }
+.db-connect-muted { color: var(--mute); font-weight: 400; }
+.db-connect-pre {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  color: var(--ink);
+  overflow-x: auto;
+  line-height: 1.55;
+  margin: 0;
+}
+.db-connect-pre code { background: none; padding: 0; color: inherit; }
+.db-connect-cli-use { align-self: flex-start; }
+.db-connect-foot {
+  font-size: 12px;
+  color: var(--mute);
+  line-height: 1.5;
+  padding: 14px 16px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.db-connect-foot-dot { color: var(--warn); font-size: 10px; margin-top: 2px; }
 `
