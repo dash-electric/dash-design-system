@@ -1,13 +1,28 @@
-// OAuth flow for Anthropic (Claude Pro/Team subscription auth).
+// Anthropic subscription OAuth — DISABLED.
 //
-// Browser-side flow:
-//   1. Daemon generates state + PKCE verifier, returns auth URL.
-//   2. Browser redirects user to Anthropic OAuth authorize endpoint.
-//   3. Anthropic redirects back to localhost callback with `code`.
-//   4. Daemon exchanges code for tokens (access + refresh).
+// HISTORICAL NOTE: This file previously implemented a raw PKCE flow against
+// `claude.ai/oauth/authorize` using Claude Code's public OAuth client_id
+// (`9d1c250a-e61b-44d9-88ed-5944d1962f5e`) to obtain Claude Pro/Max
+// subscription tokens for third-party use. That pattern was BANNED by
+// Anthropic's Consumer Terms of Service update (February 2026, enforced
+// April 4 2026):
 //
-// Endpoint base is overridable via ANTHROPIC_OAUTH_BASE env so we can flex when
-// the actual Anthropic OAuth URL is finalized. See README + auth/anthropic/REA  DME.
+//   "Using OAuth tokens obtained through Claude Free, Pro, or Max accounts
+//    in any other product, tool, or service — including the Agent SDK —
+//    is not permitted and constitutes a violation of the Consumer Terms
+//    of Service."
+//
+// Tools that continued this pattern (OpenClaw, OpenCode, Roo Code, Goose)
+// had their tokens blocked and users risk account suspension.
+//
+// We keep this file (rather than deleting it) for two reasons:
+//   1. Historical reference — git blame stays informative.
+//   2. The PKCE helpers below remain useful if Anthropic ever opens a
+//      real third-party OAuth program with per-app client registration.
+//
+// Both `startOAuthFlow` and `exchangeCodeForToken` THROW IMMEDIATELY if
+// called. Use BYO API key (see byo-key.ts) or subprocess the official
+// `claude` CLI instead.
 
 import { createHash, randomBytes } from "node:crypto"
 
@@ -16,15 +31,13 @@ const DEFAULT_OAUTH_BASE = "https://claude.ai/oauth"
 export const ANTHROPIC_OAUTH_BASE =
   process.env.ANTHROPIC_OAUTH_BASE ?? DEFAULT_OAUTH_BASE
 
-// Claude Code's official public OAuth client_id. Subscription-auth apps
-// (9router, etc.) reuse this — Anthropic exposes it as a public client so
-// local-callback PKCE flows work without per-app client registration.
+// Placeholder. The previous default (Claude Code's public client_id) was
+// removed because third-party reuse violates Anthropic ToS. Setting
+// ANTHROPIC_CLIENT_ID has no effect — the flow throws regardless.
 export const ANTHROPIC_CLIENT_ID =
-  process.env.ANTHROPIC_CLIENT_ID ?? "9d1c250a-e61b-44d9-88ed-5944d1962f5e"
+  process.env.ANTHROPIC_CLIENT_ID ?? "unset-third-party-oauth-banned"
 
-// Scopes used by Claude Code's own login. `org:create_api_key` lets the
-// daemon derive an inference-capable token; `user:inference` is the actual
-// model-call grant; `user:profile` returns the signed-in email for UX.
+// Scope strings preserved for reference only.
 export const ANTHROPIC_OAUTH_SCOPE =
   process.env.ANTHROPIC_OAUTH_SCOPE ?? "org:create_api_key user:profile user:inference"
 
@@ -64,6 +77,9 @@ export type CallbackOpts = {
   port: number
 }
 
+const BANNED_MESSAGE =
+  "Anthropic subscription OAuth in third-party apps was banned by Anthropic ToS effective April 4 2026. Use BYO API key or subprocess the official `claude` CLI instead."
+
 function sha256Base64Url(input: string): string {
   return createHash("sha256")
     .update(input)
@@ -74,72 +90,29 @@ function sha256Base64Url(input: string): string {
 }
 
 /**
- * Generate the Anthropic OAuth authorize URL with PKCE + CSRF state.
+ * DISABLED. Throws immediately. See file header.
  *
- * Caller (daemon) must:
- *   - Persist `{ state -> pkceVerifier, redirectAfter }` keyed by state.
- *   - Issue a 302 to `authUrl`.
- *   - On callback, verify the returned `state`, look up pkceVerifier, and call
- *     `exchangeCodeForToken`.
+ * Kept exported so callers fail loud at the call site rather than silently
+ * importing an undefined symbol if they were on an older build.
  */
 export async function startOAuthFlow(
-  opts: StartOAuthOpts,
+  _opts: StartOAuthOpts,
 ): Promise<StartOAuthResult> {
-  const state = randomBytes(32).toString("hex")
-  const pkceVerifier = randomBytes(64).toString("base64url")
-  const pkceChallenge = sha256Base64Url(pkceVerifier)
-
-  // `code=true` first — Claude Code login flow signals authorization-code mode
-  // via this query param. Order matters for some intermediary CDN caching, so
-  // we keep it leading and let URLSearchParams produce the rest.
-  const params = new URLSearchParams({
-    code: "true",
-    client_id: ANTHROPIC_CLIENT_ID,
-    response_type: "code",
-    redirect_uri: callbackUrl(opts.port),
-    scope: ANTHROPIC_OAUTH_SCOPE,
-    state,
-    code_challenge: pkceChallenge,
-    code_challenge_method: "S256",
-  })
-
-  return {
-    authUrl: `${ANTHROPIC_OAUTH_BASE}/authorize?${params.toString()}`,
-    state,
-    pkceVerifier,
-    redirectAfter: opts.redirectAfter,
-  }
+  throw new Error(BANNED_MESSAGE)
+  // Unreachable — kept so the PKCE helpers below stay tree-reachable if a
+  // future per-app OAuth program ever ships.
+  // eslint-disable-next-line no-unreachable
+  void sha256Base64Url
+  // eslint-disable-next-line no-unreachable
+  void randomBytes
 }
 
 /**
- * Exchange an authorization code for access + refresh tokens.
- *
- * The caller is responsible for verifying that `opts.state` matches the state
- * we issued before reaching this function — we don't re-check here because the
- * pkceVerifier lookup at the call site already proves possession of the state.
+ * DISABLED. Throws immediately. See file header.
  */
 export async function exchangeCodeForToken(
-  opts: CallbackOpts,
-  fetchImpl: typeof fetch = fetch,
+  _opts: CallbackOpts,
+  _fetchImpl: typeof fetch = fetch,
 ): Promise<TokenResponse> {
-  const response = await fetchImpl(`${ANTHROPIC_OAUTH_BASE}/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "authorization_code",
-      code: opts.code,
-      redirect_uri: callbackUrl(opts.port),
-      client_id: ANTHROPIC_CLIENT_ID,
-      code_verifier: opts.pkceVerifier,
-    }).toString(),
-  })
-
-  if (!response.ok) {
-    const body = await response.text().catch(() => "")
-    throw new Error(
-      `OAuth token exchange failed: ${response.status} ${response.statusText} ${body}`,
-    )
-  }
-
-  return (await response.json()) as TokenResponse
+  throw new Error(BANNED_MESSAGE)
 }

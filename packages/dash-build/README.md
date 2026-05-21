@@ -25,10 +25,32 @@ Opens interactive menu:
 
 After first run, open dashboard at <http://localhost:7777/dashboard>.
 
-### 1. Connect Claude
+### 1. Connect Anthropic
 
-Click **Connect Anthropic** → log in with your Claude Pro/Team account.
-Uses your subscription. Zero API key needed.
+Two ToS-safe options. Pick one.
+
+**Option A — Bring your own API key (default, recommended)**
+
+On the dashboard, paste an Anthropic API key (`sk-ant-...`) into the
+**Connect Anthropic** form. Get one at <https://console.anthropic.com/>.
+The key is encrypted with AES-256-GCM and stored at
+`~/.dash-build/auth/anthropic-byo-key.json`.
+
+**Option B — Claude Code subprocess (subscription-friendly)**
+
+Install the official Claude Code CLI and run `claude login` once. Dash
+Build will spawn `claude` as a subprocess for generation — your Pro/Max
+subscription is consumed via the official client, not extracted into a
+third-party app. Probe availability:
+
+```bash
+curl http://localhost:7777/api/auth/anthropic/claude-cli
+```
+
+> **Why not subscription OAuth?** Anthropic's Consumer Terms of Service
+> update (Feb 2026, enforced April 4 2026) made third-party use of
+> Claude Pro/Max OAuth tokens a ToS violation. Tools that continued the
+> pattern had tokens blocked. Dash Build removed that flow in 0.1.1.
 
 ### 2. Install GitHub App
 
@@ -51,7 +73,7 @@ Click **Generate** → AI consults Dash DS Skill → may ask clarifications
 │ Browser (localhost:7777/dashboard)           │
 │   ↕ WebSocket                                │
 │ Daemon (Node.js, packages/dash-build)        │
-│   ├ Anthropic OAuth (Pro/Team subscription)  │
+│   ├ Anthropic auth (BYO key + Claude CLI)    │
 │   ├ GitHub App (Bearer token + Octokit)      │
 │   ├ Skill chain (dash-prd + design + Skill)  │
 │   ├ Clarification (multi-turn questions)     │
@@ -69,7 +91,6 @@ Env vars (optional overrides):
 | Var                              | Default                       | Description                  |
 | -------------------------------- | ----------------------------- | ---------------------------- |
 | `DASH_BUILD_PORT`                | `7777`                        | Daemon port                  |
-| `ANTHROPIC_OAUTH_BASE`           | `https://claude.ai/oauth`     | Anthropic OAuth endpoint     |
 | `DASH_BUILD_GITHUB_APP_ID`       | _(required for GitHub)_       | GitHub App ID                |
 | `DASH_BUILD_GITHUB_PRIVATE_KEY`  | _(required)_                  | PEM-encoded private key      |
 | `DASH_BUILD_GITHUB_CLIENT_ID`    | _(required)_                  | OAuth client ID              |
@@ -108,12 +129,13 @@ dash-build start    # fresh launch
 
 Daemon auto-falls back to `7778`, `7779`, … up to `7786`.
 
-### Claude OAuth fails
+### Anthropic key save fails
 
-Fall back to BYO API key:
-
-1. Open dashboard → **Settings**
-2. Paste Anthropic API key (`sk-ant-...`)
+1. Confirm the key starts with `sk-ant-` and you copied it whole from the
+   Anthropic Console.
+2. Check `~/.dash-build/auth/` is writable by your user.
+3. Or skip BYO key entirely and use the Claude CLI subprocess path
+   (`claude login` once in your terminal).
 
 ### GitHub App fails
 
@@ -125,7 +147,7 @@ Verify env vars are set. Re-install the app via the dashboard.
 | ------------------------------------------ | -------------------------------- |
 | `~/.dash-build/daemon.pid`                 | Daemon PID                       |
 | `~/.dash-build/state.json`                 | Daemon state (atomic-write JSON) |
-| `~/.dash-build/auth/anthropic.json`        | Encrypted OAuth tokens           |
+| `~/.dash-build/auth/anthropic-byo-key.json`| Encrypted BYO Anthropic API key  |
 | `~/.dash-build/auth/github.json`           | Encrypted installation tokens    |
 | `~/.dash-build/sessions/<id>.json`         | Clarification sessions           |
 | `~/.dash-build/preview/<id>/`              | Bundled previews                 |

@@ -68,14 +68,7 @@ export function renderDashboard(store: Store, orchestrator?: Orchestrator): stri
 
   let buildBody: string
   if (needsAnthropic) {
-    buildBody = renderEmptyState({
-      icon: "✦",
-      title: "Connect Claude Pro to start building",
-      body: "Dash Build uses your Anthropic Pro subscription for generation. No API key required.",
-      ctaLabel: "Connect Anthropic",
-      ctaHref: "/api/auth/anthropic",
-      variant: "primary",
-    })
+    buildBody = renderAnthropicConnectForm()
   } else if (needsGithub) {
     buildBody = renderEmptyState({
       icon: "◆",
@@ -130,6 +123,62 @@ export function renderDashboard(store: Store, orchestrator?: Orchestrator): stri
       auth.anthropic.connected && auth.github.connected ? "ok" : "pending",
     version: store.getVersion(),
   })
+}
+
+/**
+ * Inline BYO Anthropic API key form. Replaces the legacy "Connect Anthropic
+ * → 302 to claude.ai" CTA, which used the now-banned subscription OAuth
+ * flow (see auth/anthropic/oauth-flow.ts header).
+ *
+ * Pure-string template + a tiny inline script. No new libraries. POSTs
+ * `{ apiKey }` to `/api/auth/anthropic` and reloads on success. The label
+ * "Connect Anthropic" is preserved verbatim so existing smoke + E2E tests
+ * keep matching.
+ */
+function renderAnthropicConnectForm(): string {
+  return `<div class="db-empty-state db-empty-primary">
+    <span class="db-empty-icon" aria-hidden="true">✦</span>
+    <h3 class="db-empty-title">Connect Anthropic to start building</h3>
+    <p class="db-empty-body">Paste an Anthropic API key (sk-ant-*). Get one at <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a>. Subscription OAuth was removed (banned by Anthropic ToS, April 2026) — BYO key or run the official <code>claude</code> CLI.</p>
+    <form id="db-anthropic-form" class="db-anthropic-form" autocomplete="off">
+      <label class="db-sr-only" for="db-anthropic-key">Anthropic API key</label>
+      <input id="db-anthropic-key" name="apiKey" type="password" class="db-input" placeholder="sk-ant-..." required minlength="10" />
+      <button type="submit" class="db-button db-button-primary">
+        <span class="db-button-label">Save key</span>
+        <span class="db-button-arrow" aria-hidden="true">→</span>
+      </button>
+    </form>
+    <p class="db-anthropic-form-status" id="db-anthropic-form-status" role="status" aria-live="polite"></p>
+    <script>
+      (function () {
+        var f = document.getElementById('db-anthropic-form');
+        var s = document.getElementById('db-anthropic-form-status');
+        if (!f) return;
+        f.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var input = document.getElementById('db-anthropic-key');
+          var apiKey = (input && input.value || '').trim();
+          if (!apiKey) { s.textContent = 'Enter a key first.'; return; }
+          s.textContent = 'Saving…';
+          fetch('/api/auth/anthropic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ apiKey: apiKey })
+          })
+            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+            .then(function (out) {
+              if (out.ok && out.body && out.body.ok) {
+                s.textContent = 'Saved. Reloading…';
+                setTimeout(function () { window.location.reload(); }, 400);
+              } else {
+                s.textContent = 'Error: ' + ((out.body && out.body.error) || 'save failed');
+              }
+            })
+            .catch(function (err) { s.textContent = 'Network error: ' + err.message; });
+        });
+      })();
+    </script>
+  </div>`
 }
 
 function escapeAttr(value: string): string {

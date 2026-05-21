@@ -159,13 +159,17 @@ describe("Dash Build E2E", () => {
     expect(html).toContain("db-ws-indicator")
   })
 
-  it("Anthropic OAuth start redirects to callback", async () => {
-    const r = await fetch(`${baseUrl}/api/auth/anthropic`, { redirect: "manual" })
-    expect([302, 200]).toContain(r.status)
-    if (r.status === 302) {
-      const loc = r.headers.get("location") ?? ""
-      expect(loc).toMatch(/anthropic/)
-    }
+  it("Anthropic auth GET returns BYO + Claude-CLI options (ToS-safe)", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/anthropic`)
+    expect(r.status).toBe(200)
+    const body = await r.json()
+    expect(body.ok).toBe(true)
+    expect(body.provider).toBe("anthropic")
+    expect(body.options.byoKey.endpoint).toBe("POST /api/auth/anthropic")
+    expect(body.options.claudeCli.endpoint).toBe(
+      "GET /api/auth/anthropic/claude-cli",
+    )
+    expect(body.tosNote).toMatch(/banned/i)
   })
 
   it("submit prompt → queued status", async () => {

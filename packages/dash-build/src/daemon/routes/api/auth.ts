@@ -1,4 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
+import { exec } from "node:child_process"
+import { promisify } from "node:util"
 import type { Store } from "../../state/store.js"
 import type { Broadcaster } from "../../ws/broadcaster.js"
 import {
@@ -9,94 +11,53 @@ import {
   sendJson,
   sendRedirect,
 } from "../_helpers.js"
-import {
-  exchangeCodeForToken,
-  startOAuthFlow,
-} from "../../../auth/anthropic/oauth-flow.js"
-import { AnthropicTokenStore } from "../../../auth/anthropic/token-store.js"
+import { BYOKeyStore } from "../../../auth/anthropic/byo-key.js"
 
 /**
- * Auth routes.
+ * Auth routes — ToS-safe rewrite (May 2026).
  *
- * Anthropic OAuth = raw PKCE S256 flow against `claude.ai/oauth/authorize`,
- * reusing Claude Code's public client_id. This mirrors the 9router pattern
- * for subscription-based auth — no per-app client registration with
- * Anthropic is required.
+ * The previous implementation reused Claude Code's public OAuth client_id
+ * (`9d1c250a-…`) to mint Pro/Max subscription tokens for daemon use. That
+ * was banned by Anthropic's Consumer ToS update (Feb 2026, enforced
+ * April 4 2026). See packages/dash-build/src/auth/anthropic/oauth-flow.ts
+ * for the historical note.
  *
- * Two callback paths are supported:
- *   1. Automatic — Anthropic redirects browser back to
- *      /api/auth/anthropic/callback with ?code= and ?state= query params.
- *   2. Manual — user copies the post-authorize URL from their browser and
- *      pastes it into the dashboard. POST /api/auth/anthropic/manual-callback
- *      with body { url }. Same code/state parsed out of the URL.
+ * Two ToS-safe paths replace it:
+ *
+ *   Path A — BYO Anthropic API key (default, official):
+ *     - POST /api/auth/anthropic { apiKey } → encrypt + store via BYOKeyStore.
+ *     - DELETE /api/auth/anthropic → clear key + flip auth.connected false.
+ *     - GET /api/auth/anthropic → JSON describing both options + state.
+ *
+ *   Path B — Claude Code subprocess (optional, subscription-friendly):
+ *     - GET /api/auth/anthropic/claude-cli → probe `claude --version` on PATH.
+ *     - No token storage — user runs `claude login` once in their terminal;
+ *       dash-build spawns `claude` as a subprocess and lets it manage its
+ *       own auth state on disk. This is ToS-safe because no third-party
+ *       app is extracting or reusing Claude Code's tokens.
  *
  * GitHub App flow remains a stub for Wave 5 (per-user pilot grant).
  */
 
 const PORT = Number(process.env.DASH_BUILD_PORT ?? 7777)
 
-/**
- * Pending OAuth state map. Key = CSRF state string, value = { pkceVerifier,
- * expiresAt }. Lives in memory — daemon restart kills any in-flight login
- * and the user just clicks "Sign in" again.
- */
-const pending = new Map<string, { pkceVerifier: string; expiresAt: number }>()
-const STATE_TTL_MS = 10 * 60 * 1000 // 10 minutes
+const execAsync = promisify(exec)
 
-function gcPending(): void {
-  const now = Date.now()
-  for (const [k, v] of pending) {
-    if (v.expiresAt < now) pending.delete(k)
-  }
+function makeKeyStore(): BYOKeyStore {
+  return new BYOKeyStore()
 }
 
-function makeTokenStore(): AnthropicTokenStore {
-  return new AnthropicTokenStore()
-}
-
-async function completeOAuth(
-  params: { code: string; state: string },
-  store: Store,
-  broadcaster: Broadcaster,
-): Promise<{ ok: true; email?: string } | { ok: false; error: string }> {
-  gcPending()
-  const slot = pending.get(params.state)
-  if (!slot) {
-    return { ok: false, error: "unknown_or_expired_state" }
-  }
-  pending.delete(params.state)
-
-  let token: Awaited<ReturnType<typeof exchangeCodeForToken>>
+async function probeClaudeCli(): Promise<{
+  installed: boolean
+  version: string | null
+}> {
   try {
-    token = await exchangeCodeForToken({
-      code: params.code,
-      state: params.state,
-      pkceVerifier: slot.pkceVerifier,
-      port: PORT,
-    })
-  } catch (err) {
-    return {
-      ok: false,
-      error: `token_exchange_failed: ${(err as Error).message}`,
-    }
+    const { stdout } = await execAsync("claude --version", { timeout: 3000 })
+    const version = stdout.trim() || null
+    return { installed: true, version }
+  } catch {
+    return { installed: false, version: null }
   }
-
-  const tokenStore = makeTokenStore()
-  const expiresAt = new Date(Date.now() + token.expires_in * 1000).toISOString()
-  await tokenStore.save({
-    access_token: token.access_token,
-    refresh_token: token.refresh_token,
-    expires_at: expiresAt,
-    user_email: token.user_email ?? "",
-  })
-
-  await store.setAuth("anthropic", {
-    connected: true,
-    user: token.user_email ?? null,
-  })
-  broadcaster.broadcast("auth:changed", { provider: "anthropic" })
-
-  return { ok: true, email: token.user_email }
 }
 
 export function handleAuthRoute(
@@ -112,103 +73,95 @@ export function handleAuthRoute(
     return sendJson(res, 200, { ok: true, auth: store.getAuth() })
   }
 
-  // ── Anthropic: start OAuth ─────────────────────────────────────────────
-  // Default behaviour: 302 the browser straight to claude.ai. Programmatic
-  // clients that want the authUrl as JSON (e.g. tests, custom UIs that want
-  // to open a popup) can pass `?format=json`.
-  if (pathname === "/api/auth/anthropic") {
-    if (req.method !== "POST" && req.method !== "GET") return methodNotAllowed(res)
-    const reqUrl = new URL(req.url ?? "/", `http://localhost:${PORT}`)
-    const wantsJson = reqUrl.searchParams.get("format") === "json"
-    void (async () => {
-      const flow = await startOAuthFlow({
-        port: PORT,
-        redirectAfter: "/dashboard",
-      })
-      pending.set(flow.state, {
-        pkceVerifier: flow.pkceVerifier,
-        expiresAt: Date.now() + STATE_TTL_MS,
-      })
-      if (wantsJson) {
-        sendJson(res, 200, {
-          ok: true,
-          provider: "anthropic",
-          authUrl: flow.authUrl,
-          state: flow.state,
-          manualCallbackHint:
-            "If the redirect lands somewhere other than this dashboard, copy the full URL and POST it to /api/auth/anthropic/manual-callback as { url }.",
-        })
-      } else {
-        sendRedirect(res, flow.authUrl)
-      }
-    })()
-    return
-  }
-
-  // ── Anthropic: automatic browser callback ──────────────────────────────
-  if (pathname === "/api/auth/anthropic/callback") {
+  // ── Anthropic: Claude CLI probe (Path B) ───────────────────────────────
+  // Declared BEFORE the catch-all `/api/auth/anthropic` block so the
+  // suffix matches first.
+  if (pathname === "/api/auth/anthropic/claude-cli") {
     if (req.method !== "GET") return methodNotAllowed(res)
-    const url = new URL(req.url ?? "/", `http://localhost:${PORT}`)
-    const code = url.searchParams.get("code")
-    const state = url.searchParams.get("state")
-    if (!code || !state) {
-      return sendRedirect(res, "/dashboard?auth_error=missing_code_or_state")
-    }
-    void completeOAuth({ code, state }, store, broadcaster).then((result) => {
-      if (result.ok) {
-        sendRedirect(res, "/dashboard?auth=anthropic_ok")
-      } else {
-        sendRedirect(
-          res,
-          `/dashboard?auth_error=${encodeURIComponent(result.error)}`,
-        )
-      }
+    void probeClaudeCli().then((probe) => {
+      sendJson(res, 200, {
+        ok: true,
+        installed: probe.installed,
+        version: probe.version,
+        loginInstructions:
+          "Run `claude login` in your terminal once. dash-build will spawn `claude` as a subprocess for generation.",
+      })
     })
     return
   }
 
-  // ── Anthropic: manual callback paste (fallback) ────────────────────────
-  if (pathname === "/api/auth/anthropic/manual-callback") {
-    if (req.method !== "POST") return methodNotAllowed(res)
-    void (async () => {
-      let body: { url?: string }
-      try {
-        body = await readJsonBody<{ url?: string }>(req)
-      } catch {
-        return badRequest(res, "invalid_json_body")
-      }
-      if (!body.url) return badRequest(res, "missing_url_field")
-      let parsed: URL
-      try {
-        parsed = new URL(body.url)
-      } catch {
-        return badRequest(res, "invalid_url")
-      }
-      const code = parsed.searchParams.get("code")
-      const state = parsed.searchParams.get("state")
-      if (!code || !state) {
-        return badRequest(res, "url_missing_code_or_state")
-      }
-      const result = await completeOAuth({ code, state }, store, broadcaster)
-      if (result.ok) {
-        sendJson(res, 200, { ok: true, email: result.email ?? null })
-      } else {
-        sendJson(res, 400, { ok: false, error: result.error })
-      }
-    })()
-    return
-  }
+  // ── Anthropic: BYO API key (Path A) ────────────────────────────────────
+  if (pathname === "/api/auth/anthropic") {
+    if (req.method === "GET") {
+      void (async () => {
+        const keyStore = makeKeyStore()
+        const existing = await keyStore.load().catch(() => null)
+        sendJson(res, 200, {
+          ok: true,
+          provider: "anthropic",
+          mode: existing ? "byo-key" : "none",
+          connected: existing !== null,
+          options: {
+            byoKey: {
+              description:
+                "Bring your own Anthropic API key (sk-ant-*). Get one at https://console.anthropic.com/. POST { apiKey } here to save.",
+              endpoint: "POST /api/auth/anthropic",
+            },
+            claudeCli: {
+              description:
+                "Subprocess the official Claude Code CLI. Run `claude login` in your terminal once; dash-build spawns `claude` per generation. ToS-safe because the user runs the official CLI — no third-party token extraction.",
+              endpoint: "GET /api/auth/anthropic/claude-cli",
+            },
+          },
+          tosNote:
+            "Subscription OAuth (Claude Pro/Max token extraction) was banned by Anthropic effective April 4 2026 and is no longer supported.",
+        })
+      })()
+      return
+    }
 
-  // ── Anthropic: sign-out ────────────────────────────────────────────────
-  if (pathname === "/api/auth/anthropic/signout") {
-    if (req.method !== "POST") return methodNotAllowed(res)
-    void (async () => {
-      await makeTokenStore().clear().catch(() => undefined)
-      await store.setAuth("anthropic", { connected: false, user: null })
-      broadcaster.broadcast("auth:changed", { provider: "anthropic" })
-      sendJson(res, 200, { ok: true })
-    })()
-    return
+    if (req.method === "POST") {
+      void (async () => {
+        let body: { apiKey?: string }
+        try {
+          body = await readJsonBody<{ apiKey?: string }>(req)
+        } catch {
+          return badRequest(res, "invalid_json_body")
+        }
+        const apiKey = body.apiKey?.trim()
+        if (!apiKey) return badRequest(res, "missing_apiKey")
+        if (!apiKey.startsWith("sk-ant-")) {
+          return badRequest(
+            res,
+            'invalid_apiKey_prefix (expected "sk-ant-")',
+          )
+        }
+        try {
+          await makeKeyStore().save(apiKey)
+        } catch (err) {
+          return badRequest(res, `save_failed: ${(err as Error).message}`)
+        }
+        await store.setAuth("anthropic", {
+          connected: true,
+          user: "byo-key",
+        })
+        broadcaster.broadcast("auth:changed", { provider: "anthropic" })
+        sendJson(res, 200, { ok: true, mode: "byo-key" })
+      })()
+      return
+    }
+
+    if (req.method === "DELETE") {
+      void (async () => {
+        await makeKeyStore().clear().catch(() => undefined)
+        await store.setAuth("anthropic", { connected: false, user: null })
+        broadcaster.broadcast("auth:changed", { provider: "anthropic" })
+        sendJson(res, 200, { ok: true })
+      })()
+      return
+    }
+
+    return methodNotAllowed(res)
   }
 
   // ── GitHub: still stub (Wave 5 = per-user pilot grant) ─────────────────
@@ -231,7 +184,9 @@ export function handleAuthRoute(
   return notFound(res)
 }
 
-// Test hook — clears in-memory pending state.
+// Test hook — preserved for backwards compatibility with older test imports.
+// No in-memory state to reset now (OAuth pending map removed); kept as a
+// no-op so any external caller doesn't break on upgrade.
 export function __resetAuthPendingStateForTests(): void {
-  pending.clear()
+  /* no-op — OAuth pending state map was removed in May 2026 ToS fix */
 }
