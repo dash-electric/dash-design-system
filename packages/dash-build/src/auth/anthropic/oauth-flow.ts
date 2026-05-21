@@ -16,11 +16,17 @@ const DEFAULT_OAUTH_BASE = "https://claude.ai/oauth"
 export const ANTHROPIC_OAUTH_BASE =
   process.env.ANTHROPIC_OAUTH_BASE ?? DEFAULT_OAUTH_BASE
 
+// Claude Code's official public OAuth client_id. Subscription-auth apps
+// (9router, etc.) reuse this — Anthropic exposes it as a public client so
+// local-callback PKCE flows work without per-app client registration.
 export const ANTHROPIC_CLIENT_ID =
-  process.env.ANTHROPIC_CLIENT_ID ?? "dash-build"
+  process.env.ANTHROPIC_CLIENT_ID ?? "9d1c250a-e61b-44d9-88ed-5944d1962f5e"
 
+// Scopes used by Claude Code's own login. `org:create_api_key` lets the
+// daemon derive an inference-capable token; `user:inference` is the actual
+// model-call grant; `user:profile` returns the signed-in email for UX.
 export const ANTHROPIC_OAUTH_SCOPE =
-  process.env.ANTHROPIC_OAUTH_SCOPE ?? "api code"
+  process.env.ANTHROPIC_OAUTH_SCOPE ?? "org:create_api_key user:profile user:inference"
 
 export const callbackUrl = (port: number): string =>
   `http://localhost:${port}/api/auth/anthropic/callback`
@@ -83,7 +89,11 @@ export async function startOAuthFlow(
   const pkceVerifier = randomBytes(64).toString("base64url")
   const pkceChallenge = sha256Base64Url(pkceVerifier)
 
+  // `code=true` first — Claude Code login flow signals authorization-code mode
+  // via this query param. Order matters for some intermediary CDN caching, so
+  // we keep it leading and let URLSearchParams produce the rest.
   const params = new URLSearchParams({
+    code: "true",
     client_id: ANTHROPIC_CLIENT_ID,
     response_type: "code",
     redirect_uri: callbackUrl(opts.port),
