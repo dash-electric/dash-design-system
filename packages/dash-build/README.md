@@ -169,6 +169,28 @@ pnpm --filter @dash/build build      # production build
 
 Smoke test (full pipeline, no network): `pnpm vitest run src/__tests__/smoke/`
 
+## Authentication
+
+Dash Build supports two ToS-safe paths:
+
+### Path A — Bring your own Anthropic API key (default)
+1. Get an API key from <https://console.anthropic.com/settings/keys>
+2. Paste it into the dashboard's "Connect Anthropic" form or POST it to `/api/auth/anthropic`.
+3. The key is encrypted (AES-256-GCM) and stored at `~/.dash-build/auth/anthropic-byo-key.json` with mode 0600.
+4. You pay Anthropic per token used.
+
+### Path B — Subprocess the official Claude Code CLI (subscription-friendly)
+1. Install Claude Code: `npm i -g @anthropic-ai/claude-code`
+2. Log in once: `claude login` (uses Anthropic's own OAuth — your Pro/Max subscription).
+3. Run `dash-build`. The dashboard auto-detects `claude` on PATH and uses it.
+4. Generation runs as `claude -p "<prompt>"` subprocess; tokens stay inside Claude Code. Your subscription covers usage.
+
+`GET /api/auth/anthropic` reports the active mode in its `activeMode` field
+(`byo-key` | `claude-cli` | `none`). The pipeline orchestrator transparently
+routes through either path via `AuthenticatedAnthropicClient.complete()`.
+
+**Why no built-in subscription OAuth?** Anthropic's Consumer ToS (Feb 2026, enforced Apr 4 2026) bans third-party apps from minting subscription OAuth tokens. Subprocess-ing the official Claude Code CLI is different — you run Claude Code yourself; Dash Build only orchestrates the subprocess. The subscription token never leaves Claude Code.
+
 ## License
 
 Internal — Dash Electric Indonesia.

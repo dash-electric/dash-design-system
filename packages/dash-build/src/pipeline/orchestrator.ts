@@ -592,8 +592,35 @@ export function defaultAnthropicProvider(
       return client.isConnected()
     },
     async buildSdkClient() {
-      const sdk = (await client.buildSdkClient()) as AnthropicLike
-      return sdk
+      const mode = await client.getMode()
+      if (mode === "byo-key") {
+        const sdk = (await client.buildSdkClient()) as AnthropicLike
+        return sdk
+      }
+      if (mode === "claude-cli") {
+        // Shim the SDK surface (`messages.create`) by routing through the
+        // `claude` CLI subprocess. The skill chain only uses the single
+        // `messages.create({ model, max_tokens, system, messages })` shape,
+        // so we collapse system+messages into one prompt and stream the
+        // assistant text back as a single `content[]` block.
+        return {
+          messages: {
+            async create(req) {
+              const body = req.messages
+                .map((m) => `[${m.role}]\n${m.content}`)
+                .join("\n\n")
+              const prompt = req.system
+                ? `[system]\n${req.system}\n\n${body}`
+                : body
+              const text = await client.complete(prompt)
+              return { content: [{ type: "text", text }] }
+            },
+          },
+        } satisfies AnthropicLike
+      }
+      throw new Error(
+        "No Anthropic credentials. POST an API key to /api/auth/anthropic or run `claude login`.",
+      )
     },
   }
 }

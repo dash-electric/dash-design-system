@@ -96,10 +96,22 @@ export function handleAuthRoute(
       void (async () => {
         const keyStore = makeKeyStore()
         const existing = await keyStore.load().catch(() => null)
+        // Probe Claude CLI to surface the *active* effective mode. The
+        // dashboard uses this to indicate whether generation will route
+        // via BYO HTTP API or `claude` subprocess. TODO(agent-b chat-ui):
+        // surface activeMode in the dashboard header pill once chat
+        // rewrite lands.
+        const cliProbe = existing ? { installed: false } : await probeClaudeCli()
+        const activeMode: "byo-key" | "claude-cli" | "none" = existing
+          ? "byo-key"
+          : cliProbe.installed
+            ? "claude-cli"
+            : "none"
         sendJson(res, 200, {
           ok: true,
           provider: "anthropic",
           mode: existing ? "byo-key" : "none",
+          activeMode,
           connected: existing !== null,
           options: {
             byoKey: {

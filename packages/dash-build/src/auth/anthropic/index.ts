@@ -26,5 +26,6 @@ export { BYOKeyStore, type BYOKeyStoreOptions } from "./byo-key.js"
 export {
   AuthenticatedAnthropicClient,
   type AnthropicCredentials,
+  type AnthropicAuthMode,
   type AuthenticatedClientOptions,
 } from "./client.js"
