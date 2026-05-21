@@ -292,6 +292,9 @@ importers:
       chalk:
         specifier: ^5.4.0
         version: 5.6.2
+      esbuild:
+        specifier: '>=0.21'
+        version: 0.28.0
       open:
         specifier: ^10.1.0
         version: 10.2.0
