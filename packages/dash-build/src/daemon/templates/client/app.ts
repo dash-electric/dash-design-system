@@ -220,6 +220,20 @@ export const DASHBOARD_JS = `
         try {
           var parser = new DOMParser();
           var doc = parser.parseFromString(html, "text/html");
+          // Chat thread (new layout) — swap inner.
+          var newThread = doc.getElementById("db-chat-thread");
+          var oldThread = document.getElementById("db-chat-thread");
+          if (newThread && oldThread) {
+            oldThread.outerHTML = newThread.outerHTML;
+            scrollChatToBottom();
+          }
+          // Preview pane (new layout) — swap inner.
+          var newPreview = doc.getElementById("db-preview-pane");
+          var oldPreview = document.getElementById("db-preview-pane");
+          if (newPreview && oldPreview) {
+            oldPreview.outerHTML = newPreview.outerHTML;
+          }
+          // Legacy prompt list region (classic layout + hidden fallback).
           var newList = doc.getElementById("db-prompts-region");
           var oldList = document.getElementById("db-prompts-region");
           if (newList && oldList) {
@@ -235,6 +249,45 @@ export const DASHBOARD_JS = `
       .catch(function () { /* ignore */ })
       .finally(function () { refreshInFlight = false; });
   }
+
+  // ---------- Chat helpers ----------
+  function scrollChatToBottom() {
+    var scroll = document.getElementById("db-chat-scroll");
+    if (scroll) scroll.scrollTop = scroll.scrollHeight;
+  }
+  function appendChatMessage(role, content, status) {
+    var thread = document.getElementById("db-chat-thread");
+    if (!thread) return;
+    // If the thread is in empty state (a DIV, not a UL), upgrade it.
+    if (thread.tagName !== "UL") {
+      var ul = document.createElement("ul");
+      ul.id = "db-chat-thread";
+      ul.className = "db-chat-thread";
+      ul.setAttribute("aria-live", "polite");
+      thread.parentNode.replaceChild(ul, thread);
+      thread = ul;
+    }
+    var li = document.createElement("li");
+    li.className = "db-chat-msg";
+    li.setAttribute("data-role", role);
+    li.setAttribute("data-status", status || "ok");
+    var bubble = document.createElement("div");
+    bubble.className = "db-chat-bubble";
+    if (status === "running") {
+      bubble.innerHTML = '<span class="db-chat-typing" aria-label="Builder is thinking"><span></span><span></span><span></span></span>';
+    } else {
+      var txt = document.createElement("span");
+      txt.className = "db-chat-bubble-text";
+      txt.textContent = content;
+      bubble.appendChild(txt);
+    }
+    li.appendChild(bubble);
+    thread.appendChild(li);
+    scrollChatToBottom();
+    return li;
+  }
+  // Boot: ensure chat scroll starts pinned to the bottom.
+  scrollChatToBottom();
 
   // ---------- Submit prompt ----------
   var submitBtn = document.getElementById("db-prompt-submit");
@@ -258,6 +311,10 @@ export const DASHBOARD_JS = `
     if (repoSelect && repoSelect.value) payload.repo = repoSelect.value;
     if (branchInput && branchInput.value) payload.branch = branchInput.value;
 
+    // Optimistic chat bubbles — append user msg + running builder placeholder.
+    appendChatMessage("user", text, "ok");
+    var pendingBuilder = appendChatMessage("builder", "", "running");
+
     fetch("/api/prompt", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -267,8 +324,11 @@ export const DASHBOARD_JS = `
         if (!r.ok) throw new Error("submit_failed");
         return r.json();
       })
-      .then(function () {
+      .then(function (resp) {
         input.value = "";
+        if (pendingBuilder && resp && resp.id) {
+          pendingBuilder.setAttribute("data-prompt-id", resp.id);
+        }
         // WS push will refresh; do an immediate refresh too as belt-and-braces
         refreshDashboard();
       })
@@ -276,6 +336,9 @@ export const DASHBOARD_JS = `
         input.classList.add("db-textarea-error");
         setTimeout(function () { input.classList.remove("db-textarea-error"); }, 1200);
         showToast({ message: "Could not submit prompt — please retry", kind: "error" });
+        if (pendingBuilder && pendingBuilder.parentNode) {
+          pendingBuilder.parentNode.removeChild(pendingBuilder);
+        }
       })
       .finally(function () {
         submitBtn.disabled = false;

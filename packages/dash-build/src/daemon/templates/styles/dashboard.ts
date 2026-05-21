@@ -747,4 +747,442 @@ button { font-family: inherit; }
   .db-prompt-input-footer { flex-direction: column; align-items: stretch; }
   .db-button { justify-content: center; }
 }
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/*  Chat dashboard (Claude.ai-style split-pane)                            */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+/* Override the centered ".db-main" max-width when the chat shell is the body. */
+.db-main:has(.db-chat-shell) {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  height: calc(100vh - 64px);
+}
+
+/* Thin top status bar above the split pane. */
+.db-chat-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
+  min-height: 52px;
+}
+.db-chat-statusbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.db-chat-statusbar-group .db-select,
+.db-chat-statusbar-group .db-text-input {
+  padding: 6px 10px;
+  font-size: 13px;
+  width: auto;
+  min-width: 160px;
+}
+.db-chat-statusbar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.db-chat-statusbar-spacer { flex: 1; }
+.db-chat-statusbar-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Split pane: ~40 / ~60. */
+.db-chat-shell {
+  display: grid;
+  grid-template-columns: minmax(420px, 40%) 1fr;
+  gap: 1px;
+  background: var(--rule);
+  height: calc(100vh - 116px); /* header + statusbar */
+  min-height: 480px;
+}
+.db-chat-pane {
+  background: var(--paper-2);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.db-chat-pane--left {
+  background: var(--paper);
+}
+.db-chat-pane--right {
+  background: var(--paper-3);
+}
+
+/* ── Chat thread ── */
+.db-chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 18px 8px;
+  scroll-behavior: smooth;
+}
+.db-chat-thread {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.db-chat-thread--empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.db-chat-empty {
+  text-align: center;
+  max-width: 360px;
+  padding: 32px 20px;
+}
+.db-chat-empty-mark {
+  display: inline-block;
+  font-size: 28px;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+.db-chat-empty-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.db-chat-empty-body {
+  margin: 0;
+  font-size: 14px;
+  color: var(--mute);
+  line-height: 1.5;
+}
+
+.db-chat-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 100%;
+}
+.db-chat-msg[data-role="user"] { align-items: flex-end; }
+.db-chat-msg[data-role="builder"] { align-items: flex-start; }
+
+.db-chat-bubble {
+  max-width: min(560px, 90%);
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.db-chat-msg[data-role="user"] .db-chat-bubble {
+  background: var(--primary);
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+.db-chat-msg[data-role="builder"] .db-chat-bubble {
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-bottom-left-radius: 4px;
+}
+.db-chat-msg[data-role="builder"][data-status="error"] .db-chat-bubble {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.db-chat-time {
+  font-size: 11px;
+  color: var(--mute-2);
+  padding: 0 6px;
+}
+
+/* Typing dots ("Builder is thinking"). */
+.db-chat-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 18px;
+}
+.db-chat-typing > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mute);
+  opacity: 0.4;
+  animation: db-chat-typing-bounce 1.2s ease-in-out infinite;
+}
+.db-chat-typing > span:nth-child(2) { animation-delay: 160ms; }
+.db-chat-typing > span:nth-child(3) { animation-delay: 320ms; }
+@keyframes db-chat-typing-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-3px); opacity: 1; }
+}
+
+/* File chips below builder bubbles. */
+.db-chat-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: min(560px, 90%);
+}
+.db-chat-file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  font-size: 12px;
+  color: var(--ink);
+  max-width: 100%;
+  overflow: hidden;
+}
+.db-chat-file-chip-icon { color: var(--primary); font-size: 11px; }
+.db-chat-file-chip-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+.db-chat-file-chip-size { color: var(--mute); font-size: 11px; }
+
+/* Composer pinned at the bottom of the left pane. */
+.db-chat-composer {
+  border-top: 1px solid var(--rule);
+  padding: 12px 16px 16px;
+  background: var(--paper-2);
+}
+.db-chat-composer .db-prompt-input-wrap { gap: 8px; }
+.db-chat-composer .db-textarea {
+  min-height: 64px;
+  background: var(--paper-2);
+  border-radius: 12px;
+}
+.db-chat-composer--disabled {
+  border-top: 1px solid var(--rule);
+  padding: 16px;
+  background: var(--paper);
+  text-align: center;
+}
+
+/* ── Right pane: live preview ── */
+.db-live-preview-pane {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.db-live-preview-state {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  position: relative;
+  min-height: 0;
+}
+.db-live-preview-state--idle,
+.db-live-preview-state--running,
+.db-live-preview-state--error {
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+.db-live-preview-empty {
+  text-align: center;
+  max-width: 380px;
+}
+.db-live-preview-empty-art {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 18px;
+  border-radius: 16px;
+  background: var(--paper-2);
+  border: 1px dashed var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mute);
+  font-size: 28px;
+}
+.db-live-preview-empty-art--error {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+  color: var(--danger);
+  font-weight: 700;
+}
+.db-live-preview-empty-grid {
+  position: absolute;
+  inset: 12px;
+  border-radius: 8px;
+  background-image:
+    linear-gradient(var(--rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.4;
+}
+.db-live-preview-empty-cursor {
+  position: relative;
+  color: var(--primary);
+  font-size: 22px;
+}
+.db-live-preview-empty-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.db-live-preview-empty-body {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mute);
+  line-height: 1.5;
+}
+
+/* Pipeline steps (running state). */
+.db-live-preview-pipeline {
+  width: 100%;
+  max-width: 420px;
+}
+.db-live-preview-heading {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.db-live-preview-sub {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--mute);
+}
+.db-pipeline-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.db-pipeline-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--paper-2);
+  border: 1px solid var(--rule-2);
+  font-size: 13px;
+  color: var(--mute);
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.db-pipeline-step[data-state="active"] {
+  background: var(--primary-card);
+  border-color: var(--primary-soft);
+  color: var(--ink);
+}
+.db-pipeline-step[data-state="done"] {
+  color: var(--ink);
+}
+.db-pipeline-step[data-state="error"] {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.db-pipeline-step-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--rule-2);
+  color: var(--mute);
+}
+.db-pipeline-step-icon--done { background: var(--success); color: #fff; }
+.db-pipeline-step-icon--active {
+  background: transparent;
+  border: 2px solid var(--primary);
+  border-right-color: transparent;
+  animation: db-spin 0.9s linear infinite;
+}
+.db-pipeline-step-icon--error { background: var(--danger); color: #fff; }
+.db-pipeline-step-icon--pending {
+  background: transparent;
+  border: 1.5px dashed var(--rule);
+}
+.db-pipeline-step-label {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.db-pipeline-step-detail {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--mute);
+}
+
+/* Ready state: iframe + foundation score badge. */
+.db-live-preview-state--ready { padding: 0; }
+.db-live-preview-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: var(--paper-2);
+}
+.db-foundation-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+.db-foundation-badge-label {
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+.db-foundation-badge--good { border-color: var(--success); color: var(--success); }
+.db-foundation-badge--ok { border-color: var(--warn); color: var(--warn); }
+.db-foundation-badge--low { border-color: var(--danger); color: var(--danger); }
+
+/* Responsive: stack on narrow screens. */
+@media (max-width: 880px) {
+  .db-chat-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(280px, 50vh) 1fr;
+    height: auto;
+  }
+  .db-chat-pane--left { border-bottom: 1px solid var(--rule); }
+}
 `

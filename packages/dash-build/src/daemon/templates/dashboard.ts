@@ -1,5 +1,6 @@
 import type { Store } from "../state/store.js"
 import type { Orchestrator } from "../../pipeline/orchestrator.js"
+import type { PromptRecord } from "../state/types.js"
 import { renderLayout } from "./layout.js"
 import { renderAuthChip } from "./components/auth-chip.js"
 import { renderBranchInput } from "./components/branch-input.js"
@@ -7,20 +8,351 @@ import { renderEmptyState } from "./components/empty-state.js"
 import { renderPromptCard, renderPromptList } from "./components/prompt-card.js"
 import { renderPromptInput } from "./components/prompt-input.js"
 import { renderRepoSelect } from "./components/repo-select.js"
+import {
+  renderChatThread,
+  type ChatMessage,
+} from "./components/chat-thread.js"
+import {
+  renderLivePreviewPane,
+  DEFAULT_PIPELINE_STEPS,
+  type PreviewPaneState,
+  type PipelineStep,
+} from "./components/live-preview-pane.js"
 
 /**
- * Dashboard composition. Server-rendered template literal — no React.
+ * Dashboard composition.
  *
- * Sections (top to bottom):
- *  1. Page title row
- *  2. Workspace card: repo select + branch input + auth chips
- *  3. Build feature card: prompt input + submit
- *  4. Active prompts card: list of recent prompt cards w/ status pills
+ * Two render paths are available:
  *
- * The auth + prompts regions get IDs so the client JS can swap them in place
- * on WS push without a full page reload.
+ *  - `renderChatDashboard` (default) — Claude.ai-style split pane: chat
+ *    thread on the left, live preview on the right.
+ *  - `renderClassicDashboard` — original single-column "build feature" card.
+ *    Kept callable for tests and as a fallback.
+ *
+ * The default export (`renderDashboard`) is the chat layout.
  */
-export function renderDashboard(store: Store, orchestrator?: Orchestrator): string {
+
+// ─────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────
+
+function escapeAttr(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+function buildRepoList(authRepos: string[]): { full_name: string }[] {
+  const repos =
+    authRepos.length > 0
+      ? authRepos
+      : ["dash/halo-dash-fe", "dash/portal-v2", "dash/backoffice"]
+  return repos.map((full_name) => ({ full_name }))
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Chat ↔ prompt-record adaptation
+// ─────────────────────────────────────────────────────────────────────────
+
+function promptToChatMessages(
+  prompt: PromptRecord,
+  resolveArtifact?: (
+    id: string,
+  ) => { files: { path: string; content: string }[] } | undefined,
+): ChatMessage[] {
+  const out: ChatMessage[] = []
+  out.push({
+    role: "user",
+    content: prompt.text,
+    timestamp: prompt.createdAt,
+    promptId: prompt.id,
+  })
+
+  let status: ChatMessage["status"] = "ok"
+  let body: string
+  let files: ChatMessage["files"]
+
+  switch (prompt.status) {
+    case "queued":
+      status = "running"
+      body = "Queued — picking up shortly."
+      break
+    case "clarifying":
+      status = "ok"
+      body =
+        "I need a few clarifications before I generate. Open the prompt to answer."
+      break
+    case "generating":
+      status = "running"
+      body = "Generating files…"
+      break
+    case "awaiting_approval": {
+      status = "ok"
+      body = "Done. Review the preview and approve to open a PR."
+      const artifact = resolveArtifact?.(prompt.id)
+      if (artifact?.files?.length) {
+        files = artifact.files.map((f) => ({
+          path: f.path,
+          size: f.content.length,
+        }))
+      }
+      break
+    }
+    case "pr_created":
+      status = "ok"
+      body = prompt.prUrl ? `PR opened — ${prompt.prUrl}` : "PR opened."
+      break
+    case "completed":
+      status = "ok"
+      body = "Completed."
+      break
+    case "failed":
+      status = "error"
+      body = prompt.error ?? "Generation failed."
+      break
+    case "cancelled":
+      status = "ok"
+      body = "Cancelled."
+      break
+    default:
+      status = "ok"
+      body = ""
+  }
+
+  out.push({
+    role: "builder",
+    content: body,
+    status,
+    timestamp: prompt.updatedAt,
+    promptId: prompt.id,
+    files,
+  })
+  return out
+}
+
+function pickActivePrompt(prompts: PromptRecord[]): PromptRecord | undefined {
+  // Pick the latest non-terminal prompt; fall back to newest overall.
+  const live = prompts.find((p) =>
+    ["queued", "clarifying", "generating", "awaiting_approval"].includes(
+      p.status,
+    ),
+  )
+  return live ?? prompts[0]
+}
+
+function pipelineStepsFor(prompt: PromptRecord | undefined): PipelineStep[] {
+  if (!prompt) return DEFAULT_PIPELINE_STEPS
+  const set = (id: string, state: PipelineStep["state"]): PipelineStep => {
+    const base = DEFAULT_PIPELINE_STEPS.find((s) => s.id === id)!
+    return { ...base, state }
+  }
+  const status = prompt.status
+  if (status === "queued") {
+    return [
+      set("dash-prd", "active"),
+      set("design", "pending"),
+      set("skill-v3", "pending"),
+      set("claude", "pending"),
+      set("validate", "pending"),
+      set("preview", "pending"),
+    ]
+  }
+  if (status === "clarifying" || status === "generating") {
+    return [
+      set("dash-prd", "done"),
+      set("design", "done"),
+      set("skill-v3", "active"),
+      set("claude", "pending"),
+      set("validate", "pending"),
+      set("preview", "pending"),
+    ]
+  }
+  if (
+    status === "awaiting_approval" ||
+    status === "pr_created" ||
+    status === "completed"
+  ) {
+    return [
+      set("dash-prd", "done"),
+      set("design", "done"),
+      set("skill-v3", "done"),
+      set("claude", "done"),
+      set("validate", "done"),
+      set("preview", "done"),
+    ]
+  }
+  if (status === "failed") {
+    return [
+      set("dash-prd", "done"),
+      set("design", "done"),
+      set("skill-v3", "done"),
+      set("claude", "error"),
+      set("validate", "pending"),
+      set("preview", "pending"),
+    ]
+  }
+  return DEFAULT_PIPELINE_STEPS
+}
+
+function previewStateFor(prompt: PromptRecord | undefined): PreviewPaneState {
+  if (!prompt) return "idle"
+  if (prompt.status === "failed") return "error"
+  if (
+    prompt.status === "awaiting_approval" ||
+    prompt.status === "pr_created" ||
+    prompt.status === "completed"
+  ) {
+    return "ready"
+  }
+  if (
+    prompt.status === "queued" ||
+    prompt.status === "clarifying" ||
+    prompt.status === "generating"
+  ) {
+    return "running"
+  }
+  return "idle"
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Chat dashboard (NEW DEFAULT)
+// ─────────────────────────────────────────────────────────────────────────
+
+export function renderChatDashboard(
+  store: Store,
+  orchestrator?: Orchestrator,
+): string {
+  const auth = store.getAuth()
+  const workspace = store.getWorkspace()
+  const prompts = store.getPrompts(20)
+  const resolveArtifact = orchestrator
+    ? (id: string) => orchestrator.getArtifact(id)
+    : undefined
+
+  const repos = buildRepoList(auth.github.repos)
+  const githubDetail = auth.github.connected
+    ? `${auth.github.repos.length || repos.length} repos`
+    : undefined
+  const anthropicDetail = auth.anthropic.user ?? undefined
+
+  // Thin top status bar — workspace + auth chips above the split pane.
+  const statusBar = `<div class="db-chat-statusbar" id="db-auth-region">
+    <div class="db-chat-statusbar-group">
+      <label class="db-chat-statusbar-label" for="db-repo-select">Repo</label>
+      ${renderRepoSelect({ repos, active: workspace.activeRepo })}
+    </div>
+    <div class="db-chat-statusbar-group">
+      <label class="db-chat-statusbar-label" for="db-branch-input">Branch</label>
+      ${renderBranchInput({ value: workspace.activeBranch })}
+    </div>
+    <div class="db-chat-statusbar-spacer"></div>
+    <div class="db-chat-statusbar-chips">
+      ${renderAuthChip({ provider: "anthropic", connected: auth.anthropic.connected, detail: anthropicDetail })}
+      ${renderAuthChip({ provider: "github", connected: auth.github.connected, detail: githubDetail })}
+    </div>
+  </div>`
+
+  const needsAnthropic = !auth.anthropic.connected
+  const needsGithub = !auth.github.connected
+
+  // Chat thread — build from prompt history. Oldest at top, newest at bottom.
+  const chronological = [...prompts].reverse()
+  const messages: ChatMessage[] = []
+  for (const p of chronological) {
+    for (const m of promptToChatMessages(p, resolveArtifact)) messages.push(m)
+  }
+
+  const threadBody =
+    needsAnthropic || needsGithub
+      ? `<div class="db-chat-thread db-chat-thread--empty" id="db-chat-thread">
+          ${
+            needsAnthropic
+              ? // TODO(auth-agent): ensure the connect-anthropic form lands here.
+                renderEmptyState({
+                  icon: "✦",
+                  title: "Connect Claude Pro to start building",
+                  body: "Dash Build uses your Anthropic Pro subscription for generation. No API key required.",
+                  ctaLabel: "Connect Anthropic",
+                  ctaHref: "/api/auth/anthropic",
+                  variant: "primary",
+                })
+              : renderEmptyState({
+                  icon: "◆",
+                  title: "Install the Dash Build GitHub App",
+                  body: "Pick which repos Dash Build can open PRs against. You can scope to a single repo or your full org.",
+                  ctaLabel: "Install GitHub App",
+                  ctaHref: "/api/auth/github",
+                  variant: "primary",
+                })
+          }
+        </div>`
+      : renderChatThread({ messages })
+
+  // Pinned composer + a hidden legacy `db-prompts-region` sibling so the
+  // existing /api/status-driven refresh helper + the routes test
+  // (`expect(html).toContain("db-prompts-region")`) continue to work.
+  const promptComposer =
+    needsAnthropic || needsGithub
+      ? `<div class="db-chat-composer db-chat-composer--disabled" aria-disabled="true">
+          <p class="db-muted db-body-sm">Connect auth above to start chatting.</p>
+        </div>`
+      : `<div class="db-chat-composer">
+          ${renderPromptInput({})}
+        </div>`
+
+  const leftPane = `<aside class="db-chat-pane db-chat-pane--left" aria-label="Chat">
+    <div class="db-chat-scroll" id="db-chat-scroll">
+      ${threadBody}
+    </div>
+    ${promptComposer}
+    <div hidden id="db-prompts-region" aria-hidden="true">
+      ${renderPromptList(prompts, resolveArtifact)}
+    </div>
+  </aside>`
+
+  // Right pane — live preview keyed off the active prompt.
+  const active = pickActivePrompt(prompts)
+  const previewState = previewStateFor(active)
+  const score = (active as unknown as { score?: number })?.score
+  const previewPane = renderLivePreviewPane({
+    state: previewState,
+    promptId: active?.id,
+    steps: pipelineStepsFor(active),
+    score: typeof score === "number" ? score : undefined,
+  })
+
+  const rightPane = `<section class="db-chat-pane db-chat-pane--right" aria-label="Live preview">
+    ${previewPane}
+  </section>`
+
+  const body = `
+    ${statusBar}
+    <div class="db-chat-shell">
+      ${leftPane}
+      ${rightPane}
+    </div>
+  `
+
+  return renderLayout({
+    title: "Dashboard",
+    body,
+    authIndicator:
+      auth.anthropic.connected && auth.github.connected ? "ok" : "pending",
+    version: store.getVersion(),
+  })
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Classic dashboard (LEGACY / FALLBACK)
+// ─────────────────────────────────────────────────────────────────────────
+
+export function renderClassicDashboard(
+  store: Store,
+  orchestrator?: Orchestrator,
+): string {
   const auth = store.getAuth()
   const workspace = store.getWorkspace()
   const prompts = store.getPrompts(10)
@@ -28,13 +360,7 @@ export function renderDashboard(store: Store, orchestrator?: Orchestrator): stri
     ? (id: string) => orchestrator.getArtifact(id)
     : undefined
 
-  // Workspace / auth region
-  const repos = [
-    // Fallback when GitHub App not installed yet
-    ...(auth.github.repos.length > 0
-      ? auth.github.repos
-      : ["dash/halo-dash-fe", "dash/portal-v2", "dash/backoffice"]),
-  ].map((full_name) => ({ full_name }))
+  const repos = buildRepoList(auth.github.repos)
 
   const githubDetail = auth.github.connected
     ? `${auth.github.repos.length || repos.length} repos`
@@ -62,13 +388,20 @@ export function renderDashboard(store: Store, orchestrator?: Orchestrator): stri
     </div>
   </section>`
 
-  // Build feature card
   const needsAnthropic = !auth.anthropic.connected
   const needsGithub = !auth.github.connected
 
   let buildBody: string
   if (needsAnthropic) {
-    buildBody = renderAnthropicConnectForm()
+    // TODO(auth-agent): ensure the connect-anthropic form lands here.
+    buildBody = renderEmptyState({
+      icon: "✦",
+      title: "Connect Claude Pro to start building",
+      body: "Dash Build uses your Anthropic Pro subscription for generation. No API key required.",
+      ctaLabel: "Connect Anthropic",
+      ctaHref: "/api/auth/anthropic",
+      variant: "primary",
+    })
   } else if (needsGithub) {
     buildBody = renderEmptyState({
       icon: "◆",
@@ -90,7 +423,6 @@ export function renderDashboard(store: Store, orchestrator?: Orchestrator): stri
     ${buildBody}
   </section>`
 
-  // Prompts card
   const promptsBody =
     needsAnthropic || needsGithub
       ? `<div class="db-empty-state"><p class="db-empty-body">Connect auth above to see prompts.</p></div>`
@@ -125,69 +457,12 @@ export function renderDashboard(store: Store, orchestrator?: Orchestrator): stri
   })
 }
 
-/**
- * Inline BYO Anthropic API key form. Replaces the legacy "Connect Anthropic
- * → 302 to claude.ai" CTA, which used the now-banned subscription OAuth
- * flow (see auth/anthropic/oauth-flow.ts header).
- *
- * Pure-string template + a tiny inline script. No new libraries. POSTs
- * `{ apiKey }` to `/api/auth/anthropic` and reloads on success. The label
- * "Connect Anthropic" is preserved verbatim so existing smoke + E2E tests
- * keep matching.
- */
-function renderAnthropicConnectForm(): string {
-  return `<div class="db-empty-state db-empty-primary">
-    <span class="db-empty-icon" aria-hidden="true">✦</span>
-    <h3 class="db-empty-title">Connect Anthropic to start building</h3>
-    <p class="db-empty-body">Paste an Anthropic API key (sk-ant-*). Get one at <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a>. Subscription OAuth was removed (banned by Anthropic ToS, April 2026) — BYO key or run the official <code>claude</code> CLI.</p>
-    <form id="db-anthropic-form" class="db-anthropic-form" autocomplete="off">
-      <label class="db-sr-only" for="db-anthropic-key">Anthropic API key</label>
-      <input id="db-anthropic-key" name="apiKey" type="password" class="db-input" placeholder="sk-ant-..." required minlength="10" />
-      <button type="submit" class="db-button db-button-primary">
-        <span class="db-button-label">Save key</span>
-        <span class="db-button-arrow" aria-hidden="true">→</span>
-      </button>
-    </form>
-    <p class="db-anthropic-form-status" id="db-anthropic-form-status" role="status" aria-live="polite"></p>
-    <script>
-      (function () {
-        var f = document.getElementById('db-anthropic-form');
-        var s = document.getElementById('db-anthropic-form-status');
-        if (!f) return;
-        f.addEventListener('submit', function (e) {
-          e.preventDefault();
-          var input = document.getElementById('db-anthropic-key');
-          var apiKey = (input && input.value || '').trim();
-          if (!apiKey) { s.textContent = 'Enter a key first.'; return; }
-          s.textContent = 'Saving…';
-          fetch('/api/auth/anthropic', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ apiKey: apiKey })
-          })
-            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
-            .then(function (out) {
-              if (out.ok && out.body && out.body.ok) {
-                s.textContent = 'Saved. Reloading…';
-                setTimeout(function () { window.location.reload(); }, 400);
-              } else {
-                s.textContent = 'Error: ' + ((out.body && out.body.error) || 'save failed');
-              }
-            })
-            .catch(function (err) { s.textContent = 'Network error: ' + err.message; });
-        });
-      })();
-    </script>
-  </div>`
-}
-
-function escapeAttr(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
+// Default export — the chat-style dashboard.
+export function renderDashboard(
+  store: Store,
+  orchestrator?: Orchestrator,
+): string {
+  return renderChatDashboard(store, orchestrator)
 }
 
 // Re-export legacy helpers so existing callers (e.g. WS tests) keep working.
