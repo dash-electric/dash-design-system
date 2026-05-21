@@ -11,6 +11,7 @@ import { handleReposRoute } from "./routes/api/repos.js"
 import { handleAuthRoute } from "./routes/api/auth.js"
 import { notFound, sendJson, sendRedirect } from "./routes/_helpers.js"
 import { handlePreviewRoute } from "../preview/api-routes.js"
+import { handleBridgeRoute, isBridgePath } from "./routes/api/bridge.js"
 
 export interface RouterDeps {
   store: Store
@@ -61,6 +62,9 @@ export async function router(
     }
     if (pathname.startsWith("/preview/")) {
       return await handlePreviewRoute(req, res, pathname)
+    }
+    if (isBridgePath(pathname)) {
+      return handleBridgeRoute(req, res, pathname)
     }
     return notFound(res)
   } catch (err) {

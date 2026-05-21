@@ -16,6 +16,7 @@
  */
 import http from "node:http"
 import type { AddressInfo } from "node:net"
+import { BRIDGE_ROUTES } from "./bridge/types.js"
 
 export type HealthState = {
   /** Epoch ms of last completed poll. null until first poll lands. */
@@ -101,6 +102,24 @@ export function startHealthServer(opts: HealthServerOpts): HealthServer {
         pollIntervalMs: state.pollIntervalMs,
       }
       res.statusCode = verdict.httpStatus
+      res.setHeader("content-type", "application/json")
+      res.end(JSON.stringify(body))
+      return
+    }
+    // Bridge stubs — return 501 until Day 4+ implements real routing.
+    // Kept inline (no router framework) to honor the zero-dep constraint.
+    if (
+      req.method === "POST" &&
+      (req.url === BRIDGE_ROUTES.missingBlock ||
+        req.url === BRIDGE_ROUTES.promote ||
+        req.url === BRIDGE_ROUTES.clarify)
+    ) {
+      const body = {
+        kind: "error",
+        reason: "Bridge endpoint scaffolded, full implementation pending",
+        code: "not_implemented",
+      }
+      res.statusCode = 501
       res.setHeader("content-type", "application/json")
       res.end(JSON.stringify(body))
       return
