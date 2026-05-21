@@ -28,8 +28,9 @@ export interface LaunchDaemonOptions {
   port: number
   mode?: "attached" | "detached"
   /**
-   * Path to the daemon entry script. Defaults to a placeholder that just
-   * prints a message — Agent B will replace this with the real HTTP server.
+   * Path to the daemon entry script. Defaults to the bundled
+   * `dist/daemon.js`. When that file is missing (running directly from src
+   * in tests/dev) a short-lived placeholder script is spawned instead.
    */
   entry?: string
 }
@@ -41,11 +42,10 @@ export interface LaunchedDaemon {
 }
 
 /**
- * Launch the daemon as a child process.
- *
- * PLACEHOLDER: Agent B owns the actual daemon. For now we just spawn a
- * short-lived node process so the menu + dispatcher can be exercised
- * end-to-end without crashing.
+ * Launch the daemon as a child process. When the bundled `dist/daemon.js`
+ * is present (production path), node spawns the real HTTP server. When
+ * absent (dev / tests running from src) a short-lived placeholder process
+ * is spawned so the menu + dispatcher can be exercised without crashing.
  */
 export async function launchDaemon(opts: LaunchDaemonOptions): Promise<LaunchedDaemon> {
   const mode = opts.mode ?? "detached"

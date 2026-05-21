@@ -33,6 +33,10 @@ export default defineConfig([
     sourcemap: false,
     dts: false,
     shims: false,
+    // Bundle workspace @dash/* deps — their `main` points at uncompiled
+    // src/*.ts, so leaving them external causes the spawned daemon to crash
+    // on `import "./activate.js"` (file is .ts, not .js).
+    noExternal: [/^@dash\//],
     banner: {
       js: "#!/usr/bin/env node",
     },

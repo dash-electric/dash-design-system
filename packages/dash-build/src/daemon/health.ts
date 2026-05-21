@@ -1,7 +1,7 @@
 /**
- * Poll a health endpoint until it returns 200 or timeout.
- * Daemon HTTP server not yet implemented (Agent B) — this is the client side
- * that web-ui mode will call once the daemon ships.
+ * Poll a health endpoint until it returns 200 or timeout. Used by mode
+ * runners (web-ui, tray) to confirm the spawned daemon is reachable before
+ * opening the browser.
  */
 export interface WaitForHealthOptions {
   url: string

@@ -20,19 +20,23 @@ export async function runWebUI(opts: WebUIOptions): Promise<void> {
   // eslint-disable-next-line no-console
   console.log(chalk.dim(`  PID ${daemon.pid} · pid file ${daemon.pidFile}`))
 
-  // Wait for daemon /health — will gracefully time out while daemon is a stub.
+  // Wait for daemon /health to return 200. Bundled daemon needs ~1-3s for
+  // Store + Orchestrator + auth client init on first boot.
   const healthy = await waitForHealth({
     url: `http://localhost:${port}/health`,
-    timeoutMs: 1_500,
+    timeoutMs: 8_000,
   })
 
   if (!healthy) {
     // eslint-disable-next-line no-console
     console.log(
       chalk.yellow(
-        "  ⚠ Daemon health check did not pass (expected — daemon HTTP server lands with Agent B).",
+        "  ⚠ Daemon /health did not respond within 8s. Check `~/.dash-build/daemon.log` or try `dash-build` again.",
       ),
     )
+  } else {
+    // eslint-disable-next-line no-console
+    console.log(chalk.green(`  ✓ Daemon healthy on http://localhost:${port}/health`))
   }
 
   const dashboardUrl = `http://localhost:${port}/dashboard`
