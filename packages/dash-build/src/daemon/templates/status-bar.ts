@@ -15,7 +15,7 @@ export function renderStatusBar(auth: AuthState, workspace: WorkspaceState): str
       <span class="db-muted">${escapeHtml(repo)}</span>
     </div>
     <div class="db-workspace-auth">
-      ${renderAuthChip({ provider: "anthropic", connected: auth.anthropic.connected })}
+      ${renderAuthChip({ provider: "openai", connected: auth.openai.connected })}
       ${renderAuthChip({ provider: "github", connected: auth.github.connected })}
     </div>
   </section>`

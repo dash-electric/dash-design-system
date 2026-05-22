@@ -215,6 +215,7 @@ export const DASHBOARD_JS = `
           var oldPreview = document.getElementById("db-preview-pane");
           if (newPreview && oldPreview) {
             oldPreview.outerHTML = newPreview.outerHTML;
+            bootPreviewControls();
           }
           // Legacy prompt list region (classic layout + hidden fallback).
           var newList = doc.getElementById("db-prompts-region");
@@ -227,6 +228,7 @@ export const DASHBOARD_JS = `
           if (newAuth && oldAuth) {
             oldAuth.innerHTML = newAuth.innerHTML;
           }
+          hydrateInlineClarifications();
         } catch (e) { /* swallow */ }
       })
       .catch(function () { /* ignore */ })
@@ -269,8 +271,145 @@ export const DASHBOARD_JS = `
     scrollChatToBottom();
     return li;
   }
+
+  // ---------- Inline clarification forms ----------
+  function cssEscape(value) {
+    if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(value);
+    return String(value).replace(/"/g, '\\"');
+  }
+  function clarificationPromptIds() {
+    var ids = [];
+    var seen = {};
+    document.querySelectorAll("[data-clarification-focus]").forEach(function (el) {
+      var id = el.getAttribute("data-clarification-focus");
+      if (!id || seen[id]) return;
+      seen[id] = true;
+      ids.push(id);
+    });
+    return ids;
+  }
+  function findBuilderMessage(promptId) {
+    var nodes = document.querySelectorAll(".db-chat-msg[data-role='builder'][data-prompt-id]");
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      if (nodes[i].getAttribute("data-prompt-id") === promptId) return nodes[i];
+    }
+    return null;
+  }
+  function renderInlineQuestion(session) {
+    var count = (session.questions || []).length;
+    var html = '<form class="db-inline-question" data-inline-clarification="' + escapeHtml(session.promptId) + '">' +
+      '<div class="db-inline-question-head">' +
+      '<div><p class="db-inline-question-title">Quick context check</p>' +
+      '<p class="db-inline-question-sub">Answer here; Dash Build continues without opening a new page.</p></div>' +
+      '<span class="db-inline-question-pill">' + count + ' question' + (count === 1 ? '' : 's') + '</span>' +
+      '</div>';
+    (session.questions || []).forEach(function (q) {
+      html += '<div class="db-inline-q" data-q-id="' + escapeHtml(q.id) + '" data-q-type="' + escapeHtml(q.type) + '" data-required="' + (q.required ? 'true' : 'false') + '">' +
+        '<div class="db-inline-q-label">' + escapeHtml(q.text) + (q.required ? ' <span aria-label="required">*</span>' : '') + '</div>' +
+        (q.rationale ? '<p class="db-inline-q-help">' + escapeHtml(q.rationale) + '</p>' : '');
+      if (q.type === "single-choice" || q.type === "multi-choice") {
+        var inputType = q.type === "multi-choice" ? "checkbox" : "radio";
+        html += '<div class="db-inline-options">';
+        (q.options || []).forEach(function (opt) {
+          html += '<label class="db-inline-option"><input type="' + inputType + '" name="' + escapeHtml(q.id) + '" value="' + escapeHtml(opt) + '"><span>' + escapeHtml(opt) + '</span></label>';
+        });
+        html += '</div>';
+      } else if (q.type === "yes-no") {
+        html += '<div class="db-inline-options">' +
+          '<label class="db-inline-option"><input type="radio" name="' + escapeHtml(q.id) + '" value="true"><span>Yes</span></label>' +
+          '<label class="db-inline-option"><input type="radio" name="' + escapeHtml(q.id) + '" value="false"><span>No</span></label>' +
+          '</div>';
+      } else {
+        html += '<textarea class="db-inline-textarea" name="' + escapeHtml(q.id) + '" placeholder="Type the missing context…"></textarea>';
+      }
+      html += '</div>';
+    });
+    html += '<div class="db-inline-question-foot">' +
+      '<span class="db-inline-question-msg" aria-live="polite">This updates PRD and design context.</span>' +
+      '<button type="submit" class="db-inline-question-submit">Continue →</button>' +
+      '</div></form>';
+    return html;
+  }
+  function readInlineAnswers(form) {
+    var answers = [];
+    var missing = null;
+    form.querySelectorAll(".db-inline-q").forEach(function (row) {
+      var id = row.getAttribute("data-q-id");
+      var type = row.getAttribute("data-q-type");
+      var required = row.getAttribute("data-required") === "true";
+      var answer;
+      if (type === "single-choice" || type === "yes-no") {
+        var checked = row.querySelector("input:checked");
+        if (checked) answer = type === "yes-no" ? checked.value === "true" : checked.value;
+      } else if (type === "multi-choice") {
+        answer = Array.prototype.slice.call(row.querySelectorAll("input:checked")).map(function (el) { return el.value; });
+      } else {
+        var textarea = row.querySelector("textarea");
+        answer = textarea ? textarea.value.trim() : "";
+      }
+      var empty = Array.isArray(answer) ? answer.length === 0 : answer === undefined || answer === "";
+      if (required && empty && !missing) missing = row.querySelector(".db-inline-q-label").textContent;
+      answers.push({ questionId: id, answer: answer });
+    });
+    return { answers: answers, missing: missing };
+  }
+  function wireInlineQuestion(form) {
+    if (!form || form.getAttribute("data-wired") === "true") return;
+    form.setAttribute("data-wired", "true");
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var promptId = form.getAttribute("data-inline-clarification");
+      var submit = form.querySelector(".db-inline-question-submit");
+      var msg = form.querySelector(".db-inline-question-msg");
+      var result = readInlineAnswers(form);
+      if (result.missing) {
+        if (msg) msg.textContent = "Need answer: " + result.missing;
+        return;
+      }
+      if (submit) submit.disabled = true;
+      if (msg) msg.textContent = "Saving answer…";
+      result.answers.reduce(function (chain, item) {
+        return chain.then(function () {
+          return fetch("/api/clarification/" + encodeURIComponent(promptId) + "/answer", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(item)
+          }).then(function (res) {
+            if (!res.ok) throw new Error("answer_failed");
+          });
+        });
+      }, Promise.resolve()).then(function () {
+        if (msg) msg.textContent = "Saved. Continuing generation…";
+        refreshDashboard();
+      }).catch(function () {
+        if (submit) submit.disabled = false;
+        if (msg) msg.textContent = "Could not save answer. Try again.";
+      });
+    });
+  }
+  function hydrateInlineClarifications() {
+    clarificationPromptIds().forEach(function (promptId) {
+      var existing = document.querySelector('[data-inline-clarification="' + cssEscape(promptId) + '"]');
+      if (existing) {
+        wireInlineQuestion(existing);
+        return;
+      }
+      fetch("/api/clarification/" + encodeURIComponent(promptId))
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (session) {
+          if (!session || (session.status !== "pending" && session.status !== "expired")) return;
+          var msg = findBuilderMessage(promptId);
+          if (!msg) return;
+          msg.insertAdjacentHTML("beforeend", renderInlineQuestion(session));
+          wireInlineQuestion(msg.querySelector('[data-inline-clarification="' + cssEscape(promptId) + '"]'));
+          scrollChatToBottom();
+        })
+        .catch(function () { /* best-effort */ });
+    });
+  }
   // Boot: ensure chat scroll starts pinned to the bottom.
   scrollChatToBottom();
+  hydrateInlineClarifications();
 
   // ---------- Submit prompt ----------
   var submitBtn = document.getElementById("db-prompt-submit");
@@ -339,6 +478,132 @@ export const DASHBOARD_JS = `
     });
   }
 
+  // ---------- Resizable chat/workspace split ----------
+  function bootChatResizer() {
+    var shell = document.querySelector(".db-chat-shell");
+    var handle = document.querySelector(".db-chat-resizer");
+    if (!shell || !handle) return;
+    var saved = null;
+    try { saved = localStorage.getItem("dash-build-chat-pane-width"); } catch (e) {}
+    if (saved) shell.style.setProperty("--db-chat-pane-width", saved);
+
+    function clampWidth(width) {
+      var total = shell.clientWidth || window.innerWidth;
+      var min = 320;
+      var max = Math.max(min, total - 480);
+      return Math.max(min, Math.min(max, width));
+    }
+    function setWidth(width, persist) {
+      var next = clampWidth(width);
+      shell.style.setProperty("--db-chat-pane-width", next + "px");
+      handle.setAttribute("aria-valuenow", String(next));
+      if (persist) {
+        try { localStorage.setItem("dash-build-chat-pane-width", next + "px"); } catch (e) {}
+      }
+      return next;
+    }
+    function currentWidth() {
+      var left = document.querySelector(".db-chat-pane--left");
+      return left ? left.getBoundingClientRect().width : 420;
+    }
+    handle.setAttribute("aria-valuemin", "320");
+    handle.setAttribute("aria-valuemax", String(Math.max(320, shell.clientWidth - 480)));
+    handle.setAttribute("aria-valuenow", String(Math.round(currentWidth())));
+    handle.addEventListener("pointerdown", function (ev) {
+      if (ev.button !== 0) return;
+      ev.preventDefault();
+      var startX = ev.clientX;
+      var startWidth = currentWidth();
+      shell.classList.add("is-resizing");
+      handle.setPointerCapture(ev.pointerId);
+      function move(moveEv) {
+        setWidth(startWidth + moveEv.clientX - startX, false);
+      }
+      function end(endEv) {
+        try { handle.releasePointerCapture(endEv.pointerId); } catch (e) {}
+        shell.classList.remove("is-resizing");
+        setWidth(currentWidth(), true);
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", end);
+        window.removeEventListener("pointercancel", end);
+      }
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", end);
+      window.addEventListener("pointercancel", end);
+    });
+    handle.addEventListener("keydown", function (ev) {
+      var next = null;
+      if (ev.key === "ArrowLeft") next = currentWidth() - 32;
+      if (ev.key === "ArrowRight") next = currentWidth() + 32;
+      if (ev.key === "Home") next = 320;
+      if (ev.key === "End") next = shell.clientWidth - 480;
+      if (next == null) return;
+      ev.preventDefault();
+      setWidth(next, true);
+    });
+  }
+  bootChatResizer();
+
+  // ---------- Live preview viewport controls ----------
+  function setPreviewViewport(mode, persist) {
+    var pane = document.getElementById("db-preview-pane");
+    if (!pane) return;
+    var state = pane.querySelector(".db-live-preview-state--ready");
+    if (!state) return;
+    var next = mode === "tablet" || mode === "mobile" ? mode : "desktop";
+    state.setAttribute("data-preview-viewport", next);
+    pane.querySelectorAll("[data-preview-device]").forEach(function (btn) {
+      var active = btn.getAttribute("data-preview-device") === next;
+      btn.classList.toggle("db-live-preview-device--active", active);
+      if (active) btn.setAttribute("aria-pressed", "true");
+      else btn.setAttribute("aria-pressed", "false");
+    });
+    if (persist) {
+      try { localStorage.setItem("dash-build-preview-viewport", next); } catch (e) {}
+    }
+  }
+  function bootPreviewControls() {
+    var saved = "desktop";
+    try { saved = localStorage.getItem("dash-build-preview-viewport") || "desktop"; } catch (e) {}
+    setPreviewViewport(saved, false);
+  }
+  bootPreviewControls();
+
+  document.addEventListener("click", function (ev) {
+    var target = ev.target;
+    if (!target || !target.closest) return;
+    var device = target.closest("[data-preview-device]");
+    if (device) {
+      ev.preventDefault();
+      setPreviewViewport(device.getAttribute("data-preview-device"), true);
+      return;
+    }
+    var refreshPreview = target.closest("[data-preview-refresh]");
+    if (refreshPreview) {
+      ev.preventDefault();
+      var pane = document.getElementById("db-preview-pane");
+      var frame = pane ? pane.querySelector(".db-live-preview-frame") : null;
+      if (frame && frame.getAttribute("src")) {
+        var src = frame.getAttribute("src").split("?")[0];
+        frame.setAttribute("src", src + "?t=" + Date.now());
+      }
+      return;
+    }
+    var trigger = target.closest("[data-clarification-focus]");
+    if (!trigger) return;
+    ev.preventDefault();
+    var id = trigger.getAttribute("data-clarification-focus");
+    hydrateInlineClarifications();
+    setTimeout(function () {
+      var form = document.querySelector('[data-inline-clarification="' + cssEscape(id) + '"]');
+      if (form) {
+        form.scrollIntoView({ block: "center", behavior: "smooth" });
+        var firstInput = form.querySelector("input, textarea, button");
+        if (firstInput) firstInput.focus();
+      }
+    }, 120);
+  });
+
   // ---------- Delegated: approve action ----------
   document.addEventListener("click", function (ev) {
     var target = ev.target;
@@ -368,9 +633,47 @@ export const DASHBOARD_JS = `
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo: val, branch: branch }),
-      }).catch(function () { /* best-effort */ });
+      }).then(function () { refreshDashboard(); }).catch(function () { /* best-effort */ });
     });
   }
+
+  // ---------- Baseline repo preview ----------
+  document.addEventListener("click", function (ev) {
+    var target = ev.target;
+    if (!target || !target.closest) return;
+    var start = target.closest("[data-repo-preview-start]");
+    if (start) {
+      ev.preventDefault();
+      var repo = start.getAttribute("data-repo-preview-start");
+      start.setAttribute("disabled", "true");
+      start.textContent = "Starting…";
+      fetch("/api/repo-preview/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repo: repo })
+      }).then(function () {
+        setTimeout(refreshDashboard, 600);
+      }).catch(function () {
+        start.removeAttribute("disabled");
+        start.textContent = "Start local preview →";
+      });
+      return;
+    }
+    var copy = target.closest("[data-copy-command]");
+    if (copy) {
+      ev.preventDefault();
+      var command = copy.getAttribute("data-copy-command") || "";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(command).then(function () {
+          showToast({ message: "Command copied", kind: "success" });
+        }).catch(function () {
+          showToast({ message: command, kind: "info", duration: 7000 });
+        });
+      } else {
+        showToast({ message: command, kind: "info", duration: 7000 });
+      }
+    }
+  });
 
   // ---------- Boot ----------
   setWsState("connecting", "Connecting…");

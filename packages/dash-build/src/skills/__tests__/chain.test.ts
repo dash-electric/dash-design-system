@@ -12,6 +12,7 @@ const RICH_PROMPT =
   "Build a mitra suspension dashboard in backoffice. As ops user I view audit history for KYC compliance via GET /api/mitra/suspensions"
 
 const passDesign: DesignContext = {
+  designContract: "Global Dash design contract: use operational density and registry-first components.",
   cardinalRules: "CR-1...CR-8",
   voiceRules: "Anda formal",
   manifest: null,
@@ -90,7 +91,7 @@ describe("generateWithSkillChain", () => {
     expect(r.kind).toBe("clarify")
   })
 
-  it("calls Claude with the composed system prompt when scope is clear", async () => {
+  it("calls the model with the composed system prompt when scope is clear", async () => {
     const deps = passingDeps()
     const r = await generateWithSkillChain(
       { prompt: RICH_PROMPT, repoPath: process.cwd() },
@@ -99,10 +100,13 @@ describe("generateWithSkillChain", () => {
     expect(r.kind).toBe("generated")
     expect(deps.anthropic!.messages.create).toHaveBeenCalledOnce()
     const call = (deps.anthropic!.messages.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
+    expect(call.system).toContain("Global Design Contract")
+    expect(call.system).toContain("Global Dash design contract")
     expect(call.system).toContain("Cardinal Rules")
     expect(call.system).toContain("Layered Architecture")
     expect(call.system).toContain("Per-Repo Stack Mandate")
     expect(call.system).toContain("Banned Imports")
+    expect(call.system).toContain("ALWAYS include a first file named `preview.tsx`")
     expect(call.messages[0].content).toBe(RICH_PROMPT)
   })
 
@@ -148,7 +152,7 @@ describe("generateWithSkillChain", () => {
     expect(r.meta.detectedRepoStack).toBe("backoffice")
   })
 
-  it("returns error when no Anthropic client is wired", async () => {
+  it("returns error when no model client is wired", async () => {
     const deps = passingDeps()
     deps.anthropic = undefined
     const r = await generateWithSkillChain(
@@ -156,10 +160,10 @@ describe("generateWithSkillChain", () => {
       deps,
     )
     expect(r.kind).toBe("error")
-    if (r.kind === "error") expect(r.reason).toMatch(/Anthropic/)
+    if (r.kind === "error") expect(r.reason).toMatch(/OpenAI\/Codex/)
   })
 
-  it("returns error when Anthropic throws", async () => {
+  it("returns error when model generation throws", async () => {
     const deps = passingDeps({
       anthropic: {
         messages: {
@@ -174,7 +178,7 @@ describe("generateWithSkillChain", () => {
       deps,
     )
     expect(r.kind).toBe("error")
-    if (r.kind === "error") expect(r.reason).toMatch(/anthropic/i)
+    if (r.kind === "error") expect(r.reason).toMatch(/model generation/i)
   })
 
   it("validates banned imports in Claude output and marks validation.passed=false", async () => {

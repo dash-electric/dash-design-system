@@ -5,9 +5,9 @@
 
 export {
   Orchestrator,
-  defaultAnthropicProvider,
   defaultClarificationGateway,
   defaultGithubProvider,
+  defaultOpenAIProvider,
   defaultSkillChainRunner,
   generatePromptId,
   mergeAnswers,

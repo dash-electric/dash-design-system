@@ -9,6 +9,7 @@ import { handleStatic } from "./routes/static.js"
 import { handlePromptsRoute } from "./routes/api/prompts.js"
 import { handleReposRoute } from "./routes/api/repos.js"
 import { handleAuthRoute } from "./routes/api/auth.js"
+import { handleRepoPreviewRoute } from "./routes/api/repo-preview.js"
 import { notFound, sendJson, sendRedirect } from "./routes/_helpers.js"
 import { handlePreviewRoute } from "../preview/api-routes.js"
 import { handleBridgeRoute, isBridgePath } from "./routes/api/bridge.js"
@@ -59,6 +60,9 @@ export async function router(
     }
     if (pathname.startsWith("/api/auth/")) {
       return handleAuthRoute(req, res, pathname, deps.store, deps.broadcaster)
+    }
+    if (pathname === "/api/repo-preview" || pathname === "/api/repo-preview/start") {
+      return await handleRepoPreviewRoute(req, res, pathname)
     }
     if (pathname.startsWith("/preview/")) {
       return await handlePreviewRoute(req, res, pathname)

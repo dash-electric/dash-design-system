@@ -1,38 +1,38 @@
 import { escapeHtml } from "../layout.js"
 
 /**
- * Anthropic connect form — two ToS-safe paths surfaced side-by-side.
+ * OpenAI connect form — API-key-first with Codex CLI as a local-account option.
  *
- *   Path A — Bring your own API key (sk-ant-*). Password-style input;
- *   POSTs to /api/auth/anthropic with { apiKey } and reloads on success.
+ *   Path A — Bring your own OpenAI API key. This is the most portable path
+ *   for future users and CI-like/local testing.
  *
- *   Path B — Subprocess the official Claude Code CLI. If `claude` is on
- *   PATH, this card is rendered "ready"; otherwise it shows install hints.
+ *   Path B — Use the official Codex CLI. If `codex` is installed and logged
+ *   in, Dash Build can spawn `codex exec` per generation.
  *
  * The route layer exposes `activeMode` so the rendering caller can pre-
- * select the right card. If `activeMode === "claude-cli"`, that card is
- * marked "Ready — using subscription via Claude Code". If neither is set,
+ * select the right card. If `activeMode === "codex-cli"`, that card is
+ * marked "Ready — using Codex login". If neither is set,
  * the BYO form is the default focus.
  */
-export interface AnthropicConnectOptions {
-  /** Whether `claude` binary is on PATH (from /api/auth/anthropic GET). */
-  claudeCliInstalled?: boolean
+export interface OpenAIConnectOptions {
+  /** Whether `codex` binary is on PATH (from /api/auth/openai GET). */
+  codexCliInstalled?: boolean
   /** Optional version string from the probe. */
-  claudeCliVersion?: string | null
+  codexCliVersion?: string | null
   /** Active mode if known — drives which card is highlighted. */
-  activeMode?: "byo-key" | "claude-cli" | "none"
+  activeMode?: "byo-key" | "codex-cli" | "none"
 }
 
-export function renderAnthropicConnectForm(
-  opts: AnthropicConnectOptions = {},
+export function renderOpenAIConnectForm(
+  opts: OpenAIConnectOptions = {},
 ): string {
-  const claudeReady = Boolean(opts.claudeCliInstalled)
+  const codexReady = Boolean(opts.codexCliInstalled)
   const activeMode = opts.activeMode ?? "none"
 
   return `<div class="db-connect-shell" data-active-mode="${escapeHtml(activeMode)}">
     <header class="db-connect-head">
-      <h2 class="db-connect-title">Connect Anthropic to start building</h2>
-      <p class="db-connect-lede">Pick one. Both paths are ToS-safe — subscription OAuth via third-party token extraction was banned by Anthropic in April 2026 and is intentionally not offered here.</p>
+      <h2 class="db-connect-title">Connect OpenAI to start building</h2>
+      <p class="db-connect-lede">Use an OpenAI API key for the most portable setup, or connect through the official Codex CLI when you want Dash Build to reuse your local Codex login.</p>
     </header>
 
     <div class="db-connect-grid">
@@ -40,10 +40,10 @@ export function renderAnthropicConnectForm(
       <!-- Path A: BYO API key -->
       <section class="db-connect-card${activeMode === "byo-key" ? " db-connect-card--active" : ""}" aria-labelledby="db-byo-title">
         <div class="db-connect-card-head">
-          <span class="db-connect-card-tag">Path A · Official</span>
-          <h3 class="db-connect-card-title" id="db-byo-title">Paste an Anthropic API key</h3>
+          <span class="db-connect-card-tag">Path A · Recommended</span>
+          <h3 class="db-connect-card-title" id="db-byo-title">Paste an OpenAI API key</h3>
         </div>
-        <p class="db-connect-card-body">Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com/settings/keys</a>. Stored AES-256-GCM encrypted, mode 0600. You pay Anthropic per token.</p>
+        <p class="db-connect-card-body">Best default for local testing, teams, and future package users. Stored AES-256-GCM encrypted, mode 0600.</p>
         <form class="db-connect-form" id="db-byo-form" autocomplete="off" novalidate>
           <label class="db-connect-label" for="db-byo-input">API key</label>
           <input
@@ -51,42 +51,55 @@ export function renderAnthropicConnectForm(
             id="db-byo-input"
             name="apiKey"
             class="db-connect-input"
-            placeholder="sk-ant-…"
+            placeholder="sk-…"
             spellcheck="false"
             autocapitalize="off"
             autocorrect="off"
             required
-            pattern="^sk-ant-.+"
+            pattern="^sk-.+"
           />
           <button type="submit" class="db-button db-button-primary db-connect-submit">
-            <span class="db-button-label">Save & connect</span>
+            <span class="db-button-label">Save fallback key</span>
             <span class="db-button-arrow" aria-hidden="true">→</span>
           </button>
           <p class="db-connect-form-msg" id="db-byo-msg" aria-live="polite"></p>
         </form>
       </section>
 
-      <!-- Path B: Claude Code CLI subprocess -->
-      <section class="db-connect-card${activeMode === "claude-cli" ? " db-connect-card--active" : ""}" aria-labelledby="db-cli-title">
+      <!-- Path B: Codex CLI -->
+      <section class="db-connect-card${activeMode === "codex-cli" ? " db-connect-card--active" : ""}" aria-labelledby="db-cli-title">
         <div class="db-connect-card-head">
-          <span class="db-connect-card-tag">Path B · Subscription</span>
-          <h3 class="db-connect-card-title" id="db-cli-title">Use your Claude Code subscription</h3>
+          <span class="db-connect-card-tag">Path B · Local Codex</span>
+          <h3 class="db-connect-card-title" id="db-cli-title">Use your OpenAI login via Codex</h3>
         </div>
         ${
-          claudeReady
+          codexReady
             ? `<p class="db-connect-card-body">
                  <span class="db-connect-status db-connect-status--ok">●</span>
-                 <code>claude</code> detected${opts.claudeCliVersion ? ` <span class="db-connect-muted">(${escapeHtml(opts.claudeCliVersion)})</span>` : ""}. Dash Build will spawn <code>claude -p</code> as a subprocess per prompt. Subscription tokens never leave Claude Code.
+                 <code>codex</code> detected${opts.codexCliVersion ? ` <span class="db-connect-muted">(${escapeHtml(opts.codexCliVersion)})</span>` : ""}. Dash Build can spawn <code>codex exec</code> per prompt. Your OpenAI login stays inside Codex.
                </p>
-               <button type="button" class="db-button db-button-ghost db-connect-cli-use" id="db-cli-use">
-                 <span class="db-button-label">Use Claude Code mode</span>
-               </button>`
+               <div class="db-connect-actions">
+                 <button type="button" class="db-button db-button-ghost db-connect-cli-use" id="db-cli-use">
+                   <span class="db-button-label">Use Codex mode</span>
+                 </button>
+                 <button type="button" class="db-button db-button-secondary db-connect-cli-copy" id="db-cli-copy">
+                   <span class="db-button-label">Copy login command</span>
+                 </button>
+               </div>
+               <div class="db-connect-fallback" id="db-cli-fallback" hidden>
+                 <p class="db-connect-fallback-title">Finish login in Terminal</p>
+                 <ol class="db-connect-steps">
+                   <li>Run <code>codex login --device-auth</code> in your terminal.</li>
+                   <li>Complete the OpenAI sign-in page.</li>
+                   <li>Refresh this dashboard.</li>
+                 </ol>
+               </div>`
             : `<p class="db-connect-card-body">
                  <span class="db-connect-status db-connect-status--pending">○</span>
-                 <code>claude</code> not on PATH. Install + log in once in your terminal:
+                 <code>codex</code> not ready yet. Install or log in once in your terminal:
                </p>
-               <pre class="db-connect-pre"><code>npm i -g @anthropic-ai/claude-code
-claude login
+               <pre class="db-connect-pre"><code>npm i -g @openai/codex
+codex login --device-auth
 # then refresh this page</code></pre>`
         }
       </section>
@@ -95,8 +108,9 @@ claude login
 
     <footer class="db-connect-foot">
       <span class="db-connect-foot-dot">●</span>
-      Subscription-extraction OAuth using Claude Code's public client_id was banned by Anthropic Feb 2026 (enforced Apr 4 2026). Tools that did it (OpenClaw, OpenCode, Roo Code, Goose) had tokens blocked.
+      API key mode is the safest product default. Codex mode remains available for local users who already work inside Codex.
     </footer>
+    <p class="db-connect-form-msg" id="db-cli-msg" aria-live="polite"></p>
   </div>
   <script>
     (function () {
@@ -110,7 +124,7 @@ claude login
           msg.textContent = "Saving…";
           msg.className = "db-connect-form-msg db-connect-form-msg--pending";
           try {
-            var res = await fetch("/api/auth/anthropic", {
+            var res = await fetch("/api/auth/openai", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ apiKey: apiKey }),
@@ -132,11 +146,94 @@ claude login
       }
 
       var cliBtn = document.getElementById("db-cli-use");
+      var cliCopyBtn = document.getElementById("db-cli-copy");
+      var cliMsg = document.getElementById("db-cli-msg");
+      var cliFallback = document.getElementById("db-cli-fallback");
+      var cliPoll = null;
+      var cliCommand = "codex login --device-auth";
+      function setCliMessage(text, kind) {
+        if (!cliMsg) return;
+        cliMsg.textContent = text;
+        cliMsg.className = "db-connect-form-msg" + (kind ? " db-connect-form-msg--" + kind : "");
+      }
+      function showCliFallback() {
+        if (cliFallback) cliFallback.hidden = false;
+      }
+      async function copyCliCommand() {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(cliCommand);
+          } else {
+            var input = document.createElement("textarea");
+            input.value = cliCommand;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand("copy");
+            document.body.removeChild(input);
+          }
+          setCliMessage("Copied: " + cliCommand, "ok");
+        } catch (err) {
+          setCliMessage("Copy failed. Run: " + cliCommand, "err");
+        }
+      }
+      if (cliCopyBtn) {
+        cliCopyBtn.addEventListener("click", function () {
+          showCliFallback();
+          void copyCliCommand();
+        });
+      }
       if (cliBtn) {
-        cliBtn.addEventListener("click", function () {
-          // Claude CLI mode is automatic — server probes per request.
-          // Just reload so the dashboard picks up the active mode.
-          window.location.reload();
+        cliBtn.addEventListener("click", async function () {
+          cliBtn.setAttribute("disabled", "disabled");
+          setCliMessage("Starting Codex login…", "pending");
+          try {
+            var res = await fetch("/api/auth/openai/codex-cli/start", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" }
+            });
+            var body = await res.json().catch(function () { return {}; });
+            if (!res.ok || !body.ok) {
+              throw new Error(body.error || ("HTTP " + res.status));
+            }
+            if (body.status === "connected") {
+              setCliMessage("Codex already connected. Reloading…", "ok");
+              setTimeout(function () { window.location.reload(); }, 300);
+              return;
+            }
+            if (body.verificationUrl) {
+              window.open(body.verificationUrl, "_blank", "noopener");
+            }
+            setCliMessage(
+              body.code
+                ? "Finish login in the OpenAI page, then enter code: " + body.code
+                : "Finish login in the OpenAI page we just opened.",
+              "pending"
+            );
+            cliPoll = window.setInterval(async function () {
+              try {
+                var pollRes = await fetch("/api/auth/openai/codex-cli/session");
+                var pollBody = await pollRes.json().catch(function () { return {}; });
+                if (!pollRes.ok || !pollBody.ok) return;
+                if (pollBody.status === "connected") {
+                  if (cliPoll) window.clearInterval(cliPoll);
+                  setCliMessage("Codex connected. Reloading…", "ok");
+                  setTimeout(function () { window.location.reload(); }, 400);
+                  return;
+                }
+                if (pollBody.status === "failed") {
+                  if (cliPoll) window.clearInterval(cliPoll);
+                  cliBtn.removeAttribute("disabled");
+                  setCliMessage("Codex login failed. Check terminal auth and try again.", "err");
+                }
+              } catch (err) {
+                // keep polling quietly
+              }
+            }, 2000);
+          } catch (err) {
+            cliBtn.removeAttribute("disabled");
+            showCliFallback();
+            setCliMessage("Dash Build could not start Codex login from the browser. Use the terminal command instead.", "err");
+          }
         });
       }
     })();

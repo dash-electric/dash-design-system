@@ -8,7 +8,7 @@
  *
  *   processPrompt:
  *     status → generating
- *     auth check (Anthropic)
+ *     auth check (OpenAI/Codex)
  *     skill chain runs:
  *       kind=clarify   → store session, status → clarifying, return
  *       kind=generated → store artifact, status → awaiting_approval
@@ -25,6 +25,14 @@
  */
 
 import { randomUUID } from "node:crypto"
+import {
+  existsSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+} from "node:fs"
+import { stat, writeFile } from "node:fs/promises"
+import { join } from "node:path"
 import type { Store } from "../daemon/state/store.js"
 import type { Broadcaster } from "../daemon/ws/broadcaster.js"
 import type { PromptRecord, PromptStatus } from "../daemon/state/types.js"
@@ -48,7 +56,14 @@ import type {
 } from "./types.js"
 import { classify, describe, PipelineError } from "./error-handling.js"
 import { nextStatus, isTerminal } from "./status-transitions.js"
-import { bundleForPreview, cleanupOne } from "../preview/index.js"
+import {
+  bundleForPreview,
+  bundlePathFor,
+  cleanupOne,
+  prepareTempDir,
+  resolvePreviewDir,
+} from "../preview/index.js"
+import type { BundleResult } from "../preview/index.js"
 
 export interface OrchestratorOptions {
   store: Store
@@ -225,8 +240,8 @@ export class Orchestrator {
     try {
       if (!(await this.anthropic.isConnected())) {
         throw new PipelineError(
-          "auth-missing-anthropic",
-          "Anthropic not connected",
+          "auth-missing-openai",
+          "OpenAI not connected",
         )
       }
     } catch (err) {
@@ -275,14 +290,18 @@ export class Orchestrator {
         promptId: prompt.id,
       })
       artifact.bundleResult = bundleResult
+      artifact.previewMode = "component"
     } catch (err) {
       this.logger.warn("preview bundle failed (continuing without iframe)", {
         id: prompt.id,
         err: (err as Error).message,
       })
+      artifact.bundleResult = await writeFallbackPreviewBundle(prompt.id, artifact, err)
+      artifact.previewMode = "fallback"
     }
 
     this.artifacts.set(prompt.id, artifact)
+    await persistArtifact(prompt.id, artifact)
 
     await this.setStatus(prompt, "awaiting_approval")
     this.broadcaster.broadcast("generation:complete", {
@@ -292,6 +311,7 @@ export class Orchestrator {
       passed: result.validation.passed,
       errorCount: result.validation.errors.length,
       previewAvailable: Boolean(artifact.bundleResult),
+      previewMode: artifact.previewMode ?? null,
     })
   }
 
@@ -415,7 +435,11 @@ export class Orchestrator {
   // ── Inspection helpers (used by HTTP routes + tests) ─────────────────────
 
   getArtifact(promptId: string): GenerationArtifact | undefined {
-    return this.artifacts.get(promptId)
+    const cached = this.artifacts.get(promptId)
+    if (cached) return cached
+    const recovered = readPersistedArtifact(promptId)
+    if (recovered) this.artifacts.set(promptId, recovered)
+    return recovered
   }
 
   // ── Internals ────────────────────────────────────────────────────────────
@@ -491,6 +515,198 @@ ${artifact.explanation}
 ---
 🤖 Generated via Dash Build (Lovable-for-Dash) — run id ${prompt.id}
 `
+  }
+}
+
+const ARTIFACT_MANIFEST = "artifact.json"
+const GENERATED_ENTRY_FILE = "__dash_preview_entry.tsx"
+
+function detectLanguage(filePath: string): string {
+  if (filePath.endsWith(".tsx")) return "tsx"
+  if (filePath.endsWith(".ts")) return "ts"
+  if (filePath.endsWith(".jsx")) return "jsx"
+  if (filePath.endsWith(".js")) return "js"
+  if (filePath.endsWith(".json")) return "json"
+  if (filePath.endsWith(".css")) return "css"
+  if (filePath.endsWith(".md")) return "md"
+  return "text"
+}
+
+async function persistArtifact(
+  promptId: string,
+  artifact: GenerationArtifact,
+): Promise<void> {
+  const tempDir = await prepareTempDir(promptId)
+  await writeFile(
+    join(tempDir, ARTIFACT_MANIFEST),
+    JSON.stringify(
+      {
+        ...artifact,
+        bundleResult: artifact.bundleResult
+          ? {
+              ...artifact.bundleResult,
+              bundlePath: "bundle.js",
+              tempDir: ".",
+            }
+          : undefined,
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  )
+}
+
+function readGeneratedFilesFromPreviewDir(dir: string, prefix = ""): ParsedFile[] {
+  const files: ParsedFile[] = []
+  let entries: import("node:fs").Dirent[]
+  try {
+    entries = readdirSync(join(dir, prefix), { withFileTypes: true })
+  } catch {
+    return files
+  }
+  for (const entry of entries) {
+    const rel = prefix ? join(prefix, entry.name) : entry.name
+    if (entry.isDirectory()) {
+      files.push(...readGeneratedFilesFromPreviewDir(dir, rel))
+      continue
+    }
+    if (
+      rel === "bundle.js" ||
+      rel === ARTIFACT_MANIFEST ||
+      rel === GENERATED_ENTRY_FILE ||
+      rel.endsWith(".map")
+    ) {
+      continue
+    }
+    try {
+      files.push({
+        path: rel,
+        language: detectLanguage(rel),
+        content: readFileSync(join(dir, rel), "utf8"),
+      })
+    } catch {
+      // Best-effort recovery only.
+    }
+  }
+  return files
+}
+
+function readPersistedArtifact(promptId: string): GenerationArtifact | undefined {
+  const tempDir = resolvePreviewDir(promptId)
+  const manifestPath = join(tempDir, ARTIFACT_MANIFEST)
+  if (existsSync(manifestPath)) {
+    try {
+      const parsed = JSON.parse(readFileSync(manifestPath, "utf8")) as GenerationArtifact
+      if (parsed.bundleResult) {
+        parsed.bundleResult = {
+          ...parsed.bundleResult,
+          bundlePath: bundlePathFor(promptId),
+          tempDir,
+        }
+      }
+      return parsed
+    } catch {
+      // Fall through to file recovery.
+    }
+  }
+
+  if (!existsSync(tempDir)) return undefined
+  const files = readGeneratedFilesFromPreviewDir(tempDir)
+  if (files.length === 0) return undefined
+  const bundlePath = bundlePathFor(promptId)
+  const bundleResult: BundleResult | undefined = existsSync(bundlePath)
+    ? {
+        bundlePath,
+        entryPath: files[0]?.path ?? "preview.tsx",
+        byteSize: statSync(bundlePath).size,
+        tempDir,
+      }
+    : undefined
+
+  return {
+    promptId,
+    files,
+    explanation: "Recovered generated files from the local preview workspace after daemon restart.",
+    validation: { passed: true, score: 100, errors: [], warnings: [] },
+    generatedAt: statSync(tempDir).mtime.toISOString(),
+    bundleResult,
+    previewMode: "component",
+  }
+}
+
+async function writeFallbackPreviewBundle(
+  promptId: string,
+  artifact: GenerationArtifact,
+  err: unknown,
+): Promise<BundleResult> {
+  const tempDir = await prepareTempDir(promptId)
+  const bundlePath = join(tempDir, "bundle.js")
+  const message = err instanceof Error ? err.message : String(err)
+  const data = {
+    fileCount: artifact.files.length,
+    files: artifact.files.map((f) => ({
+      path: f.path,
+      language: f.language,
+      bytes: f.content.length,
+    })),
+    score: artifact.validation.score,
+    passed: artifact.validation.passed,
+    explanation: artifact.explanation,
+    message,
+  }
+  const js = `(() => {
+  const data = ${JSON.stringify(data)};
+  const root = document.getElementById("root");
+  if (!root) return;
+  const escapeHtml = (value) => String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+  const rows = data.files.map((file) => \`
+    <li class="dash-preview-file">
+      <span class="dash-preview-file-path">\${escapeHtml(file.path)}</span>
+      <span class="dash-preview-file-meta">\${escapeHtml(file.language)} · \${file.bytes}B</span>
+    </li>\`).join("");
+  root.innerHTML = \`
+    <style>
+      .dash-preview-fallback { max-width: 980px; margin: 0 auto; display: grid; gap: 18px; }
+      .dash-preview-hero { padding: 28px; border: 1px solid #e6e1ee; border-radius: 14px; background: #fff; box-shadow: 0 18px 50px rgba(26,20,36,.08); }
+      .dash-preview-kicker { margin: 0 0 8px; color: #5e2aac; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+      .dash-preview-title { margin: 0; font-size: 28px; line-height: 1.15; color: #1a1424; }
+      .dash-preview-sub { margin: 12px 0 0; color: #6b6478; line-height: 1.6; max-width: 760px; }
+      .dash-preview-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+      .dash-preview-stat { padding: 10px 12px; border-radius: 10px; background: #f7f5fb; color: #1a1424; font-weight: 700; }
+      .dash-preview-files { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+      .dash-preview-file { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid #e6e1ee; border-radius: 10px; background: #fff; }
+      .dash-preview-file-path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #1a1424; overflow-wrap: anywhere; }
+      .dash-preview-file-meta { color: #6b6478; white-space: nowrap; }
+      .dash-preview-note { padding: 14px 16px; border-radius: 10px; background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; font-size: 13px; line-height: 1.5; }
+    </style>
+    <main class="dash-preview-fallback">
+      <section class="dash-preview-hero">
+        <p class="dash-preview-kicker">Generated output ready</p>
+        <h1 class="dash-preview-title">Review generated Dash files</h1>
+        <p class="dash-preview-sub">\${escapeHtml(data.explanation || "Dash Build generated files, but the component bundle could not be mounted directly in the sandbox.")}</p>
+        <div class="dash-preview-stats">
+          <span class="dash-preview-stat">\${data.fileCount} files</span>
+          <span class="dash-preview-stat">Foundation \${data.score}/100</span>
+          <span class="dash-preview-stat">\${data.passed ? "Validation passed" : "Needs review"}</span>
+        </div>
+      </section>
+      <ul class="dash-preview-files">\${rows}</ul>
+      <div class="dash-preview-note">Sandbox fallback: the generated files are available, but the visual iframe could not bundle the repo-specific imports. Reason: \${escapeHtml(data.message)}</div>
+    </main>\`;
+})();`
+  await writeFile(bundlePath, js, "utf8")
+  const info = await stat(bundlePath)
+  return {
+    bundlePath,
+    entryPath: "dash-build-fallback-preview.js",
+    byteSize: info.size,
+    tempDir,
   }
 }
 
@@ -579,48 +795,35 @@ export function defaultGithubProvider(client: GitHubAppClient): GithubProvider {
   }
 }
 
-// ── Default anthropic provider ─────────────────────────────────────────────
+// ── Default OpenAI/Codex provider ──────────────────────────────────────────
 
-import type { AuthenticatedAnthropicClient } from "../auth/anthropic/client.js"
+import type { AuthenticatedOpenAIClient } from "../auth/openai/client.js"
 import type { AnthropicLike } from "../skills/types.js"
 
-export function defaultAnthropicProvider(
-  client: AuthenticatedAnthropicClient,
+export function defaultOpenAIProvider(
+  client: AuthenticatedOpenAIClient,
 ): AnthropicProvider {
   return {
     async isConnected() {
       return client.isConnected()
     },
     async buildSdkClient() {
-      const mode = await client.getMode()
-      if (mode === "byo-key") {
-        const sdk = (await client.buildSdkClient()) as AnthropicLike
-        return sdk
-      }
-      if (mode === "claude-cli") {
-        // Shim the SDK surface (`messages.create`) by routing through the
-        // `claude` CLI subprocess. The skill chain only uses the single
-        // `messages.create({ model, max_tokens, system, messages })` shape,
-        // so we collapse system+messages into one prompt and stream the
-        // assistant text back as a single `content[]` block.
-        return {
-          messages: {
-            async create(req) {
-              const body = req.messages
-                .map((m) => `[${m.role}]\n${m.content}`)
-                .join("\n\n")
-              const prompt = req.system
-                ? `[system]\n${req.system}\n\n${body}`
-                : body
-              const text = await client.complete(prompt)
-              return { content: [{ type: "text", text }] }
-            },
+      return {
+        messages: {
+          async create(req) {
+            const body = req.messages
+              .map((m) => `[${m.role}]\n${m.content}`)
+              .join("\n\n")
+            const prompt = req.system
+              ? `[system]\n${req.system}\n\n${body}`
+              : body
+            const text = await client.complete(prompt, {
+              model: process.env.DASH_BUILD_OPENAI_MODEL ? req.model : undefined,
+            })
+            return { content: [{ type: "text", text }] }
           },
-        } satisfies AnthropicLike
-      }
-      throw new Error(
-        "No Anthropic credentials. POST an API key to /api/auth/anthropic or run `claude login`.",
-      )
+        },
+      } satisfies AnthropicLike
     },
   }
 }

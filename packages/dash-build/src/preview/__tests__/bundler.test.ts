@@ -100,10 +100,58 @@ describe("preview/bundler — bundleForPreview", () => {
     expect(esb.lastOpts?.bundle).toBe(true)
     expect(esb.lastOpts?.sourcemap).toBe("inline")
     expect(esb.lastOpts?.external).toEqual([])
+    expect(esb.lastOpts?.nodePaths).toContain(path.join(process.cwd(), "node_modules"))
+    expect(esb.lastOpts?.plugins?.map((p) => p.name)).toContain("dash-preview-alias")
+    expect(esb.lastOpts?.plugins?.map((p) => p.name)).toContain("dash-preview-react-resolve")
 
     // file was actually written
     const onDisk = await fs.readFile(result.bundlePath, "utf8")
     expect(onDisk).toContain("fake bundle")
+    expect(await fs.readFile(path.join(root, "p1", "__dash_preview_entry.tsx"), "utf8"))
+      .toContain("createRoot(root).render")
+  })
+
+  it("adds an alias plugin that resolves @/ imports to generated apps/docs files", async () => {
+    const esb = fakeEsbuild()
+    await bundleForPreview({
+      files: [
+        {
+          path: "preview.tsx",
+          language: "tsx",
+          content: `import Thing from "@/registry/dash/templates/thing"; export default Thing`,
+        },
+        {
+          path: "apps/docs/registry/dash/templates/thing.tsx",
+          language: "tsx",
+          content: `export default function Thing(){ return <div>ok</div> }`,
+        },
+      ],
+      promptId: "alias",
+      rootDir: root,
+      esbuildModule: esb,
+    })
+
+    const plugin = esb.lastOpts?.plugins?.find((p) => p.name === "dash-preview-alias")
+    expect(plugin).toBeTruthy()
+    let resolvedPath: string | null = null
+    plugin!.setup({
+      onResolve(_opts, callback) {
+        Promise.resolve(
+          callback({
+            path: "@/registry/dash/templates/thing",
+            importer: "",
+            resolveDir: path.join(root, "alias"),
+          }),
+        ).then((result) => {
+          resolvedPath = result?.path ?? null
+        })
+      },
+    })
+    await vi.waitFor(() => {
+      expect(resolvedPath).toBe(
+        path.join(root, "alias", "apps", "docs", "registry", "dash", "templates", "thing.tsx"),
+      )
+    })
   })
 
   it("throws BundleError when files is empty", async () => {

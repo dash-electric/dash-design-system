@@ -36,6 +36,7 @@ Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showca
 
 | Need | File |
 |------|------|
+| Global cross-repo design contract | `design.md` |
 | Layered Architecture spec | `LAYERED-ARCHITECTURE.md` |
 | Per-repo stack mandates | `apps/docs/registry/rules/dash-ai-rules.md` |
 | Domain entities, table names, state machines | `apps/docs/registry/rules/dash-domain-glossary.md` |
@@ -67,19 +68,24 @@ dash-build
 # → opens browser at http://localhost:7777/dashboard
 ```
 
-**Auth:** Anthropic OAuth via Pro/Team subscription (zero API key) + GitHub App (PR creation).
+**Auth:** OpenAI via official Codex CLI login, with BYO OpenAI API key fallback. GitHub App handles PR creation; local pilot mode may use a stub callback until real app credentials are present.
 
 **Capabilities (Day 1-3 shipped):**
 - 9router-style multi-interface menu (Web UI / Terminal / Tray / Exit)
-- Skill chain: dash-prd → design → Skill v3 → Claude
+- Skill chain: dash-prd → `design.md` → Layer 0 rules → Skill v4 → OpenAI/Codex
 - AI clarification gate (multi-turn questions when uncertain)
 - Sandboxed iframe preview (esbuild peer dep)
 - Foundation match score (0-100)
 - GitHub PR creation via Dash Build App
-- Dark mode + toast notifications + skeleton states
-- 225 tests, zero flake, 6 packages typecheck clean
+- Lovable-style split dashboard + toast notifications + skeleton states
+- 263 tests, 6 packages typecheck clean
 
 **Architecture:** see `packages/dash-build/README.md`
+
+**Planning workflow:** Dash Build uses a gstack-inspired artifact pipeline:
+`dash-intake -> dash-prd -> dash-design-review? -> dash-trd -> Skill v4 + Codex -> dash-review -> dash-qa`.
+See `packages/dash-build/docs/gstack-adoption.md` and
+`packages/dash-build/docs/artifact-contracts.md`.
 
 **Pilot use case:** any Dash team member (PM, finance ops, designer, dev) can prompt feature → AI ships PR.
 
@@ -90,10 +96,10 @@ dash-build
 3. Default stack per repo (auto-detected by Skill):
    - portal-v2: Next App Router + TS + Jotai + axios
    - backoffice: Next Pages Router + JS + useState + axios + NextAuth
-   - halo-dash-fe: Next Pages Router + JS + useState + axios + AuthContext
    - basecamp: Next App Router + TS + Zustand 5 + Firebase + shadcn
    - react-fleet: CRA + CRACO + TS + useState + custom `useFormValidation` hook
 4. Tokens: `bg-primary-500`, `text-text-strong-950`, `border-error-base`. Never raw hex.
+5. Cross-repo UI consistency comes from `design.md`; do not copy its rules into consumer repos. Dash Build loads it from the `dash-ds` root even when the target repo changes.
 
 ## When user asks for a new feature
 
@@ -101,6 +107,11 @@ Default to **dash-prd skill** (`/dash-prd`) for spec-first approach. Skip to vib
 - Scope crystal clear (no audit/legal exposure)
 - 1-person execution
 - Throwaway prototype
+
+For Dash Build prompts, run the context-intake rules first. If the prompt is
+casual or incomplete, ask only the blocker questions that change implementation
+or design. Persist the answers into PRD/TRD context so later stages do not ask
+again.
 
 ## Don't do
 
@@ -147,4 +158,4 @@ Rules + glossary are huge (829 + 1982 lines = ~2811 lines). Skill v2 pre-compres
 - eKYC vendor (Verihubs assumed — verify)
 - Metric baselines (need analytics access)
 - Deputy maintainer (bus factor = 1 currently; Q3 2026 mandatory)
-- Dash Build production GitHub App registration (currently per-user pilot)
+- Dash Build production GitHub App registration / org-wide install policy

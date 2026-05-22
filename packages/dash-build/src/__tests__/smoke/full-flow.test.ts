@@ -141,7 +141,7 @@ describe("Dash Build smoke — full flow", () => {
     // 1. daemon state shape
     const snap = store.snapshot()
     expect(snap.prompts).toHaveLength(0)
-    expect(snap.auth.anthropic.connected).toBe(false)
+    expect(snap.auth.openai.connected).toBe(false)
 
     // 2. submit prompt
     const submitted = await orchestrator.submitPrompt({
@@ -208,7 +208,7 @@ describe("Dash Build smoke — full flow", () => {
     await orch.processPrompt(submitted.promptId)
     const p = store.getPrompt(submitted.promptId)
     expect(p?.status).toBe("failed")
-    expect(p?.error).toMatch(/Anthropic/)
+    expect(p?.error).toMatch(/OpenAI/)
     // and the snapshot is still readable (daemon didn't crash)
     expect(store.snapshot()).toBeDefined()
   })

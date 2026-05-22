@@ -54,12 +54,50 @@ describe("evaluatePrompt", () => {
   })
 
   it("asks voice-rule when mitra is mentioned", () => {
-    const out = evaluatePrompt(input("build screen for mitra to view payouts"))
+    const out = evaluatePrompt(input("build screen about mitra payouts"))
     const ids = out.questions.map((q) => q.id)
     expect(ids).toContain("voice-rule")
     const voice = out.questions.find((q) => q.id === "voice-rule")!
     expect(voice.type).toBe("yes-no")
     expect(voice.required).toBe(true)
+  })
+
+  it("does NOT ask voice-rule when prompt explicitly says not mitra-facing", () => {
+    const out = evaluatePrompt(
+      input("Build Performance Mitra page in backoffice for HR. This is not mitra-facing."),
+    )
+    const ids = out.questions.map((q) => q.id)
+    expect(ids).not.toContain("voice-rule")
+  })
+
+  it("flags contradiction when merged clarification conflicts with explicit audience", () => {
+    const out = evaluatePrompt(
+      input(
+        [
+          "Build Performance Mitra page in backoffice for HR. This is not mitra-facing.",
+          "",
+          "--- Clarifications ---",
+          "- Is this UI seen by mitra (drivers/couriers)? → true",
+        ].join("\n"),
+      ),
+    )
+    const ids = out.questions.map((q) => q.id)
+    expect(ids).toContain("visibility-conflict")
+  })
+
+  it("does NOT repeat questions already answered in merged clarification context", () => {
+    const out = evaluatePrompt(
+      input(
+        [
+          "Build performance mitra page in backoffice",
+          "",
+          "--- Clarifications ---",
+          "- Is this UI seen by mitra (drivers/couriers)? → true",
+        ].join("\n"),
+      ),
+    )
+    const ids = out.questions.map((q) => q.id)
+    expect(ids).not.toContain("voice-rule")
   })
 
   it("asks audit-trail when legal/financial signals present", () => {

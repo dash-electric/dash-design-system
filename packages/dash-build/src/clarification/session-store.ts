@@ -75,7 +75,10 @@ export class SessionStore {
       .filter((q) => q.required)
       .every((q) => session.answers[q.id] !== undefined)
 
-    if (allRequiredAnswered && session.status === "pending") {
+    if (
+      allRequiredAnswered &&
+      (session.status === "pending" || session.status === "expired")
+    ) {
       session.status = "answered"
     }
 

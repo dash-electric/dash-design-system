@@ -11,6 +11,7 @@ Every generated block, template, or pattern MUST carry theme metadata. The Dash 
 - **New atom-level primitives** (Button, Input, …) default to `theme: "shared"` and live under `registry/dash/ui/`.
 - **New composites tied to a product workflow** must declare `theme: "<product>"` matching one of `ride`, `logistic`, `travel`, `marketplace`, `outsourcing`, or `trellis-{tenantId}`.
 - **When in doubt → `theme: "shared"`.** A shared block can be promoted to product-specific later; the reverse forces a rename.
+- **Global UI character comes from [`design.md`](./design.md).** Use it as the cross-repo contract for layout density, token usage, component behavior, and anti-patterns before applying repo-specific stack rules.
 
 ### Registry entry
 
@@ -40,7 +41,6 @@ The Hermes generation worker reads `gap.repo` from the incoming Gap entry and ma
 ```
 portal-v2          → theme: "ride"
 backoffice         → theme: "ride"
-halo-dash-fe       → theme: "ride"
 basecamp           → theme: "ride"        (Q3 2026: split per-product)
 react-fleet        → theme: "logistic"
 dash-travel-fe     → theme: "travel"      (planned)
@@ -63,9 +63,27 @@ Agents MUST respect the layer boundaries documented in [`LAYERED-ARCHITECTURE.md
 
 `/Users/irfanprimaputra.b/Dash/*` repos are **READ-ONLY** references for any agent. Distill patterns into new DS entries under `registry/dash/`; never edit production directly.
 
+## Dash Build planning workflow
+
+Dash Build adopts a gstack-inspired artifact pipeline. Agents should not jump
+from rough prompt directly to generation when context is missing.
+
+Required sequence for non-trivial Dash Build work:
+
+```
+dash-intake -> dash-prd -> dash-design-review? -> dash-trd -> generation -> dash-review -> dash-qa
+```
+
+- Use [`packages/dash-build/docs/context-intake.md`](./packages/dash-build/docs/context-intake.md) to normalize casual/messy user prompts and decide whether to ask.
+- Use [`packages/dash-build/docs/artifact-contracts.md`](./packages/dash-build/docs/artifact-contracts.md) for PRD, design, TRD, QA, and review artifact requirements.
+- Use [`packages/dash-build/docs/skill-routing.md`](./packages/dash-build/docs/skill-routing.md) to decide which planning/review skill should run.
+- Use [`packages/dash-build/docs/qa-and-review.md`](./packages/dash-build/docs/qa-and-review.md) before marking generated output done.
+
 ## See also
 
 - [`CLAUDE.md`](./CLAUDE.md) — repo-level rules and Claude-Code-specific workflows
+- [`design.md`](./design.md) — global cross-repo design contract for AI generation
+- [`packages/dash-build/docs/gstack-adoption.md`](./packages/dash-build/docs/gstack-adoption.md) — Dash Build planning workflow adopted from gstack principles
 - [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md) — full architecture spec
 - [`apps/docs/registry/rules/dash-ai-rules.md`](./apps/docs/registry/rules/dash-ai-rules.md) — per-repo stack mandates, banned imports
 - [`apps/docs/registry/rules/dash-domain-glossary.md`](./apps/docs/registry/rules/dash-domain-glossary.md) — entities, table names, state machines

@@ -25,36 +25,34 @@ Opens interactive menu:
 
 After first run, open dashboard at <http://localhost:7777/dashboard>.
 
-### 1. Connect Anthropic
+### 1. Connect OpenAI
 
-Two ToS-safe options. Pick one.
+Two supported paths. Pick one.
 
-**Option A — Bring your own API key (default, recommended)**
+**Option A — Bring your own API key (recommended for teams)**
 
-On the dashboard, paste an Anthropic API key (`sk-ant-...`) into the
-**Connect Anthropic** form. Get one at <https://console.anthropic.com/>.
-The key is encrypted with AES-256-GCM and stored at
-`~/.dash-build/auth/anthropic-byo-key.json`.
+On the dashboard, paste an OpenAI API key (`sk-...`) into the
+**Connect OpenAI** form. The key is encrypted with AES-256-GCM and stored at
+`~/.dash-build/auth/openai-byo-key.json`.
 
-**Option B — Claude Code subprocess (subscription-friendly)**
+**Option B — Codex CLI login (local convenience)**
 
-Install the official Claude Code CLI and run `claude login` once. Dash
-Build will spawn `claude` as a subprocess for generation — your Pro/Max
-subscription is consumed via the official client, not extracted into a
-third-party app. Probe availability:
+Install the official Codex CLI and run `codex login --device-auth` once.
+Dash Build will spawn `codex exec` for generation while your OpenAI login
+stays inside Codex.
 
 ```bash
-curl http://localhost:7777/api/auth/anthropic/claude-cli
+curl http://localhost:7777/api/auth/openai/codex-cli
 ```
 
-> **Why not subscription OAuth?** Anthropic's Consumer Terms of Service
-> update (Feb 2026, enforced April 4 2026) made third-party use of
-> Claude Pro/Max OAuth tokens a ToS violation. Tools that continued the
-> pattern had tokens blocked. Dash Build removed that flow in 0.1.1.
-
-### 2. Install GitHub App
+### 2. Connect GitHub
 
 Click **Install GitHub App** → install Dash Build app on your repo.
+
+During local pilot, if GitHub App environment variables are not configured,
+the dashboard may route through `/api/auth/github/callback?stub=1` so the rest
+of the UI can be tested. Real PR creation requires the GitHub App credentials
+listed below.
 
 ### 3. Pick repo
 
@@ -66,6 +64,42 @@ Type prompt: `tambahin chart payroll di backoffice`
 Click **Generate** → AI consults Dash DS Skill → may ask clarifications
 → generates code → preview → **Open PR**.
 
+## Local Testing Without GitHub App
+
+For local output/preview testing, GitHub is optional. Connect OpenAI through
+Codex, pick `dash/portal-v2` or `dash/backoffice`, then submit a prompt. Dash
+Build will generate and render the preview locally. Install/connect the GitHub
+App only when you want the **Review & approve** action to open a real PR.
+
+## Planning Workflow
+
+Dash Build adopts a gstack-inspired planning model without vendoring gstack as
+a runtime dependency. Rough prompts are normalized into explicit artifacts
+before Codex generation:
+
+```
+raw prompt
+  -> dash-intake
+  -> clarification gate
+  -> dash-prd
+  -> dash-design-review
+  -> dash-trd
+  -> Skill v4 + Codex
+  -> dash-review
+  -> dash-qa
+  -> preview / PR
+  -> dash-doc-release + dash-learn
+```
+
+See:
+
+- [`docs/gstack-adoption.md`](./docs/gstack-adoption.md)
+- [`docs/open-design-reference.md`](./docs/open-design-reference.md)
+- [`docs/context-intake.md`](./docs/context-intake.md)
+- [`docs/artifact-contracts.md`](./docs/artifact-contracts.md)
+- [`docs/skill-routing.md`](./docs/skill-routing.md)
+- [`docs/qa-and-review.md`](./docs/qa-and-review.md)
+
 ## Architecture
 
 ```
@@ -73,13 +107,13 @@ Click **Generate** → AI consults Dash DS Skill → may ask clarifications
 │ Browser (localhost:7777/dashboard)           │
 │   ↕ WebSocket                                │
 │ Daemon (Node.js, packages/dash-build)        │
-│   ├ Anthropic auth (BYO key + Claude CLI)    │
+│   ├ OpenAI auth (Codex CLI + BYO key)        │
 │   ├ GitHub App (Bearer token + Octokit)      │
-│   ├ Skill chain (dash-prd + design + Skill)  │
+│   ├ Skill chain (PRD + design.md + Skill v4) │
 │   ├ Clarification (multi-turn questions)     │
 │   ├ Preview (sandboxed iframe + esbuild)     │
 │   └ Pipeline (queued → PR created)           │
-│ Anthropic API ─ via subscription             │
+│ OpenAI / Codex ─ via CLI or API              │
 │ GitHub API ── via App installation           │
 └──────────────────────────────────────────────┘
 ```
@@ -91,6 +125,9 @@ Env vars (optional overrides):
 | Var                              | Default                       | Description                  |
 | -------------------------------- | ----------------------------- | ---------------------------- |
 | `DASH_BUILD_PORT`                | `7777`                        | Daemon port                  |
+| `DASH_DS_ROOT`                   | auto-detected from cwd        | Dash DS root used for `design.md` and foundation rules |
+| `DASH_BUILD_CODEX_TIMEOUT_MS`    | `600000`                      | Max local Codex generation time |
+| `DASH_BUILD_OPENAI_MODEL`        | Codex CLI default             | Optional model override passed to Codex/API |
 | `DASH_BUILD_GITHUB_APP_ID`       | _(required for GitHub)_       | GitHub App ID                |
 | `DASH_BUILD_GITHUB_PRIVATE_KEY`  | _(required)_                  | PEM-encoded private key      |
 | `DASH_BUILD_GITHUB_CLIENT_ID`    | _(required)_                  | OAuth client ID              |
@@ -115,6 +152,25 @@ Manual setup for pilot phase:
 8. Save → **Generate a private key**
 9. Set env vars per table above
 
+## Design Consistency
+
+Dash Build intentionally separates the target repo from the design authority.
+Repo detection still comes from the selected project, but global UI quality is
+loaded from this `dash-ds` repo:
+
+1. `design.md` — cross-repo product character and anti-patterns.
+2. `apps/docs/registry/dash/foundation/rules/cardinal-rules.md` — CR-1..CR-8.
+3. `apps/docs/registry/dash/foundation/voice/voice-rules.md` — formal voice rules.
+4. `LAYERED-ARCHITECTURE.md` — Layer 0..3 placement rules.
+5. `@dash/skill` — target repo stack mandate and banned imports.
+6. Open Design reference lessons — active design-system loading, deterministic
+   discovery, progress checklist, critique, and compact workspace density.
+
+If the selected product repo does not contain Dash foundation files, the loader
+falls back to the current `dash-ds` root or `DASH_DS_ROOT`. That keeps generated
+UI consistent when switching between `portal-v2`, `backoffice`,
+`react-fleet`, or future repos.
+
 ## Troubleshooting
 
 ### Daemon won't start
@@ -129,13 +185,13 @@ dash-build start    # fresh launch
 
 Daemon auto-falls back to `7778`, `7779`, … up to `7786`.
 
-### Anthropic key save fails
+### OpenAI key save fails
 
-1. Confirm the key starts with `sk-ant-` and you copied it whole from the
-   Anthropic Console.
+1. Confirm the key starts with `sk-` and you copied it whole from the
+   OpenAI Platform.
 2. Check `~/.dash-build/auth/` is writable by your user.
-3. Or skip BYO key entirely and use the Claude CLI subprocess path
-   (`claude login` once in your terminal).
+3. Or skip BYO key entirely and use the Codex CLI path
+   (`codex login --device-auth` once in your terminal).
 
 ### GitHub App fails
 
@@ -147,7 +203,7 @@ Verify env vars are set. Re-install the app via the dashboard.
 | ------------------------------------------ | -------------------------------- |
 | `~/.dash-build/daemon.pid`                 | Daemon PID                       |
 | `~/.dash-build/state.json`                 | Daemon state (atomic-write JSON) |
-| `~/.dash-build/auth/anthropic-byo-key.json`| Encrypted BYO Anthropic API key  |
+| `~/.dash-build/auth/openai-byo-key.json`   | Encrypted BYO OpenAI API key     |
 | `~/.dash-build/auth/github.json`           | Encrypted installation tokens    |
 | `~/.dash-build/sessions/<id>.json`         | Clarification sessions           |
 | `~/.dash-build/preview/<id>/`              | Bundled previews                 |
@@ -171,25 +227,23 @@ Smoke test (full pipeline, no network): `pnpm vitest run src/__tests__/smoke/`
 
 ## Authentication
 
-Dash Build supports two ToS-safe paths:
+Dash Build supports two auth paths:
 
-### Path A — Bring your own Anthropic API key (default)
-1. Get an API key from <https://console.anthropic.com/settings/keys>
-2. Paste it into the dashboard's "Connect Anthropic" form or POST it to `/api/auth/anthropic`.
-3. The key is encrypted (AES-256-GCM) and stored at `~/.dash-build/auth/anthropic-byo-key.json` with mode 0600.
-4. You pay Anthropic per token used.
+### Path A — Bring your own OpenAI API key (recommended for teams)
+1. Get an API key from <https://platform.openai.com/api-keys>
+2. Paste it into the dashboard's "Connect OpenAI" form or POST it to `/api/auth/openai`.
+3. The key is encrypted (AES-256-GCM) and stored at `~/.dash-build/auth/openai-byo-key.json` with mode 0600.
+4. Direct API mode uses the Responses API.
 
-### Path B — Subprocess the official Claude Code CLI (subscription-friendly)
-1. Install Claude Code: `npm i -g @anthropic-ai/claude-code`
-2. Log in once: `claude login` (uses Anthropic's own OAuth — your Pro/Max subscription).
-3. Run `dash-build`. The dashboard auto-detects `claude` on PATH and uses it.
-4. Generation runs as `claude -p "<prompt>"` subprocess; tokens stay inside Claude Code. Your subscription covers usage.
+### Path B — Codex CLI login (local convenience)
+1. Install Codex CLI: `npm i -g @openai/codex`
+2. Log in once: `codex login --device-auth`
+3. Run `dash-build`. The dashboard auto-detects `codex` on PATH and can use it.
+4. Generation runs as `codex exec`; your OpenAI login stays inside Codex.
 
-`GET /api/auth/anthropic` reports the active mode in its `activeMode` field
-(`byo-key` | `claude-cli` | `none`). The pipeline orchestrator transparently
-routes through either path via `AuthenticatedAnthropicClient.complete()`.
-
-**Why no built-in subscription OAuth?** Anthropic's Consumer ToS (Feb 2026, enforced Apr 4 2026) bans third-party apps from minting subscription OAuth tokens. Subprocess-ing the official Claude Code CLI is different — you run Claude Code yourself; Dash Build only orchestrates the subprocess. The subscription token never leaves Claude Code.
+`GET /api/auth/openai` reports the active mode in its `activeMode` field
+(`byo-key` | `codex-cli` | `none`). The pipeline orchestrator transparently
+routes through either path via `AuthenticatedOpenAIClient.complete()`.
 
 ## License
 

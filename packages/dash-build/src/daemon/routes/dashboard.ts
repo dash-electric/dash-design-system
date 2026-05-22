@@ -1,30 +1,21 @@
 import type { ServerResponse } from "node:http"
-import { exec } from "node:child_process"
-import { promisify } from "node:util"
+import { existsSync } from "node:fs"
 import type { Store } from "../state/store.js"
 import type { Orchestrator } from "../../pipeline/orchestrator.js"
 import { renderDashboard } from "../templates/dashboard.js"
 import { sendHtml } from "./_helpers.js"
+import { CodexCliRunner } from "../../auth/codex-cli/runner.js"
+import { getRepoPreviewInfo } from "../repo-preview.js"
+import { bundlePathFor } from "../../preview/bundler.js"
 
-const execAsync = promisify(exec)
+const codexCli = new CodexCliRunner()
 
-/**
- * Probe `claude --version`. Result is used by the connect-form to show
- * the Claude Code subscription path as ready vs needing-install.
- *
- * Timeout 1.5s so a slow/missing binary never blocks a dashboard render.
- * Worst case: form shows "claude not on PATH" — user just retries.
- */
-async function probeClaudeCli(): Promise<{
-  installed: boolean
-  version: string | null
-}> {
-  try {
-    const { stdout } = await execAsync("claude --version", { timeout: 1500 })
-    return { installed: true, version: stdout.trim() || null }
-  } catch {
-    return { installed: false, version: null }
-  }
+function activePromptId(store: Store): string | null {
+  const prompts = store.getPrompts(20)
+  const live = prompts.find((p) =>
+    ["queued", "clarifying", "generating", "awaiting_approval"].includes(p.status),
+  )
+  return (live ?? prompts[0])?.id ?? null
 }
 
 export async function handleDashboard(
@@ -32,13 +23,39 @@ export async function handleDashboard(
   store: Store,
   orchestrator?: Orchestrator,
 ): Promise<void> {
-  const claudeProbe = await probeClaudeCli()
+  const codexProbe = await codexCli.probe()
+  const saved = store.getAuth().openai
+  const auth = store.getAuth()
+  const workspace = store.getWorkspace()
+  const selectedRepo =
+    workspace.activeRepo ??
+    auth.github.repos[0] ??
+    "dash/portal-v2"
+  const repoPreview = await getRepoPreviewInfo(selectedRepo)
+  const activeId = activePromptId(store)
+  const previewBundleAvailable = activeId
+    ? existsSync(bundlePathFor(activeId))
+    : undefined
+  const effectiveMode = codexProbe.authenticated
+    ? "codex-cli"
+    : saved.connected
+      ? "byo-key"
+      : "none"
+
   sendHtml(
     res,
     200,
     renderDashboard(store, orchestrator, {
-      claudeCliInstalled: claudeProbe.installed,
-      claudeCliVersion: claudeProbe.version,
+      codexCliInstalled: codexProbe.installed,
+      codexCliAuthenticated: codexProbe.authenticated,
+      codexCliVersion: codexProbe.version,
+      openAIMode: effectiveMode,
+      openAIUser:
+        effectiveMode === "codex-cli"
+          ? "ChatGPT"
+          : saved.user,
+      repoPreview,
+      previewBundleAvailable,
     }),
   )
 }

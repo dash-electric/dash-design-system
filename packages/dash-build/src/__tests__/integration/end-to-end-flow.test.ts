@@ -3,7 +3,7 @@
  *
  * Strategy: boot a real HTTP+WS daemon against a temp state file, then
  * exercise the same routes the browser dashboard would. External deps
- * (Anthropic + GitHub) are replaced with the mock-*.ts harnesses; the
+ * (OpenAI/Codex + GitHub) are replaced with the mock-*.ts harnesses; the
  * skill-chain layer is simulated by driving `store.updatePromptStatus`
  * directly to mirror what Agent H's worker will do.
  *
@@ -30,9 +30,12 @@ import {
 let daemon: RunningDaemon
 let baseUrl: string
 let workDir: string
+let originalPath: string | undefined
 
 beforeAll(async () => {
   workDir = await mkdtemp(join(tmpdir(), "dash-build-e2e-"))
+  originalPath = process.env.PATH
+  process.env.PATH = workDir
   daemon = await startDaemon({
     port: 0,
     host: "127.0.0.1",
@@ -50,6 +53,8 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await daemon.close()
+  if (originalPath === undefined) delete process.env.PATH
+  else process.env.PATH = originalPath
   await rm(workDir, { recursive: true, force: true })
 })
 
@@ -153,23 +158,23 @@ describe("Dash Build E2E", () => {
     expect(html).toContain("Dash Build")
     expect(html).toContain("db-brand-mark")
     expect(html).toContain("Plus+Jakarta+Sans")
-    // Auth CTA visible (because Anthropic not connected on fresh state)
-    expect(html).toContain("Connect Anthropic")
+    // Auth CTA visible on a fresh state
+    expect(html).toContain("Connect OpenAI")
     // WS indicator present
     expect(html).toContain("db-ws-indicator")
   })
 
-  it("Anthropic auth GET returns BYO + Claude-CLI options (ToS-safe)", async () => {
-    const r = await fetch(`${baseUrl}/api/auth/anthropic`)
+  it("OpenAI auth GET returns Codex + BYO key options", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/openai`)
     expect(r.status).toBe(200)
     const body = await r.json()
     expect(body.ok).toBe(true)
-    expect(body.provider).toBe("anthropic")
-    expect(body.options.byoKey.endpoint).toBe("POST /api/auth/anthropic")
-    expect(body.options.claudeCli.endpoint).toBe(
-      "GET /api/auth/anthropic/claude-cli",
+    expect(body.provider).toBe("openai")
+    expect(body.options.byoKey.endpoint).toBe("POST /api/auth/openai")
+    expect(body.options.codexCli.endpoint).toBe(
+      "GET /api/auth/openai/codex-cli",
     )
-    expect(body.tosNote).toMatch(/banned/i)
+    expect(body.loginStatus === null || typeof body.loginStatus === "string").toBe(true)
   })
 
   it("submit prompt → queued status", async () => {

@@ -154,6 +154,14 @@ export async function handlePromptsRoute(
           explanation: artifact.explanation,
           validation: artifact.validation,
           generatedAt: artifact.generatedAt,
+          preview: artifact.bundleResult
+            ? {
+                mode: artifact.previewMode ?? "component",
+                bundleUrl: `/preview/${encodeURIComponent(id)}/bundle.js`,
+                previewUrl: `/preview/${encodeURIComponent(id)}`,
+                byteSize: artifact.bundleResult.byteSize,
+              }
+            : null,
         }
       : null,
   })

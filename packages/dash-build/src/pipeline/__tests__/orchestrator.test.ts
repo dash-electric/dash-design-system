@@ -224,7 +224,7 @@ describe("Orchestrator", () => {
     ).rejects.toThrow(/not ready for PR/i)
   })
 
-  it("auth-missing-anthropic → status failed with descriptive error", async () => {
+  it("auth-missing-openai → status failed with descriptive error", async () => {
     const { orchestrator } = build({ anthropic: makeAnthropic(false) })
     const submitted = await orchestrator.submitPrompt({
       text: "do thing",
@@ -233,7 +233,7 @@ describe("Orchestrator", () => {
     await orchestrator.processPrompt(submitted.promptId)
     const prompt = store.getPrompt(submitted.promptId)
     expect(prompt?.status).toBe("failed")
-    expect(prompt?.error).toMatch(/Anthropic not connected/i)
+    expect(prompt?.error).toMatch(/OpenAI not connected/i)
   })
 
   it("auth-missing-github → approvePR rejects without mutating to pr_created", async () => {

@@ -5,7 +5,7 @@ import { escapeHtml } from "../layout.js"
  * dot + label. Clickable when disconnected (CTA to /api/auth/<provider>).
  */
 
-export type AuthProviderId = "anthropic" | "github"
+export type AuthProviderId = "openai" | "github"
 
 interface ChipMeta {
   label: string
@@ -13,7 +13,7 @@ interface ChipMeta {
 }
 
 const META: Record<AuthProviderId, ChipMeta> = {
-  anthropic: { label: "Anthropic", icon: "✦" },
+  openai: { label: "OpenAI", icon: "◎" },
   github: { label: "GitHub", icon: "◆" },
 }
 

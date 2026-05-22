@@ -6,12 +6,12 @@
  *     → design-loader     (Layer 0 cardinal + voice + manifest + layered arch)
  *     → skill-loader      (Skill v4 per-repo stack mandate + banned imports)
  *     → prompt-composer   (assemble system prompt)
- *     → anthropic.messages (Claude generates)
+ *     → model client (OpenAI/Codex generates)
  *     → response-parser   (extract files + explanation)
  *     → validator         (cardinal rule check + score)
  *
  * Caller responsibilities:
- *   - Provide an Anthropic client (Agent C handoff). Defaults to `null` which
+ *   - Provide a model client (OpenAI/Codex handoff). Defaults to `null` which
  *     returns `{ kind: "error" }` — keeps unit tests hermetic.
  *   - When `result.kind === "clarify"`, hand the questions off to Agent F's
  *     clarification UI; resume by calling `generateWithSkillChain` again with
@@ -33,8 +33,8 @@ import type {
   GenerateResult,
 } from "./types.js"
 
-/** Default model id — overridable per call. Aligned with Agent C handoff. */
-export const DEFAULT_MODEL_ID = "claude-opus-4-7-20251020"
+/** Default model label — overridable per call. Codex CLI uses its own config unless env overrides it. */
+export const DEFAULT_MODEL_ID = process.env.DASH_BUILD_OPENAI_MODEL ?? "codex-default"
 
 function genPromptId(): string {
   return randomUUID()
@@ -76,6 +76,7 @@ export async function generateWithSkillChain(
   const [design, skill] = await Promise.all([
     loadDesign().catch(() => ({
       cardinalRules: "",
+      designContract: "",
       voiceRules: "",
       manifest: null,
       layeredArchitecture: "",
@@ -98,7 +99,7 @@ export async function generateWithSkillChain(
     return {
       kind: "error",
       reason:
-        "No Anthropic client provided — wire `deps.anthropic` from the Agent C auth module before generation",
+        "No OpenAI/Codex client provided — wire `deps.anthropic` from the auth module before generation",
     }
   }
 
@@ -112,7 +113,12 @@ export async function generateWithSkillChain(
     })
     rawText = extractText(response)
   } catch (err) {
-    return { kind: "error", reason: "anthropic.messages.create failed", details: err }
+    const message = err instanceof Error ? err.message : String(err)
+    return {
+      kind: "error",
+      reason: `model generation failed: ${message}`,
+      details: err,
+    }
   }
 
   // ── Stage 6: parse ───────────────────────────────────────────────────────

@@ -2,6 +2,29 @@
 
 All notable changes to `@dash/build` are documented here.
 
+## 0.1.2 — 2026-05-21
+
+### Changed
+
+- Switched the recommended auth path to first-party OpenAI login through the
+  official Codex CLI. Dash Build now treats `codex login --device-auth` as the
+  preferred zero-key setup and can fall back to an encrypted OpenAI API key.
+- Added `design.md` as the global Dash design contract and wired it into the
+  generation prompt before cardinal rules, Layered Architecture, and per-repo
+  Skill context. This keeps UI output consistent when switching target repos.
+- Improved design root resolution: when a selected product repo has no Dash
+  foundation files, Dash Build falls back to the `dash-ds` cwd or
+  `DASH_DS_ROOT` for `design.md` and Layer 0 rules.
+- Updated Codex login detection to accept `codex login status` output that
+  includes warnings on stderr while still reporting `Logged in using ChatGPT`.
+
+### Notes
+
+- GitHub App connection remains the PR path. Local pilot builds can use the
+  stub callback while real GitHub App credentials are being configured.
+- Legacy Anthropic/Claude modules remain in the tree as historical/fallback
+  code paths and tests, but they are no longer the recommended dashboard flow.
+
 ## 0.1.1 — 2026-05-21
 
 ### Security

@@ -42,16 +42,16 @@ describe("Store", () => {
   it("creates a fresh state when no file exists", async () => {
     const store = await loadStore()
     const snap = store.snapshot()
-    expect(snap.auth.anthropic.connected).toBe(false)
+    expect(snap.auth.openai.connected).toBe(false)
     expect(snap.prompts).toHaveLength(0)
   })
 
   it("persists atomically and reloads identically", async () => {
     const store = await loadStore()
-    await store.setAuth("anthropic", { connected: true, user: "irfan@dash.id" })
+    await store.setAuth("openai", { connected: true, user: "irfan@dash.id" })
     const reloaded = await loadStore()
-    expect(reloaded.getAuth().anthropic.user).toBe("irfan@dash.id")
-    expect(reloaded.getAuth().anthropic.connected).toBe(true)
+    expect(reloaded.getAuth().openai.user).toBe("irfan@dash.id")
+    expect(reloaded.getAuth().openai.connected).toBe(true)
   })
 
   it("addPrompt prepends to the prompts list", async () => {
@@ -95,6 +95,27 @@ describe("Store", () => {
     // And the file is now valid JSON again
     const raw = await readFile(file, "utf8")
     expect(() => JSON.parse(raw)).not.toThrow()
+  })
+
+  it("migrates legacy anthropic auth state into openai auth", async () => {
+    await writeFile(
+      file,
+      JSON.stringify({
+        version: "0.1.0",
+        startedAt: "2026-05-21T00:00:00.000Z",
+        auth: {
+          anthropic: { connected: true, user: "legacy-user" },
+          github: { connected: false, repos: [] },
+        },
+        prompts: [],
+        workspace: { activeRepo: "dash/halo-dash-fe", activeBranch: "main" },
+      }),
+      "utf8",
+    )
+    const store = await loadStore()
+    expect(store.getAuth().openai.connected).toBe(true)
+    expect(store.getAuth().openai.user).toBe("legacy-user")
+    expect(store.getWorkspace().activeRepo).toBe("dash/halo-dash-fe")
   })
 
   it("atomic write does not leave .tmp files behind", async () => {

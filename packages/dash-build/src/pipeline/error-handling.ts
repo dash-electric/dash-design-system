@@ -1,13 +1,13 @@
 /**
  * Pipeline error handling — classification + degrade modes.
  *
- * The orchestrator wraps every external call (Anthropic, GitHub, filesystem,
+ * The orchestrator wraps every external call (OpenAI/Codex, GitHub, filesystem,
  * skill chain) so a single transient failure cannot crash the daemon. Errors
  * are classified so the worker can decide whether to retry or fail-fast.
  */
 
 export type PipelineErrorKind =
-  | "auth-missing-anthropic"
+  | "auth-missing-openai"
   | "auth-missing-github"
   | "skill-chain-failed"
   | "generation-failed"
@@ -31,8 +31,12 @@ export function classify(err: unknown): PipelineError {
   if (err instanceof PipelineError) return err
   const msg = err instanceof Error ? err.message : String(err)
 
-  if (/anthropic.*not.*connect/i.test(msg) || /not.*authenticated/i.test(msg)) {
-    return new PipelineError("auth-missing-anthropic", msg, err)
+  if (
+    /openai.*not.*connect/i.test(msg) ||
+    /codex.*not.*(logged|auth)/i.test(msg) ||
+    /not.*authenticated/i.test(msg)
+  ) {
+    return new PipelineError("auth-missing-openai", msg, err)
   }
   if (/github.*not.*connect/i.test(msg) || /install.*github.*app/i.test(msg)) {
     return new PipelineError("auth-missing-github", msg, err)
@@ -52,8 +56,8 @@ export function shouldRetry(err: PipelineError, attempts: number): boolean {
 /** A human-readable summary string for the prompt error field. */
 export function describe(err: PipelineError): string {
   switch (err.kind) {
-    case "auth-missing-anthropic":
-      return "Anthropic not connected — connect via OAuth or paste an API key in dashboard settings."
+    case "auth-missing-openai":
+      return "OpenAI not connected — run `codex login --device-auth` or save an API key in dashboard settings."
     case "auth-missing-github":
       return "GitHub App not installed — open the dashboard and install the Dash Build App."
     case "skill-chain-failed":

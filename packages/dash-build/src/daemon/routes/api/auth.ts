@@ -1,6 +1,4 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
-import { exec } from "node:child_process"
-import { promisify } from "node:util"
 import type { Store } from "../../state/store.js"
 import type { Broadcaster } from "../../ws/broadcaster.js"
 import {
@@ -11,10 +9,14 @@ import {
   sendJson,
   sendRedirect,
 } from "../_helpers.js"
-import { BYOKeyStore } from "../../../auth/anthropic/byo-key.js"
+import { BYOKeyStore } from "../../../auth/openai/byo-key.js"
+import {
+  CodexCliRunner,
+  type CodexCliDeviceAuthSession,
+} from "../../../auth/codex-cli/runner.js"
 
 /**
- * Auth routes — ToS-safe rewrite (May 2026).
+ * Auth routes — OpenAI / Codex-first auth surface (May 2026).
  *
  * The previous implementation reused Claude Code's public OAuth client_id
  * (`9d1c250a-…`) to mint Pro/Max subscription tokens for daemon use. That
@@ -22,42 +24,27 @@ import { BYOKeyStore } from "../../../auth/anthropic/byo-key.js"
  * April 4 2026). See packages/dash-build/src/auth/anthropic/oauth-flow.ts
  * for the historical note.
  *
- * Two ToS-safe paths replace it:
+ * Two safe paths replace it:
  *
- *   Path A — BYO Anthropic API key (default, official):
- *     - POST /api/auth/anthropic { apiKey } → encrypt + store via BYOKeyStore.
- *     - DELETE /api/auth/anthropic → clear key + flip auth.connected false.
- *     - GET /api/auth/anthropic → JSON describing both options + state.
+ *   Path A — Official Codex CLI:
+ *     - GET /api/auth/openai/codex-cli → probe `codex --version` + login state.
+ *     - No token storage — user runs `codex login --device-auth` once in their
+ *       terminal; dash-build spawns `codex exec` as a subprocess and lets it
+ *       manage its own auth state on disk.
  *
- *   Path B — Claude Code subprocess (optional, subscription-friendly):
- *     - GET /api/auth/anthropic/claude-cli → probe `claude --version` on PATH.
- *     - No token storage — user runs `claude login` once in their terminal;
- *       dash-build spawns `claude` as a subprocess and lets it manage its
- *       own auth state on disk. This is ToS-safe because no third-party
- *       app is extracting or reusing Claude Code's tokens.
+ *   Path B — Optional BYO OpenAI API key:
+ *     - POST /api/auth/openai { apiKey } → encrypt + store via BYOKeyStore.
+ *     - DELETE /api/auth/openai → clear key + flip auth.connected false.
+ *     - GET /api/auth/openai → JSON describing both options + state.
  *
  * GitHub App flow remains a stub for Wave 5 (per-user pilot grant).
  */
 
-const PORT = Number(process.env.DASH_BUILD_PORT ?? 7777)
-
-const execAsync = promisify(exec)
+const codexCli = new CodexCliRunner()
+let pendingCodexLogin: CodexCliDeviceAuthSession | null = null
 
 function makeKeyStore(): BYOKeyStore {
   return new BYOKeyStore()
-}
-
-async function probeClaudeCli(): Promise<{
-  installed: boolean
-  version: string | null
-}> {
-  try {
-    const { stdout } = await execAsync("claude --version", { timeout: 3000 })
-    const version = stdout.trim() || null
-    return { installed: true, version }
-  } catch {
-    return { installed: false, version: null }
-  }
 }
 
 export function handleAuthRoute(
@@ -73,60 +60,137 @@ export function handleAuthRoute(
     return sendJson(res, 200, { ok: true, auth: store.getAuth() })
   }
 
-  // ── Anthropic: Claude CLI probe (Path B) ───────────────────────────────
-  // Declared BEFORE the catch-all `/api/auth/anthropic` block so the
+  // ── OpenAI: Codex CLI probe (Path A) ───────────────────────────────────
+  // Declared BEFORE the catch-all `/api/auth/openai` block so the
   // suffix matches first.
-  if (pathname === "/api/auth/anthropic/claude-cli") {
+  if (pathname === "/api/auth/openai/codex-cli") {
     if (req.method !== "GET") return methodNotAllowed(res)
-    void probeClaudeCli().then((probe) => {
+    void codexCli.probe().then((probe) => {
       sendJson(res, 200, {
         ok: true,
         installed: probe.installed,
+        authenticated: probe.authenticated,
         version: probe.version,
         loginInstructions:
-          "Run `claude login` in your terminal once. dash-build will spawn `claude` as a subprocess for generation.",
+          "Run `codex login --device-auth` in your terminal once. dash-build will spawn `codex exec` as a subprocess for generation.",
       })
     })
     return
   }
 
-  // ── Anthropic: BYO API key (Path A) ────────────────────────────────────
-  if (pathname === "/api/auth/anthropic") {
+  if (pathname === "/api/auth/openai/codex-cli/start") {
+    if (req.method !== "POST") return methodNotAllowed(res)
+    void (async () => {
+      const probe = await codexCli.probe().catch(() => null)
+      if (probe?.authenticated) {
+        return sendJson(res, 200, {
+          ok: true,
+          status: "connected",
+          authenticated: true,
+        })
+      }
+
+      if (!pendingCodexLogin || pendingCodexLogin.completed) {
+        pendingCodexLogin = await codexCli.startDeviceAuth()
+      }
+
+      sendJson(res, 200, {
+        ok: true,
+        status: pendingCodexLogin.completed
+          ? pendingCodexLogin.success
+            ? "connected"
+            : "failed"
+          : "pending",
+        verificationUrl: pendingCodexLogin.verificationUrl,
+        code: pendingCodexLogin.code,
+      })
+    })().catch((err) => {
+      pendingCodexLogin = null
+      badRequest(
+        res,
+        `codex_login_start_failed: ${(err as Error).message}. Run \`codex login --device-auth\` in your terminal, then refresh the dashboard.`,
+      )
+    })
+    return
+  }
+
+  if (pathname === "/api/auth/openai/codex-cli/session") {
+    if (req.method !== "GET") return methodNotAllowed(res)
+    void (async () => {
+      const probe = await codexCli.probe().catch(() => null)
+      if (probe?.authenticated) {
+        pendingCodexLogin = null
+        return sendJson(res, 200, {
+          ok: true,
+          status: "connected",
+          authenticated: true,
+        })
+      }
+      if (!pendingCodexLogin) {
+        return sendJson(res, 200, {
+          ok: true,
+          status: "idle",
+          authenticated: false,
+        })
+      }
+
+      const status = pendingCodexLogin.completed
+        ? pendingCodexLogin.success
+          ? "connected"
+          : "failed"
+        : "pending"
+
+      const body = {
+        ok: true,
+        status,
+        authenticated: false,
+        verificationUrl: pendingCodexLogin.verificationUrl,
+        code: pendingCodexLogin.code,
+        error: pendingCodexLogin.error,
+      }
+
+      if (pendingCodexLogin.completed) {
+        pendingCodexLogin = null
+      }
+
+      sendJson(res, 200, body)
+    })().catch((err) => {
+      badRequest(res, `codex_login_session_failed: ${(err as Error).message}`)
+    })
+    return
+  }
+
+  // ── OpenAI: Codex CLI + optional BYO API key ───────────────────────────
+  if (pathname === "/api/auth/openai") {
     if (req.method === "GET") {
       void (async () => {
         const keyStore = makeKeyStore()
         const existing = await keyStore.load().catch(() => null)
-        // Probe Claude CLI to surface the *active* effective mode. The
-        // dashboard uses this to indicate whether generation will route
-        // via BYO HTTP API or `claude` subprocess. TODO(agent-b chat-ui):
-        // surface activeMode in the dashboard header pill once chat
-        // rewrite lands.
-        const cliProbe = existing ? { installed: false } : await probeClaudeCli()
-        const activeMode: "byo-key" | "claude-cli" | "none" = existing
-          ? "byo-key"
-          : cliProbe.installed
-            ? "claude-cli"
+        const cliProbe = await codexCli.probe()
+        const activeMode: "byo-key" | "codex-cli" | "none" = cliProbe.authenticated
+          ? "codex-cli"
+          : existing
+            ? "byo-key"
             : "none"
         sendJson(res, 200, {
           ok: true,
-          provider: "anthropic",
+          provider: "openai",
           mode: existing ? "byo-key" : "none",
           activeMode,
-          connected: existing !== null,
+          connected: activeMode !== "none",
           options: {
+            codexCli: {
+              description:
+                "Use the official Codex CLI with your OpenAI / ChatGPT login. Run `codex login --device-auth` once; Dash Build spawns `codex exec` per generation.",
+              endpoint: "GET /api/auth/openai/codex-cli",
+            },
             byoKey: {
               description:
-                "Bring your own Anthropic API key (sk-ant-*). Get one at https://console.anthropic.com/. POST { apiKey } here to save.",
-              endpoint: "POST /api/auth/anthropic",
-            },
-            claudeCli: {
-              description:
-                "Subprocess the official Claude Code CLI. Run `claude login` in your terminal once; dash-build spawns `claude` per generation. ToS-safe because the user runs the official CLI — no third-party token extraction.",
-              endpoint: "GET /api/auth/anthropic/claude-cli",
+                "Optional fallback. Save an OpenAI API key (sk-*) for direct Responses API calls when you do not want to rely on local Codex auth.",
+              endpoint: "POST /api/auth/openai",
             },
           },
-          tosNote:
-            "Subscription OAuth (Claude Pro/Max token extraction) was banned by Anthropic effective April 4 2026 and is no longer supported.",
+          loginStatus: cliProbe.statusLine,
         })
       })()
       return
@@ -142,10 +206,10 @@ export function handleAuthRoute(
         }
         const apiKey = body.apiKey?.trim()
         if (!apiKey) return badRequest(res, "missing_apiKey")
-        if (!apiKey.startsWith("sk-ant-")) {
+        if (!apiKey.startsWith("sk-")) {
           return badRequest(
             res,
-            'invalid_apiKey_prefix (expected "sk-ant-")',
+            'invalid_apiKey_prefix (expected "sk-")',
           )
         }
         try {
@@ -153,11 +217,11 @@ export function handleAuthRoute(
         } catch (err) {
           return badRequest(res, `save_failed: ${(err as Error).message}`)
         }
-        await store.setAuth("anthropic", {
+        await store.setAuth("openai", {
           connected: true,
           user: "byo-key",
         })
-        broadcaster.broadcast("auth:changed", { provider: "anthropic" })
+        broadcaster.broadcast("auth:changed", { provider: "openai" })
         sendJson(res, 200, { ok: true, mode: "byo-key" })
       })()
       return
@@ -166,8 +230,8 @@ export function handleAuthRoute(
     if (req.method === "DELETE") {
       void (async () => {
         await makeKeyStore().clear().catch(() => undefined)
-        await store.setAuth("anthropic", { connected: false, user: null })
-        broadcaster.broadcast("auth:changed", { provider: "anthropic" })
+        await store.setAuth("openai", { connected: false, user: null })
+        broadcaster.broadcast("auth:changed", { provider: "openai" })
         sendJson(res, 200, { ok: true })
       })()
       return

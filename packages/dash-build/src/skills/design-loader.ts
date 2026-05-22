@@ -1,9 +1,11 @@
 /**
  * Design context loader.
  *
- * Loads Layer 0 (foundation) + Layered Architecture rules from the dash-ds repo
- * so they can be spliced into the Claude system prompt. Reads:
+ * Loads the global Dash design contract + Layer 0 foundation +
+ * Layered Architecture rules from the dash-ds repo so they can be spliced
+ * into the generation system prompt. Reads:
  *
+ *   - design.md                                                      (global cross-repo design contract)
  *   - apps/docs/registry/dash/foundation/rules/cardinal-rules.md   (CR-1..CR-8)
  *   - apps/docs/registry/dash/foundation/voice/voice-rules.md      (formal Anda)
  *   - apps/docs/registry/dash/foundation/manifest.json             (tokens + brand)
@@ -18,21 +20,41 @@ import { promises as fs, existsSync } from "node:fs"
 import path from "node:path"
 import type { DesignContext, FoundationManifest } from "./types.js"
 
-/** Walk up until we hit a dir containing `apps/docs` OR run out of parents. */
-export function findRepoRoot(startDir: string): string {
+function hasDashFoundation(dir: string): boolean {
+  return existsSync(path.join(dir, "apps", "docs", "registry", "dash", "foundation"))
+}
+
+function findFoundationRoot(startDir: string): string | null {
   let cur = path.resolve(startDir)
   for (let i = 0; i < 12; i++) {
-    if (
-      existsSync(path.join(cur, "apps", "docs", "registry", "dash", "foundation")) ||
-      existsSync(path.join(cur, ".git"))
-    ) {
-      return cur
-    }
+    if (hasDashFoundation(cur)) return cur
     const parent = path.dirname(cur)
     if (parent === cur) break
     cur = parent
   }
-  return startDir
+  return null
+}
+
+/** Walk up until we hit the dash-ds foundation; fall back gracefully. */
+export function findRepoRoot(startDir: string): string {
+  let cur = path.resolve(startDir)
+  let firstGitRoot: string | null = null
+
+  for (let i = 0; i < 12; i++) {
+    if (hasDashFoundation(cur)) return cur
+    if (!firstGitRoot && existsSync(path.join(cur, ".git"))) firstGitRoot = cur
+    const parent = path.dirname(cur)
+    if (parent === cur) break
+    cur = parent
+  }
+
+  const envRoot = process.env.DASH_DS_ROOT
+  if (envRoot && hasDashFoundation(path.resolve(envRoot))) return path.resolve(envRoot)
+
+  const cwdRoot = findFoundationRoot(process.cwd())
+  if (cwdRoot) return cwdRoot
+
+  return firstGitRoot ?? startDir
 }
 
 async function tryReadText(p: string): Promise<string | null> {
@@ -88,8 +110,10 @@ export async function loadDesignContext(
   const voicePath = path.join(foundationDir, "voice", "voice-rules.md")
   const manifestPath = path.join(foundationDir, "manifest.json")
   const layeredPath = path.join(repoRoot, "LAYERED-ARCHITECTURE.md")
+  const designContractPath = path.join(repoRoot, "design.md")
 
-  const [cardinalRules, voiceRules, layered, manifest] = await Promise.all([
+  const [designContract, cardinalRules, voiceRules, layered, manifest] = await Promise.all([
+    tryReadText(designContractPath),
     tryReadText(cardinalPath),
     tryReadText(voicePath),
     tryReadText(layeredPath),
@@ -97,6 +121,7 @@ export async function loadDesignContext(
   ])
 
   for (const [val, p] of [
+    [designContract, designContractPath],
     [cardinalRules, cardinalPath],
     [voiceRules, voicePath],
     [layered, layeredPath],
@@ -107,6 +132,7 @@ export async function loadDesignContext(
   }
 
   return {
+    designContract: designContract ?? "",
     cardinalRules: cardinalRules ?? "",
     voiceRules: voiceRules ?? "",
     manifest,

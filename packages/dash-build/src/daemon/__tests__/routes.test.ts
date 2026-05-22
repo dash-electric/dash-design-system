@@ -111,5 +111,31 @@ describe("HTTP routes", () => {
     const body = await r.json()
     expect(Array.isArray(body.repos)).toBe(true)
     expect(body.repos[0]?.full_name).toBeTruthy()
+    expect(body.mode).toBe("local-test")
+    expect(body.repos.map((repo: { full_name: string }) => repo.full_name)).toEqual([
+      "dash/portal-v2",
+      "dash/backoffice",
+    ])
+  })
+
+  it("POST /api/repos persists active local test repo", async () => {
+    const r = await fetch(`${baseUrl}/api/repos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ repo: "dash/backoffice", branch: "main" }),
+    })
+    expect(r.status).toBe(200)
+    const body = await r.json()
+    expect(body.ok).toBe(true)
+    expect(daemon.store.getWorkspace().activeRepo).toBe("dash/backoffice")
+  })
+
+  it("dashboard allows local generation with OpenAI only", async () => {
+    await daemon.store.setAuth("openai", { connected: true, user: "byo-key" })
+    const r = await fetch(`${baseUrl}/dashboard`)
+    expect(r.status).toBe(200)
+    const html = await r.text()
+    expect(html).toContain("db-prompt-input")
+    expect(html).not.toContain("Install the Dash Build GitHub App")
   })
 })

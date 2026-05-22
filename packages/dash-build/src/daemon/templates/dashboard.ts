@@ -4,8 +4,7 @@ import type { PromptRecord } from "../state/types.js"
 import { renderLayout } from "./layout.js"
 import { renderAuthChip } from "./components/auth-chip.js"
 import { renderBranchInput } from "./components/branch-input.js"
-import { renderEmptyState } from "./components/empty-state.js"
-import { renderAnthropicConnectForm } from "./components/anthropic-connect.js"
+import { renderOpenAIConnectForm } from "./components/anthropic-connect.js"
 import { renderPromptCard, renderPromptList } from "./components/prompt-card.js"
 import { renderPromptInput } from "./components/prompt-input.js"
 import { renderRepoSelect } from "./components/repo-select.js"
@@ -19,13 +18,15 @@ import {
   type PreviewPaneState,
   type PipelineStep,
 } from "./components/live-preview-pane.js"
+import type { RepoPreviewInfo } from "../repo-preview.js"
+import type { GenerationArtifact } from "../../pipeline/types.js"
 
 /**
  * Dashboard composition.
  *
  * Two render paths are available:
  *
- *  - `renderChatDashboard` (default) — Claude.ai-style split pane: chat
+ *  - `renderChatDashboard` (default) — builder-style split pane: chat
  *    thread on the left, live preview on the right.
  *  - `renderClassicDashboard` — original single-column "build feature" card.
  *    Kept callable for tests and as a fallback.
@@ -50,7 +51,7 @@ function buildRepoList(authRepos: string[]): { full_name: string }[] {
   const repos =
     authRepos.length > 0
       ? authRepos
-      : ["dash/halo-dash-fe", "dash/portal-v2", "dash/backoffice"]
+      : ["dash/portal-v2", "dash/backoffice"]
   return repos.map((full_name) => ({ full_name }))
 }
 
@@ -60,9 +61,7 @@ function buildRepoList(authRepos: string[]): { full_name: string }[] {
 
 function promptToChatMessages(
   prompt: PromptRecord,
-  resolveArtifact?: (
-    id: string,
-  ) => { files: { path: string; content: string }[] } | undefined,
+  resolveArtifact?: (id: string) => GenerationArtifact | undefined,
 ): ChatMessage[] {
   const out: ChatMessage[] = []
   out.push({
@@ -75,6 +74,7 @@ function promptToChatMessages(
   let status: ChatMessage["status"] = "ok"
   let body: string
   let files: ChatMessage["files"]
+  let review: ChatMessage["review"]
 
   switch (prompt.status) {
     case "queued":
@@ -84,7 +84,7 @@ function promptToChatMessages(
     case "clarifying":
       status = "ok"
       body =
-        "I need a few clarifications before I generate. Open the prompt to answer."
+        "I need one quick answer before I generate so the PRD and design context are correct."
       break
     case "generating":
       status = "running"
@@ -92,13 +92,37 @@ function promptToChatMessages(
       break
     case "awaiting_approval": {
       status = "ok"
-      body = "Done. Review the preview and approve to open a PR."
+      body =
+        "Done. Review the preview. GitHub is only needed when you want to open a PR."
       const artifact = resolveArtifact?.(prompt.id)
       if (artifact?.files?.length) {
         files = artifact.files.map((f) => ({
           path: f.path,
           size: f.content.length,
         }))
+        const previewMode = artifact.previewMode ?? (artifact.bundleResult ? "component" : "fallback")
+        review = {
+          title: "Review generated Dash files",
+          summary: artifact.explanation || "Dash Build generated code and prepared it for local preview.",
+          stats: [
+            { label: "Files", value: String(artifact.files.length), tone: "neutral" },
+            {
+              label: "Foundation",
+              value: `${artifact.validation.score}/100`,
+              tone: artifact.validation.passed ? "good" : "warn",
+            },
+            {
+              label: "Preview",
+              value: previewMode === "fallback" ? "Fallback" : "Live",
+              tone: previewMode === "fallback" ? "warn" : "good",
+            },
+            {
+              label: "Validation",
+              value: artifact.validation.passed ? "Passed" : "Review",
+              tone: artifact.validation.passed ? "good" : "warn",
+            },
+          ],
+        }
       }
       break
     }
@@ -130,6 +154,7 @@ function promptToChatMessages(
     timestamp: prompt.updatedAt,
     promptId: prompt.id,
     files,
+    review,
   })
   return out
 }
@@ -153,20 +178,30 @@ function pipelineStepsFor(prompt: PromptRecord | undefined): PipelineStep[] {
   const status = prompt.status
   if (status === "queued") {
     return [
-      set("dash-prd", "active"),
+      { ...set("dash-prd", "active"), detail: "shape scope" },
       set("design", "pending"),
       set("skill-v3", "pending"),
-      set("claude", "pending"),
+      set("codex", "pending"),
       set("validate", "pending"),
       set("preview", "pending"),
     ]
   }
-  if (status === "clarifying" || status === "generating") {
+  if (status === "clarifying") {
     return [
-      set("dash-prd", "done"),
-      set("design", "done"),
-      set("skill-v3", "active"),
-      set("claude", "pending"),
+      { ...set("dash-prd", "active"), detail: "collect context" },
+      set("design", "pending"),
+      set("skill-v3", "pending"),
+      set("codex", "pending"),
+      set("validate", "pending"),
+      set("preview", "pending"),
+    ]
+  }
+  if (status === "generating") {
+    return [
+      { ...set("dash-prd", "done"), detail: "scope locked" },
+      { ...set("design", "done"), detail: "context pack" },
+      { ...set("skill-v3", "active"), detail: "compose files" },
+      set("codex", "pending"),
       set("validate", "pending"),
       set("preview", "pending"),
     ]
@@ -177,12 +212,12 @@ function pipelineStepsFor(prompt: PromptRecord | undefined): PipelineStep[] {
     status === "completed"
   ) {
     return [
-      set("dash-prd", "done"),
-      set("design", "done"),
-      set("skill-v3", "done"),
-      set("claude", "done"),
-      set("validate", "done"),
-      set("preview", "done"),
+      { ...set("dash-prd", "done"), detail: "scope locked" },
+      { ...set("design", "done"), detail: "rules applied" },
+      { ...set("skill-v3", "done"), detail: "files ready" },
+      { ...set("codex", "done"), detail: "generated" },
+      { ...set("validate", "done"), detail: "checked" },
+      { ...set("preview", "done"), detail: "mounted" },
     ]
   }
   if (status === "failed") {
@@ -190,7 +225,7 @@ function pipelineStepsFor(prompt: PromptRecord | undefined): PipelineStep[] {
       set("dash-prd", "done"),
       set("design", "done"),
       set("skill-v3", "done"),
-      set("claude", "error"),
+      set("codex", "error"),
       set("validate", "pending"),
       set("preview", "pending"),
     ]
@@ -201,6 +236,7 @@ function pipelineStepsFor(prompt: PromptRecord | undefined): PipelineStep[] {
 function previewStateFor(prompt: PromptRecord | undefined): PreviewPaneState {
   if (!prompt) return "idle"
   if (prompt.status === "failed") return "error"
+  if (prompt.status === "clarifying") return "clarifying"
   if (
     prompt.status === "awaiting_approval" ||
     prompt.status === "pr_created" ||
@@ -210,7 +246,6 @@ function previewStateFor(prompt: PromptRecord | undefined): PreviewPaneState {
   }
   if (
     prompt.status === "queued" ||
-    prompt.status === "clarifying" ||
     prompt.status === "generating"
   ) {
     return "running"
@@ -225,7 +260,15 @@ function previewStateFor(prompt: PromptRecord | undefined): PreviewPaneState {
 export function renderChatDashboard(
   store: Store,
   orchestrator?: Orchestrator,
-  opts: { claudeCliInstalled?: boolean; claudeCliVersion?: string | null } = {},
+  opts: {
+    codexCliInstalled?: boolean
+    codexCliAuthenticated?: boolean
+    codexCliVersion?: string | null
+    openAIMode?: "codex-cli" | "byo-key" | "none"
+    openAIUser?: string | null
+    repoPreview?: RepoPreviewInfo | null
+    previewBundleAvailable?: boolean
+  } = {},
 ): string {
   const auth = store.getAuth()
   const workspace = store.getWorkspace()
@@ -235,16 +278,23 @@ export function renderChatDashboard(
     : undefined
 
   const repos = buildRepoList(auth.github.repos)
+  const selectedRepo = workspace.activeRepo ?? repos[0]?.full_name ?? null
   const githubDetail = auth.github.connected
     ? `${auth.github.repos.length || repos.length} repos`
-    : undefined
-  const anthropicDetail = auth.anthropic.user ?? undefined
+    : "optional for PR"
+  const openAIConnected =
+    opts.openAIMode === "codex-cli" ||
+    opts.openAIMode === "byo-key" ||
+    auth.openai.connected
+  const openAIDetail =
+    opts.openAIUser ??
+    (opts.openAIMode === "codex-cli" ? "ChatGPT" : auth.openai.user ?? undefined)
 
   // Thin top status bar — workspace + auth chips above the split pane.
   const statusBar = `<div class="db-chat-statusbar" id="db-auth-region">
     <div class="db-chat-statusbar-group">
       <label class="db-chat-statusbar-label" for="db-repo-select">Repo</label>
-      ${renderRepoSelect({ repos, active: workspace.activeRepo })}
+      ${renderRepoSelect({ repos, active: selectedRepo })}
     </div>
     <div class="db-chat-statusbar-group">
       <label class="db-chat-statusbar-label" for="db-branch-input">Branch</label>
@@ -252,14 +302,16 @@ export function renderChatDashboard(
     </div>
     <div class="db-chat-statusbar-spacer"></div>
     <div class="db-chat-statusbar-chips">
-      ${renderAuthChip({ provider: "anthropic", connected: auth.anthropic.connected, detail: anthropicDetail })}
+      ${renderAuthChip({ provider: "openai", connected: openAIConnected, detail: openAIDetail })}
       ${renderAuthChip({ provider: "github", connected: auth.github.connected, detail: githubDetail })}
     </div>
   </div>`
 
-  const needsAnthropic = !auth.anthropic.connected
-  const needsGithub = !auth.github.connected
-
+  const needsOpenAI = !openAIConnected
+  const active =
+    needsOpenAI
+      ? undefined
+      : pickActivePrompt(prompts)
   // Chat thread — build from prompt history. Oldest at top, newest at bottom.
   const chronological = [...prompts].reverse()
   const messages: ChatMessage[] = []
@@ -268,36 +320,37 @@ export function renderChatDashboard(
   }
 
   const threadBody =
-    needsAnthropic || needsGithub
+    needsOpenAI
       ? `<div class="db-chat-thread db-chat-thread--empty" id="db-chat-thread">
-          ${
-            needsAnthropic
-              ? renderAnthropicConnectForm({
-                  claudeCliInstalled: opts.claudeCliInstalled,
-                  claudeCliVersion: opts.claudeCliVersion,
-                  activeMode: opts.claudeCliInstalled ? "claude-cli" : "none",
-                })
-              : renderEmptyState({
-                  icon: "◆",
-                  title: "Install the Dash Build GitHub App",
-                  body: "Pick which repos Dash Build can open PRs against. You can scope to a single repo or your full org.",
-                  ctaLabel: "Install GitHub App",
-                  ctaHref: "/api/auth/github",
-                  variant: "primary",
-                })
-          }
+          ${renderOpenAIConnectForm({
+            codexCliInstalled: opts.codexCliInstalled,
+            codexCliVersion: opts.codexCliVersion,
+            activeMode: opts.openAIMode === "byo-key" ? "byo-key" : opts.codexCliAuthenticated ? "codex-cli" : "none",
+          })}
         </div>`
-      : renderChatThread({ messages })
+      : renderChatThread({
+          messages,
+          emptyHint:
+            "Describe a feature to generate code and preview it locally. Connect GitHub later only when you want Dash Build to open a PR.",
+        })
 
   // Pinned composer + a hidden legacy `db-prompts-region` sibling so the
   // existing /api/status-driven refresh helper + the routes test
   // (`expect(html).toContain("db-prompts-region")`) continue to work.
   const promptComposer =
-    needsAnthropic || needsGithub
+    needsOpenAI
       ? `<div class="db-chat-composer db-chat-composer--disabled" aria-disabled="true">
-          <p class="db-muted db-body-sm">Connect auth above to start chatting.</p>
+          <p class="db-muted db-body-sm">Connect OpenAI to start local generation.</p>
         </div>`
       : `<div class="db-chat-composer">
+          ${
+            active?.status === "clarifying"
+              ? `<div class="db-chat-composer-alert" role="status">
+                  <span>Paused for one clarification.</span>
+                  <button type="button" data-clarification-focus="${escapeAttr(active.id)}">Answer inline →</button>
+                </div>`
+              : ""
+          }
           ${renderPromptInput({})}
         </div>`
 
@@ -312,33 +365,50 @@ export function renderChatDashboard(
   </aside>`
 
   // Right pane — live preview keyed off the active prompt.
-  const active = pickActivePrompt(prompts)
-  const previewState = previewStateFor(active)
+  const inferredPreviewState = active
+    ? previewStateFor(active)
+    : selectedRepo
+      ? "baseline"
+      : "idle"
+  const previewState =
+    inferredPreviewState === "ready" && opts.previewBundleAvailable === false
+      ? "error"
+      : inferredPreviewState
   const score = (active as unknown as { score?: number })?.score
+  const activeArtifact = active ? resolveArtifact?.(active.id) : undefined
   const previewPane = renderLivePreviewPane({
     state: previewState,
     promptId: active?.id,
     steps: pipelineStepsFor(active),
-    score: typeof score === "number" ? score : undefined,
+    score:
+      activeArtifact?.validation.score ??
+      (typeof score === "number" ? score : undefined),
+    previewMode: activeArtifact?.previewMode,
+    errorMessage:
+      inferredPreviewState === "ready" && opts.previewBundleAvailable === false
+        ? "Generated files are ready, but the iframe bundle could not be built for this output. Review the file list on the left."
+        : undefined,
+    repoPreview: opts.repoPreview,
   })
 
   const rightPane = `<section class="db-chat-pane db-chat-pane--right" aria-label="Live preview">
     ${previewPane}
   </section>`
 
-  const body = `
+  const body = `<section class="db-chat-scene">
     ${statusBar}
     <div class="db-chat-shell">
       ${leftPane}
+      <div class="db-chat-resizer" role="separator" aria-orientation="vertical" aria-label="Resize chat panel" tabindex="0"></div>
       ${rightPane}
     </div>
-  `
+  </section>`
 
   return renderLayout({
     title: "Dashboard",
     body,
     authIndicator:
-      auth.anthropic.connected && auth.github.connected ? "ok" : "pending",
+      openAIConnected ? "ok" : "pending",
     version: store.getVersion(),
   })
 }
@@ -350,7 +420,13 @@ export function renderChatDashboard(
 export function renderClassicDashboard(
   store: Store,
   orchestrator?: Orchestrator,
-  opts: { claudeCliInstalled?: boolean; claudeCliVersion?: string | null } = {},
+  opts: {
+    codexCliInstalled?: boolean
+    codexCliAuthenticated?: boolean
+    codexCliVersion?: string | null
+    openAIMode?: "codex-cli" | "byo-key" | "none"
+    openAIUser?: string | null
+  } = {},
 ): string {
   const auth = store.getAuth()
   const workspace = store.getWorkspace()
@@ -363,8 +439,14 @@ export function renderClassicDashboard(
 
   const githubDetail = auth.github.connected
     ? `${auth.github.repos.length || repos.length} repos`
-    : undefined
-  const anthropicDetail = auth.anthropic.user ?? undefined
+    : "optional for PR"
+  const openAIConnected =
+    opts.openAIMode === "codex-cli" ||
+    opts.openAIMode === "byo-key" ||
+    auth.openai.connected
+  const openAIDetail =
+    opts.openAIUser ??
+    (opts.openAIMode === "codex-cli" ? "ChatGPT" : auth.openai.user ?? undefined)
 
   const workspaceCard = `<section class="db-card" aria-labelledby="db-workspace-title">
     <header class="db-card-header">
@@ -382,29 +464,18 @@ export function renderClassicDashboard(
       </div>
     </div>
     <div class="db-workspace-auth" id="db-auth-region">
-      ${renderAuthChip({ provider: "anthropic", connected: auth.anthropic.connected, detail: anthropicDetail })}
+      ${renderAuthChip({ provider: "openai", connected: openAIConnected, detail: openAIDetail })}
       ${renderAuthChip({ provider: "github", connected: auth.github.connected, detail: githubDetail })}
     </div>
   </section>`
 
-  const needsAnthropic = !auth.anthropic.connected
-  const needsGithub = !auth.github.connected
-
+  const needsOpenAI = !openAIConnected
   let buildBody: string
-  if (needsAnthropic) {
-    buildBody = renderAnthropicConnectForm({
-      claudeCliInstalled: opts.claudeCliInstalled,
-      claudeCliVersion: opts.claudeCliVersion,
-      activeMode: opts.claudeCliInstalled ? "claude-cli" : "none",
-    })
-  } else if (needsGithub) {
-    buildBody = renderEmptyState({
-      icon: "◆",
-      title: "Install the Dash Build GitHub App",
-      body: "Pick which repos Dash Build can open PRs against. You can scope to a single repo or your full org.",
-      ctaLabel: "Install GitHub App",
-      ctaHref: "/api/auth/github",
-      variant: "primary",
+  if (needsOpenAI) {
+    buildBody = renderOpenAIConnectForm({
+      codexCliInstalled: opts.codexCliInstalled,
+      codexCliVersion: opts.codexCliVersion,
+      activeMode: opts.openAIMode === "byo-key" ? "byo-key" : opts.codexCliAuthenticated ? "codex-cli" : "none",
     })
   } else {
     buildBody = renderPromptInput({})
@@ -419,8 +490,8 @@ export function renderClassicDashboard(
   </section>`
 
   const promptsBody =
-    needsAnthropic || needsGithub
-      ? `<div class="db-empty-state"><p class="db-empty-body">Connect auth above to see prompts.</p></div>`
+    needsOpenAI
+      ? `<div class="db-empty-state"><p class="db-empty-body">Connect OpenAI above to see prompts.</p></div>`
       : prompts.length === 0
         ? renderPromptList([], resolveArtifact)
         : renderPromptList(prompts, resolveArtifact)
@@ -447,20 +518,25 @@ export function renderClassicDashboard(
     title: "Dashboard",
     body,
     authIndicator:
-      auth.anthropic.connected && auth.github.connected ? "ok" : "pending",
+      openAIConnected ? "ok" : "pending",
     version: store.getVersion(),
   })
 }
 
 /**
  * Opts threaded through to both chat + classic dashboards. Used by the
- * connect-anthropic form to know whether the Claude Code subprocess
+ * connect form to know whether the Codex subprocess
  * path is ready (binary on PATH) — keeps the render sync while still
  * showing accurate state. The probe runs in the dashboard route handler.
  */
 export interface RenderDashboardOptions {
-  claudeCliInstalled?: boolean
-  claudeCliVersion?: string | null
+  codexCliInstalled?: boolean
+  codexCliAuthenticated?: boolean
+  codexCliVersion?: string | null
+  openAIMode?: "codex-cli" | "byo-key" | "none"
+  openAIUser?: string | null
+  repoPreview?: RepoPreviewInfo | null
+  previewBundleAvailable?: boolean
 }
 
 // Default export — the chat-style dashboard.

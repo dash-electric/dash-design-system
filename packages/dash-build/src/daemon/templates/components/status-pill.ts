@@ -39,7 +39,7 @@ export const PROMPT_STATUS_SPEC: Record<PromptStatus, StatusPillSpec> = {
     icon: "◐",
     modifier: "generating",
     animated: true,
-    aria: "generating with Claude",
+    aria: "generating with Codex",
   },
   awaiting_approval: {
     label: "Awaiting approval",

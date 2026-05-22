@@ -18,18 +18,21 @@
  *   4. First .ts file
  */
 
-import { promises as fs } from "node:fs"
+import { existsSync, promises as fs, readdirSync } from "node:fs"
 import path from "node:path"
+import { createRequire } from "node:module"
 import { prepareTempDir, resolvePreviewDir } from "./temp-dir.js"
 import {
   BundleError,
   BundleTooLargeError,
   EsbuildMissingError,
 } from "./types.js"
-import type { BundleInput, BundleResult, EsbuildLike } from "./types.js"
+import type { BundleInput, BundleResult, EsbuildLike, EsbuildPlugin } from "./types.js"
 import type { ParsedFile } from "../skills/types.js"
 
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024 // 5 MB
+const require = createRequire(import.meta.url)
+const GENERATED_ENTRY = "__dash_preview_entry.tsx"
 
 export function findEntry(files: ParsedFile[]): string | null {
   if (files.length === 0) return null
@@ -78,6 +81,115 @@ function assertSafeRelativePath(filePath: string): void {
   }
 }
 
+async function firstExisting(candidates: string[]): Promise<string | null> {
+  for (const candidate of candidates) {
+    try {
+      const stat = await fs.stat(candidate)
+      if (stat.isFile()) return candidate
+    } catch {
+      // try the next candidate
+    }
+  }
+  return null
+}
+
+function expansionCandidates(basePath: string): string[] {
+  const ext = path.extname(basePath)
+  if (ext) return [basePath]
+  return [
+    basePath,
+    `${basePath}.tsx`,
+    `${basePath}.ts`,
+    `${basePath}.jsx`,
+    `${basePath}.js`,
+    `${basePath}.json`,
+    path.join(basePath, "index.tsx"),
+    path.join(basePath, "index.ts"),
+    path.join(basePath, "index.jsx"),
+    path.join(basePath, "index.js"),
+  ]
+}
+
+function dashAliasPlugin(tempDir: string): EsbuildPlugin {
+  const bases = [
+    path.join(tempDir, "apps", "docs"),
+    path.join(tempDir, "src"),
+    tempDir,
+  ]
+  return {
+    name: "dash-preview-alias",
+    setup(build) {
+      build.onResolve({ filter: /^@\// }, async (args) => {
+        const rest = args.path.slice(2)
+        const candidates = bases.flatMap((base) =>
+          expansionCandidates(path.join(base, rest)),
+        )
+        const resolved = await firstExisting(candidates)
+        return resolved ? { path: resolved } : null
+      })
+    },
+  }
+}
+
+function pnpmDependencyFallback(spec: string): string | null {
+  const packageName = spec.startsWith("react-dom/") ? "react-dom" : "react"
+  const subpath =
+    spec === packageName
+      ? "index.js"
+      : `${spec.slice(packageName.length + 1)}.js`
+  const pnpmDir = path.join(process.cwd(), "node_modules", ".pnpm")
+  if (!existsSync(pnpmDir)) return null
+
+  const entries = readdirSync(pnpmDir)
+  const reactDomEntry = entries.find((entry) => entry.startsWith("react-dom@"))
+  const matchedReactVersion = reactDomEntry?.match(/_react@([^_]+)/)?.[1]
+  const preferredEntries =
+    packageName === "react" && matchedReactVersion
+      ? [`react@${matchedReactVersion}`, ...entries.filter((entry) => entry.startsWith("react@"))]
+      : entries.filter((entry) => entry.startsWith(`${packageName}@`))
+
+  for (const entry of preferredEntries) {
+    if (!entry.startsWith(`${packageName}@`)) continue
+    const candidate = path.join(
+      pnpmDir,
+      entry,
+      "node_modules",
+      packageName,
+      subpath,
+    )
+    if (existsSync(candidate)) return candidate
+  }
+  return null
+}
+
+function resolvePreviewDependency(spec: string): string {
+  const pnpmResolved = pnpmDependencyFallback(spec)
+  if (pnpmResolved) return pnpmResolved
+
+  try {
+    return require.resolve(spec, {
+      paths: [
+        process.cwd(),
+        path.join(process.cwd(), "node_modules"),
+        path.join(process.cwd(), "packages", "dash-build"),
+      ],
+    })
+  } catch (error) {
+    throw error
+  }
+}
+
+function reactResolvePlugin(): EsbuildPlugin {
+  return {
+    name: "dash-preview-react-resolve",
+    setup(build) {
+      build.onResolve({ filter: /^react(\/jsx-runtime)?$|^react-dom\/client$/ }, (args) => {
+        return { path: resolvePreviewDependency(args.path) }
+      })
+    },
+  }
+}
+
 export async function bundleForPreview(opts: BundleInput): Promise<BundleResult> {
   if (opts.files.length === 0) {
     throw new BundleError([{ text: "no input files" }])
@@ -106,20 +218,44 @@ export async function bundleForPreview(opts: BundleInput): Promise<BundleResult>
   const esbuild = opts.esbuildModule ?? (await loadEsbuild())
 
   const outfile = path.join(tempDir, "bundle.js")
-  const entryPath = path.join(tempDir, entry)
+  const sourceEntryPath = path.join(tempDir, entry)
+  const generatedEntryPath = path.join(tempDir, GENERATED_ENTRY)
+  const importPath = `./${path.relative(tempDir, sourceEntryPath).replace(/\\/g, "/")}`
+  await fs.writeFile(
+    generatedEntryPath,
+    [
+      'import * as React from "react"',
+      'import { createRoot } from "react-dom/client"',
+      `import * as PreviewModule from ${JSON.stringify(importPath)}`,
+      "",
+      'const root = document.getElementById("root")',
+      "const Component = PreviewModule.default",
+      "if (!root) {",
+      '  throw new Error("preview_root_missing")',
+      "}",
+      'if (typeof Component !== "function") {',
+      '  throw new Error("preview_default_export_missing")',
+      "}",
+      "createRoot(root).render(React.createElement(Component))",
+      "",
+    ].join("\n"),
+    "utf8",
+  )
 
   const result = await esbuild.build({
-    entryPoints: [entryPath],
+    entryPoints: [generatedEntryPath],
     bundle: true,
     format: "iife",
     platform: "browser",
     target: "es2020",
+    nodePaths: [path.join(process.cwd(), "node_modules")],
     jsx: "automatic",
     jsxImportSource: "react",
     minify: false,
     sourcemap: "inline",
     outfile,
     external: [],
+    plugins: [dashAliasPlugin(tempDir), reactResolvePlugin()],
     define: {
       "process.env.NODE_ENV": '"development"',
     },
@@ -140,7 +276,7 @@ export async function bundleForPreview(opts: BundleInput): Promise<BundleResult>
 
   return {
     bundlePath: outfile,
-    entryPath,
+    entryPath: sourceEntryPath,
     byteSize: stat.size,
     tempDir,
   }

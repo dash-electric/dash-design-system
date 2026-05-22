@@ -35,8 +35,6 @@ export interface EvaluatorOutput {
 const VAGUE_VERBS = ["tambahin", "tambahkan", "buat", "improve", "fix", "update", "make", "add"]
 const SURFACE_HINTS = [
   "backoffice",
-  "halo-dash",
-  "halo dash",
   "portal-v2",
   "portal v2",
   "basecamp",
@@ -69,6 +67,18 @@ const SOURCE_TOKENS = [
   "hard-coded",
 ]
 const MITRA_TOKENS = ["mitra", "driver", "courier", "kurir", "pengemudi", "rider"]
+const NON_MITRA_FACING_PATTERNS = [
+  /\bnot\s+mitra[-\s]?facing\b/i,
+  /\bnot\s+(for|seen by|visible to)\s+(mitra|drivers?|couriers?|kurir|pengemudi|riders?)\b/i,
+  /\bbukan\s+(untuk|buat|dilihat|dipakai)\s+(mitra|driver|courier|kurir|pengemudi|rider)\b/i,
+  /\b(tidak|nggak|ga|gak)\s+(mitra[-\s]?facing|untuk\s+mitra|buat\s+mitra|dilihat\s+mitra)\b/i,
+  /\b(internal|backoffice|hr|admin)[-\s]only\b/i,
+]
+const MITRA_FACING_PATTERNS = [
+  /\bmitra[-\s]?facing\b/i,
+  /\b(for|seen by|visible to)\s+(mitra|drivers?|couriers?|kurir|pengemudi|riders?)\b/i,
+  /\b(untuk|buat|dilihat|dipakai)\s+(mitra|driver|courier|kurir|pengemudi|rider)\b/i,
+]
 const LEGAL_FINANCIAL_TOKENS = [
   "payment",
   "payout",
@@ -101,6 +111,37 @@ function lower(s: string): string {
   return s.toLowerCase()
 }
 
+function hasClarificationAnswer(
+  prompt: string,
+  question: Pick<ClarificationQuestion, "id" | "text">,
+): boolean {
+  const p = lower(prompt)
+  if (!p.includes("--- clarifications ---")) return false
+  return (
+    p.includes(`${lower(question.text)} →`) ||
+    p.includes(`${lower(question.text)} ->`) ||
+    p.includes(`${lower(question.id)} →`) ||
+    p.includes(`${lower(question.id)} ->`)
+  )
+}
+
+function clarificationBooleanAnswer(
+  prompt: string,
+  question: Pick<ClarificationQuestion, "id" | "text">,
+): boolean | null {
+  const p = lower(prompt)
+  if (!p.includes("--- clarifications ---")) return null
+  const anchors = [lower(question.text), lower(question.id)]
+  for (const anchor of anchors) {
+    const idx = p.indexOf(anchor)
+    if (idx === -1) continue
+    const tail = p.slice(idx, idx + 240)
+    if (/(→|->)\s*(true|yes|iya|ya)\b/.test(tail)) return true
+    if (/(→|->)\s*(false|no|tidak|nggak|ga|gak)\b/.test(tail)) return false
+  }
+  return null
+}
+
 export function containsVague(prompt: string, words: string[] = VAGUE_VERBS): boolean {
   const p = lower(prompt)
   return words.some((w) => new RegExp(`\\b${w}\\b`, "i").test(p))
@@ -124,6 +165,15 @@ export function mentionsSource(prompt: string): boolean {
 export function mentionsMitra(prompt: string): boolean {
   const p = lower(prompt)
   return MITRA_TOKENS.some((t) => new RegExp(`\\b${t}\\b`, "i").test(p))
+}
+
+export function explicitlyNonMitraFacing(prompt: string): boolean {
+  return NON_MITRA_FACING_PATTERNS.some((pattern) => pattern.test(prompt))
+}
+
+export function explicitlyMitraFacing(prompt: string): boolean {
+  if (explicitlyNonMitraFacing(prompt)) return false
+  return MITRA_FACING_PATTERNS.some((pattern) => pattern.test(prompt))
 }
 
 export function mentionsLegalFinancial(prompt: string): boolean {
@@ -151,66 +201,102 @@ export function evaluatePrompt(input: EvaluatorInput): EvaluatorOutput {
   const { prompt, detectedRepo } = input
 
   // Heuristic 1: vague verb without explicit surface and no detected repo
-  if (containsVague(prompt) && !mentionsSurface(prompt) && !detectedRepo) {
-    questions.push({
-      id: "target-surface",
-      text: "Where should this feature live?",
-      type: "single-choice",
-      options: ["backoffice", "halo-dash-fe", "portal-v2", "basecamp"],
-      rationale: "Surface determines stack + voice rule",
-      required: true,
-    })
+  const targetSurfaceQuestion: ClarificationQuestion = {
+    id: "target-surface",
+    text: "Where should this feature live?",
+    type: "single-choice",
+    options: ["backoffice", "portal-v2", "basecamp", "react-fleet"],
+    rationale: "Surface determines stack + voice rule",
+    required: true,
+  }
+  if (
+    containsVague(prompt) &&
+    !mentionsSurface(prompt) &&
+    !detectedRepo &&
+    !hasClarificationAnswer(prompt, targetSurfaceQuestion)
+  ) {
+    questions.push(targetSurfaceQuestion)
   }
 
   // Heuristic 2: data verb but no source
-  if (mentionsData(prompt) && !mentionsSource(prompt)) {
-    questions.push({
-      id: "data-source",
-      text: "Data comes from?",
-      type: "single-choice",
-      options: [
-        "GET /api/<endpoint>",
-        "Postgres direct",
-        "GraphQL",
-        "Hard-coded mock",
-        "Skip — I'll wire later",
-      ],
-      rationale: "API contract drives fetch pattern",
-      required: false,
-    })
+  const dataSourceQuestion: ClarificationQuestion = {
+    id: "data-source",
+    text: "Data comes from?",
+    type: "single-choice",
+    options: [
+      "GET /api/<endpoint>",
+      "Postgres direct",
+      "GraphQL",
+      "Hard-coded mock",
+      "Skip — I'll wire later",
+    ],
+    rationale: "API contract drives fetch pattern",
+    required: false,
+  }
+  if (
+    mentionsData(prompt) &&
+    !mentionsSource(prompt) &&
+    !hasClarificationAnswer(prompt, dataSourceQuestion)
+  ) {
+    questions.push(dataSourceQuestion)
   }
 
   // Heuristic 3: mitra mention → voice rule confirm
-  if (mentionsMitra(prompt)) {
+  const voiceRuleQuestion: ClarificationQuestion = {
+    id: "voice-rule",
+    text: "Is this UI seen by mitra (drivers/couriers)?",
+    type: "yes-no",
+    rationale: "Mitra-facing requires formal 'Anda' voice per Dash rule",
+    required: true,
+  }
+  const voiceAnswer = clarificationBooleanAnswer(prompt, voiceRuleQuestion)
+  const nonMitraFacing = explicitlyNonMitraFacing(prompt)
+  if (nonMitraFacing && voiceAnswer === true) {
     questions.push({
-      id: "voice-rule",
-      text: "Is this UI seen by mitra (drivers/couriers)?",
-      type: "yes-no",
-      rationale: "Mitra-facing requires formal 'Anda' voice per Dash rule",
+      id: "visibility-conflict",
+      text: "Prompt says this is not mitra-facing, but the answer says mitra can see it. Which is correct?",
+      type: "single-choice",
+      options: [
+        "Internal only — HR/admin/backoffice",
+        "Mitra-facing — drivers/couriers can see it",
+      ],
+      rationale: "Audience controls tone, permissions, and exposed data",
       required: true,
     })
+  } else if (
+    mentionsMitra(prompt) &&
+    !nonMitraFacing &&
+    !explicitlyMitraFacing(prompt) &&
+    !hasClarificationAnswer(prompt, voiceRuleQuestion)
+  ) {
+    questions.push(voiceRuleQuestion)
   }
 
   // Heuristic 4: legal / financial field
-  if (mentionsLegalFinancial(prompt)) {
-    questions.push({
-      id: "audit-trail",
-      text: "Does this edit a legal/financial field?",
-      type: "yes-no",
-      rationale: "Audit trail mandatory per Dash cardinal rule #3",
-      required: true,
-    })
+  const auditTrailQuestion: ClarificationQuestion = {
+    id: "audit-trail",
+    text: "Does this edit a legal/financial field?",
+    type: "yes-no",
+    rationale: "Audit trail mandatory per Dash cardinal rule #3",
+    required: true,
+  }
+  if (
+    mentionsLegalFinancial(prompt) &&
+    !hasClarificationAnswer(prompt, auditTrailQuestion)
+  ) {
+    questions.push(auditTrailQuestion)
   }
 
   // Heuristic 5: scope blast
-  if (isLargeScope(prompt)) {
-    questions.push({
-      id: "scope-confirm",
-      text: "This looks like 3+ days of work. Break into smaller features?",
-      type: "yes-no",
-      rationale: "Smaller iterations ship faster, easier to review",
-      required: false,
-    })
+  const scopeConfirmQuestion: ClarificationQuestion = {
+    id: "scope-confirm",
+    text: "This looks like 3+ days of work. Break into smaller features?",
+    type: "yes-no",
+    rationale: "Smaller iterations ship faster, easier to review",
+    required: false,
+  }
+  if (isLargeScope(prompt) && !hasClarificationAnswer(prompt, scopeConfirmQuestion)) {
+    questions.push(scopeConfirmQuestion)
   }
 
   const confidence =

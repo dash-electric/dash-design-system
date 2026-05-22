@@ -1,7 +1,7 @@
 /**
- * Composes the Claude system prompt from PRD eval + design context + Skill v4 context.
+ * Composes the generation system prompt from PRD eval + design context + Skill v4 context.
  *
- * Output format is a strict markdown contract — Claude is told exactly how to
+ * Output format is a strict markdown contract — the model is told exactly how to
  * frame each generated file (```<lang> [path/to/file]```) so `response-parser`
  * can extract files deterministically.
  */
@@ -39,6 +39,9 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     `(No per-repo Skill context available — assume vanilla Next 14 App Router + TS unless prompt says otherwise.)`
 
   const prdBlock = ctx.prd.summary.trim() || "(prompt scope inferred from raw user input)"
+  const designContractBlock =
+    ctx.design.designContract.trim() ||
+    "Use the global Dash product character: operational density, semantic tokens, registry-first components, no card-inside-card layouts, explicit loading/empty/error/success states, and repo-specific implementation patterns."
 
   return [
     "# Dash Build — System Prompt",
@@ -47,44 +50,56 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     "Follow ALL rules below STRICTLY. When a rule conflicts with the user prompt,",
     "the rule wins — explain the conflict in your explanation block.",
     "",
-    "## 1. Cardinal Rules (NEVER violate)",
+    "## 1. Global Design Contract",
+    "",
+    designContractBlock,
+    "",
+    "## 2. Cardinal Rules (NEVER violate)",
     "",
     cardinalBlock,
     "",
-    "## 2. Voice Rules",
+    "## 3. Voice Rules",
     "",
     voiceBlock,
     "",
-    "## 3. Layered Architecture Decision Tree",
+    "## 4. Layered Architecture Decision Tree",
     "",
     ctx.design.layeredArchitecture.trim(),
     "",
-    "## 4. Per-Repo Stack Mandate",
+    "## 5. Per-Repo Stack Mandate",
     "",
     skillBlock,
     "",
-    "## 5. PRD Context",
+    "## 6. PRD Context",
     "",
     `Sections touched: ${ctx.prd.sectionsTouched}. Confidence: ${ctx.prd.confidence}.`,
     prdBlock,
     "",
-    "## 6. Banned Imports",
+    "## 7. Banned Imports",
     "",
     `DO NOT import any of: ${BANNED_IMPORTS.map((b) => `\`${b}\``).join(", ")}.`,
     "Replacements: useState + hand-rolled validation. axios or native fetch. Jotai (portal-v2) or Zustand 5 (basecamp) for global state.",
     "",
-    "## 7. Token Usage",
+    "## 8. Token Usage",
     "",
     "Use Dash semantic tokens only — `bg-primary-500`, `text-text-strong-950`, `border-stroke-soft-200`, `bg-bg-white-0`.",
     "Never raw hex (`#5e2aac` / `#7C4FC4` / `#fff`). Dash Purple canonical = `#5e2aac` via `--primary-base`.",
     "",
-    "## 8. Output Format (STRICT)",
+    "## 9. Output Format (STRICT)",
     "",
     "For each file you create or modify, output a fenced code block with the path in brackets:",
     "",
     "```tsx [src/components/example.tsx]",
     "// file content here",
     "```",
+    "",
+    "ALWAYS include a first file named `preview.tsx` when the request creates or changes UI.",
+    "`preview.tsx` is the canvas artifact shown to the user before publish. It must be self-contained:",
+    "- export a default React component;",
+    "- use mock data inline;",
+    "- avoid `@/`, repo aliases, app router imports, server components, filesystem imports, and external Dash repo components;",
+    "- use only React plus plain CSS/Tailwind-like utility classes that can run in the sandbox;",
+    "- mirror the real generated UI enough for product/design review, even if production files use registry components.",
     "",
     "Multiple files = multiple fenced blocks. After all code blocks, write a short",
     "plain-text explanation (2-5 sentences) covering: design decisions, any banned-",

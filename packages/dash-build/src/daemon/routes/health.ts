@@ -26,7 +26,7 @@ export function handleHealth(res: ServerResponse, store: Store): void {
     version: store.getVersion(),
     uptime,
     auth: {
-      anthropic: auth.anthropic.connected ? "connected" : "disconnected",
+      openai: auth.openai.connected ? "connected" : "disconnected",
       github: auth.github.connected ? "connected" : "disconnected",
     },
     prompts: {

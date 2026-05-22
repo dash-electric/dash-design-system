@@ -51,6 +51,7 @@ export interface EsbuildBuildOptions {
   format: "iife" | "esm" | "cjs"
   platform: "browser" | "node" | "neutral"
   target: string
+  nodePaths?: string[]
   jsx: "automatic" | "transform" | "preserve"
   jsxImportSource?: string
   minify: boolean
@@ -58,6 +59,7 @@ export interface EsbuildBuildOptions {
   outfile: string
   external?: string[]
   define?: Record<string, string>
+  plugins?: EsbuildPlugin[]
   write?: boolean
   logLevel?: "silent" | "info" | "warning" | "error"
 }
@@ -65,6 +67,34 @@ export interface EsbuildBuildOptions {
 export interface EsbuildBuildResult {
   errors: Array<{ text: string; location?: { file?: string; line?: number } }>
   warnings: Array<{ text: string }>
+}
+
+export interface EsbuildOnResolveArgs {
+  path: string
+  importer: string
+  resolveDir: string
+}
+
+export interface EsbuildOnResolveResult {
+  path: string
+}
+
+export interface EsbuildPluginBuild {
+  onResolve(
+    opts: { filter: RegExp },
+    callback: (
+      args: EsbuildOnResolveArgs,
+    ) =>
+      | EsbuildOnResolveResult
+      | null
+      | undefined
+      | Promise<EsbuildOnResolveResult | null | undefined>,
+  ): void
+}
+
+export interface EsbuildPlugin {
+  name: string
+  setup(build: EsbuildPluginBuild): void
 }
 
 export class BundleError extends Error {

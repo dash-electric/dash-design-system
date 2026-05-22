@@ -22,11 +22,12 @@ function formatRelative(iso: string): string {
 
 function actionFor(prompt: PromptRecord): string {
   if (prompt.status === "clarifying") {
-    return `<a class="db-prompt-action db-prompt-action-primary"
-        href="/clarify/${escapeHtml(prompt.id)}"
+    return `<button class="db-prompt-action db-prompt-action-primary"
+        type="button"
+        data-clarification-focus="${escapeHtml(prompt.id)}"
         aria-label="Answer clarification questions">
       Answer questions →
-    </a>`
+    </button>`
   }
   if (prompt.status === "awaiting_approval") {
     return `<button
@@ -105,7 +106,7 @@ export function renderPromptList(
       <h3 class="db-empty-title">Build your first feature</h3>
       <p class="db-empty-body">Describe what you want — Dash Build evaluates scope, asks clarifying questions, then opens a PR. Try:</p>
       <ul class="db-empty-examples">
-        <li>"Tambahin filter driver by status di halo-dash"</li>
+        <li>"Tambahin filter driver by status di portal-v2"</li>
         <li>"Fix Modal close button on backoffice mitra detail"</li>
         <li>"Add payroll chart grouped by mitra Lvl in portal-v2"</li>
       </ul>

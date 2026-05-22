@@ -4,7 +4,7 @@
 > foundation + AI-native developer workflow.
 
 The single repository for everything Dash Design System: docs site +
-registry, install CLI, MCP server, Claude Code skill, autonomous Hermes
+registry, install CLI, MCP server, AI editor skill, autonomous Hermes
 generation pipeline, and the browser-based Dash Build workflow.
 
 Built for internal use by 10+ engineers across Dash product engineering
@@ -37,12 +37,12 @@ for the full spec, migration case studies, and visual showcase.
 - **`@dash/build`** ⭐ — **Browser-based AI builder. Lovable-for-Dash internal.**
   - `pnpm i -g @dash/build && dash-build`
   - Daemon at localhost:7777, 9router-style multi-interface menu
-  - Anthropic OAuth via Pro/Team subscription (zero API key)
-  - GitHub App PR creation
-  - Skill chain: dash-prd → design → Skill v3 → Claude
+  - OpenAI connection via official Codex CLI login, with BYO OpenAI API key fallback
+  - GitHub App PR creation; local pilot can fall back to a stub callback while app credentials are being wired
+  - Skill chain: dash-prd → `design.md` → Layer 0 rules → Skill v4 → OpenAI/Codex
   - Sandboxed iframe preview, foundation match score (0-100)
-  - Dark mode, toast notifications, skeleton states
-  - 239 tests, zero flake, cross-platform path support (macOS / Linux / Windows)
+  - Lovable-style split dashboard, toast notifications, skeleton states
+  - 263 tests, cross-platform path support (macOS / Linux / Windows)
   - See [`packages/dash-build/README.md`](./packages/dash-build/README.md)
 
 ## Why this repo
@@ -55,7 +55,7 @@ for design systems used across 10+ product teams.
 
 One `pnpm install`, one CI pipeline, one place to ship registry +
 tooling changes atomically, one shared `@dash/registry-schema` package.
-AI-first workflows (Claude Code, Cursor, MCP, Dash Build) work best when
+AI-first workflows (Codex, Claude Code, Cursor, MCP, Dash Build) work best when
 context is co-located: skill, MCP server, registry source, and the
 generation pipeline all live one directory hop apart.
 
@@ -97,6 +97,7 @@ dash-ds/
 │   ├── dash-build/            # @dash/build — browser-based AI builder
 │   └── registry-schema/       # @dash/registry-schema — shared types
 ├── .github/workflows/         # CI, preview deploy, release
+├── design.md                  # Global cross-repo Dash design contract for AI generation
 ├── pnpm-workspace.yaml
 ├── tsconfig.base.json
 └── vercel.json
@@ -109,6 +110,7 @@ dash-ds/
 - [`packages/mcp-server/README.md`](./packages/mcp-server/README.md) — MCP server setup for Claude Code / Cursor
 - [`packages/skill/README.md`](./packages/skill/README.md) — Claude Code skill manifest
 - [`packages/dash-build/README.md`](./packages/dash-build/README.md) — Dash Build daemon, auth, deployment
+- [`packages/dash-build/docs/gstack-adoption.md`](./packages/dash-build/docs/gstack-adoption.md) — gstack-inspired Dash Build planning workflow
 
 ## Common scripts (run from repo root)
 
@@ -127,7 +129,7 @@ Package-scoped commands use pnpm filters:
 pnpm --filter dash test                 # only CLI tests
 pnpm --filter @dash/docs build          # only Next build
 pnpm --filter @dash/build typecheck     # only Dash Build typecheck
-pnpm --filter @dash/build test          # only Dash Build tests (239)
+pnpm --filter @dash/build test          # only Dash Build tests (263)
 ```
 
 ## Contributing

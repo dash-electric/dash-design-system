@@ -3,6 +3,7 @@ import { validateOutput } from "../validator.js"
 import type { DesignContext, ParsedResponse } from "../types.js"
 
 const EMPTY_DESIGN: DesignContext = {
+  designContract: "",
   cardinalRules: "",
   voiceRules: "",
   manifest: null,

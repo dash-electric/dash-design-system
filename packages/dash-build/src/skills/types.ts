@@ -1,9 +1,9 @@
 /**
  * Skill chain types — pipeline that loads dash-prd + design + Skill v4 context
- * into Claude prompts BEFORE generation.
+ * into model prompts BEFORE generation.
  *
  * Per Dash cardinal rule (AI must NOT generate blindly), every prompt routes:
- *   prompt → prd-evaluator → design-loader → skill-loader → claude → parse → validate
+ *   prompt → prd-evaluator → design-loader → skill-loader → model → parse → validate
  *
  * Each stage is pure / testable in isolation. Anthropic + Agent F integration
  * points are dependency-injected so unit tests stay hermetic.
@@ -40,6 +40,7 @@ export interface PRDEval {
 // ---------------------------------------------------------------------------
 
 export interface DesignContext {
+  designContract: string
   cardinalRules: string
   voiceRules: string
   manifest: FoundationManifest | null
@@ -147,7 +148,7 @@ export type GenerateResult =
     }
 
 // ---------------------------------------------------------------------------
-// Dependency injection — keeps Anthropic + filesystem out of pure tests
+// Dependency injection — keeps model provider + filesystem out of pure tests
 // ---------------------------------------------------------------------------
 
 export interface AnthropicLike {

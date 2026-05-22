@@ -16,6 +16,12 @@ export interface ChatMessage {
   timestamp: string
   /** Optional structured artifact callouts (e.g. generated files). */
   files?: Array<{ path: string; size?: number }>
+  /** Optional generated-output review summary. */
+  review?: {
+    title: string
+    summary: string
+    stats: Array<{ label: string; value: string; tone?: "good" | "warn" | "neutral" }>
+  }
   /** Optional prompt id so client-side updates can target this bubble. */
   promptId?: string
 }
@@ -40,6 +46,26 @@ function fileChip(path: string, size?: number): string {
   </span>`
 }
 
+function renderReview(review: NonNullable<ChatMessage["review"]>): string {
+  const stats = review.stats
+    .map((stat) => {
+      const tone = stat.tone ?? "neutral"
+      return `<span class="db-chat-review-stat" data-tone="${escapeHtml(tone)}">
+        <span>${escapeHtml(stat.label)}</span>
+        <strong>${escapeHtml(stat.value)}</strong>
+      </span>`
+    })
+    .join("")
+  return `<section class="db-chat-review" aria-label="Generated output review">
+    <div class="db-chat-review-head">
+      <span class="db-chat-review-kicker">What changed</span>
+      <h4>${escapeHtml(review.title)}</h4>
+    </div>
+    <p>${escapeHtml(review.summary)}</p>
+    ${stats ? `<div class="db-chat-review-stats">${stats}</div>` : ""}
+  </section>`
+}
+
 export function renderChatMessage(msg: ChatMessage): string {
   const role = msg.role
   const status = msg.status ?? (role === "user" ? "ok" : "ok")
@@ -62,6 +88,7 @@ export function renderChatMessage(msg: ChatMessage): string {
     msg.files && msg.files.length > 0
       ? `<div class="db-chat-files">${msg.files.map((f) => fileChip(f.path, f.size)).join("")}</div>`
       : ""
+  const reviewBlock = msg.review ? renderReview(msg.review) : ""
 
   const timeLabel = formatTime(msg.timestamp)
 
@@ -69,6 +96,7 @@ export function renderChatMessage(msg: ChatMessage): string {
     <div class="db-chat-bubble">
       ${bubbleInner}
     </div>
+    ${reviewBlock}
     ${filesBlock}
     ${timeLabel ? `<span class="db-chat-time">${escapeHtml(timeLabel)}</span>` : ""}
   </li>`

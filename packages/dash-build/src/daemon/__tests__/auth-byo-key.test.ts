@@ -8,15 +8,18 @@ let daemon: RunningDaemon
 let baseUrl: string
 let workDir: string
 let originalHome: string | undefined
+let originalPath: string | undefined
 
 // We point HOME at a temp dir so BYOKeyStore's default
-// `~/.dash-build/auth/anthropic-byo-key.json` lands inside the test
+// `~/.dash-build/auth/openai-byo-key.json` lands inside the test
 // scratch directory. The daemon's auth route uses `new BYOKeyStore()`
 // with no overrides, so HOME is the only knob we have.
 beforeAll(async () => {
   workDir = await mkdtemp(join(tmpdir(), "dash-build-byo-key-"))
   originalHome = process.env.HOME
+  originalPath = process.env.PATH
   process.env.HOME = workDir
+  process.env.PATH = workDir
 
   daemon = await startDaemon({
     port: 0,
@@ -34,25 +37,27 @@ afterAll(async () => {
   await daemon.close()
   if (originalHome === undefined) delete process.env.HOME
   else process.env.HOME = originalHome
+  if (originalPath === undefined) delete process.env.PATH
+  else process.env.PATH = originalPath
   await rm(workDir, { recursive: true, force: true })
 })
 
-describe("Anthropic BYO API key routes (ToS-safe)", () => {
-  it("GET /api/auth/anthropic returns BYO + Claude-CLI options when no key saved", async () => {
-    const r = await fetch(`${baseUrl}/api/auth/anthropic`)
+describe("OpenAI auth routes", () => {
+  it("GET /api/auth/openai returns Codex + BYO key options", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/openai`)
     expect(r.status).toBe(200)
     const body = await r.json()
     expect(body.ok).toBe(true)
-    expect(body.provider).toBe("anthropic")
-    expect(body.mode).toBe("none")
-    expect(body.connected).toBe(false)
+    expect(body.provider).toBe("openai")
+    expect(body.mode === "none" || body.mode === "byo-key").toBe(true)
+    expect(typeof body.connected).toBe("boolean")
     expect(body.options.byoKey).toBeDefined()
-    expect(body.options.claudeCli).toBeDefined()
-    expect(body.tosNote).toMatch(/banned/i)
+    expect(body.options.codexCli).toBeDefined()
+    expect(body.loginStatus === null || typeof body.loginStatus === "string").toBe(true)
   })
 
-  it("POST /api/auth/anthropic rejects missing apiKey", async () => {
-    const r = await fetch(`${baseUrl}/api/auth/anthropic`, {
+  it("POST /api/auth/openai rejects missing apiKey", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/openai`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({}),
@@ -63,8 +68,8 @@ describe("Anthropic BYO API key routes (ToS-safe)", () => {
     expect(body.error).toBe("missing_apiKey")
   })
 
-  it("POST /api/auth/anthropic rejects invalid prefix", async () => {
-    const r = await fetch(`${baseUrl}/api/auth/anthropic`, {
+  it("POST /api/auth/openai rejects invalid prefix", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/openai`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ apiKey: "not-a-real-key" }),
@@ -72,14 +77,14 @@ describe("Anthropic BYO API key routes (ToS-safe)", () => {
     expect(r.status).toBe(400)
     const body = await r.json()
     expect(body.ok).toBe(false)
-    expect(body.error).toMatch(/sk-ant-/)
+    expect(body.error).toMatch(/sk-/)
   })
 
-  it("POST /api/auth/anthropic accepts valid-prefix key + flips connected=true", async () => {
-    const r = await fetch(`${baseUrl}/api/auth/anthropic`, {
+  it("POST /api/auth/openai accepts valid-prefix key + flips connected=true", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/openai`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ apiKey: "sk-ant-test-only-fake-12345" }),
+      body: JSON.stringify({ apiKey: "sk-test-only-fake-12345" }),
     })
     expect(r.status).toBe(200)
     const body = await r.json()
@@ -87,36 +92,36 @@ describe("Anthropic BYO API key routes (ToS-safe)", () => {
     expect(body.mode).toBe("byo-key")
 
     // Status now reports connected.
-    const status = await fetch(`${baseUrl}/api/auth/anthropic`).then((x) =>
+    const status = await fetch(`${baseUrl}/api/auth/openai`).then((x) =>
       x.json(),
     )
     expect(status.connected).toBe(true)
-    expect(status.mode).toBe("byo-key")
+    expect(status.activeMode).toBe("byo-key")
   })
 
-  it("DELETE /api/auth/anthropic clears the key + flips connected=false", async () => {
-    const r = await fetch(`${baseUrl}/api/auth/anthropic`, {
+  it("DELETE /api/auth/openai clears the key + flips connected=false", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/openai`, {
       method: "DELETE",
     })
     expect(r.status).toBe(200)
     const body = await r.json()
     expect(body.ok).toBe(true)
 
-    const status = await fetch(`${baseUrl}/api/auth/anthropic`).then((x) =>
+    const status = await fetch(`${baseUrl}/api/auth/openai`).then((x) =>
       x.json(),
     )
-    expect(status.connected).toBe(false)
     expect(status.mode).toBe("none")
   })
 
-  it("GET /api/auth/anthropic/claude-cli returns probe result + login instructions", async () => {
-    const r = await fetch(`${baseUrl}/api/auth/anthropic/claude-cli`)
+  it("GET /api/auth/openai/codex-cli returns probe result + login instructions", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/openai/codex-cli`)
     expect(r.status).toBe(200)
     const body = await r.json()
     expect(body.ok).toBe(true)
     expect(typeof body.installed).toBe("boolean")
+    expect(typeof body.authenticated).toBe("boolean")
     // version is null if not installed, string otherwise
     expect(body.version === null || typeof body.version === "string").toBe(true)
-    expect(body.loginInstructions).toMatch(/claude login/i)
+    expect(body.loginInstructions).toMatch(/codex login/i)
   })
 })

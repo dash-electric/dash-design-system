@@ -6,16 +6,16 @@ import { handleUpgrade } from "./ws/server.js"
 import { writePidFile, deletePidFile } from "./pid-file.js"
 import {
   Orchestrator,
-  defaultAnthropicProvider,
   defaultClarificationGateway,
   defaultGithubProvider,
+  defaultOpenAIProvider,
   defaultSkillChainRunner,
   Worker,
 } from "../pipeline/index.js"
-import { AuthenticatedAnthropicClient } from "../auth/anthropic/index.js"
+import { AuthenticatedOpenAIClient } from "../auth/openai/index.js"
 import { GitHubAppClient } from "../integrations/github/index.js"
 import { SessionStore } from "../clarification/session-store.js"
-import { registerClarificationRoutes } from "../clarification/api-routes.js"
+import { handleClarificationRequest } from "../clarification/api-routes.js"
 // pid-file lives alongside this file in src/daemon/pid-file.ts
 
 export interface DaemonServerOptions {
@@ -62,7 +62,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
     clarificationStore = new SessionStore()
     await clarificationStore.reload().catch(() => 0)
 
-    const anthropicClient = new AuthenticatedAnthropicClient()
+    const openAIClient = new AuthenticatedOpenAIClient()
     const githubClient = new GitHubAppClient()
 
     const sessionStoreRef = clarificationStore
@@ -70,7 +70,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
       store,
       broadcaster,
       clarification: defaultClarificationGateway(clarificationStore),
-      anthropic: defaultAnthropicProvider(anthropicClient),
+      anthropic: defaultOpenAIProvider(openAIClient),
       github: defaultGithubProvider(githubClient),
       skillChain: defaultSkillChainRunner(),
       expireSessions: (ms) => sessionStoreRef.expire(ms),
@@ -81,21 +81,36 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
     }
   }
 
+  const resumeAfterClarification = async (
+    promptId: string,
+    outcome: "answered" | "skipped",
+  ) => {
+    if ((outcome === "answered" || outcome === "skipped") && orchestrator) {
+      await orchestrator.resumeAfterClarification(promptId).catch(() => {})
+    }
+  }
+
   const server = createServer((req, res) => {
+    const pathname = new URL(req.url ?? "/", `http://${host}:${port}`).pathname
+    if (clarificationStore && pathname.startsWith("/api/clarification/")) {
+      void handleClarificationRequest(req, res, clarificationStore, {
+        onComplete: resumeAfterClarification,
+      }).catch((err) => {
+        if (!res.headersSent) {
+          res.statusCode = 500
+          res.setHeader("content-type", "application/json; charset=utf-8")
+          res.end(
+            JSON.stringify({
+              error: "internal",
+              message: err instanceof Error ? err.message : String(err),
+            }),
+          )
+        }
+      })
+      return
+    }
     void router(req, res, { store, broadcaster, orchestrator: orchestrator ?? undefined })
   })
-
-  // Mount Agent F's clarification routes. They listen on the same server's
-  // "request" event and complete the response themselves.
-  if (clarificationStore && orchestrator) {
-    registerClarificationRoutes(server, clarificationStore, {
-      onComplete: async (promptId, outcome) => {
-        if (outcome === "answered") {
-          await orchestrator!.resumeAfterClarification(promptId).catch(() => {})
-        }
-      },
-    })
-  }
 
   server.on("upgrade", (req, socket, head) => {
     handleUpgrade(req, socket as never, head, { broadcaster })

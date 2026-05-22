@@ -10,6 +10,7 @@ import {
   type PromptRecord,
   type PromptStatus,
   createInitialState,
+  normalizeDaemonState,
 } from "./types.js"
 
 const DEFAULT_DIR = join(homedir(), ".dash-build")
@@ -55,7 +56,7 @@ export class Store {
 
     try {
       const raw = await readFile(filePath, "utf8")
-      const parsed = JSON.parse(raw) as DaemonState
+      const parsed = normalizeDaemonState(JSON.parse(raw))
       // Light shape validation — fall back to fresh if missing required keys
       if (!parsed.auth || !parsed.prompts || !parsed.workspace) {
         throw new Error("invalid state shape")
@@ -92,10 +93,10 @@ export class Store {
   }
 
   async setAuth<P extends AuthProvider>(provider: P, update: AuthUpdate<P>): Promise<void> {
-    if (provider === "anthropic") {
-      const u = update as AuthUpdate<"anthropic">
-      this.state.auth.anthropic = {
-        ...this.state.auth.anthropic,
+    if (provider === "openai") {
+      const u = update as AuthUpdate<"openai">
+      this.state.auth.openai = {
+        ...this.state.auth.openai,
         ...u,
       }
     } else {

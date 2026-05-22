@@ -42,7 +42,7 @@ export function registerClarificationRoutes(
     if (res.headersSent || res.writableEnded) return
 
     try {
-      await handleRequest(req, res, store, opts)
+      await handleClarificationRequest(req, res, store, opts)
     } catch (err) {
       if (!res.headersSent) {
         sendJson(res, 500, {
@@ -54,7 +54,7 @@ export function registerClarificationRoutes(
   })
 }
 
-async function handleRequest(
+export async function handleClarificationRequest(
   req: IncomingMessage,
   res: ServerResponse,
   store: SessionStore,

@@ -6,9 +6,9 @@
  * ~/.dash-build/state.json on every mutation.
  */
 
-export type AuthProvider = "anthropic" | "github"
+export type AuthProvider = "openai" | "github"
 
-export interface AnthropicAuthState {
+export interface OpenAIAuthState {
   connected: boolean
   user: string | null
 }
@@ -19,7 +19,7 @@ export interface GithubAuthState {
 }
 
 export interface AuthState {
-  anthropic: AnthropicAuthState
+  openai: OpenAIAuthState
   github: GithubAuthState
 }
 
@@ -58,7 +58,7 @@ export interface DaemonState {
   workspace: WorkspaceState
 }
 
-export interface AuthUpdateAnthropic {
+export interface AuthUpdateOpenAI {
   connected?: boolean
   user?: string | null
 }
@@ -68,8 +68,8 @@ export interface AuthUpdateGithub {
   repos?: string[]
 }
 
-export type AuthUpdate<P extends AuthProvider> = P extends "anthropic"
-  ? AuthUpdateAnthropic
+export type AuthUpdate<P extends AuthProvider> = P extends "openai"
+  ? AuthUpdateOpenAI
   : AuthUpdateGithub
 
 export const DAEMON_VERSION = "0.1.0"
@@ -79,10 +79,57 @@ export function createInitialState(): DaemonState {
     version: DAEMON_VERSION,
     startedAt: new Date().toISOString(),
     auth: {
-      anthropic: { connected: false, user: null },
+      openai: { connected: false, user: null },
       github: { connected: false, repos: [] },
     },
     prompts: [],
     workspace: { activeRepo: null, activeBranch: null },
+  }
+}
+
+export function normalizeDaemonState(input: unknown): DaemonState {
+  const base = createInitialState()
+  const parsed = (input && typeof input === "object" ? input : {}) as Partial<DaemonState> & {
+    auth?: {
+      openai?: Partial<OpenAIAuthState>
+      anthropic?: Partial<OpenAIAuthState>
+      github?: Partial<GithubAuthState>
+    }
+    workspace?: Partial<WorkspaceState>
+  }
+
+  return {
+    version: typeof parsed.version === "string" ? parsed.version : base.version,
+    startedAt:
+      typeof parsed.startedAt === "string" ? parsed.startedAt : base.startedAt,
+    auth: {
+      openai: {
+        connected:
+          parsed.auth?.openai?.connected ??
+          parsed.auth?.anthropic?.connected ??
+          base.auth.openai.connected,
+        user:
+          parsed.auth?.openai?.user ??
+          parsed.auth?.anthropic?.user ??
+          base.auth.openai.user,
+      },
+      github: {
+        connected: parsed.auth?.github?.connected ?? base.auth.github.connected,
+        repos: Array.isArray(parsed.auth?.github?.repos)
+          ? parsed.auth!.github!.repos.filter((repo): repo is string => typeof repo === "string")
+          : base.auth.github.repos,
+      },
+    },
+    prompts: Array.isArray(parsed.prompts) ? parsed.prompts : base.prompts,
+    workspace: {
+      activeRepo:
+        parsed.workspace?.activeRepo === undefined
+          ? base.workspace.activeRepo
+          : parsed.workspace.activeRepo,
+      activeBranch:
+        parsed.workspace?.activeBranch === undefined
+          ? base.workspace.activeBranch
+          : parsed.workspace.activeBranch,
+    },
   }
 }

@@ -67,6 +67,9 @@ export interface GenerationArtifact {
    *  bundler failed or esbuild was unavailable — the artifact is still
    *  considered valid for PR creation; only the iframe preview is skipped. */
   bundleResult?: BundleResult
+  /** Whether the iframe is rendering the generated component or a fallback
+   *  review shell because the component bundle could not mount directly. */
+  previewMode?: "component" | "fallback"
 }
 
 /**
@@ -81,10 +84,10 @@ export interface PreviewBundler {
 // ── DI for the orchestrator ────────────────────────────────────────────────
 
 export interface AnthropicProvider {
-  /** True when at least one credential (OAuth or BYO key) is available. */
+  /** True when at least one credential (Codex login or BYO key) is available. */
   isConnected(): Promise<boolean>
   /**
-   * Build an Anthropic SDK-shaped client. The orchestrator only needs the
+   * Build a messages.create-shaped client. The orchestrator only needs the
    * `messages.create` surface (AnthropicLike) so unit tests can stub it.
    */
   buildSdkClient(): Promise<AnthropicLike>
