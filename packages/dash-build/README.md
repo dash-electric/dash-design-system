@@ -130,6 +130,8 @@ See:
 - [`docs/artifact-contracts.md`](./docs/artifact-contracts.md)
 - [`docs/skill-routing.md`](./docs/skill-routing.md)
 - [`docs/qa-and-review.md`](./docs/qa-and-review.md)
+- [`HANDOFF-2026-05-25.md`](./HANDOFF-2026-05-25.md) — current P0 status,
+  known gaps, and next-chat continuation prompt.
 
 ## Architecture
 
