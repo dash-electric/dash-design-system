@@ -9,7 +9,7 @@ import {
   type EsbuildBuildOptions,
   type EsbuildLike,
 } from "../types.js"
-import type { ParsedFile } from "../../skills/types.js"
+import type { ParsedFile, RepoContextPack } from "../../skills/types.js"
 
 const sampleTsx: ParsedFile = {
   path: "preview.tsx",
@@ -152,6 +152,45 @@ describe("preview/bundler — bundleForPreview", () => {
         path.join(root, "alias", "apps", "docs", "registry", "dash", "templates", "thing.tsx"),
       )
     })
+  })
+
+  it("wraps generated previews with deterministic repo shell context", async () => {
+    const esb = fakeEsbuild()
+    const repoContext: RepoContextPack = {
+      selectedRepo: "dash/backoffice",
+      repoSlug: "backoffice",
+      theme: "ride",
+      audience: "internal operations users",
+      surface: "backoffice",
+      existingShell: true,
+      requiresNavOrRoute: true,
+      defaultRoute: "/delivery",
+      targetRoute: "/delivery",
+      targetNavLabel: "Orders",
+      existingNavItems: ["Dashboard", "Mitra", "Orders", "Payroll"],
+      routeRequirement: "Use the delivery route.",
+      integrationContract: "Target route: /delivery. Target nav: Orders.",
+      dataPolicy: "mock-data-only",
+      ambiguity: null,
+    }
+
+    await bundleForPreview({
+      files: [sampleTsx],
+      promptId: "repo-shell",
+      rootDir: root,
+      esbuildModule: esb,
+      repoContext,
+    })
+
+    const generatedEntry = await fs.readFile(
+      path.join(root, "repo-shell", "__dash_preview_entry.tsx"),
+      "utf8",
+    )
+    expect(generatedEntry).toContain("DashPreviewHarness")
+    expect(generatedEntry).toContain('"repoSlug":"backoffice"')
+    expect(generatedEntry).toContain('"route":"/delivery"')
+    expect(generatedEntry).toContain('"activeNav":"Orders"')
+    expect(generatedEntry).toContain("data-repo-shell")
   })
 
   it("throws BundleError when files is empty", async () => {

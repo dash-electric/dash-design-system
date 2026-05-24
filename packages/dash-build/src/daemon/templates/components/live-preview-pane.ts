@@ -113,13 +113,66 @@ function renderBaseline(info?: RepoPreviewInfo | null): string {
     </div>`
   }
 
+  const baseline = info.baseline
+  const navItems = baseline.shell.nav
+    .map((item, index) => {
+      const active = index === 0 ? " db-baseline-shell-nav-item--active" : ""
+      return `<span class="db-baseline-shell-nav-item${active}">${escapeHtml(item)}</span>`
+    })
+    .join("")
+  const hints = baseline.shell.contentHints
+    .map((hint) => `<li>${escapeHtml(hint)}</li>`)
+    .join("")
+  const unavailableReason =
+    baseline.unavailableReason ?? (info.status === "running" ? "" : info.message)
+  const fallbackReason = unavailableReason
+    ? `<p class="db-baseline-shell-reason">${escapeHtml(unavailableReason)}</p>`
+    : ""
+  const auth = info.metadata.auth
+  const authLabel =
+    auth.mode === "none"
+      ? "No auth gate"
+      : auth.mode === "real-session-required"
+        ? "Real session required"
+        : "Preview harness required"
+  const authPlan = auth.unblockPlan
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join("")
+  const authKeys = auth.sessionKeys
+    .map((item) => `<code>${escapeHtml(item)}</code>`)
+    .join("")
+  const authRoutes = auth.routes
+    .map((route) => `<code>${escapeHtml(route)}</code>`)
+    .join("")
+  const authCallout =
+    auth.mode === "none"
+      ? ""
+      : `<aside class="db-auth-preview-callout" aria-label="Preview auth note">
+        <div class="db-auth-preview-head">
+          <span class="db-auth-preview-kicker">${escapeHtml(authLabel)}</span>
+          <strong>Real app is live, but protected.</strong>
+        </div>
+        <p>${escapeHtml(auth.summary)}</p>
+        <div class="db-auth-preview-meta">
+          <span>Routes ${authRoutes}</span>
+          <span>Session ${authKeys}</span>
+        </div>
+        <ol>${authPlan}</ol>
+      </aside>`
+
+  if (info.status === "running" && auth.mode !== "none") {
+    return renderAuthHarness(info, authCallout)
+  }
+
   if (info.status === "running") {
     return `<div class="db-live-preview-state db-live-preview-state--ready db-live-preview-state--baseline" data-state="baseline">
       <div class="db-baseline-ribbon">
-        <span>Baseline repo</span>
+        <span>${escapeHtml(baseline.label)}</span>
         <code>${escapeHtml(info.repo)}</code>
+        <span>${escapeHtml(baseline.surface)}</span>
         <a href="${escapeHtml(info.url)}" target="_blank" rel="noreferrer">Open app ↗</a>
       </div>
+      ${authCallout}
       <iframe
         class="db-live-preview-frame"
         title="Selected repo baseline preview"
@@ -148,18 +201,132 @@ function renderBaseline(info?: RepoPreviewInfo | null): string {
     : ""
 
   return `<div class="db-live-preview-state db-live-preview-state--idle" data-state="baseline">
-    <div class="db-baseline-card" data-repo-preview="${escapeHtml(info.repo)}">
-      <span class="db-baseline-kicker">Existing repo</span>
-      <h3 class="db-live-preview-empty-title">${escapeHtml(info.repo)}</h3>
-      <p class="db-live-preview-empty-body">${escapeHtml(info.message)}</p>
-      ${error}
-      <pre class="db-baseline-command"><code>${escapeHtml(command)}</code></pre>
-      <div class="db-baseline-actions">
-        <button type="button" class="db-live-preview-action" data-repo-preview-start="${escapeHtml(info.repo)}"${disabled}>${escapeHtml(cta)} →</button>
-        <button type="button" class="db-button db-button-secondary db-baseline-copy" data-copy-command="${escapeHtml(command)}">Copy command</button>
-      </div>
-      <p class="db-live-preview-empty-body db-baseline-note">After it is running, the current app appears here. Generated output will replace this iframe when the prompt finishes.</p>
+    <div class="db-baseline-shell" data-repo-preview="${escapeHtml(info.repo)}">
+      <aside class="db-baseline-shell-rail" aria-label="${escapeHtml(baseline.label)} navigation">
+        <div class="db-baseline-shell-mark">${escapeHtml(baseline.label.slice(0, 1))}</div>
+        <nav class="db-baseline-shell-nav">${navItems}</nav>
+      </aside>
+      <section class="db-baseline-shell-main">
+        <header class="db-baseline-shell-head">
+          <div>
+            <span class="db-baseline-kicker">Baseline fallback</span>
+            <h3 class="db-baseline-shell-title">${escapeHtml(baseline.shell.title)}</h3>
+            <p class="db-baseline-shell-meta">${escapeHtml(info.repo)} &middot; ${escapeHtml(baseline.theme)} &middot; ${escapeHtml(baseline.audience)}</p>
+          </div>
+          <span class="db-baseline-shell-status">${escapeHtml(info.status.replace(/_/g, " "))}</span>
+        </header>
+        <p class="db-baseline-shell-description">${escapeHtml(baseline.description)}</p>
+        ${fallbackReason}
+        ${error}
+        ${auth.mode === "none" ? "" : `<div class="db-baseline-auth-summary">
+          <span>${escapeHtml(authLabel)}</span>
+          <p>${escapeHtml(auth.summary)}</p>
+        </div>`}
+        <div class="db-baseline-shell-grid" aria-hidden="true">
+          <div class="db-baseline-shell-panel db-baseline-shell-panel--wide">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="db-baseline-shell-panel">
+            <span></span><span></span>
+          </div>
+          <div class="db-baseline-shell-panel">
+            <span></span><span></span>
+          </div>
+        </div>
+        <ul class="db-baseline-shell-hints">${hints}</ul>
+        <div class="db-baseline-actions">
+          <button type="button" class="db-live-preview-action" data-repo-preview-start="${escapeHtml(info.repo)}"${disabled}>${escapeHtml(cta)} →</button>
+          <button type="button" class="db-button db-button-secondary db-baseline-copy" data-copy-command="${escapeHtml(command)}">Copy command</button>
+        </div>
+        <pre class="db-baseline-command"><code>${escapeHtml(command)}</code></pre>
+        <p class="db-live-preview-empty-body db-baseline-note">Generated output will replace this baseline once Dash Build finishes a prompt.</p>
+      </section>
     </div>
+  </div>`
+}
+
+function renderAuthHarness(info: RepoPreviewInfo, authCallout: string): string {
+  const baseline = info.baseline
+  const repoKind = info.repo.includes("portal") ? "portal" : "backoffice"
+  const nav = baseline.shell.nav
+    .map((item, index) => {
+      const active = index === 0 ? " db-preview-harness-nav-item--active" : ""
+      return `<span class="db-preview-harness-nav-item${active}">${escapeHtml(item)}</span>`
+    })
+    .join("")
+  const metricLabels =
+    repoKind === "portal"
+      ? ["Active deliveries", "COD balance", "Open invoices", "Support SLA"]
+      : ["Active mitra", "Suspended", "Resigned", "Monthly trend"]
+  const metrics = metricLabels
+    .map((label, index) => {
+      const value = repoKind === "portal"
+        ? ["1,248", "Rp82.4m", "17", "98.1%"][index]
+        : ["12,842", "184", "39", "+8.4%"][index]
+      return `<article class="db-preview-harness-card">
+        <span>${escapeHtml(label)}</span>
+        <strong>${escapeHtml(value)}</strong>
+      </article>`
+    })
+    .join("")
+  const tableRows =
+    repoKind === "portal"
+      ? [
+          ["ORD-1042", "Same day", "In transit", "Rp248k"],
+          ["ORD-1043", "Instant", "Waiting pickup", "Rp92k"],
+          ["ORD-1044", "Regular", "Delivered", "Rp138k"],
+        ]
+      : [
+          ["DVR-2841", "Active", "Jakarta Selatan", "4.8"],
+          ["DVR-1902", "Suspended", "Bandung", "3.9"],
+          ["DVR-4420", "Resigned", "Surabaya", "4.2"],
+        ]
+  const rows = tableRows
+    .map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`)
+    .join("")
+  const shellTitle =
+    repoKind === "portal"
+      ? "Portal v2 preview harness"
+      : "Backoffice preview harness"
+  const shellBody =
+    repoKind === "portal"
+      ? "First-party preview with mocked client session, sandbox API posture, and route context for portal-v2 screens."
+      : "First-party preview with mocked internal user session, role-aware nav context, and fixture data for backoffice screens."
+
+  return `<div class="db-live-preview-state db-live-preview-state--ready db-live-preview-state--baseline" data-state="baseline" data-preview-harness="${escapeHtml(info.repo)}">
+    <div class="db-baseline-ribbon">
+      <span>${escapeHtml(baseline.label)}</span>
+      <code>${escapeHtml(info.repo)}</code>
+      <span>Preview harness</span>
+      <a href="${escapeHtml(info.url)}" target="_blank" rel="noreferrer">Open real app ↗</a>
+    </div>
+    <div class="db-preview-harness">
+      <aside class="db-preview-harness-rail">
+        <div class="db-preview-harness-brand">${escapeHtml(baseline.label.slice(0, 1))}</div>
+        <nav>${nav}</nav>
+      </aside>
+      <main class="db-preview-harness-main">
+        <header class="db-preview-harness-head">
+          <div>
+            <span class="db-preview-harness-kicker">Auth-safe canvas</span>
+            <h3>${escapeHtml(shellTitle)}</h3>
+            <p>${escapeHtml(shellBody)}</p>
+          </div>
+          <span class="db-preview-harness-pill">Mock session</span>
+        </header>
+        <section class="db-preview-harness-metrics">${metrics}</section>
+        <section class="db-preview-harness-panel">
+          <div class="db-preview-harness-panel-head">
+            <strong>${repoKind === "portal" ? "Recent deliveries" : "Mitra performance"}</strong>
+            <span>Fixture data</span>
+          </div>
+          <table>
+            <tbody>${rows}</tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+    ${authCallout}
   </div>`
 }
 

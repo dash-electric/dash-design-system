@@ -6,7 +6,8 @@
  *   - medium : raw hex / missing tokens / casual voice on mitra surface (-5 to -10)
  *   - low    : style / TODO smell                                       (-2)
  *
- * `passed` flips to false on ANY high error. Score is clamped 0..100.
+ * `passed` flips to false on ANY high error or CR-5 token violation. Score is
+ * clamped 0..100.
  */
 
 import { BANNED_IMPORTS } from "./prompt-composer.js"
@@ -126,8 +127,9 @@ export function validateOutput(
   }
 
   const highCount = errors.filter((e) => e.severity === "high").length
+  const tokenViolationCount = errors.filter((e) => e.ruleId === "CR-5").length
   return {
-    passed: highCount === 0,
+    passed: highCount === 0 && tokenViolationCount === 0,
     score: Math.max(0, Math.min(100, score)),
     errors,
     warnings,

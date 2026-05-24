@@ -255,6 +255,7 @@ export class Orchestrator {
       result = await this.skillChain.run({
         prompt: prompt.text,
         repoPath: this.repoPathResolver(prompt.repo),
+        selectedRepo: prompt.repo,
         anthropic: sdk,
       })
     } catch (err) {
@@ -279,6 +280,7 @@ export class Orchestrator {
       explanation: result.response.explanation,
       validation: result.validation,
       generatedAt: new Date().toISOString(),
+      contextPack: result.meta.repoContext,
     }
 
     // 4b. Best-effort sandbox bundle for the iframe preview. Failure is
@@ -288,6 +290,7 @@ export class Orchestrator {
       const bundleResult = await this.previewBundler.bundle({
         files: artifact.files,
         promptId: prompt.id,
+        repoContext: artifact.contextPack,
       })
       artifact.bundleResult = bundleResult
       artifact.previewMode = "component"
@@ -722,7 +725,11 @@ export function defaultSkillChainRunner(): SkillChainRunner {
   return {
     async run(input) {
       return generateWithSkillChain(
-        { prompt: input.prompt, repoPath: input.repoPath },
+        {
+          prompt: input.prompt,
+          repoPath: input.repoPath,
+          selectedRepo: input.selectedRepo ?? null,
+        },
         { anthropic: input.anthropic },
       )
     },

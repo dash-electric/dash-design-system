@@ -73,6 +73,63 @@ export interface SkillContext {
 }
 
 // ---------------------------------------------------------------------------
+// Repo-aware context pack
+// ---------------------------------------------------------------------------
+
+export type DashTheme =
+  | "shared"
+  | "ride"
+  | "logistic"
+  | "travel"
+  | "marketplace"
+  | "outsourcing"
+  | `trellis-${string}`
+
+export type RepoSurface =
+  | "backoffice"
+  | "portal-v2"
+  | "basecamp"
+  | "react-fleet"
+  | "dash-travel-fe"
+  | "dash-marketplace"
+  | `trellis-${string}`
+  | "shared"
+  | "unknown"
+
+export interface RepoContextPack {
+  /** Repo selected in Dash Build UI / caller. Example: dash/backoffice. */
+  selectedRepo: string | null
+  /** Normalized repo/surface key used for stack + audience inference. */
+  repoSlug: RepoSurface
+  /** Product or tenant theme for registry metadata and downstream routing. */
+  theme: DashTheme
+  /** Human-readable audience inferred from repo + prompt. */
+  audience: string
+  /** User-facing surface name inferred from repo + prompt. */
+  surface: string
+  /** Generation must integrate into the existing selected repo shell. */
+  existingShell: boolean
+  /** Prompt asks for a page/tab/navigation/route surface. */
+  requiresNavOrRoute: boolean
+  /** Known default route for the selected repo/surface, if Dash Build can infer it. */
+  defaultRoute: string | null
+  /** Best inferred route/page the generated change should integrate with. */
+  targetRoute: string | null
+  /** Best inferred nav label/menu item for the generated change. */
+  targetNavLabel: string | null
+  /** Known shell/nav entries for the selected repo. */
+  existingNavItems: string[]
+  /** Concrete route/nav instruction when requiresNavOrRoute is true. */
+  routeRequirement: string | null
+  /** Human-readable integration contract injected into generation and review. */
+  integrationContract: string
+  /** P0 context pack policy: generated preview/production examples use mocks. */
+  dataPolicy: "mock-data-only"
+  /** Whether repo/theme was inferred from weak signal and should be surfaced. */
+  ambiguity: string | null
+}
+
+// ---------------------------------------------------------------------------
 // Stage 4 — Response parsing
 // ---------------------------------------------------------------------------
 
@@ -117,8 +174,11 @@ export interface GenerateInput {
   prompt: string
   /** Path the user is generating against (drives Skill v4 per-repo detection). */
   repoPath: string
+  /** Repo selected by Dash Build, e.g. dash/backoffice. */
+  selectedRepo?: string | null
   detectedRepo?: string | null
   detectedLayer?: "ride" | "logistic" | "shared" | null
+  contextPack?: RepoContextPack
 }
 
 export type GenerateResult =
@@ -137,6 +197,7 @@ export type GenerateResult =
         modelId: string
         prdSectionsTouched: number
         detectedRepoStack: string | null
+        repoContext?: RepoContextPack
         designSources: string[]
         skillSources: string[]
       }

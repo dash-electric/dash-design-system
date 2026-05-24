@@ -24,7 +24,7 @@ import { randomUUID } from "node:crypto"
 import { evaluatePromptScope } from "./prd-evaluator.js"
 import { loadDesignContext } from "./design-loader.js"
 import { loadSkillContext } from "./skill-loader.js"
-import { composeSystemPrompt } from "./prompt-composer.js"
+import { composeSystemPrompt, inferRepoContextPack } from "./prompt-composer.js"
 import { extractText, parseResponse } from "./response-parser.js"
 import { validateOutput } from "./validator.js"
 import type {
@@ -46,6 +46,21 @@ export async function generateWithSkillChain(
 ): Promise<GenerateResult> {
   const promptId = (deps.promptId ?? genPromptId)()
   const modelId = deps.modelId ?? DEFAULT_MODEL_ID
+  const repoContext =
+    input.contextPack ??
+    inferRepoContextPack({
+      prompt: input.prompt,
+      selectedRepo: input.selectedRepo ?? input.detectedRepo ?? null,
+      detectedRepo: input.detectedRepo ?? null,
+      detectedLayer: input.detectedLayer ?? null,
+      repoPath: input.repoPath,
+    })
+  const detectedRepo = input.detectedRepo ?? repoContext.repoSlug
+  const detectedLayer =
+    input.detectedLayer ??
+    (repoContext.theme === "ride" || repoContext.theme === "logistic" || repoContext.theme === "shared"
+      ? repoContext.theme
+      : null)
 
   // ── Stage 1: PRD evaluation ───────────────────────────────────────────────
   const evaluate = deps.evaluatePRD ?? evaluatePromptScope
@@ -53,8 +68,8 @@ export async function generateWithSkillChain(
   try {
     prdEval = await evaluate({
       prompt: input.prompt,
-      detectedRepo: input.detectedRepo ?? null,
-      detectedLayer: input.detectedLayer ?? null,
+      detectedRepo: detectedRepo === "unknown" ? null : detectedRepo,
+      detectedLayer,
     })
   } catch (err) {
     return { kind: "error", reason: "prd-evaluator failed", details: err }
@@ -92,7 +107,7 @@ export async function generateWithSkillChain(
   ])
 
   // ── Stage 4: compose system prompt ───────────────────────────────────────
-  const systemPrompt = composeSystemPrompt({ prd: prdEval, design, skill })
+  const systemPrompt = composeSystemPrompt({ prd: prdEval, design, skill, repoContext })
 
   // ── Stage 5: call Claude ─────────────────────────────────────────────────
   if (!deps.anthropic) {
@@ -136,6 +151,7 @@ export async function generateWithSkillChain(
       modelId,
       prdSectionsTouched: prdEval.sectionsTouched,
       detectedRepoStack: skill.detectedRepoStack,
+      repoContext,
       designSources: design.loadedSources,
       skillSources: skill.sources,
     },

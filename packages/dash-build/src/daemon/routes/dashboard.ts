@@ -10,12 +10,15 @@ import { bundlePathFor } from "../../preview/bundler.js"
 
 const codexCli = new CodexCliRunner()
 
-function activePromptId(store: Store): string | null {
+function activePromptId(store: Store, selectedRepo: string | null): string | null {
   const prompts = store.getPrompts(20)
-  const live = prompts.find((p) =>
+  const repoPrompts = selectedRepo
+    ? prompts.filter((p) => p.repo === selectedRepo)
+    : prompts
+  const live = repoPrompts.find((p) =>
     ["queued", "clarifying", "generating", "awaiting_approval"].includes(p.status),
   )
-  return (live ?? prompts[0])?.id ?? null
+  return (live ?? repoPrompts[0])?.id ?? null
 }
 
 export async function handleDashboard(
@@ -32,7 +35,7 @@ export async function handleDashboard(
     auth.github.repos[0] ??
     "dash/portal-v2"
   const repoPreview = await getRepoPreviewInfo(selectedRepo)
-  const activeId = activePromptId(store)
+  const activeId = activePromptId(store, selectedRepo)
   const previewBundleAvailable = activeId
     ? existsSync(bundlePathFor(activeId))
     : undefined

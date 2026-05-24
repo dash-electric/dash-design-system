@@ -33,16 +33,25 @@ export function renderPromptInput(opts: PromptInputOptions = {}): string {
         <span class="db-prompt-hint-icon">⚡</span>
         Skill chain auto-evaluates scope before generation
       </span>
-      <button
-        id="db-prompt-submit"
-        class="db-button db-button-primary"
-        type="button"
-        aria-label="Generate feature from prompt"
-        ${disabled}
-      >
-        <span class="db-button-label">Generate</span>
-        <span class="db-button-arrow" aria-hidden="true">→</span>
-      </button>
+      <span class="db-prompt-actions">
+        <button
+          id="db-local-run-reset"
+          class="db-button db-button-ghost db-button-compact"
+          type="button"
+          aria-label="Reset local run history"
+          ${disabled}
+        >Reset</button>
+        <button
+          id="db-prompt-submit"
+          class="db-button db-button-primary"
+          type="button"
+          aria-label="Generate feature from prompt"
+          ${disabled}
+        >
+          <span class="db-button-label">Generate</span>
+          <span class="db-button-arrow" aria-hidden="true">→</span>
+        </button>
+      </span>
     </div>
   </div>`
 }

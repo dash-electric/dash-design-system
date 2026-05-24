@@ -105,9 +105,67 @@ describe("generateWithSkillChain", () => {
     expect(call.system).toContain("Cardinal Rules")
     expect(call.system).toContain("Layered Architecture")
     expect(call.system).toContain("Per-Repo Stack Mandate")
+    expect(call.system).toContain("Repo Context Pack")
     expect(call.system).toContain("Banned Imports")
     expect(call.system).toContain("ALWAYS include a first file named `preview.tsx`")
     expect(call.messages[0].content).toBe(RICH_PROMPT)
+  })
+
+  it("injects selected repo, inferred audience/theme, nav, mock-data, and reuse constraints", async () => {
+    const deps = passingDeps()
+    const r = await generateWithSkillChain(
+      {
+        prompt: "Add a billing tab reachable from account navigation",
+        repoPath: process.cwd(),
+        selectedRepo: "dash/portal-v2",
+      },
+      deps,
+    )
+    expect(r.kind).toBe("generated")
+    const call = (deps.anthropic!.messages.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
+    expect(call.system).toContain("Selected repo: dash/portal-v2")
+    expect(call.system).toContain("Inferred surface: portal-v2")
+    expect(call.system).toContain("Inferred audience: client/web portal users")
+    expect(call.system).toContain("Theme metadata: ride")
+    expect(call.system).toContain("Known shell nav: Home, Trips, Payments, Support, Users, Billing")
+    expect(call.system).toContain("Default route: /en/deliveries")
+    expect(call.system).toContain("Target route: /en/billing")
+    expect(call.system).toContain("Target nav label: Billing")
+    expect(call.system).toContain("Existing shell constraint: Integrate into the selected repo")
+    expect(call.system).toContain("Integration contract: Target route: /en/billing")
+    expect(call.system).toContain("P0 data policy: mock-data-only")
+    expect(call.system).toContain("Route/nav requirement: Include the production route/page file")
+    expect(call.system).toContain("do not generate a standalone app shell")
+    expect(call.system).toContain('active nav "Billing"')
+    expect(call.system).toContain("route /en/billing")
+    expect(call.system).toContain("Render only the feature/page content")
+    expect(call.system).toContain("Reuse existing Dash DS registry components")
+    expect(call.system).toContain("component candidate")
+    if (r.kind === "generated") {
+      expect(r.meta.repoContext?.repoSlug).toBe("portal-v2")
+      expect(r.meta.repoContext?.requiresNavOrRoute).toBe(true)
+      expect(r.meta.repoContext?.targetRoute).toBe("/en/billing")
+      expect(r.meta.repoContext?.targetNavLabel).toBe("Billing")
+    }
+  })
+
+  it("passes inferred repo context into PRD evaluation", async () => {
+    const evaluatePRD = vi.fn(async (): Promise<PRDEval> => PASSING_PRD_EVAL)
+    const deps = passingDeps({ evaluatePRD })
+    await generateWithSkillChain(
+      {
+        prompt: "Add a compact statement page",
+        repoPath: process.cwd(),
+        selectedRepo: "dash/backoffice",
+      },
+      deps,
+    )
+    expect(evaluatePRD).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detectedRepo: "backoffice",
+        detectedLayer: "ride",
+      }),
+    )
   })
 
   it("invokes design + skill loaders in parallel", async () => {

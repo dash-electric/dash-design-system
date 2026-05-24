@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http"
 import type { Store } from "../../state/store.js"
 import type { Broadcaster } from "../../ws/broadcaster.js"
 import type { Orchestrator } from "../../../pipeline/orchestrator.js"
+import { cleanupOne } from "../../../preview/index.js"
 import {
   badRequest,
   methodNotAllowed,
@@ -83,6 +84,20 @@ export async function handlePromptsRoute(
     return sendJson(res, 201, { ok: true, id: prompt.id, status: prompt.status })
   }
 
+  if (pathname === "/api/prompts/reset") {
+    if (req.method !== "POST") return methodNotAllowed(res)
+    const removed = await store.clearPrompts()
+    await Promise.all(removed.map((p) => cleanupOne(p.id)))
+    broadcaster.broadcast("prompts:changed", {
+      status: "reset",
+      removed: removed.length,
+    })
+    return sendJson(res, 200, {
+      ok: true,
+      removed: removed.length,
+    })
+  }
+
   // /api/prompts/:id[/approve]
   const match = pathname.match(/^\/api\/prompts\/([A-Za-z0-9_-]+)(\/approve)?$/)
   if (!match) return notFound(res)
@@ -154,6 +169,7 @@ export async function handlePromptsRoute(
           explanation: artifact.explanation,
           validation: artifact.validation,
           generatedAt: artifact.generatedAt,
+          contextPack: artifact.contextPack,
           preview: artifact.bundleResult
             ? {
                 mode: artifact.previewMode ?? "component",

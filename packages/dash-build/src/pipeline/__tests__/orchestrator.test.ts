@@ -177,6 +177,21 @@ describe("Orchestrator", () => {
     expect(artifact?.files.length).toBe(1)
   })
 
+  it("passes the selected repo into the skill chain for context inference", async () => {
+    const skillChain = makeSkillChain(GENERATED)
+    const { orchestrator } = build({ skillChain })
+    const submitted = await orchestrator.submitPrompt({
+      text: "add billing tab",
+      repo: "dash/portal-v2",
+    })
+    await orchestrator.processPrompt(submitted.promptId)
+    expect(skillChain.run).toHaveBeenCalledWith(
+      expect.objectContaining({
+        selectedRepo: "dash/portal-v2",
+      }),
+    )
+  })
+
   it("clarification path: generating → clarifying, clarification:needed fired", async () => {
     const clarification = makeClarification()
     const { orchestrator } = build({

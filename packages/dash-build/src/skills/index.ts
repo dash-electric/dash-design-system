@@ -7,7 +7,7 @@ export { generateWithSkillChain, DEFAULT_MODEL_ID } from "./chain.js"
 export { evaluatePromptScope, countPrdSectionsTouched } from "./prd-evaluator.js"
 export { loadDesignContext, findRepoRoot } from "./design-loader.js"
 export { loadSkillContext } from "./skill-loader.js"
-export { composeSystemPrompt, BANNED_IMPORTS } from "./prompt-composer.js"
+export { composeSystemPrompt, inferRepoContextPack, BANNED_IMPORTS } from "./prompt-composer.js"
 export { parseResponse, extractText, isSafePath } from "./response-parser.js"
 export { validateOutput } from "./validator.js"
 
@@ -21,6 +21,9 @@ export type {
   DesignContext,
   FoundationManifest,
   SkillContext,
+  RepoContextPack,
+  RepoSurface,
+  DashTheme,
   ParsedFile,
   ParsedResponse,
   ValidationError,

@@ -111,6 +111,10 @@ Generated UI should preserve expected behavior across repos:
   surface provenance and audit status.
 - Navigation: preserve the target repo navigation model. Do not introduce a
   new sidebar, shell, or route pattern unless explicitly requested.
+- Repo-aware preview: when a target repo is selected, Dash Build must wrap the
+  generated preview in a deterministic repo shell/navigation context and active
+  route. `preview.tsx` should render the feature/page content inside that route
+  slot, not redraw the app sidebar, topbar, or navigation from memory.
 - Prompt/composer UIs: keep the text box compact, keep actions close to the
   input, and show progress in the canvas rather than making the chat transcript
   the dominant visual object.
@@ -178,7 +182,10 @@ When generating for a target repo:
 3. Load the repo-specific stack mandate.
 4. Match the repo's implementation style.
 5. Preserve the same Dash product character.
-6. Emit a compact state-coverage checklist for UI work: loading, empty, error,
+6. Preserve the selected repo shell in the preview and generated files: active
+   nav item, route path, local data policy, and any component gaps must be
+   visible in the review artifact.
+7. Emit a compact state-coverage checklist for UI work: loading, empty, error,
    success, permission/disabled, and long-content behavior.
 
 If repo patterns conflict with this design contract, preserve working repo

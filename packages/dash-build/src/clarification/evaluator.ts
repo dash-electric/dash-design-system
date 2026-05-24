@@ -106,6 +106,31 @@ const COMPOUND_TOKENS = [
   " lalu ",
   " and ",
 ]
+const BROAD_DELIVERABLE_TOKENS = [
+  "board",
+  "dashboard",
+  "exporter",
+  "export",
+  "report",
+  "screen",
+  "page",
+  "modal",
+  "notification",
+  "banner",
+  "workflow",
+  "flow",
+]
+
+const REPO_INFERRED_NON_MITRA_AUDIENCES = [
+  "backoffice",
+  "portal-v2",
+  "portal v2",
+  "basecamp",
+  "react-fleet",
+  "fleet",
+]
+
+const P0_MOCK_DATA_ONLY = true
 
 function lower(s: string): string {
   return s.toLowerCase()
@@ -152,6 +177,11 @@ export function mentionsSurface(prompt: string): boolean {
   return SURFACE_HINTS.some((s) => p.includes(s))
 }
 
+export function hasRepoInferredAudience(prompt: string, detectedRepo: string | null): boolean {
+  const signal = lower([prompt, detectedRepo].filter(Boolean).join(" "))
+  return REPO_INFERRED_NON_MITRA_AUDIENCES.some((s) => signal.includes(s))
+}
+
 export function mentionsData(prompt: string): boolean {
   const p = lower(prompt)
   return DATA_TOKENS.some((t) => new RegExp(`\\b${t}\\b`, "i").test(p))
@@ -193,7 +223,13 @@ export function isLargeScope(prompt: string): boolean {
       idx += t.length
     }
   }
-  return compoundHits >= 2
+  if (compoundHits < 2) return false
+  if (compoundHits >= 3) return true
+  const deliverableHits = BROAD_DELIVERABLE_TOKENS.reduce(
+    (count, token) => count + (new RegExp(`\\b${token}\\b`, "i").test(p) ? 1 : 0),
+    0,
+  )
+  return deliverableHits >= 3
 }
 
 export function evaluatePrompt(input: EvaluatorInput): EvaluatorOutput {
@@ -236,6 +272,7 @@ export function evaluatePrompt(input: EvaluatorInput): EvaluatorOutput {
   if (
     mentionsData(prompt) &&
     !mentionsSource(prompt) &&
+    !P0_MOCK_DATA_ONLY &&
     !hasClarificationAnswer(prompt, dataSourceQuestion)
   ) {
     questions.push(dataSourceQuestion)
@@ -266,6 +303,7 @@ export function evaluatePrompt(input: EvaluatorInput): EvaluatorOutput {
   } else if (
     mentionsMitra(prompt) &&
     !nonMitraFacing &&
+    !hasRepoInferredAudience(prompt, detectedRepo) &&
     !explicitlyMitraFacing(prompt) &&
     !hasClarificationAnswer(prompt, voiceRuleQuestion)
   ) {

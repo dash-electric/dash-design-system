@@ -143,6 +143,13 @@ export class Store {
     return this.state.prompts.slice(0, limit)
   }
 
+  async clearPrompts(): Promise<PromptRecord[]> {
+    const removed = this.state.prompts
+    this.state.prompts = []
+    await this.persist()
+    return removed
+  }
+
   async updatePromptStatus(
     id: string,
     status: PromptStatus,

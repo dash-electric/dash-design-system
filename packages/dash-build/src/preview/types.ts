@@ -12,7 +12,7 @@
  * native binaries.
  */
 
-import type { ParsedFile } from "../skills/types.js"
+import type { ParsedFile, RepoContextPack } from "../skills/types.js"
 
 // ---------------------------------------------------------------------------
 // Bundler
@@ -28,6 +28,9 @@ export interface BundleInput {
   /** Dependency-injected esbuild module (for tests / vendor swap). When
    *  omitted we dynamic-import("esbuild") at call time. */
   esbuildModule?: EsbuildLike
+  /** Repo-aware context used to wrap generated preview content in a stable
+   *  Dash Build-owned shell instead of asking the model to redraw app chrome. */
+  repoContext?: RepoContextPack
 }
 
 export interface BundleResult {

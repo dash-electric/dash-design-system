@@ -28,7 +28,7 @@ import {
   EsbuildMissingError,
 } from "./types.js"
 import type { BundleInput, BundleResult, EsbuildLike, EsbuildPlugin } from "./types.js"
-import type { ParsedFile } from "../skills/types.js"
+import type { ParsedFile, RepoContextPack } from "../skills/types.js"
 
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024 // 5 MB
 const require = createRequire(import.meta.url)
@@ -190,6 +190,51 @@ function reactResolvePlugin(): EsbuildPlugin {
   }
 }
 
+function previewHarnessSource(ctx: RepoContextPack | undefined): string {
+  const payload = ctx?.existingShell
+    ? {
+        repoSlug: ctx.repoSlug,
+        surface: ctx.surface,
+        theme: ctx.theme,
+        route: ctx.targetRoute ?? ctx.defaultRoute,
+        activeNav: ctx.targetNavLabel,
+        navItems: ctx.existingNavItems,
+      }
+    : null
+
+  return [
+    `const DashPreviewContext = ${JSON.stringify(payload)}`,
+    "function DashPreviewHarness(props) {",
+    "  const children = props.children",
+    "  const ctx = DashPreviewContext",
+    "  if (!ctx) return children",
+    "  const navItems = Array.isArray(ctx.navItems) && ctx.navItems.length > 0 ? ctx.navItems : ['Dashboard']",
+    "  const activeNav = ctx.activeNav || navItems[0]",
+    "  const route = ctx.route || '/'",
+    "  const rail = React.createElement('aside', { className: 'dash-preview-harness-rail' },",
+    "    React.createElement('div', { className: 'dash-preview-harness-brand' }, ctx.repoSlug === 'portal-v2' ? 'Dash Portal' : 'Dash Backoffice'),",
+    "    React.createElement('nav', { className: 'dash-preview-harness-nav' },",
+    "      navItems.map((item) => React.createElement('span', {",
+    "        key: item,",
+    "        className: 'dash-preview-harness-nav-item' + (item === activeNav ? ' is-active' : ''),",
+    "      }, item))",
+    "    )",
+    "  )",
+    "  const topbar = React.createElement('header', { className: 'dash-preview-harness-topbar' },",
+    "    React.createElement('div', { className: 'dash-preview-harness-search' }, ctx.repoSlug === 'portal-v2' ? 'Search trips, invoices, users...' : 'Search orders, mitra, delivery...'),",
+    "    React.createElement('div', { className: 'dash-preview-harness-route' },",
+    "      React.createElement('span', null, ctx.surface),",
+    "      React.createElement('code', null, route)",
+    "    )",
+    "  )",
+    "  return React.createElement('div', { className: 'dash-preview-harness-app', 'data-repo-shell': ctx.repoSlug, 'data-target-route': route },",
+    "    rail,",
+    "    React.createElement('main', { className: 'dash-preview-harness-main' }, topbar, React.createElement('section', { className: 'dash-preview-harness-slot' }, children))",
+    "  )",
+    "}",
+  ].join("\n")
+}
+
 export async function bundleForPreview(opts: BundleInput): Promise<BundleResult> {
   if (opts.files.length === 0) {
     throw new BundleError([{ text: "no input files" }])
@@ -228,6 +273,8 @@ export async function bundleForPreview(opts: BundleInput): Promise<BundleResult>
       'import { createRoot } from "react-dom/client"',
       `import * as PreviewModule from ${JSON.stringify(importPath)}`,
       "",
+      previewHarnessSource(opts.repoContext),
+      "",
       'const root = document.getElementById("root")',
       "const Component = PreviewModule.default",
       "if (!root) {",
@@ -236,7 +283,7 @@ export async function bundleForPreview(opts: BundleInput): Promise<BundleResult>
       'if (typeof Component !== "function") {',
       '  throw new Error("preview_default_export_missing")',
       "}",
-      "createRoot(root).render(React.createElement(Component))",
+      "createRoot(root).render(React.createElement(DashPreviewHarness, null, React.createElement(Component)))",
       "",
     ].join("\n"),
     "utf8",

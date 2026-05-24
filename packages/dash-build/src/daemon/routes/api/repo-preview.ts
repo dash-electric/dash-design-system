@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
 import { getRepoPreviewInfo, startRepoPreview } from "../../repo-preview.js"
+import { renderLivePreviewPane } from "../../templates/components/live-preview-pane.js"
 import { badRequest, methodNotAllowed, readJsonBody, sendJson } from "../_helpers.js"
 
 interface StartBody {
@@ -19,6 +20,9 @@ export async function handleRepoPreviewRoute(
     return sendJson(res, info ? 200 : 404, {
       ok: Boolean(info),
       preview: info,
+      html: info
+        ? renderLivePreviewPane({ state: "baseline", repoPreview: info })
+        : null,
     })
   }
 
@@ -34,6 +38,9 @@ export async function handleRepoPreviewRoute(
     return sendJson(res, info ? 200 : 404, {
       ok: Boolean(info),
       preview: info,
+      html: info
+        ? renderLivePreviewPane({ state: "baseline", repoPreview: info })
+        : null,
     })
   }
 

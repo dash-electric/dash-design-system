@@ -71,6 +71,37 @@ Codex, pick `dash/portal-v2` or `dash/backoffice`, then submit a prompt. Dash
 Build will generate and render the preview locally. Install/connect the GitHub
 App only when you want the **Review & approve** action to open a real PR.
 
+Real repo preview can still be auth-gated. Backoffice requires a valid
+`UserAuth`/cross-domain session, while portal-v2 requires `clientUserToken` and
+profile/config API data on the portal origin. Dash Build should show the live
+local app URL plus the auth requirements, then render generated previews through
+a first-party preview harness with mocked auth/context and fixture data instead
+of patching production repos with bypass auth.
+
+For auth-gated repos, the canvas defaults to the first-party preview harness so
+local review does not get blocked by login screens, expired tokens, or iframe
+runtime errors. Use **Open real app** only when you need manual authenticated
+review in the target repo itself.
+
+Generated artifacts now carry their resolved Context Pack into the review card:
+selected repo, inferred surface/theme, known shell nav, default route, target
+route, target nav label, and integration contract. This makes P0 testing
+auditable: if output ignores the selected repo, check whether context inference
+or model generation failed before judging the preview.
+
+### Milestone Reset
+
+During P0 testing, use the dashboard **Reset** button or call:
+
+```bash
+curl -X POST http://localhost:7777/api/prompts/reset
+```
+
+This clears local prompt/run history and removes generated preview bundles while
+keeping the selected repo, branch, OpenAI auth, and GitHub connection intact. Use
+it before a fresh end-to-end test so old `awaiting_approval` runs do not pin the
+canvas to the wrong repo or prompt.
+
 ## Planning Workflow
 
 Dash Build adopts a gstack-inspired planning model without vendoring gstack as

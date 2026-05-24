@@ -1,8 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
 import type { Store } from "../../state/store.js"
+import { isRepoPreviewAllowed, listRepoPreviewManifests } from "../../repo-preview.js"
 import { badRequest, methodNotAllowed, readJsonBody, sendJson } from "../_helpers.js"
-
-const DEFAULT_LOCAL_REPOS = ["dash/portal-v2", "dash/backoffice"] as const
 
 /**
  * GET  /api/repos — list connected GitHub repos or local test targets.
@@ -28,6 +27,9 @@ export function handleReposRoute(
       const repo = typeof body.repo === "string" && body.repo.trim()
         ? body.repo.trim()
         : null
+      if (repo && !isRepoPreviewAllowed(repo)) {
+        return badRequest(res, "unsupported_repo")
+      }
       const branch = typeof body.branch === "string" && body.branch.trim()
         ? body.branch.trim()
         : "main"
@@ -39,13 +41,31 @@ export function handleReposRoute(
 
   if (req.method !== "GET") return methodNotAllowed(res)
   const auth = store.getAuth()
-  const repos = auth.github.repos.length > 0
-    ? auth.github.repos
-    : [...DEFAULT_LOCAL_REPOS]
+  const manifests = listRepoPreviewManifests()
+  const allowedIds = manifests.map((repo) => repo.id)
+  const connectedAllowedRepos = auth.github.repos.filter(isRepoPreviewAllowed)
+  const repos = connectedAllowedRepos.length > 0
+    ? connectedAllowedRepos
+    : allowedIds
+  const manifestById = new Map(manifests.map((repo) => [repo.id, repo]))
+
   sendJson(res, 200, {
     ok: true,
     connected: auth.github.connected,
     mode: auth.github.connected ? "github-app" : "local-test",
-    repos: repos.map((full_name) => ({ full_name })),
+    repos: repos.map((full_name) => {
+      const manifest = manifestById.get(full_name)
+      return {
+        full_name,
+        id: manifest?.id ?? full_name,
+        label: manifest?.label ?? full_name,
+        surface: manifest?.surface ?? "Dash repo",
+        audience: manifest?.audience ?? "Dash users",
+        theme: manifest?.theme ?? "shared",
+        previewMode: manifest?.previewMode ?? "mock-shell",
+        defaultRoute: manifest?.defaultRoute ?? "/",
+        baselineDescription: manifest?.baselineDescription ?? "Repo baseline preview.",
+      }
+    }),
   })
 }

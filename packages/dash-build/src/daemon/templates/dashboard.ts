@@ -101,11 +101,30 @@ function promptToChatMessages(
           size: f.content.length,
         }))
         const previewMode = artifact.previewMode ?? (artifact.bundleResult ? "component" : "fallback")
+        const route = artifact.contextPack?.targetRoute ?? artifact.contextPack?.defaultRoute
+        const nav = artifact.contextPack?.targetNavLabel
+        const contextSummary = artifact.contextPack
+          ? `Context locked to ${artifact.contextPack.surface} (${artifact.contextPack.theme})${route ? ` at ${route}` : ""}${nav ? ` via ${nav}` : ""}. ${artifact.explanation || "Dash Build generated code and prepared it for local preview."}`
+          : artifact.explanation || "Dash Build generated code and prepared it for local preview."
         review = {
           title: "Review generated Dash files",
-          summary: artifact.explanation || "Dash Build generated code and prepared it for local preview.",
+          summary: contextSummary,
           stats: [
             { label: "Files", value: String(artifact.files.length), tone: "neutral" },
+            artifact.contextPack
+              ? {
+                  label: "Context",
+                  value: artifact.contextPack.repoSlug,
+                  tone: "good",
+                }
+              : null,
+            route
+              ? {
+                  label: "Route",
+                  value: route,
+                  tone: "neutral",
+                }
+              : null,
             {
               label: "Foundation",
               value: `${artifact.validation.score}/100`,
@@ -121,7 +140,7 @@ function promptToChatMessages(
               value: artifact.validation.passed ? "Passed" : "Review",
               tone: artifact.validation.passed ? "good" : "warn",
             },
-          ],
+          ].filter(Boolean) as NonNullable<ChatMessage["review"]>["stats"],
         }
       }
       break
@@ -159,14 +178,21 @@ function promptToChatMessages(
   return out
 }
 
-function pickActivePrompt(prompts: PromptRecord[]): PromptRecord | undefined {
-  // Pick the latest non-terminal prompt; fall back to newest overall.
-  const live = prompts.find((p) =>
+function pickActivePrompt(
+  prompts: PromptRecord[],
+  selectedRepo: string | null,
+): PromptRecord | undefined {
+  // Pick the latest prompt for the selected repo so switching repos reveals
+  // that repo's baseline instead of pinning the canvas to old generated work.
+  const scoped = selectedRepo
+    ? prompts.filter((p) => p.repo === selectedRepo)
+    : prompts
+  const live = scoped.find((p) =>
     ["queued", "clarifying", "generating", "awaiting_approval"].includes(
       p.status,
     ),
   )
-  return live ?? prompts[0]
+  return live ?? scoped[0]
 }
 
 function pipelineStepsFor(prompt: PromptRecord | undefined): PipelineStep[] {
@@ -311,7 +337,7 @@ export function renderChatDashboard(
   const active =
     needsOpenAI
       ? undefined
-      : pickActivePrompt(prompts)
+      : pickActivePrompt(prompts, selectedRepo)
   // Chat thread — build from prompt history. Oldest at top, newest at bottom.
   const chronological = [...prompts].reverse()
   const messages: ChatMessage[] = []

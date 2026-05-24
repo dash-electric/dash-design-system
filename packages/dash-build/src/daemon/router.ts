@@ -48,7 +48,11 @@ export async function router(
     if (pathname === "/api/repos") {
       return handleReposRoute(req, res, deps.store)
     }
-    if (pathname === "/api/prompt" || pathname.startsWith("/api/prompts/")) {
+    if (
+      pathname === "/api/prompt" ||
+      pathname === "/api/prompts/reset" ||
+      pathname.startsWith("/api/prompts/")
+    ) {
       return await handlePromptsRoute(
         req,
         res,

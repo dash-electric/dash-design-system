@@ -23,6 +23,7 @@ import type {
   AnthropicLike,
   GenerateResult,
   ParsedFile,
+  RepoContextPack,
   ValidationResult,
 } from "../skills/types.js"
 import type { BundleInput, BundleResult } from "../preview/types.js"
@@ -70,6 +71,8 @@ export interface GenerationArtifact {
   /** Whether the iframe is rendering the generated component or a fallback
    *  review shell because the component bundle could not mount directly. */
   previewMode?: "component" | "fallback"
+  /** Repo-aware context used for generation; surfaced in review UI. */
+  contextPack?: RepoContextPack
 }
 
 /**
@@ -125,6 +128,7 @@ export interface SkillChainRunner {
   run(input: {
     prompt: string
     repoPath: string
+    selectedRepo?: string | null
     anthropic: AnthropicLike
   }): Promise<GenerateResult>
 }

@@ -478,6 +478,31 @@ export const DASHBOARD_JS = `
     });
   }
 
+  var resetBtn = document.getElementById("db-local-run-reset");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      resetBtn.setAttribute("disabled", "true");
+      var oldText = resetBtn.textContent || "Reset";
+      resetBtn.textContent = "Resetting…";
+      fetch("/api/prompts/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keepWorkspace: true })
+      }).then(function (r) {
+        if (!r.ok) throw new Error("reset_failed");
+        return r.json();
+      }).then(function () {
+        showToast({ message: "Local run reset", kind: "success" });
+        return refreshDashboard();
+      }).catch(function () {
+        showToast({ message: "Could not reset local run", kind: "error" });
+      }).finally(function () {
+        resetBtn.removeAttribute("disabled");
+        resetBtn.textContent = oldText;
+      });
+    });
+  }
+
   // ---------- Resizable chat/workspace split ----------
   function bootChatResizer() {
     var shell = document.querySelector(".db-chat-shell");
@@ -568,6 +593,27 @@ export const DASHBOARD_JS = `
     setPreviewViewport(saved, false);
   }
   bootPreviewControls();
+  function replacePreviewPane(html) {
+    if (!html) return false;
+    var oldPreview = document.getElementById("db-preview-pane");
+    if (!oldPreview) return false;
+    oldPreview.outerHTML = html;
+    bootPreviewControls();
+    return true;
+  }
+  function fetchRepoPreview(repo) {
+    if (!repo) return Promise.resolve(false);
+    return fetch("/api/repo-preview?repo=" + encodeURIComponent(repo), {
+      headers: { "Accept": "application/json" },
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error("preview_unavailable");
+        return r.json();
+      })
+      .then(function (body) {
+        return replacePreviewPane(body && body.html);
+      });
+  }
 
   document.addEventListener("click", function (ev) {
     var target = ev.target;
@@ -625,17 +671,25 @@ export const DASHBOARD_JS = `
   });
 
   // ---------- Repo select persistence ----------
-  if (repoSelect) {
-    repoSelect.addEventListener("change", function () {
-      var val = repoSelect.value;
-      var branch = branchInput ? branchInput.value : "main";
+  document.addEventListener("change", function (ev) {
+    var target = ev.target;
+    if (!target || target.id !== "db-repo-select") return;
+    var val = target.value;
+    var branchEl = document.getElementById("db-branch-input");
+    var branch = branchEl && branchEl.value ? branchEl.value : "main";
       fetch("/api/repos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo: val, branch: branch }),
-      }).then(function () { refreshDashboard(); }).catch(function () { /* best-effort */ });
-    });
-  }
+      })
+        .then(function (r) {
+          if (!r.ok) throw new Error("repo_persist_failed");
+          return fetchRepoPreview(val);
+        })
+        .catch(function () {
+          showToast({ message: "Could not switch repo preview", kind: "error" });
+        });
+  });
 
   // ---------- Baseline repo preview ----------
   document.addEventListener("click", function (ev) {
@@ -651,8 +705,12 @@ export const DASHBOARD_JS = `
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo: repo })
-      }).then(function () {
-        setTimeout(refreshDashboard, 600);
+      }).then(function (r) {
+        if (!r.ok) throw new Error("start_failed");
+        return r.json();
+      }).then(function (body) {
+        replacePreviewPane(body && body.html);
+        setTimeout(function () { fetchRepoPreview(repo).catch(function () { /* best-effort */ }); }, 800);
       }).catch(function () {
         start.removeAttribute("disabled");
         start.textContent = "Start local preview →";

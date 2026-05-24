@@ -74,7 +74,7 @@ describe("validateOutput", () => {
     expect(r.passed).toBe(false)
   })
 
-  it("flags raw hex with medium severity", () => {
+  it("flags raw hex with medium severity and blocks validation pass", () => {
     const r = validateOutput(
       parsed([
         {
@@ -85,7 +85,7 @@ describe("validateOutput", () => {
       EMPTY_DESIGN,
     )
     expect(r.errors.some((e) => e.ruleId === "CR-5" && e.message.includes("hex"))).toBe(true)
-    expect(r.passed).toBe(true) // medium does NOT block
+    expect(r.passed).toBe(false)
     expect(r.score).toBeLessThan(100)
   })
 
@@ -128,6 +128,7 @@ describe("validateOutput", () => {
       EMPTY_DESIGN,
     )
     expect(r.errors.some((e) => e.message.includes("No Dash semantic tokens"))).toBe(true)
+    expect(r.passed).toBe(false)
   })
 
   it("emits a TODO warning without deducting score", () => {

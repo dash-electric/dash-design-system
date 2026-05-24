@@ -37,12 +37,12 @@ describe("evaluatePrompt", () => {
     expect(ids).not.toContain("target-surface")
   })
 
-  it("asks data-source when data verb present without source", () => {
+  it("does NOT ask data-source for P0 because generation uses mock data only", () => {
     const out = evaluatePrompt(
       input("show list of mitra in backoffice"),
     )
     const ids = out.questions.map((q) => q.id)
-    expect(ids).toContain("data-source")
+    expect(ids).not.toContain("data-source")
   })
 
   it("does NOT ask data-source when source hint is present", () => {
@@ -60,6 +60,22 @@ describe("evaluatePrompt", () => {
     const voice = out.questions.find((q) => q.id === "voice-rule")!
     expect(voice.type).toBe("yes-no")
     expect(voice.required).toBe(true)
+  })
+
+  it("does NOT ask voice-rule when selected repo infers internal backoffice audience", () => {
+    const out = evaluatePrompt(
+      input("build screen about mitra payouts", { detectedRepo: "backoffice" }),
+    )
+    const ids = out.questions.map((q) => q.id)
+    expect(ids).not.toContain("voice-rule")
+  })
+
+  it("does NOT ask voice-rule when selected repo infers client portal audience", () => {
+    const out = evaluatePrompt(
+      input("show mitra referral status", { detectedRepo: "portal-v2" }),
+    )
+    const ids = out.questions.map((q) => q.id)
+    expect(ids).not.toContain("voice-rule")
   })
 
   it("does NOT ask voice-rule when prompt explicitly says not mitra-facing", () => {
@@ -118,6 +134,18 @@ describe("evaluatePrompt", () => {
     expect(ids).toContain("scope-confirm")
   })
 
+  it("does NOT ask scope-confirm for a bounded repo-aware UI improvement", () => {
+    const out = evaluatePrompt(
+      input(
+        "Tambahin compact delivery exception filter di backoffice delivery page. Operator bisa filter status problem delivery, lihat 3 KPI kecil, dan review daftar order bermasalah pakai mock data. Harus tetap di existing delivery shell dan jangan bikin sidebar baru.",
+        { detectedRepo: "backoffice" },
+      ),
+    )
+    const ids = out.questions.map((q) => q.id)
+    expect(ids).not.toContain("scope-confirm")
+    expect(out.shouldClarify).toBe(false)
+  })
+
   it("returns shouldClarify=false + confidence 90 for crystal-clear prompt", () => {
     const out = evaluatePrompt(
       input(
@@ -136,8 +164,9 @@ describe("evaluatePrompt", () => {
         "tambahin payment edit screen for mitra in basecamp and audit log and notification banner and report export",
       ),
     )
-    // expects multiple questions to fire (vague, mitra, legal, scope)
-    expect(out.questions.length).toBeGreaterThanOrEqual(3)
+    // expects multiple true ambiguities to fire (legal/audit + scope);
+    // repo/surface and P0 data policy are inferred.
+    expect(out.questions.length).toBeGreaterThanOrEqual(2)
     expect(out.confidence).toBeLessThanOrEqual(90 - out.questions.length * 15)
     expect(out.confidence).toBeGreaterThanOrEqual(20)
   })
