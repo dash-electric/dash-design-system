@@ -262,6 +262,96 @@ Suggested permission levels:
 - `publisher`: can publish/open PR.
 - `admin`: can manage repos, auth, members, secrets.
 
+## Branch Safety And Publish Isolation
+
+Dash Build should not treat `main` as the working surface for generated output.
+
+Minimum branch/publish rules:
+
+- Each run should know its `baseCommit`.
+- Preview can exist without publish.
+- Publish should happen on an isolated branch or worktree, not on `main`.
+- If the tracked upstream branch moved after generation, the run should be marked
+  `stale` before publish proceeds.
+- Multiple users can generate in parallel, but publish requires latest-base
+  validation and may briefly lock the target branch/project.
+
+Recommended additional run fields:
+
+- `baseCommit`
+- `headCommit`
+- `staleReason`
+- `publishRecordId`
+
+## Repo Sync And Automation
+
+Dash Build should know when repo context is out of date.
+
+Minimum direction:
+
+- Support GitHub App/webhook ingestion for push/merge/install events.
+- Map repo events to affected projects.
+- Persist repo sync events so the UI can show why a run became stale.
+- Recompute stale status when tracked branch head changes.
+- Offer a manual refresh path for local-only repos where no webhook exists.
+
+Recommended repo connection fields:
+
+- `repoFullName`
+- `defaultBranch`
+- `trackedBranch`
+- `lastIndexedCommit`
+- `lastWebhookAt`
+- `syncStatus`: `healthy | stale | missing_auth | local_only`
+
+The goal is not just automation for its own sake. The goal is to stop Dash Build
+from presenting old output as if it still matches the repo.
+
+## Design-System Evolution Loop
+
+Dash Build should not only consume Dash DS. It should help evolve it.
+
+When generation needs a UI pattern that current docs/registry do not cover:
+
+1. try to reuse existing Dash foundation, components, or blocks first
+2. if coverage is missing, mark the output as a `DS gap`
+3. if a reusable primitive/composite is introduced, mark it as a
+   `component candidate` or `block candidate`
+4. route the candidate into a review lane before docs/registry promotion
+
+This keeps one-off feature output separate from reusable DS growth.
+
+Recommended candidate states:
+
+- `candidate`
+- `approved`
+- `rejected`
+- `one_off`
+
+Recommended candidate fields:
+
+- `type`: `component | block`
+- `name`
+- `theme`
+- `runId`
+- `reason`
+- `status`
+
+## design.md As Active Governance
+
+The builder UI itself is a Dash product surface and should be governed like one.
+
+`design.md` is not passive reference material. It is an active contract for:
+
+- builder shell layout density
+- operational hierarchy and status communication
+- token use and theme behavior
+- anti-pattern avoidance in both generated UI and builder UI
+
+If Dash Build introduces a UI pattern that is not represented in the active Dash
+ design contract or docs coverage, that is a governance gap that should be
+ tracked explicitly.
+
 Concurrency rules:
 
 - Multiple users can chat/run previews in the same project.
