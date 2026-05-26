@@ -186,9 +186,21 @@ function renderBaseline(info?: RepoPreviewInfo | null): string {
       const realAppLink = realAppUrl
         ? `<a href="${escapeHtml(realAppUrl)}" target="_blank" rel="noreferrer">Open real app ↗</a>`
         : ""
-      const cloneSubtitle = `Clone preview · 127.0.0.1:${info.port} · shim active`
-      return `<div class="db-live-preview-state db-live-preview-state--ready db-live-preview-state--baseline" data-state="baseline" data-clone-preview="${escapeHtml(info.repo)}">
-        <div class="db-baseline-ribbon db-baseline-ribbon--clone">
+      // F1 — when the dev server had to shift off the manifest's default
+      // port (3101 → 3102 …), call it out in the ribbon so the operator
+      // understands the URL drift before they paste it into a bug report.
+      // The :defaultPort tooltip on the suffix preserves the original value.
+      const portShifted =
+        Number.isFinite(info.metadata.defaultPort) &&
+        info.port !== info.metadata.defaultPort
+      const cloneSubtitle = portShifted
+        ? `Clone preview · 127.0.0.1:${info.port} · shim active · port shifted from :${info.metadata.defaultPort}`
+        : `Clone preview · 127.0.0.1:${info.port} · shim active`
+      const shiftTitle = portShifted
+        ? ` title="Dev server moved off :${info.metadata.defaultPort} (in use). Now listening on :${info.port}."`
+        : ""
+      return `<div class="db-live-preview-state db-live-preview-state--ready db-live-preview-state--baseline" data-state="baseline" data-clone-preview="${escapeHtml(info.repo)}"${portShifted ? ` data-port-shifted="true"` : ""}>
+        <div class="db-baseline-ribbon db-baseline-ribbon--clone"${shiftTitle}>
           <span>${escapeHtml(baseline.label)}</span>
           <code>${escapeHtml(info.repo)}</code>
           <span>${escapeHtml(cloneSubtitle)}</span>

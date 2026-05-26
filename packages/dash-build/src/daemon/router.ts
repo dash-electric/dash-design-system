@@ -3,6 +3,7 @@ import type { Store } from "./state/store.js"
 import type { Broadcaster } from "./ws/broadcaster.js"
 import type { Orchestrator } from "../pipeline/orchestrator.js"
 import { handleDashboard } from "./routes/dashboard.js"
+import { handleOwner } from "./routes/owner.js"
 import { handleHealth } from "./routes/health.js"
 import { handleStatus } from "./routes/status.js"
 import { handleStatic } from "./routes/static.js"
@@ -16,6 +17,10 @@ import { handleSandboxRoute, isSandboxPath } from "./routes/api/sandbox.js"
 import { notFound, sendJson, sendRedirect } from "./routes/_helpers.js"
 import { handlePreviewRoute } from "../preview/api-routes.js"
 import { handleBridgeRoute, isBridgePath } from "./routes/api/bridge.js"
+import { handleOwnerBranches } from "./routes/api/owner/branches.js"
+import { handleOwnerCost } from "./routes/api/owner/cost.js"
+import { handleOwnerDSCandidates } from "./routes/api/owner/ds-candidates.js"
+import { handleOwnerActivity } from "./routes/api/owner/activity.js"
 import type { AutoReconnect } from "../auth/openai/auto-reconnect.js"
 
 export interface RouterDeps {
@@ -40,6 +45,9 @@ export async function router(
     }
     if (pathname === "/dashboard") {
       return handleDashboard(res, deps.store, deps.orchestrator)
+    }
+    if (pathname === "/owner") {
+      return await handleOwner(res, deps.store)
     }
     if (pathname === "/health") {
       return handleHealth(res, deps.store)
@@ -93,6 +101,20 @@ export async function router(
     }
     if (isBridgePath(pathname)) {
       return handleBridgeRoute(req, res, pathname)
+    }
+    // Sprint 3B — Owner Co-pilot AI triage endpoints.
+    // S3A's UI shell consumes these — keep response shapes stable.
+    if (pathname === "/api/owner/branches") {
+      return await handleOwnerBranches(req, res, { store: deps.store })
+    }
+    if (pathname === "/api/owner/cost") {
+      return await handleOwnerCost(req, res, { store: deps.store })
+    }
+    if (pathname === "/api/owner/ds-candidates") {
+      return await handleOwnerDSCandidates(req, res, { store: deps.store })
+    }
+    if (pathname === "/api/owner/activity") {
+      return await handleOwnerActivity(req, res, { store: deps.store })
     }
     return notFound(res)
   } catch (err) {

@@ -235,6 +235,7 @@ export class Orchestrator {
     // Backward-compat: silently skip when no Workspace is available.
     if (this.workspace) {
       this.wireSandboxBroadcast(this.workspace)
+      this.wireDevServerBroadcast(this.workspace)
     }
 
     // TTL sweep: walk SessionStore every 5 min and expire pending sessions
@@ -470,6 +471,11 @@ export class Orchestrator {
       // S1A's coarser end-of-bootstrap broadcast below still fires for
       // back-compat with code that listens for the final transition only.
       this.wireSandboxBroadcast(ws)
+      // F1 — also subscribe to async dev-server lifecycle events so a crash
+      // (child exit !== 0) translates into a UI-visible broadcast + state
+      // reset. Defensive: older Workspace builds without the setter just
+      // silently skip — orchestrator broadcasts still flow for transitions.
+      this.wireDevServerBroadcast(ws)
       if (!opts.skipClone) {
         await ws.bootstrap()
         const info = ws.info()
@@ -645,6 +651,15 @@ export class Orchestrator {
         at: event.at,
         runId: event.runId,
       })
+      // F1 — when transitioning into clone_running, surface the live dev
+      // server port the resolver needs. devServer() is best-effort: it may
+      // not exist on older Workspace builds in which case the field stays
+      // null and the resolver falls through to staging.
+      const devSnap = (workspace as unknown as {
+        devServer?: () => { port: number } | null
+      }).devServer?.call(workspace) ?? null
+      const portForPersist =
+        event.to === "clone_running" && devSnap ? devSnap.port : null
       // Fire-and-forget persistence. Defensive — Store extensions may land
       // independently in older test rigs.
       void this.setSafeSandboxState(event.repoSlug, {
@@ -653,6 +668,57 @@ export class Orchestrator {
         clonePath: workspace.clonePath,
         shimCommitSha: workspace.info().shimCommitSha,
         history: workspace.state.history(),
+        devServerPort: portForPersist,
+      })
+    })
+  }
+
+  /**
+   * F1 — subscribe to Workspace.onDevServerEvent. Currently fires only on
+   * "crashed" (child exited unexpectedly post-ready). We broadcast
+   * `sandbox:dev_server_crashed` so the dashboard client can:
+   *   1. Refresh the badge (state will already have stepped clone_running →
+   *      idle via the state-machine transition hook above).
+   *   2. Show an actionable toast: "Dev server crashed (port: 3101) — click
+   *      to retry".
+   *   3. Persist the failure tag so a daemon restart can still show the
+   *      red badge instead of "idle" pretending everything is fine.
+   */
+  private wireDevServerBroadcast(workspace: Workspace): void {
+    const setter = (workspace as unknown as {
+      setOnDevServerEvent?: (cb: ((event: unknown) => void) | null) => void
+    }).setOnDevServerEvent
+    if (typeof setter !== "function") return
+    setter.call(workspace, (event: unknown) => {
+      const ev = event as {
+        kind: string
+        repoSlug: string
+        port: number | null
+        stderr: string
+        exit: { code: number | null; signal: string | null }
+      }
+      if (ev.kind !== "crashed") return
+      this.broadcaster.broadcast("sandbox:dev_server_crashed", {
+        repo: ev.repoSlug,
+        repoSlug: ev.repoSlug,
+        port: ev.port,
+        exit: ev.exit,
+        // Cap stderr tail in the broadcast so 8KB messages don't choke the
+        // WS layer; UI just needs a hint, full log lives in daemon stderr.
+        stderr: ev.stderr.slice(-1024),
+      })
+      this.logger.warn("dev server crashed", {
+        repo: ev.repoSlug,
+        port: ev.port,
+        exit: ev.exit,
+      })
+      void this.setSafeSandboxState(ev.repoSlug, {
+        // State already transitioned back to idle inside Workspace; we
+        // persist the lastAction tag so the badge renders the error variant
+        // until the next successful start.
+        lastAction: "dev_server_crashed",
+        devServerPort: null,
+        devServerError: `Exited with code=${ev.exit.code ?? "null"}, signal=${ev.exit.signal ?? "null"}`,
       })
     })
   }

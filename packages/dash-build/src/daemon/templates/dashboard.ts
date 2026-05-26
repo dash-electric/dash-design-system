@@ -690,6 +690,10 @@ export function renderChatDashboard(
         <span class="db-topbar-tab-icon" aria-hidden="true">🕒</span>
         <span class="db-topbar-tab-label">History</span>
       </button>
+      <a class="db-topbar-tab db-topbar-tab--surface" role="tab" data-tab="owner" href="/owner" aria-selected="false" title="Owner dashboard">
+        <span class="db-topbar-tab-icon" aria-hidden="true">⚙</span>
+        <span class="db-topbar-tab-label">Owner</span>
+      </a>
     </nav>
     <div class="db-topbar-route" title="Target route">
       ${route ? `<code class="db-topbar-route-code">${escapeAttr(route)}</code>${routeNav ? `<span class="db-topbar-route-nav">${escapeAttr(routeNav)}</span>` : ""}` : `<span class="db-topbar-route-empty">no route</span>`}

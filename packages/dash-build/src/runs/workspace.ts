@@ -21,7 +21,9 @@
 
 import { existsSync } from "node:fs"
 import { mkdir, stat } from "node:fs/promises"
-import { spawn } from "node:child_process"
+import { spawn, type ChildProcess } from "node:child_process"
+import { createServer } from "node:net"
+import http from "node:http"
 import { dirname, isAbsolute, join } from "node:path"
 import {
   type PreviewShim,
@@ -41,6 +43,24 @@ import {
  * applying the shim again.
  */
 export const SYNC_STALENESS_MS = 60 * 60 * 1000
+
+/**
+ * F1 — readiness poll deadline for `startDevServer`. Beyond this, the dev
+ * server is considered stuck and we reject; the orchestrator broadcasts
+ * `sandbox:dev_server_failed` so the dashboard can offer a retry.
+ *
+ * 60s mirrors the orchestrator's own watchdog in `runDevServerStartCascade`.
+ * We resolve as soon as TCP can connect — Next.js' "Ready in …" log lags a
+ * few hundred ms behind socket bind so we don't wait for HTTP 200.
+ */
+export const DEV_SERVER_READY_TIMEOUT_MS = 60 * 1000
+
+/**
+ * F1 — when the requested port is occupied, we probe upward this many ports
+ * before giving up (3101 → 3102 → … → 3110). Returning a clear error after
+ * 10 shifts is better than silently scanning ephemeral ranges forever.
+ */
+export const DEV_SERVER_PORT_PROBE_LIMIT = 10
 
 export interface WorkspaceOptions {
   repoSlug: string
@@ -67,6 +87,70 @@ export interface WorkspaceOptions {
    * omitted, Workspace behaves exactly as before.
    */
   onStateChange?: (event: SandboxTransitionEvent) => void
+  /**
+   * F1 — fire-on-event hook for dev-server lifecycle. Wired by the
+   * orchestrator to broadcast `sandbox:dev_server_crashed` (and any future
+   * runtime signal) so the dashboard can refresh the badge + toast the user.
+   * Backward-compat: omitting it leaves crash handling as pure local state
+   * mutation (transition back to idle + clear devServerPort).
+   *
+   * Crashes are inherently async — the child can die long after
+   * `startDevServer()` resolved — so the hook is the only way for the
+   * orchestrator to learn about them.
+   */
+  onDevServerEvent?: (event: DevServerEvent) => void
+  /**
+   * F1 test seam — replace the real child_process.spawn for dev-server. Tests
+   * inject a fake that emits stdout/exit events on demand so we don't run
+   * `npm run dev` for real.
+   */
+  devServerSpawn?: DevServerSpawn
+}
+
+/**
+ * F1 — dev-server lifecycle event. Currently only "crashed" fires after the
+ * dev server died unexpectedly (exit code !== 0 or non-SIGTERM signal); the
+ * orchestrator translates it into a `sandbox:dev_server_crashed` broadcast.
+ * Normal `starting`/`ready`/`failed` lifecycle is owned by the orchestrator
+ * cascade — Workspace only sees the post-ready window.
+ */
+export interface DevServerEvent {
+  kind: "crashed"
+  repoSlug: string
+  port: number | null
+  /** Best-effort tail of stderr captured before exit (8KB cap). */
+  stderr: string
+  /** Exit code, signal, or null when neither is known. */
+  exit: { code: number | null; signal: NodeJS.Signals | null }
+}
+
+/**
+ * F1 spawn seam — must return a ChildProcess-like surface the workspace can
+ * subscribe to. Defaults to `node:child_process.spawn("npm", ["run", "dev",
+ * …])`. Tests inject a fake to avoid invoking npm.
+ */
+export type DevServerSpawn = (input: {
+  cwd: string
+  port: number
+  env: NodeJS.ProcessEnv
+}) => ChildProcess
+
+/**
+ * F1 — snapshot of a running dev server. Exposed via `Workspace.devServer()`
+ * so the orchestrator can hand the port to downstream callers without going
+ * through state.json (the snapshot is the source of truth for the in-process
+ * Workspace; state.json reflects it after the next broadcast).
+ */
+export interface DevServerInfo {
+  pid: number | null
+  port: number
+  startedAt: string
+  /** True after the readiness TCP probe succeeded. */
+  ready: boolean
+  /** True if the requested port was occupied and we shifted upward. */
+  portShifted: boolean
+  /** The port the manifest originally asked for, when portShifted is true. */
+  requestedPort: number
 }
 
 export interface WorkspaceInfo {
@@ -116,6 +200,16 @@ export class Workspace {
   private readonly defaultBranch: string
   private readonly skipInstall: boolean
   private readonly now: () => Date
+  /** F1 — dev-server child handle. null when no dev server is running. */
+  private devServerChild: ChildProcess | null = null
+  /** F1 — snapshot exposed via `devServer()` for the orchestrator. */
+  private devServerSnapshot: DevServerInfo | null = null
+  /** F1 — last 8KB of stderr; surfaced in the crash event payload. */
+  private devServerStderr = ""
+  /** F1 — hook fired on async dev-server runtime events (currently crashes). */
+  private onDevServerEvent: ((event: DevServerEvent) => void) | null
+  /** F1 — replaceable spawn for tests. */
+  private readonly devServerSpawn: DevServerSpawn
 
   constructor(opts: WorkspaceOptions) {
     if (!opts.repoSlug) throw new Error("Workspace: repoSlug required")
@@ -138,6 +232,24 @@ export class Workspace {
     this.defaultBranch = opts.defaultBranch ?? "main"
     this.skipInstall = opts.skipInstall ?? false
     this.now = opts.now ?? (() => new Date())
+    this.onDevServerEvent = opts.onDevServerEvent ?? null
+    this.devServerSpawn = opts.devServerSpawn ?? defaultDevServerSpawn
+  }
+
+  /**
+   * Late-bind the dev-server event hook. The orchestrator may receive a
+   * Workspace constructed before its Broadcaster was available (DI ordering
+   * in some test rigs). Overwrites the previous hook; pass `null` to detach.
+   */
+  setOnDevServerEvent(cb: ((event: DevServerEvent) => void) | null): void {
+    this.onDevServerEvent = cb
+  }
+
+  /** F1 — public snapshot of the in-process dev server (null when stopped). */
+  devServer(): DevServerInfo | null {
+    return this.devServerSnapshot
+      ? JSON.parse(JSON.stringify(this.devServerSnapshot)) as DevServerInfo
+      : null
   }
 
   /** Public read-only snapshot for the daemon UI / Store persistence. */
@@ -317,10 +429,236 @@ export class Workspace {
   }
 
   /**
+   * F1 — spawn `npm run dev -- -p <port>` against the clone and wait for the
+   * port to be listening before resolving. On success transitions the
+   * sandbox state idle → clone_running and stores a DevServerInfo snapshot
+   * the resolver can read.
+   *
+   * Port shifting: when the requested port (manifest default or env override)
+   * is busy, we probe upward up to DEV_SERVER_PORT_PROBE_LIMIT ports. The
+   * snapshot records `portShifted: true` so the dashboard can explain to the
+   * user why the iframe URL doesn't match the manifest.
+   *
+   * Crash handling: subscribes `child.on("exit")`. On unexpected exit (code
+   * !== 0 AND signal !== "SIGTERM") clears the snapshot, transitions
+   * clone_running → idle, and fires `onDevServerEvent({ kind: "crashed" })`.
+   * The orchestrator translates that into a `sandbox:dev_server_crashed`
+   * broadcast + auto-toast.
+   *
+   * Idempotent: calling twice while a dev server is already up is a no-op
+   * and returns the existing snapshot.
+   */
+  async startDevServer(opts: { port?: number } = {}): Promise<DevServerInfo> {
+    if (this.devServerSnapshot && this.devServerChild) {
+      return this.devServer() as DevServerInfo
+    }
+
+    const requestedPort = opts.port ?? 0
+    if (!Number.isFinite(requestedPort) || requestedPort <= 0) {
+      throw new Error(
+        `Workspace.startDevServer: explicit port required (got ${opts.port})`,
+      )
+    }
+    const port = await findAvailablePort(requestedPort)
+    const portShifted = port !== requestedPort
+
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      PORT: String(port),
+      BROWSER: "none",
+      // Mitigates Next.js noisy console + watchdog; harmless when the script
+      // ignores them.
+      FORCE_COLOR: "0",
+    }
+    const child = this.devServerSpawn({
+      cwd: this.clonePath,
+      port,
+      env,
+    })
+    this.devServerChild = child
+    this.devServerStderr = ""
+
+    // Capture stderr tail for crash diagnostics. We keep only the last 8KB so
+    // long-running noisy dev servers don't grow this unbounded.
+    const stderrStream = (child as { stderr?: NodeJS.ReadableStream | null }).stderr
+    if (stderrStream && typeof stderrStream.on === "function") {
+      stderrStream.on("data", (d: Buffer | string) => {
+        const chunk = typeof d === "string" ? d : d.toString("utf8")
+        const combined = this.devServerStderr + chunk
+        this.devServerStderr = combined.slice(-8 * 1024)
+      })
+    }
+
+    // Wire crash handler BEFORE the readiness probe so a crash during
+    // startup also flows through here (we just translate it into a
+    // start-time error too).
+    let earlyExit: { code: number | null; signal: NodeJS.Signals | null } | null = null
+    const onExit = (code: number | null, signal: NodeJS.Signals | null) => {
+      // Only act for the currently-tracked child; stale handlers from
+      // restarted servers should no-op.
+      if (this.devServerChild !== child) return
+      const snapshot = this.devServerSnapshot
+      const wasReady = snapshot?.ready ?? false
+      this.devServerChild = null
+      this.devServerSnapshot = null
+
+      // SIGTERM / signal=null with code=0 → we asked it to stop. No crash.
+      const cleanExit = (code === 0 || code === null) && signal !== "SIGKILL"
+      if (cleanExit && signal !== null && signal !== "SIGTERM" && wasReady) {
+        // Unusual but tolerable shutdown (e.g. SIGINT from a debugger). Stay
+        // quiet — the user-initiated stop path explicitly sends SIGTERM.
+      }
+
+      if (!wasReady) {
+        earlyExit = { code, signal }
+        return
+      }
+
+      // Crash detected post-ready. Step back so the badge stops showing
+      // "Clone live" and the resolver falls back to staging.
+      if (this.state.current() === "clone_running") {
+        this.state.transition("idle")
+      }
+
+      if (!cleanExit) {
+        try {
+          this.onDevServerEvent?.({
+            kind: "crashed",
+            repoSlug: this.repoSlug,
+            port,
+            stderr: this.devServerStderr,
+            exit: { code, signal },
+          })
+        } catch {
+          // Subscriber bugs must not corrupt workspace state.
+        }
+      }
+    }
+    child.on("exit", onExit)
+    // Spawn-time errors (binary missing, permission denied, …) come through
+    // here BEFORE exit fires. Treat them as start-time failures.
+    child.on("error", (err) => {
+      if (this.devServerChild !== child) return
+      earlyExit = earlyExit ?? { code: 1, signal: null }
+      this.devServerStderr =
+        (this.devServerStderr + "\n" + (err.message ?? String(err))).slice(-8 * 1024)
+    })
+
+    try {
+      await waitForPortListening(port, DEV_SERVER_READY_TIMEOUT_MS, () => earlyExit)
+    } catch (err) {
+      // Best-effort kill; ignore failure if the process is already dead.
+      this.devServerChild = null
+      this.devServerSnapshot = null
+      try {
+        if (!child.killed) child.kill("SIGTERM")
+      } catch {
+        /* swallow */
+      }
+      throw err
+    }
+
+    const snapshot: DevServerInfo = {
+      pid: child.pid ?? null,
+      port,
+      startedAt: this.now().toISOString(),
+      ready: true,
+      portShifted,
+      requestedPort,
+    }
+    this.devServerSnapshot = snapshot
+
+    // Transition idle → clone_running. Defensive: if we're not in `idle` (e.g.
+    // a test bumped us straight to clone_running) skip the transition rather
+    // than erroring.
+    if (this.state.current() === "idle") {
+      const result = this.state.transition("clone_running")
+      if (!result.ok) {
+        // Roll back the snapshot if we couldn't tell the state machine — the
+        // orchestrator depends on (state, snapshot) staying consistent.
+        this.devServerSnapshot = null
+        try {
+          if (!child.killed) child.kill("SIGTERM")
+        } catch {
+          /* swallow */
+        }
+        this.devServerChild = null
+        throw new Error(`startDevServer state transition failed: ${result.error}`)
+      }
+    }
+
+    return this.devServer() as DevServerInfo
+  }
+
+  /**
+   * F1 — graceful shutdown of the dev server. Idempotent: calling when no
+   * dev server is running is a no-op. Always clears the snapshot + steps the
+   * state machine back to idle before returning.
+   *
+   * We send SIGTERM and wait up to 5s for the child to exit before falling
+   * back to SIGKILL. Most Next.js dev servers respond within ~1s.
+   */
+  async stopDevServer(): Promise<void> {
+    const child = this.devServerChild
+    if (!child) {
+      this.devServerSnapshot = null
+      // Step back to idle if we somehow drifted into clone_running without
+      // a child handle (e.g. rehydrate from disk after a daemon crash).
+      if (this.state.current() === "clone_running") {
+        this.state.transition("idle")
+      }
+      return
+    }
+
+    // Detach event handlers so the crash path doesn't fire during a
+    // deliberate stop. Re-clear after exit so a residual reference can't
+    // pin the snapshot.
+    this.devServerChild = null
+    try {
+      child.kill("SIGTERM")
+    } catch {
+      /* already dead */
+    }
+    const exited = await new Promise<boolean>((resolveOnce) => {
+      let done = false
+      const finish = (ok: boolean) => {
+        if (done) return
+        done = true
+        resolveOnce(ok)
+      }
+      child.once("exit", () => finish(true))
+      const t = setTimeout(() => {
+        try {
+          if (!child.killed) child.kill("SIGKILL")
+        } catch {
+          /* swallow */
+        }
+        finish(false)
+      }, 5_000)
+      if (typeof (t as { unref?: () => void }).unref === "function") {
+        ;(t as { unref: () => void }).unref()
+      }
+    })
+    void exited
+
+    this.devServerSnapshot = null
+    if (this.state.current() === "clone_running") {
+      this.state.transition("idle")
+    }
+  }
+
+  /**
    * Reset the working tree to origin/main and drop any unmerged branches.
    * Used by the stale sweeper (Agent D3) before deleting / re-shimming.
+   *
+   * F1 — stops the dev server FIRST so the sweep doesn't race against an
+   * active port + leave a zombie child.
    */
   async tearDown(): Promise<void> {
+    // Stop dev server before mutating the tree underneath it.
+    await this.stopDevServer().catch(() => {
+      /* swallow — sweep should not be blocked by a stuck child */
+    })
     const co = await this.runner(
       "git",
       ["checkout", this.defaultBranch],
@@ -445,3 +783,132 @@ const defaultRunner: SubprocessRunner = (bin, args, cwd) =>
       resolveProc({ stdout, stderr, code: code ?? 1 })
     })
   })
+
+// ──────────────────────────────────────────────────────────────────────────
+// F1 — dev-server defaults + helpers
+// ──────────────────────────────────────────────────────────────────────────
+
+/**
+ * Default dev-server spawn: `npm run dev -- -p <port>` in the clone dir. We
+ * keep stdio piped so the workspace can capture stderr for crash diagnostics
+ * (raw npm output is the only signal of a Next.js boot failure). `detached`
+ * is FALSE so a daemon SIGTERM cleanly takes the child with it.
+ */
+const defaultDevServerSpawn: DevServerSpawn = ({ cwd, port, env }) =>
+  spawn("npm", ["run", "dev", "--", "-p", String(port)], {
+    cwd,
+    env,
+    stdio: ["ignore", "pipe", "pipe"],
+  })
+
+/**
+ * F1 — locate the first free TCP port ≥ requested. Uses node:net to bind a
+ * throwaway listener; releases it before returning. Returns the requested
+ * port unchanged when it's free.
+ *
+ * Bounded by DEV_SERVER_PORT_PROBE_LIMIT so we don't scan the entire
+ * ephemeral range when something pathological is happening (e.g. user has
+ * 200 background dev servers somehow).
+ */
+async function findAvailablePort(requested: number): Promise<number> {
+  for (let offset = 0; offset < DEV_SERVER_PORT_PROBE_LIMIT; offset++) {
+    const candidate = requested + offset
+    if (await isPortFree(candidate)) return candidate
+  }
+  throw new Error(
+    `startDevServer: no free port in [${requested}, ${requested + DEV_SERVER_PORT_PROBE_LIMIT - 1}]`,
+  )
+}
+
+function isPortFree(port: number): Promise<boolean> {
+  return new Promise((resolveCheck) => {
+    const server = createServer()
+    server.unref()
+    server.once("error", () => resolveCheck(false))
+    server.once("listening", () => {
+      server.close(() => resolveCheck(true))
+    })
+    try {
+      server.listen(port, "127.0.0.1")
+    } catch {
+      resolveCheck(false)
+    }
+  })
+}
+
+/**
+ * F1 — poll until 127.0.0.1:<port> accepts a TCP connection. Resolves as
+ * soon as the dev server binds; rejects after `deadlineMs` OR earlier if
+ * the dev server child exited before binding.
+ *
+ * `earlyExit` is a getter so we can react to a crash that happens DURING
+ * the wait without polluting this function with subscription wiring.
+ */
+async function waitForPortListening(
+  port: number,
+  deadlineMs: number,
+  earlyExit: () => { code: number | null; signal: NodeJS.Signals | null } | null,
+): Promise<void> {
+  const start = Date.now()
+  while (Date.now() - start < deadlineMs) {
+    const exitInfo = earlyExit()
+    if (exitInfo) {
+      throw new Error(
+        `dev server exited before bind (code=${exitInfo.code ?? "null"}, signal=${exitInfo.signal ?? "null"})`,
+      )
+    }
+    if (await canConnect(port)) return
+    await sleep(500)
+  }
+  // Last-chance HTTP probe — TCP could be listening but the Next.js handshake
+  // takes the extra millis. Falling back to HTTP avoids a flake when the port
+  // grabs at exactly the deadline boundary.
+  if (await canHttpReach(port)) return
+  throw new Error(`dev server did not listen on :${port} within ${deadlineMs}ms`)
+}
+
+function canConnect(port: number): Promise<boolean> {
+  return new Promise((resolveProbe) => {
+    const req = http.request(
+      {
+        host: "127.0.0.1",
+        port,
+        method: "HEAD",
+        path: "/",
+        timeout: 500,
+      },
+      (res) => {
+        res.resume()
+        // Any response — even 404/500 — means a server is listening.
+        resolveProbe(true)
+      },
+    )
+    req.on("error", () => resolveProbe(false))
+    req.on("timeout", () => {
+      req.destroy()
+      resolveProbe(false)
+    })
+    req.end()
+  })
+}
+
+function canHttpReach(port: number): Promise<boolean> {
+  return new Promise((resolveProbe) => {
+    const req = http.get(
+      { host: "127.0.0.1", port, path: "/", timeout: 1_000 },
+      (res) => {
+        res.resume()
+        resolveProbe(true)
+      },
+    )
+    req.on("error", () => resolveProbe(false))
+    req.on("timeout", () => {
+      req.destroy()
+      resolveProbe(false)
+    })
+  })
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolveSleep) => setTimeout(resolveSleep, ms))
+}

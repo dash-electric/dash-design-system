@@ -121,11 +121,20 @@ export type SandboxStateValue =
   | "cloned"
   | "shim_applied"
   | "idle"
+  // F1 — dev server spawned + port listening; the resolver flips the canvas
+  // iframe to http://127.0.0.1:<devServerPort> while the sandbox stays in
+  // this state. Persisted across reloads so the canvas survives a daemon
+  // restart while the long-lived dev server keeps running.
+  | "clone_running"
   | "generating"
   | "preview_ready"
   | "publishing"
   | "sweep"
   | "stale"
+  // F3 — terminal failure from a bootstrap/dev-server crash. Surfaced in the
+  // badge with an error tone + click-to-retry. Persisted so a daemon restart
+  // doesn't silently mask a broken workspace.
+  | "failed"
 
 export interface SandboxTransitionRecord {
   from: SandboxStateValue
@@ -145,6 +154,21 @@ export interface SandboxStatePersisted {
   clonePath: string
   /** SHA of the preview-shim apply commit on the current main, or null. */
   shimCommitSha: string | null
+  /**
+   * F1 — port the dev server is listening on (may differ from manifest
+   * default if there was a collision and Workspace auto-incremented).
+   * Populated when state === "clone_running"; persisted so the resolver can
+   * keep picking the live clone after a daemon restart.
+   */
+  devServerPort?: number | null
+  /**
+   * F3 — last raw lifecycle action broadcast (`dev_server_starting`,
+   * `dev_server_ready`, `dev_server_failed`, `dev_server_crashed`). Drives
+   * the badge loading/error variants when state hasn't moved yet.
+   */
+  lastAction?: string | null
+  /** F3 — human-readable error message from the most recent failure. */
+  devServerError?: string | null
 }
 
 export interface DaemonState {
@@ -356,11 +380,16 @@ const VALID_SANDBOX_STATES: ReadonlySet<SandboxStateValue> = new Set([
   "cloned",
   "shim_applied",
   "idle",
+  // F1 + F3 — see SandboxStateValue for semantics. Must stay in sync with
+  // the union above so normalizeSandboxStateMap doesn't silently drop these
+  // entries on daemon reboot.
+  "clone_running",
   "generating",
   "preview_ready",
   "publishing",
   "sweep",
   "stale",
+  "failed",
 ])
 
 function normalizeSandboxStateMap(
@@ -395,6 +424,16 @@ function normalizeSandboxStateMap(
       clonePath: typeof entry.clonePath === "string" ? entry.clonePath : "",
       shimCommitSha:
         typeof entry.shimCommitSha === "string" ? entry.shimCommitSha : null,
+      // F1/F3 — defensive parse. Older state.json files don't carry these
+      // fields; default them so the dashboard doesn't blow up on undefined
+      // access.
+      devServerPort:
+        typeof entry.devServerPort === "number" && Number.isFinite(entry.devServerPort)
+          ? entry.devServerPort
+          : null,
+      lastAction: typeof entry.lastAction === "string" ? entry.lastAction : null,
+      devServerError:
+        typeof entry.devServerError === "string" ? entry.devServerError : null,
     }
   }
   return out

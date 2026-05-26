@@ -220,6 +220,21 @@ export const DASHBOARD_JS = `
                 duration: 8000,
               });
               break;
+            case "sandbox:dev_server_crashed":
+              // F1: child exited unexpectedly AFTER ready (Next.js OOM,
+              // syntax error in user code, manual kill from a debugger).
+              // State already stepped clone_running → idle inside Workspace;
+              // we surface here so the user can retry without hunting for
+              // daemon stderr.
+              refreshDashboard();
+              showToast({
+                message: "Dev server crashed" +
+                  (msg.port ? " (port :" + msg.port + ")" : "") +
+                  " — click the badge to retry",
+                kind: "error",
+                duration: 8000,
+              });
+              break;
             case "auth:reconnected":
               // Sprint 1B: AutoReconnect recovered the OpenAI link. Toast +
               // refresh so the rail empty state collapses into the live chat.
@@ -995,6 +1010,18 @@ export const DASHBOARD_JS = `
     var tab = target.closest("[data-tab]");
     if (tab) {
       var which = tab.getAttribute("data-tab");
+      // Sprint 3A: surface-switching tabs (build / owner) navigate to a new
+      // route. When the element already carries an href (anchor), let the
+      // browser do the navigation natively; otherwise force it via
+      // window.location so a <button> with data-tab works too.
+      if (which === "owner" || which === "build") {
+        var href = tab.getAttribute("href");
+        if (!href) {
+          ev.preventDefault();
+          window.location.href = which === "owner" ? "/owner" : "/dashboard";
+        }
+        return;
+      }
       // Phase B2: history/chat are rail-mode toggles, not canvas tabs. Route
       // them to setRailViewMode and bail before setCanvasTab inverts to
       // "preview" for unknown values.
@@ -1215,6 +1242,64 @@ export const DASHBOARD_JS = `
         });
       });
   });
+
+  // ---------- F1: starting-state countdown ----------
+  // While the badge carries data-action="dev_server_starting" we tick the
+  // label every 5s so the user gets feedback ("Starting dev server… (15s)")
+  // instead of staring at a static spinner for the full 60s timeout. The
+  // ticker auto-stops as soon as the badge re-renders into a different state
+  // (success/failed/clone_running) — refreshDashboard() swaps the node
+  // entirely, and our setInterval check below sees the missing element.
+  var startingTickHandle = null;
+  var startingTickStart = 0;
+  function ensureStartingTick() {
+    var badge = document.querySelector(
+      '.db-sandbox-badge[data-action="dev_server_starting"]',
+    );
+    if (!badge) {
+      if (startingTickHandle) {
+        clearInterval(startingTickHandle);
+        startingTickHandle = null;
+        startingTickStart = 0;
+      }
+      return;
+    }
+    if (startingTickHandle) return;
+    startingTickStart = Date.now();
+    startingTickHandle = setInterval(function () {
+      var b = document.querySelector(
+        '.db-sandbox-badge[data-action="dev_server_starting"]',
+      );
+      if (!b) {
+        clearInterval(startingTickHandle);
+        startingTickHandle = null;
+        startingTickStart = 0;
+        return;
+      }
+      var labelEl = b.querySelector(".db-sandbox-badge-label");
+      if (!labelEl) return;
+      var elapsedSec = Math.max(0, Math.round((Date.now() - startingTickStart) / 1000));
+      labelEl.textContent =
+        "Starting dev server… (" + elapsedSec + "s)";
+    }, 5000);
+  }
+  // Run once now (initial paint may already have the starting badge), then
+  // re-evaluate on every refresh — refreshDashboard's success path replaces
+  // the topbar node so this is the natural re-check point.
+  ensureStartingTick();
+  var originalRefresh = refreshDashboard;
+  refreshDashboard = function () {
+    var r = originalRefresh();
+    // refreshDashboard returns a Promise in current impl; if it does, hook
+    // the then() so we re-evaluate after DOM swap.
+    if (r && typeof r.then === "function") {
+      r.then(ensureStartingTick, ensureStartingTick);
+    } else {
+      // Fallback: queue a microtask so the swap settles first.
+      setTimeout(ensureStartingTick, 0);
+    }
+    return r;
+  };
 
   // ---------- Theme toggle (Phase A1) ----------
   // Document-level delegate keyed on [data-theme-toggle]. Flips the .dark
