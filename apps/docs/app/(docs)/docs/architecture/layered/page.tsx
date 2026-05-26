@@ -627,9 +627,9 @@ export const logistic = defineTheme({
           Full spec, migration case studies, and showcase angles live in{" "}
           <Link
             className="text-(--dash-purple-600) underline-offset-4 hover:underline"
-            href="https://github.com/dash-elektrik/dash-ds/blob/main/LAYERED-ARCHITECTURE.md"
+            href="https://github.com/dash-electric/express-design-system/blob/main/ARCHITECTURE.md"
           >
-            <code className="text-xs">LAYERED-ARCHITECTURE.md</code>
+            <code className="text-xs">ARCHITECTURE.md</code>
           </Link>{" "}
           at the repo root.
         </p>

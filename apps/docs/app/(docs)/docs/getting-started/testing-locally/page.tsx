@@ -904,14 +904,14 @@ Tag the area with one of:
             We publish the kill criteria for the Wave 5 pilot so you know
             exactly when the project would be paused or scrapped. Read{" "}
             <a
-              href="https://github.com/irfanputra-design/dash/blob/main/KILL-CRITERIA.md"
+              href="https://github.com/dash-electric/express-design-system/blob/main/docs/strategy/KILL-CRITERIA.md"
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"
               target="_blank"
               rel="noreferrer"
             >
               KILL-CRITERIA.md
             </a>{" "}
-            in the repo root. Honest feedback against those thresholds is the
+            under <code className="text-xs">docs/strategy/</code>. Honest feedback against those thresholds is the
             single most valuable thing you can give back.
           </p>
         </div>

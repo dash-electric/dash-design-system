@@ -9,7 +9,7 @@
  *   - apps/docs/registry/dash/foundation/rules/cardinal-rules.md   (CR-1..CR-8)
  *   - apps/docs/registry/dash/foundation/voice/voice-rules.md      (formal Anda)
  *   - apps/docs/registry/dash/foundation/manifest.json             (tokens + brand)
- *   - LAYERED-ARCHITECTURE.md                                       (decision tree)
+ *   - ARCHITECTURE.md                                               (decision tree)
  *
  * Resilient: every file is independently optional. If `foundation/` doesn't
  * exist (e.g. shallow clone), the loader still returns a DesignContext with
@@ -109,7 +109,7 @@ export async function loadDesignContext(
   const cardinalPath = path.join(foundationDir, "rules", "cardinal-rules.md")
   const voicePath = path.join(foundationDir, "voice", "voice-rules.md")
   const manifestPath = path.join(foundationDir, "manifest.json")
-  const layeredPath = path.join(repoRoot, "LAYERED-ARCHITECTURE.md")
+  const layeredPath = path.join(repoRoot, "ARCHITECTURE.md")
   const designContractPath = path.join(repoRoot, "design.md")
 
   const [designContract, cardinalRules, voiceRules, layered, manifest] = await Promise.all([

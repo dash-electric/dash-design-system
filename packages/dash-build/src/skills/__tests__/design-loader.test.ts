@@ -34,7 +34,7 @@ async function seedFoundation(
     await writeFile(path.join(fdir, "manifest.json"), JSON.stringify(opts.manifest))
   }
   if (opts.layered !== undefined) {
-    await writeFile(path.join(root, "LAYERED-ARCHITECTURE.md"), opts.layered)
+    await writeFile(path.join(root, "ARCHITECTURE.md"), opts.layered)
   }
 }
 

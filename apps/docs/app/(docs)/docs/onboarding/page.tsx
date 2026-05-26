@@ -446,7 +446,7 @@ input with 6 boxes — needed in mitra phone re-verify flow"`}
           </li>
           <li>
             <strong>Kill criteria input</strong> — see{" "}
-            <code className="text-xs">KILL-CRITERIA.md</code> at repo root. If
+            <code className="text-xs">docs/strategy/KILL-CRITERIA.md</code>. If
             you find a reason to kill or re-scope the DS, that&apos;s a
             valuable finding, not a failure.
           </li>

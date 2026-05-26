@@ -15,7 +15,7 @@ teams (Ride, Logistic, Travel, Marketplace, Trellis tenants).
 ### Core Platform (~225 registry items)
 
 Layer 0 brand foundation → Layer 1 primitives → Layer 2 product themes →
-Layer 3 workflow blocks. See [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md)
+Layer 3 workflow blocks. See [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 for the full spec, migration case studies, and visual showcase.
 
 - **Layer 0** — Brand foundation: type ramp, spacing, radius, motion,

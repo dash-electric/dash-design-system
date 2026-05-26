@@ -331,7 +331,7 @@ export function PilotDashboard({
         description="Run at Day +7. See WAVE-5-PILOT.md § F for the full template."
       >
         <a
-          href="/WAVE-5-PILOT.md"
+          href="https://github.com/dash-electric/express-design-system/blob/main/docs/pilot/WAVE-5-PILOT.md"
           className="inline-flex items-center gap-2 rounded-md border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-sm font-medium text-text-strong-950 hover:bg-bg-weak-50"
         >
           Open WAVE-5-PILOT.md →

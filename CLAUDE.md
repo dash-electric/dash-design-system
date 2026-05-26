@@ -22,7 +22,7 @@ Dash is a **platform**, not a single product. The DS is structured as 4 layers s
 3. Brand/voice/density tweak → Layer 2 manifest in `registry/dash/themes/`. Do NOT touch Layer 1 source.
 4. Touching type ramp, spacing, motion, or token tier → Layer 0 RFC required. Stop and ask.
 
-Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showcase: `/docs/architecture/layered` and `/docs/architecture/themes` on the docs site.
+Full spec: [`ARCHITECTURE.md`](./ARCHITECTURE.md). Visual showcase: `/docs/architecture/layered` and `/docs/architecture/themes` on the docs site.
 
 ## Cardinal rules
 
@@ -32,12 +32,28 @@ Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showca
 4. **Dash Purple canonical hex:** `#5e2aac`. Do not introduce `#7C4FC4` or any other purple variant.
 5. **Mitra-facing UI voice = formal "Anda"**, not casual "kamu". Per Dash voice rule.
 
+## Deployment safety rule
+
+Every push to `main` triggers an automatic Cloud Run deploy to the staging registry via `.github/workflows/stg-deployment.yml`. Every `v*.*.*` tag triggers a production deploy via `prd-deployment.yml`.
+
+**Before merging any PR to `main` or pushing a tag, the AI agent MUST explicitly ask the contributor: "Ready to merge to staging?" (or for tags: "Ready to deploy to production?") and wait for explicit confirmation in the same turn.**
+
+This applies to:
+- `gh pr merge` against `main` (including squash/rebase/merge)
+- Direct pushes to `main` (e.g. fast-forward, bypassing PRs)
+- `git push --tags` or `git push origin v*.*.*`
+- Any operation that fast-forwards or rebases `main`
+
+Do not assume prior approval carries over between turns. Re-ask each time. A "yes" earlier in the session does NOT cover a new merge later.
+
+If the contributor declines or stays silent, leave the PR open (or branch unpushed). They can merge later via the GitHub UI on their own schedule.
+
 ## Where to look for context
 
 | Need | File |
 |------|------|
 | Global cross-repo design contract | `design.md` |
-| Layered Architecture spec | `LAYERED-ARCHITECTURE.md` |
+| Layered Architecture spec | `ARCHITECTURE.md` |
 | Per-repo stack mandates | `apps/docs/registry/rules/dash-ai-rules.md` |
 | Domain entities, table names, state machines | `apps/docs/registry/rules/dash-domain-glossary.md` |
 | Compressed rules (Skill v2 default) | `apps/docs/registry/rules/dash-ai-rules.compressed.md` |
@@ -45,10 +61,12 @@ Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showca
 | Component canonical sources | `apps/docs/registry/dash/{ui,blocks,templates,patterns,hooks,lib}/` |
 | Registry manifest | `apps/docs/registry.json` |
 | Strategic plan | `Documents/Obsidian/Irfan-Vault/02-Projects/Product-Design/Dash/Dash-Design-System/Master-Execution-Plan-2026-05-20.md` |
-| Kill criteria | `KILL-CRITERIA.md` |
-| Drift baseline | `BASELINE-DRIFT-2026-05-20.md` |
-| Honest self-critique | `feedback.md` |
-| Commit history reference | `COMMIT-PLAN-2026-05-20.md` |
+| Kill criteria | `docs/strategy/KILL-CRITERIA.md` |
+| Drift baseline | `docs/strategy/BASELINE-DRIFT-2026-05-20.md` |
+| Honest self-critique | `docs/strategy/feedback.md` |
+| Commit history reference | `docs/history/COMMIT-PLAN-2026-05-20.md` |
+| Research + comparisons (shadcn, market) | `docs/research/` |
+| Pilot operations (Wave 5, onboarding) | `docs/pilot/` |
 
 ## Tooling
 
