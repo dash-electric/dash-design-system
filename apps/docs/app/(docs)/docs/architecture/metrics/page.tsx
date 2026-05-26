@@ -500,7 +500,7 @@ export default function MetricsPage() {
           <li>
             <Link
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"
-              href="https://github.com/dash-elektrik/dash-ds/blob/main/KILL-CRITERIA.md"
+              href="https://github.com/dash-electric/express-design-system/blob/main/docs/strategy/KILL-CRITERIA.md"
             >
               <code className="text-xs">KILL-CRITERIA.md</code>
             </Link>{" "}
@@ -509,7 +509,7 @@ export default function MetricsPage() {
           <li>
             <Link
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"
-              href="https://github.com/dash-elektrik/dash-ds/blob/main/BASELINE-DRIFT-2026-05-20.md"
+              href="https://github.com/dash-electric/express-design-system/blob/main/docs/strategy/BASELINE-DRIFT-2026-05-20.md"
             >
               <code className="text-xs">BASELINE-DRIFT-2026-05-20.md</code>
             </Link>{" "}
