@@ -1,0 +1,28 @@
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/build
+**/.git
+**/.github
+**/.vscode
+**/.idea
+**/.DS_Store
+**/coverage
+**/.cache
+**/.env
+**/.env.local
+**/.env.*.local
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Docs site has playwright snapshots and large fixtures we don't need at build time
+apps/docs/playwright-report
+apps/docs/test-results
+apps/docs/tests/**/screenshots
+
+# Local plan/scratch files
+plans/
