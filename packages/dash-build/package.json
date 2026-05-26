@@ -16,10 +16,19 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "pretest": "pnpm audit:css",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.scripts.json",
-    "check-bundle-size": "tsx scripts/check-bundle-size.ts"
+    "check-bundle-size": "tsx scripts/check-bundle-size.ts",
+    "audit": "pnpm audit:css && pnpm audit:tokens",
+    "audit:css": "node scripts/audit-css.mjs",
+    "audit:css:allowlist": "node scripts/audit-css.mjs --fix-allowlist",
+    "audit:css:strict": "node scripts/audit-css.mjs --strict",
+    "audit:css:report": "node scripts/audit-css.mjs --report",
+    "audit:tokens": "node scripts/audit-tokens.mjs",
+    "audit:tokens:strict": "node scripts/audit-tokens.mjs --strict",
+    "audit:tokens:report": "node scripts/audit-tokens.mjs --report"
   },
   "engines": {
     "node": ">=20"

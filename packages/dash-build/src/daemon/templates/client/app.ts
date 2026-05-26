@@ -164,6 +164,86 @@ export const DASHBOARD_JS = `
                 showToast({ message: "Prompt failed", kind: "error" });
               }
               break;
+            case "sandbox:state_changed":
+              // Sprint 1C: SandboxStateMachine emits this on every
+              // bootstrap/run/rollback/sweep transition. Refresh the dashboard
+              // so the topbar badge reflects the new state, plus a small
+              // non-intrusive toast for transitions the user actively cares
+              // about. Lifecycle-only bootstrap steps (clean → cloned →
+              // shim_applied → idle) refresh silently to avoid toast spam.
+              refreshDashboard();
+              if (
+                msg.to === "generating" ||
+                msg.to === "preview_ready" ||
+                msg.to === "publishing" ||
+                msg.to === "stale" ||
+                msg.to === "clone_running"
+              ) {
+                showToast({
+                  message: "Sandbox: " + String(msg.to).replace(/_/g, " "),
+                  kind: msg.to === "stale" ? "warn"
+                    : msg.to === "clone_running" ? "success"
+                    : "info",
+                });
+              }
+              break;
+            case "sandbox:dev_server_starting":
+              // F3: orchestrator cascade kicked workspace.startDevServer().
+              // Refresh so the badge can render the primary-pulse loading
+              // state; toast is informational only.
+              refreshDashboard();
+              showToast({
+                message: "Starting dev server" +
+                  (msg.port ? " on :" + msg.port : "") + "…",
+                kind: "info",
+              });
+              break;
+            case "sandbox:dev_server_ready":
+              // F3: workspace.startDevServer() resolved → port listening.
+              // Refresh so the canvas resolver (F2) can flip the iframe from
+              // staging to http://127.0.0.1:<port>.
+              refreshDashboard();
+              showToast({
+                message: "Dev server ready" +
+                  (msg.port ? " on :" + msg.port : "") + " — clone live",
+                kind: "success",
+              });
+              break;
+            case "sandbox:dev_server_failed":
+              // F3: dev server failed to start (timeout, port collision,
+              // npm script missing, …). The badge auto-renders an error
+              // tone with a click-to-retry button; toast doubles as a hint.
+              refreshDashboard();
+              showToast({
+                message: "Dev server failed to start — click the badge to retry",
+                kind: "error",
+                duration: 8000,
+              });
+              break;
+            case "auth:reconnected":
+              // Sprint 1B: AutoReconnect recovered the OpenAI link. Toast +
+              // refresh so the rail empty state collapses into the live chat.
+              showToast({
+                message:
+                  "Reconnected" +
+                  (msg.mode ? " via " + String(msg.mode) : ""),
+                kind: "success",
+              });
+              refreshDashboard();
+              break;
+            case "auth:reconnect_failed":
+              // Sprint 1B: AutoReconnect tried both fallbacks and gave up.
+              // Surface a warning toast with a hint to use the manual reconnect
+              // button (already visible in the rail empty state).
+              showToast({
+                message:
+                  "Could not reconnect OpenAI" +
+                  (msg.reason ? " (" + String(msg.reason) + ")" : "") +
+                  " — try Settings or paste a new key.",
+                kind: "warn",
+                duration: 6000,
+              });
+              break;
           }
         } catch (e) { /* ignore malformed */ }
       };
@@ -229,6 +309,8 @@ export const DASHBOARD_JS = `
             oldAuth.innerHTML = newAuth.innerHTML;
           }
           hydrateInlineClarifications();
+          // Phase B3 — re-highlight any code panel that was swapped in.
+          if (typeof highlightCodePanel === "function") highlightCodePanel();
         } catch (e) { /* swallow */ }
       })
       .catch(function () { /* ignore */ })
@@ -243,6 +325,9 @@ export const DASHBOARD_JS = `
   function appendChatMessage(role, content, status) {
     var thread = document.getElementById("db-chat-thread");
     if (!thread) return;
+    // Canvas-first workspace (P1.2A) keeps a hidden compat node — never mount
+    // optimistic bubbles into it.
+    if (thread.hasAttribute("hidden")) return;
     // If the thread is in empty state (a DIV, not a UL), upgrade it.
     if (thread.tagName !== "UL") {
       var ul = document.createElement("ul");
@@ -280,6 +365,13 @@ export const DASHBOARD_JS = `
   function clarificationPromptIds() {
     var ids = [];
     var seen = {};
+    // P1.1 R4: card-style mount is the new primary surface.
+    document.querySelectorAll("[data-clarify-mount]").forEach(function (el) {
+      var id = el.getAttribute("data-clarify-mount");
+      if (!id || seen[id]) return;
+      seen[id] = true;
+      ids.push(id);
+    });
     document.querySelectorAll("[data-clarification-focus]").forEach(function (el) {
       var id = el.getAttribute("data-clarification-focus");
       if (!id || seen[id]) return;
@@ -398,6 +490,16 @@ export const DASHBOARD_JS = `
         .then(function (res) { return res.ok ? res.json() : null; })
         .then(function (session) {
           if (!session || (session.status !== "pending" && session.status !== "expired")) return;
+          // P1.1 R4: prefer the structured card slot above the preview; fall
+          // back to the legacy chat-bubble target only when no card exists.
+          var card = document.querySelector('[data-clarify-mount="' + cssEscape(promptId) + '"]');
+          if (card) {
+            var loading = card.querySelector(".db-clarify-card-loading");
+            if (loading) loading.remove();
+            card.insertAdjacentHTML("beforeend", renderInlineQuestion(session));
+            wireInlineQuestion(card.querySelector('[data-inline-clarification="' + cssEscape(promptId) + '"]'));
+            return;
+          }
           var msg = findBuilderMessage(promptId);
           if (!msg) return;
           msg.insertAdjacentHTML("beforeend", renderInlineQuestion(session));
@@ -615,9 +717,311 @@ export const DASHBOARD_JS = `
       });
   }
 
+  // Phase B2: rail-view (chat ↔ history) is a sibling concern to canvas tabs.
+  // Topbar uses the same [data-tab] attribute for "history" / "chat" tabs as
+  // for "preview" / "code", so we intercept rail-mode values BEFORE the
+  // canvas handler (which falls back to "preview" for anything unknown).
+  function setRailViewMode(next) {
+    var rail = document.getElementById("db-chat-scroll");
+    if (!rail) return;
+    var mode = next === "history" ? "history" : "chat";
+    rail.setAttribute("data-view-mode", mode);
+    var views = rail.querySelectorAll("[data-rail-view]");
+    for (var i = 0; i < views.length; i++) {
+      var view = views[i];
+      var matches = view.getAttribute("data-rail-view") === mode;
+      if (matches) view.removeAttribute("hidden");
+      else view.setAttribute("hidden", "");
+    }
+    var tabs = document.querySelectorAll("[data-tab='history'], [data-tab='chat']");
+    for (var j = 0; j < tabs.length; j++) {
+      var tab = tabs[j];
+      var active = tab.getAttribute("data-tab") === mode;
+      tab.classList.toggle("db-topbar-tab--active", active);
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+    }
+    if (mode === "chat") scrollChatToBottom();
+  }
+
+  // P1.1B: Preview / Code tab + file-list switching.
+  function setCanvasTab(_stage, next) {
+    var which = next === "code" ? "code" : "preview";
+    // P1.2B: tabs live in the top bar, panels live in the canvas region —
+    // walk the document instead of a single parent so the wiring survives
+    // re-parenting.
+    var stages = document.querySelectorAll(".db-canvas-stage, .db-canvas-v2");
+    stages.forEach(function (s) {
+      s.setAttribute("data-active-tab", which);
+      s.querySelectorAll("[data-tab-panel]").forEach(function (panel) {
+        var matches = panel.getAttribute("data-tab-panel") === which;
+        if (matches) panel.removeAttribute("hidden");
+        else panel.setAttribute("hidden", "");
+      });
+    });
+    document.querySelectorAll("[data-tab]").forEach(function (tab) {
+      var active = tab.getAttribute("data-tab") === which;
+      tab.classList.toggle("db-canvas-tab--active", active);
+      tab.classList.toggle("db-topbar-tab--active", active);
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+    });
+  }
+  function setCodeFile(panel, path) {
+    if (!panel || !path) return;
+    panel.setAttribute("data-active-file", path);
+    panel.querySelectorAll("[data-code-file]").forEach(function (btn) {
+      var active = btn.getAttribute("data-code-file") === path;
+      btn.classList.toggle("db-code-file--active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    // Phase B3 — keep the parent tab wrapper in sync so the active visual
+    // state survives clicks on either the label or surrounding chrome.
+    panel.querySelectorAll("[data-code-tab]").forEach(function (tab) {
+      var active = tab.getAttribute("data-code-tab") === path;
+      tab.classList.toggle("db-code-tab--active", active);
+    });
+    panel.querySelectorAll("[data-code-content]").forEach(function (pre) {
+      var matches = pre.getAttribute("data-code-content") === path;
+      if (matches) pre.removeAttribute("hidden");
+      else pre.setAttribute("hidden", "");
+    });
+    // Re-run highlight on the newly visible block (hljs is idempotent once
+    // the element carries the hljs class, but our .db-code-line wrappers
+    // also need re-spanning when the source is freshly injected via refresh).
+    highlightCodePanel(panel);
+  }
+
+  // Phase B3 — tab close: soft-hide tab + corresponding content pane. We do
+  // NOT actually delete the underlying file; a /dashboard refresh restores
+  // the strip. Persistent close lives in B4 scope.
+  function closeCodeTab(panel, path) {
+    if (!panel || !path) return;
+    var tab = panel.querySelector('[data-code-tab="' + cssEscape(path) + '"]');
+    if (tab) tab.setAttribute("hidden", "");
+    // If the active tab was closed, advance to the next still-visible tab.
+    if (panel.getAttribute("data-active-file") === path) {
+      var next = panel.querySelector(".db-code-tab:not([hidden])");
+      var nextPath = next ? next.getAttribute("data-code-tab") : null;
+      if (nextPath) setCodeFile(panel, nextPath);
+      else panel.setAttribute("data-active-file", "");
+    }
+  }
+
+  // ---------- Phase B3: highlight.js wiring ----------
+  // hljs is loaded from CDN via a defer script in layout.ts. It may not be
+  // ready yet on first call (DOMContentLoaded order is browser-dependent for
+  // defer + inline script ordering), so we re-attempt on the load event and
+  // after each dashboard refresh.
+  function highlightCodePanel(root) {
+    if (typeof window === "undefined" || !window.hljs) return;
+    var scope = root || document;
+    try {
+      scope.querySelectorAll(".db-code-block").forEach(function (block) {
+        if (block.getAttribute("data-hljs-done") === "true") return;
+        // hljs.highlightElement walks the textContent — our nested
+        // .db-code-line wrappers stay intact because they wrap the entire
+        // file, not individual tokens.
+        try {
+          window.hljs.highlightElement(block);
+          block.setAttribute("data-hljs-done", "true");
+        } catch (e) { /* ignore per-block highlight failure */ }
+      });
+    } catch (e) { /* defensive */ }
+  }
+  function syncHljsTheme(isDark) {
+    var light = document.getElementById("hljs-light");
+    var dark = document.getElementById("hljs-dark");
+    if (light) light.disabled = !!isDark;
+    if (dark) dark.disabled = !isDark;
+  }
+  // Initial sync + highlight (waits for CDN script if not yet loaded).
+  syncHljsTheme(document.documentElement.classList.contains("dark"));
+  if (window.hljs) {
+    highlightCodePanel();
+  } else {
+    window.addEventListener("load", function () { highlightCodePanel(); });
+  }
+
+  // ---------- Sprint 1B: Run history jump-back ----------
+  // Replaces the Phase B2 console.log stub. Six steps in order:
+  //   1. Fetch /api/runs/<runId> for the run record (validates id exists).
+  //   2. Fetch /api/prompts/<runId> to get the artifact (files + preview).
+  //   3. Pick canvas tab (preview if previewUrl exists, else code).
+  //   4. Re-render code panel files when artifact present + breadcrumb.
+  //   5. Update topbar Run #N indicator.
+  //   6. Switch rail back to chat + highlight the matching bubble.
+  // Each step is best-effort — partial failure shows what we have.
+  function jumpToRun(runId) {
+    if (!runId) return Promise.resolve(false);
+    return fetch("/api/runs/" + encodeURIComponent(runId), {
+      headers: { "Accept": "application/json" },
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error("run_not_found");
+        return r.json();
+      })
+      .then(function (runBody) {
+        var run = runBody && runBody.run;
+        if (!run) throw new Error("run_missing");
+        // Step 2 — artifact (may be null for in-flight or failed runs).
+        return fetch("/api/prompts/" + encodeURIComponent(runId), {
+          headers: { "Accept": "application/json" },
+        })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (promptBody) {
+            var artifact = promptBody && promptBody.artifact;
+            // Step 3 — pick canvas tab.
+            var hasPreview = !!(artifact && artifact.preview && artifact.preview.previewUrl);
+            setCanvasTab(null, hasPreview ? "preview" : "code");
+            // Step 4 — when artifact present, re-render code panel from the
+            // first file. We do not have HTML server-rendered for non-active
+            // runs, so we trigger a soft refresh and let the dashboard swap
+            // the panel after the run becomes active. Update breadcrumb.
+            var route = document.querySelector(".db-topbar-route-code");
+            if (route && artifact && artifact.files && artifact.files[0]) {
+              route.textContent = artifact.files[0].path;
+            }
+            // Step 5 — topbar Run #N indicator (data attribute hint).
+            var topbar = document.querySelector(".db-shell .db-topbar, .db-topbar");
+            if (topbar) topbar.setAttribute("data-active-run-id", run.id);
+            // Step 6a — rail back to chat.
+            setRailViewMode("chat");
+            // Step 6b — highlight the corresponding chat bubble. Wait one
+            // frame so any layout swap can settle, then scroll + flash.
+            requestAnimationFrame(function () {
+              var bubble = document.querySelector(
+                ".db-chat-msg[data-prompt-id='" + cssEscape(run.id) + "']"
+              );
+              if (bubble) {
+                bubble.scrollIntoView({ block: "center", behavior: "smooth" });
+                bubble.classList.add("db-chat-msg--jump-flash");
+                setTimeout(function () {
+                  bubble.classList.remove("db-chat-msg--jump-flash");
+                }, 1400);
+              }
+            });
+            return true;
+          });
+      })
+      .catch(function (err) {
+        try { console.warn("[dash-build] jumpToRun failed", err); } catch (e) {}
+        showToast({
+          message:
+            "Could not load that run" +
+            (err && err.message ? " (" + err.message + ")" : ""),
+          kind: "error",
+        });
+        // Still flip back to chat so the user is not left staring at history.
+        setRailViewMode("chat");
+        return false;
+      });
+  }
+
+  // ---------- Sprint 1B: Manual OpenAI reconnect ----------
+  function triggerOpenAIReconnect(trigger) {
+    if (trigger && trigger.getAttribute("data-busy") === "true") return;
+    var card = trigger ? trigger.closest("[data-openai-reconnect-card]") : null;
+    if (trigger) trigger.setAttribute("data-busy", "true");
+    if (card) card.setAttribute("data-busy", "true");
+    var origLabel = trigger ? trigger.querySelector(".db-button-label") : null;
+    var origText = origLabel ? origLabel.textContent : "";
+    if (origLabel) origLabel.textContent = "Reconnecting…";
+    fetch("/api/auth/openai/reconnect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(function (r) {
+        return r.json().catch(function () { return null; }).then(function (body) {
+          return { ok: r.ok, status: r.status, body: body };
+        });
+      })
+      .then(function (res) {
+        var body = res && res.body ? res.body : {};
+        if (body.connected) {
+          showToast({
+            message: "Reconnected" + (body.mode ? " via " + body.mode : ""),
+            kind: "success",
+          });
+          refreshDashboard();
+          return;
+        }
+        var reasonEl = card ? card.querySelector("[data-auth-reconnect-reason]") : null;
+        if (reasonEl) {
+          reasonEl.textContent = body.reason ? "Last attempt: " + body.reason : "";
+          if (body.reason) reasonEl.removeAttribute("hidden");
+          else reasonEl.setAttribute("hidden", "");
+        }
+        showToast({
+          message:
+            "Reconnect failed" +
+            (body.reason ? " — " + body.reason : "") +
+            ". Try Settings or paste a new key.",
+          kind: "warn",
+          duration: 5000,
+        });
+      })
+      .catch(function () {
+        showToast({
+          message: "Reconnect request failed (network)",
+          kind: "error",
+        });
+      })
+      .finally(function () {
+        if (trigger) trigger.removeAttribute("data-busy");
+        if (card) card.removeAttribute("data-busy");
+        if (origLabel) origLabel.textContent = origText || "Reconnect";
+      });
+  }
+
   document.addEventListener("click", function (ev) {
     var target = ev.target;
     if (!target || !target.closest) return;
+    // Sprint 1B: manual reconnect button — check before generic data-tab.
+    var reconnectBtn = target.closest("[data-auth-reconnect]");
+    if (reconnectBtn) {
+      ev.preventDefault();
+      triggerOpenAIReconnect(reconnectBtn);
+      return;
+    }
+    // Phase B2: handle [data-jump-run] before generic [data-tab] so a click
+    // inside the history list does not also bubble to a parent tab pill.
+    var jumpRun = target.closest("[data-jump-run]");
+    if (jumpRun) {
+      ev.preventDefault();
+      var runId = jumpRun.getAttribute("data-jump-run");
+      // Sprint 1B: real jump-back implementation. See jumpToRun above.
+      jumpToRun(runId);
+      return;
+    }
+    var tab = target.closest("[data-tab]");
+    if (tab) {
+      var which = tab.getAttribute("data-tab");
+      // Phase B2: history/chat are rail-mode toggles, not canvas tabs. Route
+      // them to setRailViewMode and bail before setCanvasTab inverts to
+      // "preview" for unknown values.
+      if (which === "history" || which === "chat") {
+        ev.preventDefault();
+        setRailViewMode(which);
+        return;
+      }
+      ev.preventDefault();
+      setCanvasTab(null, which);
+      return;
+    }
+    var closeBtn = target.closest("[data-code-tab-close]");
+    if (closeBtn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var panelClose = closeBtn.closest(".db-code-panel");
+      closeCodeTab(panelClose, closeBtn.getAttribute("data-code-tab-close"));
+      return;
+    }
+    var fileBtn = target.closest("[data-code-file]");
+    if (fileBtn) {
+      ev.preventDefault();
+      var panel = fileBtn.closest(".db-code-panel");
+      setCodeFile(panel, fileBtn.getAttribute("data-code-file"));
+      return;
+    }
     var device = target.closest("[data-preview-device]");
     if (device) {
       ev.preventDefault();
@@ -731,6 +1135,114 @@ export const DASHBOARD_JS = `
         showToast({ message: command, kind: "info", duration: 7000 });
       }
     }
+  });
+
+  // ---------- Sprint 1A: sandbox bootstrap button ----------
+  // Topbar trigger that kicks the orchestrator ensureWorkspaceBootstrap()
+  // for the active repo. The button renders only when the repo sandbox is
+  // null or in the clean state; once the bootstrap moves the state forward
+  // the server-rendered button is gone after refresh.
+  document.addEventListener("click", function (ev) {
+    var target = ev.target;
+    if (!target || !target.closest) return;
+    var btn = target.closest("[data-sandbox-bootstrap]");
+    if (!btn) return;
+    ev.preventDefault();
+    var repo = btn.getAttribute("data-sandbox-bootstrap");
+    if (!repo) return;
+    btn.setAttribute("disabled", "true");
+    var labelEl = btn.querySelector(".db-topbar-bootstrap-btn-label");
+    var prevLabel = labelEl ? labelEl.textContent : "";
+    if (labelEl) labelEl.textContent = "Bootstrapping…";
+    fetch("/api/sandbox/bootstrap?repo=" + encodeURIComponent(repo), {
+      method: "POST",
+    })
+      .then(function (r) {
+        if (!r.ok && r.status !== 202) throw new Error("bootstrap_failed");
+        return r.json();
+      })
+      .then(function () {
+        showToast({
+          message: "Clone preview bootstrapping — this may take a minute.",
+          kind: "info",
+          duration: 6000,
+        });
+        // Refresh shortly so the badge can render once the state flips. The
+        // sandbox:state_changed broadcast will also nudge the dashboard.
+        setTimeout(function () { refreshDashboard(); }, 1500);
+      })
+      .catch(function () {
+        btn.removeAttribute("disabled");
+        if (labelEl) labelEl.textContent = prevLabel || "Activate clone preview";
+        showToast({
+          message: "Could not start clone preview bootstrap.",
+          kind: "error",
+        });
+      });
+  });
+
+  // ---------- F3: sandbox dev-server restart ----------
+  // Topbar badge renders as <button data-sandbox-restart-dev="<repo>"> when
+  // the dev server failed to start. Click POSTs /api/sandbox/restart-dev so
+  // the orchestrator re-runs stopDevServer + startDevServer; broadcast
+  // lifecycle events (dev_server_starting / _ready / _failed) update the
+  // badge in-place without a full reload.
+  document.addEventListener("click", function (ev) {
+    var target = ev.target;
+    if (!target || !target.closest) return;
+    var el = target.closest("[data-sandbox-restart-dev]");
+    if (!el) return;
+    ev.preventDefault();
+    var repo = el.getAttribute("data-sandbox-restart-dev");
+    if (!repo) return;
+    el.setAttribute("disabled", "true");
+    showToast({
+      message: "Restarting dev server…",
+      kind: "info",
+    });
+    fetch("/api/sandbox/restart-dev?repo=" + encodeURIComponent(repo), {
+      method: "POST",
+    })
+      .then(function (r) {
+        if (!r.ok && r.status !== 202) throw new Error("restart_failed");
+        return r.json();
+      })
+      .catch(function () {
+        el.removeAttribute("disabled");
+        showToast({
+          message: "Could not restart the dev server.",
+          kind: "error",
+        });
+      });
+  });
+
+  // ---------- Theme toggle (Phase A1) ----------
+  // Document-level delegate keyed on [data-theme-toggle]. Flips the .dark
+  // class on <html> and persists to localStorage under "dash-build-theme".
+  // Initial state is set by an inline script in <head> (layout.ts) before
+  // first paint, so we never flash the wrong theme.
+  function syncThemeButtons(isDark) {
+    var btns = document.querySelectorAll("[data-theme-toggle]");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].setAttribute("aria-pressed", isDark ? "true" : "false");
+    }
+  }
+  syncThemeButtons(document.documentElement.classList.contains("dark"));
+  document.addEventListener("click", function (ev) {
+    var target = ev.target;
+    if (!target || !target.closest) return;
+    var toggle = target.closest("[data-theme-toggle]");
+    if (!toggle) return;
+    ev.preventDefault();
+    var root = document.documentElement;
+    var nowDark = !root.classList.contains("dark");
+    root.classList.toggle("dark", nowDark);
+    try {
+      localStorage.setItem("dash-build-theme", nowDark ? "dark" : "light");
+    } catch (e) { /* private mode no-op */ }
+    syncThemeButtons(nowDark);
+    // Phase B3 — flip the highlight.js stylesheet to match the new theme.
+    syncHljsTheme(nowDark);
   });
 
   // ---------- Boot ----------

@@ -175,7 +175,7 @@ describe("Day 3 — preview wired", () => {
     orchestrator.dispose()
   })
 
-  it("bundle failure → still awaiting_approval, no previewUrl", async () => {
+  it("bundle failure → still awaiting_approval, surfaces fallback preview mode", async () => {
     const bundle = vi.fn(async () => {
       throw new Error("esbuild_missing")
     })
@@ -188,7 +188,13 @@ describe("Day 3 — preview wired", () => {
 
     expect(bundle).toHaveBeenCalledOnce()
     const artifact = orchestrator.getArtifact(prompt.id)
-    expect(artifact?.bundleResult).toBeUndefined()
+    // Orchestrator now writes a fallback preview bundle (file listing + score
+    // shell) when the real bundler fails, so the iframe still has something
+    // to mount. `previewMode = "fallback"` is the canonical signal that this
+    // is NOT a component render — the bundle exists but is the static recap.
+    expect(artifact?.previewMode).toBe("fallback")
+    expect(artifact?.bundleResult).toBeDefined()
+    expect(artifact?.bundleResult?.entryPath).toContain("fallback")
     expect(store.getPrompt(prompt.id)?.status).toBe("awaiting_approval")
     orchestrator.dispose()
   })

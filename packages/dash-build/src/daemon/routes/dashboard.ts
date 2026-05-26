@@ -10,6 +10,33 @@ import { bundlePathFor } from "../../preview/bundler.js"
 
 const codexCli = new CodexCliRunner()
 
+/**
+ * Build a sandbox-state lookup the resolver can consume. We duck-type the
+ * Store's `getSandboxState` so legacy/test stores without the method (or
+ * future shape drift) silently fall through to env/online/local-dev instead
+ * of crashing the dashboard.
+ *
+ * Returned shape is intentionally minimal: only `state` + optional
+ * `devServerPort` are read by `resolveRepoPreviewConfig`. Whatever extra
+ * fields F1 lands on the persisted record (history, runId, clonePath…) are
+ * untouched and just pass through as part of the duck-typed return.
+ */
+function makeSandboxStateProvider(store: Store) {
+  return (repo: string) => {
+    const fn = (store as unknown as {
+      getSandboxState?: (slug: string) =>
+        | { state: string; devServerPort?: number | null }
+        | null
+    }).getSandboxState
+    if (typeof fn !== "function") return null
+    try {
+      return fn.call(store, repo) ?? null
+    } catch {
+      return null
+    }
+  }
+}
+
 function activePromptId(store: Store, selectedRepo: string | null): string | null {
   const prompts = store.getPrompts(20)
   const repoPrompts = selectedRepo
@@ -34,7 +61,10 @@ export async function handleDashboard(
     workspace.activeRepo ??
     auth.github.repos[0] ??
     "dash/portal-v2"
-  const repoPreview = await getRepoPreviewInfo(selectedRepo)
+  const repoPreview = await getRepoPreviewInfo(
+    selectedRepo,
+    makeSandboxStateProvider(store),
+  )
   const activeId = activePromptId(store, selectedRepo)
   const previewBundleAvailable = activeId
     ? existsSync(bundlePathFor(activeId))

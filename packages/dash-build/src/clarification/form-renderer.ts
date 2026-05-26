@@ -10,7 +10,9 @@
 
 import type { ClarificationQuestion, ClarificationSession } from "./types.js"
 
-const DASH_PURPLE = "#5e2aac"
+// Dash Purple semantic token (registry: --primary-base = --dash-purple-500 = #5e2aac).
+// Stored as a CSS var reference so the audit treats it as semantic, not a raw hex.
+const DASH_PURPLE = "var(--primary-base)"
 
 function escapeHtml(input: string): string {
   return input
@@ -120,11 +122,11 @@ export function renderClarificationForm(session: ClarificationSession): string {
     .original-prompt {
       margin: 20px 0;
       padding: 12px 14px;
-      background: #f4f1f9;
+      background: var(--primary-alpha-10, var(--bg-weak-50));
       border-left: 3px solid var(--purple);
       border-radius: 4px;
       font-size: 13px;
-      color: #3a2e4d;
+      color: var(--text-strong-950);
       white-space: pre-wrap;
     }
     .question {
@@ -160,14 +162,14 @@ export function renderClarificationForm(session: ClarificationSession): string {
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
-      background: #fff;
+      background: var(--bg-white-0);
       transition: all 120ms ease;
     }
     .option:hover { border-color: var(--purple); }
     .option input { accent-color: var(--purple); }
     .option:has(input:checked) {
       border-color: var(--purple);
-      background: #f4f1f9;
+      background: var(--primary-alpha-10, var(--bg-weak-50));
     }
     textarea {
       width: 100%;
@@ -193,13 +195,13 @@ export function renderClarificationForm(session: ClarificationSession): string {
       padding: 10px 18px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: #fff;
+      background: var(--bg-white-0);
       cursor: pointer;
     }
     button.primary {
       background: var(--purple);
       border-color: var(--purple);
-      color: #fff;
+      color: var(--text-white-0);
     }
     button.primary:disabled {
       opacity: 0.5;

@@ -25,6 +25,7 @@
  */
 
 import { randomUUID } from "node:crypto"
+import { spawn } from "node:child_process"
 import {
   existsSync,
   readFileSync,
@@ -64,6 +65,17 @@ import {
   resolvePreviewDir,
 } from "../preview/index.js"
 import type { BundleResult } from "../preview/index.js"
+import { writeRunArtifacts } from "../runs/artifact-store.js"
+import type { BranchManager, Workspace } from "../runs/branch-manager.js"
+import type { Publisher } from "../runs/publish.js"
+import {
+  Workspace as WorkspaceImpl,
+  defaultClonePathFor,
+} from "../runs/workspace.js"
+import { getShimForRepo } from "../runs/preview-shim.js"
+import { resolveRepoPreviewConfig } from "../daemon/repo-preview.js"
+import { PatchApplier } from "../runs/patch-applier.js"
+import { GitOps } from "../runs/git-ops.js"
 
 export interface OrchestratorOptions {
   store: Store
@@ -77,6 +89,23 @@ export interface OrchestratorOptions {
   /** Default base branch when prompt has none. */
   defaultBaseBranch?: string
   logger?: Logger
+  /**
+   * D2 clone-sandbox wiring. All three are optional — when absent, the
+   * orchestrator falls back to the day-1 path (in-memory artifact +
+   * submitChanges() via the contents API). When all three are present:
+   *   - processPrompt writes generated files into the sandbox clone via
+   *     BranchManager.writeGeneratedFiles
+   *   - approvePR publishes via Publisher.publish (extract + push + PR)
+   * Tests typically inject all three together with a throwaway bare repo.
+   */
+  workspace?: Workspace
+  branchManager?: BranchManager
+  publisher?: Publisher
+  /**
+   * Default user id used when no explicit user is wired through the prompt.
+   * Used to compose the dash-build/<userId>-<runId> branch name.
+   */
+  defaultUserId?: string
   /**
    * Bundler used to produce a sandboxed JS bundle for the iframe preview after
    * generation succeeds. Defaults to a wrapper around `bundleForPreview()`. A
@@ -109,6 +138,19 @@ export interface OrchestratorOptions {
   previewCleanup?: (promptId: string) => Promise<boolean>
   /** Override the post-approve cleanup delay (default 5 min). Tests pass 0. */
   previewCleanupDelayMs?: number
+  /**
+   * Sprint 2B — factory for building a PatchApplier per run. Tests inject a
+   * stub that records `applyPatch` calls; production defaults to a real
+   * `PatchApplier` against the workspace clone.
+   */
+  patchApplierFactory?: (workspaceDir: string) => {
+    applyPatch: (filePath: string, patchContent: string) => Promise<{
+      ok: boolean
+      conflict?: boolean
+      missingTarget?: boolean
+      error?: string
+    }>
+  }
 }
 
 const NOOP_LOGGER: Logger = {
@@ -131,10 +173,31 @@ export class Orchestrator {
   private readonly previewCleanup: (promptId: string) => Promise<boolean>
   private readonly previewCleanupDelayMs: number
   private readonly ttlCancel: (() => void) | null
+  private readonly workspace: Workspace | null
+  private readonly branchManager: BranchManager | null
+  private readonly publisher: Publisher | null
+  private readonly defaultUserId: string
+  private readonly patchApplierFactory: (workspaceDir: string) => {
+    applyPatch: (filePath: string, patchContent: string) => Promise<{
+      ok: boolean
+      conflict?: boolean
+      missingTarget?: boolean
+      error?: string
+    }>
+  }
 
   /** In-memory artifact cache, keyed by promptId. Survives process lifetime
    *  only — by-design, since regenerating is cheaper than reloading from disk. */
   private readonly artifacts: Map<string, GenerationArtifact> = new Map()
+  /** Sandbox branch state per run — only populated when the D2 sandbox path
+   *  is active. Lets approvePR find the branch the publisher needs without
+   *  re-deriving it from the prompt id. */
+  private readonly sandboxRuns: Map<string, { branchName: string; userId: string }> =
+    new Map()
+  /** Sprint 1A — in-flight bootstrap promises keyed by repoSlug so concurrent
+   *  callers (auto submitPrompt trigger + manual button click) coalesce into
+   *  one clone+shim run instead of racing. */
+  private readonly bootstrapInflight: Map<string, Promise<void>> = new Map()
 
   constructor(opts: OrchestratorOptions) {
     this.store = opts.store
@@ -152,6 +215,27 @@ export class Orchestrator {
       }
     this.previewCleanup = opts.previewCleanup ?? ((id) => cleanupOne(id))
     this.previewCleanupDelayMs = opts.previewCleanupDelayMs ?? 5 * 60 * 1000
+    this.workspace = opts.workspace ?? null
+    this.branchManager = opts.branchManager ?? null
+    this.publisher = opts.publisher ?? null
+    this.defaultUserId = opts.defaultUserId ?? "local"
+    this.patchApplierFactory =
+      opts.patchApplierFactory ??
+      ((workspaceDir) =>
+        new PatchApplier({
+          workspaceDir,
+          gitOps: new GitOps(workspaceDir),
+        }))
+
+    // Sprint 1C: wire sandbox state-machine transitions through Store +
+    // Broadcaster for any Workspace passed in via DI (e.g. integration tests
+    // that mock a bare repo). S1A's runtime `runBootstrap` calls
+    // `wireSandboxBroadcast` directly on the Workspace it constructs, so
+    // every transition (bootstrap + run + rollback + sweep) auto-broadcasts.
+    // Backward-compat: silently skip when no Workspace is available.
+    if (this.workspace) {
+      this.wireSandboxBroadcast(this.workspace)
+    }
 
     // TTL sweep: walk SessionStore every 5 min and expire pending sessions
     // older than 30 min. Disable with ttlScheduler=null (tests).
@@ -195,6 +279,27 @@ export class Orchestrator {
     if (!input.text || !input.text.trim()) {
       throw new Error("prompt text required")
     }
+    // Sprint 1A — fire-and-forget bootstrap kick. Best-effort: if the clone
+    // succeeds the live preview pane can switch to the real codebase; if it
+    // fails (offline, repo path missing, etc.) the prompt still flows through
+    // the legacy path. We cap our wait at 5s so a slow first clone never
+    // blocks the user — the bootstrap keeps running in the background after.
+    if (input.repo) {
+      const kicked = this.ensureWorkspaceBootstrap(input.repo)
+      try {
+        await Promise.race([
+          kicked,
+          new Promise<void>((resolve) => {
+            const t = setTimeout(resolve, 5_000)
+            if (typeof (t as { unref?: () => void }).unref === "function") {
+              ;(t as { unref: () => void }).unref()
+            }
+          }),
+        ])
+      } catch {
+        // Swallow — bootstrap failures must never block prompt submission.
+      }
+    }
     const prompt = this.store.addPrompt({
       text: input.text,
       repo: input.repo ?? null,
@@ -202,6 +307,10 @@ export class Orchestrator {
     })
     const queuedStatus = prompt.status
     this.broadcaster.broadcast("prompts:changed", {
+      id: prompt.id,
+      status: queuedStatus,
+    })
+    this.broadcaster.broadcast("runs:changed", {
       id: prompt.id,
       status: queuedStatus,
     })
@@ -217,6 +326,335 @@ export class Orchestrator {
       })
     })
     return { promptId: prompt.id, status: queuedStatus }
+  }
+
+  /**
+   * Sprint 1A — best-effort workspace bootstrap for a repo.
+   *
+   * Cheap when state is already past `clean`: returns immediately. Otherwise
+   * resolves the local repo dir via the repo-preview manifest, derives an
+   * origin URL (env override > `git remote get-url origin` from the local
+   * checkout > local dir as fallback), spins up a Workspace, and runs the
+   * full clone+shim+install dance. Skips entirely if the shim or local dir
+   * is missing — we don't want to crash the daemon on first contact.
+   *
+   * F3 — once the workspace settles into `idle`, cascades into
+   * `workspace.startDevServer({ port })` (the F1 method). The dev server
+   * spin-up is best-effort: if it fails (binary missing, port collision,
+   * F1 method not present, …) the cascade logs a warning and the prompt
+   * submit path keeps running. The clone iframe falls back to the staging
+   * URL via the resolver priority that F2 owns.
+   *
+   * Public so the dashboard's "Activate clone preview" button + the
+   * submitPrompt fire-and-forget hook can share the same coalesced run.
+   *
+   * NEVER throws to the caller — workspace bootstrap is purely additive.
+   */
+  async ensureWorkspaceBootstrap(
+    repo: string,
+    opts: { startDevServer?: boolean } = {},
+  ): Promise<void> {
+    if (!repo) return
+    const inflight = this.bootstrapInflight.get(repo)
+    if (inflight) return inflight
+
+    const current = this.safeGetSandboxState(repo)
+    const needsBoot =
+      current === null || current.state === "clean"
+    const needsDevServer =
+      (opts.startDevServer ?? true) &&
+      !!current &&
+      (current.state === "idle" || current.state === "shim_applied")
+    if (!needsBoot && !needsDevServer) return
+
+    const run = this.runBootstrap(repo, {
+      startDevServer: opts.startDevServer ?? true,
+      skipClone: !needsBoot,
+    })
+    this.bootstrapInflight.set(repo, run)
+    run.finally(() => {
+      this.bootstrapInflight.delete(repo)
+    })
+    return run
+  }
+
+  /**
+   * F3 — wrap `workspace.stopDevServer + startDevServer`. Best-effort:
+   * returns the latest sandbox snapshot regardless of dev-server outcome.
+   * Used by the `/api/sandbox/restart-dev` route after a `dev_server_failed`
+   * event so the user can retry without reissuing the whole bootstrap.
+   */
+  async restartDevServer(repo: string): Promise<unknown> {
+    if (!repo) return null
+    const workspace = this.findLiveWorkspaceFor(repo)
+    if (workspace) {
+      const stop = (workspace as unknown as {
+        stopDevServer?: () => Promise<void>
+      }).stopDevServer
+      if (typeof stop === "function") {
+        try {
+          await stop.call(workspace)
+        } catch (err) {
+          this.logger.warn("restartDevServer: stop failed", {
+            repo,
+            err: (err as Error).message,
+          })
+        }
+      }
+    }
+    await this.runDevServerStartCascade(repo, workspace ?? null).catch(() => {})
+    return this.safeGetSandboxState(repo)
+  }
+
+  /**
+   * F3 — find a live Workspace instance for a repo. Currently only the
+   * DI-supplied workspace is tracked (one-per-orchestrator); future work may
+   * key by repo. Returns `null` when no live instance is known, which is
+   * fine for the dev-server cascade — `runDevServerStartCascade` will
+   * lazy-create a fresh one against the existing clone in that case.
+   */
+  private findLiveWorkspaceFor(repo: string): Workspace | null {
+    if (this.workspace && this.workspace.repoSlug === repo) {
+      return this.workspace
+    }
+    return null
+  }
+
+  private async runBootstrap(
+    repo: string,
+    opts: { startDevServer: boolean; skipClone: boolean } = {
+      startDevServer: true,
+      skipClone: false,
+    },
+  ): Promise<void> {
+    const shim = getShimForRepo(repo)
+    if (!shim) {
+      this.logger.warn("bootstrap skipped: no shim registered", { repo })
+      return
+    }
+    const config = resolveRepoPreviewConfig(repo)
+    if (!config) {
+      this.logger.warn("bootstrap skipped: no repo-preview manifest", { repo })
+      return
+    }
+    if (!existsSync(config.dir)) {
+      this.logger.warn("bootstrap skipped: local repo dir missing", {
+        repo,
+        dir: config.dir,
+      })
+      return
+    }
+
+    const originUrl =
+      process.env.DASH_BUILD_GIT_ORIGIN_URL?.trim() ||
+      (await detectOriginUrl(config.dir)) ||
+      config.dir
+    const clonePath = defaultClonePathFor(repo)
+
+    let workspace: Workspace | null = null
+    try {
+      if (!opts.skipClone) {
+        await this.setSafeSandboxState(repo, {
+          state: "clean",
+          clonePath,
+        })
+      }
+      const ws = new WorkspaceImpl({
+        repoSlug: repo,
+        originUrl,
+        clonePath,
+        shim,
+      })
+      workspace = ws
+      // Sprint 1C: wire per-transition Store persistence + WS broadcast.
+      // S1A's coarser end-of-bootstrap broadcast below still fires for
+      // back-compat with code that listens for the final transition only.
+      this.wireSandboxBroadcast(ws)
+      if (!opts.skipClone) {
+        await ws.bootstrap()
+        const info = ws.info()
+        await this.setSafeSandboxState(repo, {
+          state: info.state,
+          clonePath: info.clonePath,
+          shimCommitSha: info.shimCommitSha,
+        })
+        this.broadcaster.broadcast("sandbox:state_changed", {
+          repo,
+          repoSlug: repo,
+          to: info.state,
+          state: info.state,
+        })
+        this.logger.info("bootstrap complete", {
+          repo,
+          state: info.state,
+          clonePath: info.clonePath,
+        })
+      }
+    } catch (err) {
+      this.logger.warn("bootstrap failed (continuing)", {
+        repo,
+        err: (err as Error).message,
+      })
+      // Force-mark failed so the dashboard badge reflects reality.
+      await this.setSafeSandboxState(repo, { state: "failed" }).catch(() => {})
+      this.broadcaster.broadcast("sandbox:state_changed", {
+        repo,
+        repoSlug: repo,
+        to: "failed",
+        state: "failed",
+        error: (err as Error).message,
+      })
+      return
+    }
+
+    // F3 — cascade into dev server start. Best-effort: never throws to
+    // caller; failures degrade gracefully and keep prompt submit unblocked.
+    if (opts.startDevServer) {
+      await this.runDevServerStartCascade(repo, workspace).catch(() => {})
+    }
+  }
+
+  /**
+   * F3 — start the workspace dev server and broadcast lifecycle events:
+   *   sandbox:dev_server_starting → before spawn
+   *   sandbox:dev_server_ready    → on listening
+   *   sandbox:dev_server_failed   → on timeout / spawn failure
+   *
+   * Defensive: tolerates a Workspace that hasn't yet grown
+   * `startDevServer()` (F1 lands in parallel). When the method is missing,
+   * logs a warning and returns — clone state stays idle and the canvas
+   * falls back to staging.
+   */
+  private async runDevServerStartCascade(
+    repo: string,
+    workspace: Workspace | null,
+  ): Promise<void> {
+    const config = resolveRepoPreviewConfig(repo)
+    const port = config?.port
+    if (!workspace) {
+      this.logger.warn("dev server cascade skipped: no workspace handle", {
+        repo,
+      })
+      return
+    }
+    const startDev = (workspace as unknown as {
+      startDevServer?: (input: { port?: number }) => Promise<unknown>
+    }).startDevServer
+    if (typeof startDev !== "function") {
+      this.logger.warn("dev server cascade skipped: Workspace.startDevServer unavailable", {
+        repo,
+      })
+      return
+    }
+
+    this.broadcaster.broadcast("sandbox:dev_server_starting", {
+      repo,
+      repoSlug: repo,
+      port: port ?? null,
+    })
+
+    const startupTimeoutMs = 60_000
+    try {
+      await Promise.race([
+        Promise.resolve(startDev.call(workspace, { port })),
+        new Promise<never>((_, reject) => {
+          const t = setTimeout(() => {
+            reject(new Error(`dev server startup timed out after ${startupTimeoutMs}ms`))
+          }, startupTimeoutMs)
+          if (typeof (t as { unref?: () => void }).unref === "function") {
+            ;(t as { unref: () => void }).unref()
+          }
+        }),
+      ])
+      this.broadcaster.broadcast("sandbox:dev_server_ready", {
+        repo,
+        repoSlug: repo,
+        port: port ?? null,
+      })
+      this.logger.info("dev server ready", { repo, port })
+    } catch (err) {
+      const message = (err as Error).message ?? String(err)
+      this.logger.warn("dev server start failed (continuing in idle)", {
+        repo,
+        err: message,
+      })
+      this.broadcaster.broadcast("sandbox:dev_server_failed", {
+        repo,
+        repoSlug: repo,
+        port: port ?? null,
+        error: message,
+      })
+    }
+  }
+
+  /** Defensive read so Store extensions can land independently in tests. */
+  private safeGetSandboxState(repo: string): { state: string } | null {
+    const get = (this.store as unknown as {
+      getSandboxState?: (r: string) => { state: string } | null
+    }).getSandboxState
+    if (typeof get !== "function") return null
+    try {
+      return get.call(this.store, repo) ?? null
+    } catch {
+      return null
+    }
+  }
+
+  /** Defensive write — silently no-ops if the Store hasn't gained the API. */
+  private async setSafeSandboxState(
+    repo: string,
+    patch: Record<string, unknown>,
+  ): Promise<void> {
+    const update = (this.store as unknown as {
+      updateSandboxState?: (r: string, patch: Record<string, unknown>) => Promise<unknown>
+    }).updateSandboxState
+    if (typeof update !== "function") return
+    try {
+      await update.call(this.store, repo, patch)
+    } catch (err) {
+      this.logger.warn("sandbox persist failed", {
+        repo,
+        err: (err as Error).message,
+      })
+    }
+  }
+
+  /**
+   * Sprint 1C — subscribe to SandboxStateMachine transitions for one
+   * Workspace. Every successful transition:
+   *   1. Broadcasts `sandbox:state_changed` over WS so the dashboard topbar
+   *      badge updates without a poll.
+   *   2. Persists the new state into Store (defensive — Store API may not
+   *      exist in older test fixtures).
+   *
+   * Callable from both the DI path (Workspace passed via constructor) and
+   * the runtime path (Workspace built inside `runBootstrap`). Safe to call
+   * multiple times on the same Workspace — the latest callback wins.
+   * Backward-compat: silently skips when the machine has no setter (older
+   * SandboxStateMachine builds).
+   */
+  private wireSandboxBroadcast(workspace: Workspace): void {
+    const setter = workspace.state?.setOnTransition?.bind(workspace.state)
+    if (typeof setter !== "function") return
+    setter((event) => {
+      // Broadcast first so the UI updates even if disk persistence is slow.
+      this.broadcaster.broadcast("sandbox:state_changed", {
+        repo: event.repoSlug,
+        from: event.from,
+        to: event.to,
+        at: event.at,
+        runId: event.runId,
+      })
+      // Fire-and-forget persistence. Defensive — Store extensions may land
+      // independently in older test rigs.
+      void this.setSafeSandboxState(event.repoSlug, {
+        state: event.to,
+        runId: event.runId,
+        clonePath: workspace.clonePath,
+        shimCommitSha: workspace.info().shimCommitSha,
+        history: workspace.state.history(),
+      })
+    })
   }
 
   /**
@@ -277,6 +715,7 @@ export class Orchestrator {
     const artifact: GenerationArtifact = {
       promptId: prompt.id,
       files: result.response.files,
+      patches: result.response.patches ?? [],
       explanation: result.response.explanation,
       validation: result.validation,
       generatedAt: new Date().toISOString(),
@@ -305,12 +744,94 @@ export class Orchestrator {
 
     this.artifacts.set(prompt.id, artifact)
     await persistArtifact(prompt.id, artifact)
+    await this.persistRunArtifact(prompt, artifact)
+
+    // 4c. D2 clone-sandbox: start a run branch (or reuse one) and write the
+    //     generated output there so approvePR can publish via extract+push.
+    //     Sprint 2B — output is now a mix of NEW files (mode=new-file) and
+    //     PATCHES (mode=patch). Patches go through PatchApplier (git apply);
+    //     new files go through BranchManager.writeGeneratedFiles. Any patch
+    //     failure triggers an all-or-nothing rollback before commit.
+    //     All failures are non-fatal at the pipeline level — we degrade to
+    //     the legacy submitChanges path.
+    if (this.workspace && this.branchManager) {
+      try {
+        const { branchName } = await this.branchManager.startRun(
+          prompt.id,
+          this.defaultUserId,
+        )
+
+        const patches = artifact.patches ?? []
+        if (patches.length > 0) {
+          const applier = this.patchApplierFactory(this.workspace.clonePath)
+          const applied: Array<{ path: string }> = []
+          let conflicted: { path: string; error: string } | null = null
+          for (const patch of patches) {
+            const outcome = await applier.applyPatch(patch.path, patch.patchContent)
+            if (!outcome.ok) {
+              conflicted = {
+                path: patch.path,
+                error: outcome.error ?? "unknown patch failure",
+              }
+              break
+            }
+            applied.push({ path: patch.path })
+          }
+          if (conflicted) {
+            // All-or-nothing: roll back the run branch entirely so the working
+            // tree returns to clean trunk. BranchManager.rollback handles the
+            // git-level cleanup; we let the user know via prompt error state.
+            await this.branchManager.rollback(branchName).catch((rollErr) => {
+              this.logger.warn("rollback after patch conflict failed", {
+                id: prompt.id,
+                err: (rollErr as Error).message,
+              })
+            })
+            throw new Error(
+              `patch failed for ${conflicted.path} (applied ${applied.length}/${patches.length}): ${conflicted.error}`,
+            )
+          }
+        }
+
+        // New files (mode=new-file) — write + commit in a single shot. Empty
+        // file list is OK if we only had patches; in that case stage the
+        // patch deltas via a dummy commit so extractGeneratedOnly has a
+        // single commit to format-patch over.
+        if (artifact.files.length > 0) {
+          await this.branchManager.writeGeneratedFiles(branchName, artifact.files, {
+            commitMessage:
+              this.buildCommitMessage(prompt) + ` [run ${prompt.id}]`,
+          })
+        } else if (patches.length > 0) {
+          // Patches mutated the working tree; commit them so the branch has
+          // history before publish.
+          const git = new GitOps(this.workspace.clonePath)
+          await git.commit(
+            this.buildCommitMessage(prompt) + ` [run ${prompt.id}]`,
+            { addAll: true },
+          )
+        }
+
+        this.sandboxRuns.set(prompt.id, {
+          branchName,
+          userId: this.defaultUserId,
+        })
+        this.workspace.state.setRunIdForNextTransition(prompt.id)
+        this.workspace.state.transition("preview_ready")
+      } catch (err) {
+        this.logger.warn("sandbox write failed (continuing without sandbox)", {
+          id: prompt.id,
+          err: (err as Error).message,
+        })
+      }
+    }
 
     await this.setStatus(prompt, "awaiting_approval")
     this.broadcaster.broadcast("generation:complete", {
       promptId: prompt.id,
       score: result.validation.score,
       fileCount: result.response.files.length,
+      patchCount: artifact.patches?.length ?? 0,
       passed: result.validation.passed,
       errorCount: result.validation.errors.length,
       previewAvailable: Boolean(artifact.bundleResult),
@@ -387,25 +908,61 @@ export class Orchestrator {
     const baseBranch = prompt.branch || this.defaultBaseBranch
     const newBranch = input.branch ?? `dash-build/${input.promptId.slice(0, 12)}`
     const commitMessage = input.commitMessage ?? this.buildCommitMessage(prompt)
+    const sandbox = this.sandboxRuns.get(input.promptId)
 
     try {
-      const submitted = await this.github.submitChanges({
-        fullName: prompt.repo,
-        baseBranch,
-        newBranch,
-        files: artifact.files.map((f) => ({ path: f.path, content: f.content })),
-        commitMessage,
-        prTitle: input.prTitle ?? this.buildPRTitle(prompt),
-        prBody: input.prBody ?? this.buildPRBody(prompt, artifact),
-      })
+      let prUrl: string
+      let prNumber: number
+
+      if (this.publisher && sandbox) {
+        // D2 path — extract generated-only commits from the sandbox clone,
+        // push as the canonical run branch, open PR via GitHub App.
+        const published = await this.publisher.publish({
+          runId: input.promptId,
+          userId: sandbox.userId,
+          fullName: prompt.repo,
+          baseBranch,
+          prTitle: input.prTitle ?? this.buildPRTitle(prompt),
+          prBody: input.prBody ?? this.buildPRBody(prompt, artifact),
+        })
+        prUrl = published.prUrl
+        prNumber = published.prNumber
+
+        // Best-effort: reset sandbox to idle so the next run starts clean.
+        // Failure here doesn't roll back the PR.
+        try {
+          await this.publisher.cleanup({
+            runId: input.promptId,
+            userId: sandbox.userId,
+          })
+        } catch (cleanupErr) {
+          this.logger.warn("sandbox cleanup failed (PR succeeded)", {
+            id: input.promptId,
+            err: (cleanupErr as Error).message,
+          })
+        }
+        this.sandboxRuns.delete(input.promptId)
+      } else {
+        const submitted = await this.github.submitChanges({
+          fullName: prompt.repo,
+          baseBranch,
+          newBranch,
+          files: artifact.files.map((f) => ({ path: f.path, content: f.content })),
+          commitMessage,
+          prTitle: input.prTitle ?? this.buildPRTitle(prompt),
+          prBody: input.prBody ?? this.buildPRBody(prompt, artifact),
+        })
+        prUrl = submitted.prUrl
+        prNumber = submitted.prNumber
+      }
 
       await this.store.updatePromptStatus(input.promptId, "pr_created", {
-        prUrl: submitted.prUrl,
+        prUrl,
       })
       this.broadcaster.broadcast("pr:created", {
         promptId: input.promptId,
-        prUrl: submitted.prUrl,
-        prNumber: submitted.prNumber,
+        prUrl,
+        prNumber,
       })
 
       // Schedule preview cleanup after a delay so the user can still revisit
@@ -413,7 +970,7 @@ export class Orchestrator {
       // cleanupOld() sweeper will catch orphans eventually.
       this.schedulePreviewCleanup(input.promptId)
 
-      return { prUrl: submitted.prUrl, prNumber: submitted.prNumber }
+      return { prUrl, prNumber }
     } catch (err) {
       const classified = classify(err)
       await this.failPrompt(prompt, classified)
@@ -452,6 +1009,36 @@ export class Orchestrator {
     if (target === prompt.status) return
     await this.store.updatePromptStatus(prompt.id, target)
     this.broadcaster.broadcast("prompts:changed", { id: prompt.id, status: target })
+    this.broadcaster.broadcast("runs:changed", { id: prompt.id, status: target })
+  }
+
+  private async persistRunArtifact(
+    prompt: PromptRecord,
+    artifact: GenerationArtifact,
+  ): Promise<void> {
+    try {
+      const written = await writeRunArtifacts({
+        runId: prompt.id,
+        prompt: prompt.text,
+        repo: prompt.repo,
+        branch: prompt.branch,
+        generatedAt: artifact.generatedAt,
+        files: artifact.files,
+        validation: artifact.validation,
+        explanation: artifact.explanation,
+        contextPack: artifact.contextPack,
+      })
+      await this.store.setRunArtifact(prompt.id, {
+        artifactDir: written.runDir,
+        contextPackRef: written.contextPackRef,
+        validationScore: artifact.validation.score,
+      })
+    } catch (err) {
+      this.logger.warn("run artifact persist failed", {
+        id: prompt.id,
+        err: (err as Error).message,
+      })
+    }
   }
 
   private async beginClarification(
@@ -478,6 +1065,11 @@ export class Orchestrator {
     })
     await this.store.updatePromptStatus(prompt.id, "failed", { error: summary })
     this.broadcaster.broadcast("prompts:changed", {
+      id: prompt.id,
+      status: "failed",
+      error: summary,
+    })
+    this.broadcaster.broadcast("runs:changed", {
       id: prompt.id,
       status: "failed",
       error: summary,
@@ -676,17 +1268,17 @@ async function writeFallbackPreviewBundle(
   root.innerHTML = \`
     <style>
       .dash-preview-fallback { max-width: 980px; margin: 0 auto; display: grid; gap: 18px; }
-      .dash-preview-hero { padding: 28px; border: 1px solid #e6e1ee; border-radius: 14px; background: #fff; box-shadow: 0 18px 50px rgba(26,20,36,.08); }
-      .dash-preview-kicker { margin: 0 0 8px; color: #5e2aac; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
-      .dash-preview-title { margin: 0; font-size: 28px; line-height: 1.15; color: #1a1424; }
-      .dash-preview-sub { margin: 12px 0 0; color: #6b6478; line-height: 1.6; max-width: 760px; }
+      .dash-preview-hero { padding: 28px; border: 1px solid var(--stroke-soft-200); border-radius: 14px; background: var(--bg-white-0); box-shadow: 0 18px 50px rgba(26,20,36,.08); }
+      .dash-preview-kicker { margin: 0 0 8px; color: var(--primary-base); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+      .dash-preview-title { margin: 0; font-size: 28px; line-height: 1.15; color: var(--text-strong-950); }
+      .dash-preview-sub { margin: 12px 0 0; color: var(--text-sub-600); line-height: 1.6; max-width: 760px; }
       .dash-preview-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-      .dash-preview-stat { padding: 10px 12px; border-radius: 10px; background: #f7f5fb; color: #1a1424; font-weight: 700; }
+      .dash-preview-stat { padding: 10px 12px; border-radius: 10px; background: var(--bg-weak-50); color: var(--text-strong-950); font-weight: 700; }
       .dash-preview-files { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
-      .dash-preview-file { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid #e6e1ee; border-radius: 10px; background: #fff; }
-      .dash-preview-file-path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #1a1424; overflow-wrap: anywhere; }
-      .dash-preview-file-meta { color: #6b6478; white-space: nowrap; }
-      .dash-preview-note { padding: 14px 16px; border-radius: 10px; background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; font-size: 13px; line-height: 1.5; }
+      .dash-preview-file { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid var(--stroke-soft-200); border-radius: 10px; background: var(--bg-white-0); }
+      .dash-preview-file-path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text-strong-950); overflow-wrap: anywhere; }
+      .dash-preview-file-meta { color: var(--text-sub-600); white-space: nowrap; }
+      .dash-preview-note { padding: 14px 16px; border-radius: 10px; background: var(--state-warning-lighter); color: var(--state-warning-dark); border: 1px solid var(--state-warning-light); font-size: 13px; line-height: 1.5; }
     </style>
     <main class="dash-preview-fallback">
       <section class="dash-preview-hero">
@@ -838,4 +1430,41 @@ export function defaultOpenAIProvider(
 // Re-export randomUUID-based promptId helper for callers that want their own id.
 export function generatePromptId(): string {
   return `prm_${randomUUID().slice(0, 12)}`
+}
+
+/**
+ * Best-effort `git remote get-url origin` against the local checkout. Returns
+ * `null` if git is missing, the dir is not a checkout, or the command fails.
+ * Used by `ensureWorkspaceBootstrap` so the clone tracks the canonical
+ * GitHub origin instead of a local file-path (which would block PR push).
+ */
+async function detectOriginUrl(cwd: string): Promise<string | null> {
+  return await new Promise<string | null>((resolve) => {
+    let stdout = ""
+    let stderr = ""
+    try {
+      const child = spawn("git", ["remote", "get-url", "origin"], {
+        cwd,
+        stdio: ["ignore", "pipe", "pipe"],
+        env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
+      })
+      child.stdout.on("data", (d) => {
+        stdout += d.toString("utf8")
+      })
+      child.stderr.on("data", (d) => {
+        stderr += d.toString("utf8")
+      })
+      child.on("error", () => resolve(null))
+      child.on("close", (code) => {
+        if (code !== 0) {
+          void stderr
+          return resolve(null)
+        }
+        const url = stdout.trim()
+        resolve(url || null)
+      })
+    } catch {
+      resolve(null)
+    }
+  })
 }

@@ -53,9 +53,11 @@ Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showca
 ## Tooling
 
 - **CLI:** `dash` (located `packages/cli/`). Commands: `init`, `add`, `audit`, `build`, `diff`, `doctor`, `info`, `list`, `login`, `mcp`, `search`, `sync`.
-- **MCP server:** `packages/mcp-server/`. Bearer-gated. 6 tools.
+- **MCP server:** `packages/mcp-server/`. Bearer-gated. 7 tools: `search-components`, `get-component`, `list-categories`, `list-templates`, `search-tokens`, `get-rules` (alias: `get-ai-rules`), `get-audit-checklist`.
 - **Skill:** `packages/skill/` (v2). Priority-pinned context blocks + per-repo scoping.
 - **PRD skill:** `skills/dash-prd/` (BSD-3 fork of NatPRD, vendored).
+
+**Registry URL defaults:** CLI + MCP both resolve via `process.env.DASH_REGISTRY_URL ?? "http://localhost:3000"` (local-dev mode). For production consumer repos, export `DASH_REGISTRY_URL=https://ds.dash.com` in shell rc, or pass `--registry-url` per command. Docs site (`pnpm --filter @dash/docs dev`, port 3000) must be running when consuming the local registry.
 
 ## Dash Build (Lovable-for-Dash Internal)
 

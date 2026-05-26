@@ -300,6 +300,86 @@ describe("Orchestrator", () => {
     expect(run).toHaveBeenCalledTimes(2)
   })
 
+  // ── F3: dev server cascade ───────────────────────────────────────────────
+  describe("ensureWorkspaceBootstrap dev-server cascade (F3)", () => {
+    it("cascades into workspace.startDevServer when bootstrap reaches idle", async () => {
+      const { orchestrator } = build()
+      // Fake workspace exposing startDevServer + minimal info() surface.
+      const startDev = vi.fn(async () => undefined)
+      const fakeWorkspace = {
+        repoSlug: "dash/backoffice",
+        clonePath: "/tmp/fake-clone",
+        info: () => ({
+          state: "idle",
+          clonePath: "/tmp/fake-clone",
+          shimCommitSha: null,
+        }),
+        startDevServer: startDev,
+        state: {
+          // No-op transition surface so wireSandboxBroadcast bails out.
+          setOnTransition: undefined,
+        },
+      }
+      // Reach into the private cascade helper for a deterministic unit test.
+      type CascadeFn = (r: string, w: unknown) => Promise<void>
+      const cascade = (
+        orchestrator as unknown as { runDevServerStartCascade: CascadeFn }
+      ).runDevServerStartCascade.bind(orchestrator)
+      await cascade("dash/backoffice", fakeWorkspace)
+      expect(startDev).toHaveBeenCalled()
+      expect(events.some((e) => e.event === "sandbox:dev_server_starting")).toBe(true)
+      expect(events.some((e) => e.event === "sandbox:dev_server_ready")).toBe(true)
+    })
+
+    it("dev server failure broadcasts sandbox:dev_server_failed without throwing", async () => {
+      const { orchestrator } = build()
+      const startDev = vi.fn(async () => {
+        throw new Error("port already in use")
+      })
+      const fakeWorkspace = {
+        repoSlug: "dash/backoffice",
+        clonePath: "/tmp/fake-clone",
+        info: () => ({
+          state: "idle",
+          clonePath: "/tmp/fake-clone",
+          shimCommitSha: null,
+        }),
+        startDevServer: startDev,
+        state: { setOnTransition: undefined },
+      }
+      type CascadeFn = (r: string, w: unknown) => Promise<void>
+      const cascade = (
+        orchestrator as unknown as { runDevServerStartCascade: CascadeFn }
+      ).runDevServerStartCascade.bind(orchestrator)
+      // Must NOT throw — cascade is best-effort by contract.
+      await expect(cascade("dash/backoffice", fakeWorkspace)).resolves.toBeUndefined()
+      expect(startDev).toHaveBeenCalled()
+      expect(events.some((e) => e.event === "sandbox:dev_server_failed")).toBe(true)
+      const failEvent = events.find((e) => e.event === "sandbox:dev_server_failed")
+      expect((failEvent?.data as { error?: string })?.error).toMatch(/port already in use/)
+    })
+
+    it("cascade silently skips when Workspace lacks startDevServer (F1 not landed)", async () => {
+      const { orchestrator } = build()
+      const fakeWorkspace = {
+        repoSlug: "dash/backoffice",
+        clonePath: "/tmp/fake-clone",
+        info: () => ({ state: "idle", clonePath: "", shimCommitSha: null }),
+        state: { setOnTransition: undefined },
+        // No startDevServer method.
+      }
+      type CascadeFn = (r: string, w: unknown) => Promise<void>
+      const cascade = (
+        orchestrator as unknown as { runDevServerStartCascade: CascadeFn }
+      ).runDevServerStartCascade.bind(orchestrator)
+      await expect(cascade("dash/backoffice", fakeWorkspace)).resolves.toBeUndefined()
+      // No starting / ready events fired — pure no-op when the F1 method is absent.
+      expect(events.some((e) => e.event === "sandbox:dev_server_starting")).toBe(false)
+      expect(events.some((e) => e.event === "sandbox:dev_server_ready")).toBe(false)
+      expect(events.some((e) => e.event === "sandbox:dev_server_failed")).toBe(false)
+    })
+  })
+
   it("skill-chain error → failed status with reason", async () => {
     const { orchestrator } = build({
       skillChain: makeSkillChain({

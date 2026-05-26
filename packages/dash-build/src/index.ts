@@ -40,4 +40,10 @@ export {
   type PromptStatus,
   type AuthState,
   type WorkspaceState,
+  type Project,
+  type ProjectMode,
+  type ProjectStatus,
+  type Thread,
+  type ThreadStatus,
+  type Run,
 } from "./daemon/state/types.js"

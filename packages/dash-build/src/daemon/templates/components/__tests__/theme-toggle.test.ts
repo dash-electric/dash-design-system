@@ -5,27 +5,44 @@ import { DASHBOARD_JS } from "../../client/app.js"
 import { renderLayout } from "../../layout.js"
 
 /**
- * Theme toggle was removed in May 2026 — dashboard is light-only per
- * Dash DS direction. These tests now lock in the "no dark mode anywhere"
- * invariants so a future regression that re-introduces inline dark-mode
- * blocks (instead of a Layer-2 theme) fails loudly.
+ * Phase A1 (2026-05-25) — registry tokens inlined, theme toggle RE-ENABLED.
+ *
+ * Dashboard now consumes the Dash registry semantic tokens (`:root` light +
+ * `.dark` override) inlined into the CSS bundle from
+ * `apps/docs/app/globals.css`. The toggle flips the `.dark` class on
+ * `<html>` and persists in `localStorage` under the `dash-build-theme` key.
+ * An inline script in `<head>` applies the stored / system preference
+ * before first paint so we never flash the wrong theme.
  */
-describe("themeToggle (light-only invariants)", () => {
-  it("themeToggle() renders nothing — disabled per Dash DS light-only direction", () => {
-    expect(themeToggle()).toBe("")
+describe("themeToggle (Phase A1 registry-token wiring)", () => {
+  it("themeToggle() renders a real button with the data-theme-toggle hook", () => {
+    const html = themeToggle()
+    expect(html).toContain("data-theme-toggle")
+    expect(html).toContain("db-theme-toggle")
+    expect(html).toContain('aria-pressed="false"')
+    expect(html).toContain("aria-label=")
   })
 
-  it("CSS does not include dark-mode media query or [data-theme=dark]", () => {
-    expect(DASHBOARD_CSS).not.toContain("[data-theme=\"dark\"]")
-    expect(DASHBOARD_CSS).not.toMatch(/@media\s*\(prefers-color-scheme:\s*dark\)/)
+  it("CSS bundle inlines the Dash registry `.dark` semantic override block", () => {
+    // The `.dark` block defines bg-white-0, text-strong-950, etc. — proof the
+    // registry tokens.ts payload landed in the bundle.
+    expect(DASHBOARD_CSS).toMatch(/^\.dark\s*\{/m)
+    expect(DASHBOARD_CSS).toContain("--bg-white-0: var(--dash-slate-950)")
+    expect(DASHBOARD_CSS).toContain("--text-strong-950: var(--dash-slate-0)")
   })
 
-  it("client JS does not write or read a stored dark theme", () => {
-    expect(DASHBOARD_JS).not.toContain("localStorage.setItem(\"dash-build-theme\"")
-    expect(DASHBOARD_JS).not.toMatch(/matchMedia\(["']\(prefers-color-scheme: dark\)["']\)/)
+  it("CSS bundle inlines the Dash registry light-mode foundations", () => {
+    expect(DASHBOARD_CSS).toContain("--dash-purple-500: #5e2aac")
+    expect(DASHBOARD_CSS).toContain("--primary-base:     var(--dash-purple-500)")
   })
 
-  it("layout no longer applies a stored data-theme before paint", () => {
+  it("client JS handles the theme toggle click and persists the choice", () => {
+    expect(DASHBOARD_JS).toContain("data-theme-toggle")
+    expect(DASHBOARD_JS).toContain("dash-build-theme")
+    expect(DASHBOARD_JS).toMatch(/classList\.toggle\(["']dark["']/)
+  })
+
+  it("layout applies the stored / system theme inline before paint", () => {
     const html = renderLayout({
       title: "Test",
       body: "<p>hi</p>",
@@ -33,12 +50,14 @@ describe("themeToggle (light-only invariants)", () => {
       version: "0.1.0",
       port: 7777,
     })
-    expect(html).not.toContain("localStorage.getItem(\"dash-build-theme\"")
-    expect(html).not.toContain("data-theme")
+    // Inline init script in <head> reads localStorage + prefers-color-scheme.
+    expect(html).toContain("dash-build-theme")
+    expect(html).toMatch(/matchMedia\(["']\(prefers-color-scheme: dark\)["']\)/)
+    expect(html).toContain("classList.add('dark')")
     // Toast mount node still present in chrome.
     expect(html).toContain('id="db-toasts"')
-    // Theme toggle button no longer rendered.
-    expect(html).not.toContain('id="db-theme-toggle"')
+    // Theme toggle button rendered in chrome.
+    expect(html).toContain("data-theme-toggle")
   })
 
   it("Dash Purple #5e2aac is the canonical brand primary token", () => {

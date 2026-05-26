@@ -2,6 +2,20 @@ import { escapeHtml } from "../layout.js"
 import type { RepoPreviewInfo } from "../../repo-preview.js"
 
 /**
+ * Sandbox-clone mode: `info.url` already points at the local clone
+ * (127.0.0.1:<port>) so the "Open real app ↗" link needs a separate
+ * pointer back to the staging/online URL the manifest declared. Falls back
+ * to env override > manifest default; returns null when neither exists (in
+ * which case we just hide the link rather than render a dead anchor).
+ */
+function resolveRealAppUrl(info: RepoPreviewInfo): string | null {
+  const env = process.env[info.metadata.onlineUrlEnv]?.trim()
+  const base = env || info.metadata.onlineUrl
+  if (!base) return null
+  return `${base.replace(/\/$/, "")}${info.metadata.defaultRoute}`
+}
+
+/**
  * LivePreviewPane — the right-hand pane in the builder dashboard.
  * Three states keyed off the active prompt's lifecycle:
  *   - idle    : nothing to preview yet (no prompt running)
@@ -160,19 +174,55 @@ function renderBaseline(info?: RepoPreviewInfo | null): string {
         <ol>${authPlan}</ol>
       </aside>`
 
-  if (info.status === "running" && auth.mode !== "none") {
-    return renderAuthHarness(info, authCallout)
-  }
-
   if (info.status === "running") {
+    // F2 sandbox-clone branch: the resolver picked the local clone dev server
+    // (state.json: clone_running + devServerPort). The preview-shim has
+    // already bypassed auth, so we DROP the yellow auth note and swap to a
+    // success-toned ribbon. The "Open real app ↗" link still points at the
+    // staging URL via the manifest so a user can compare against production
+    // shape if they want.
+    if (info.sourceMode === "sandbox-clone") {
+      const realAppUrl = resolveRealAppUrl(info)
+      const realAppLink = realAppUrl
+        ? `<a href="${escapeHtml(realAppUrl)}" target="_blank" rel="noreferrer">Open real app ↗</a>`
+        : ""
+      const cloneSubtitle = `Clone preview · 127.0.0.1:${info.port} · shim active`
+      return `<div class="db-live-preview-state db-live-preview-state--ready db-live-preview-state--baseline" data-state="baseline" data-clone-preview="${escapeHtml(info.repo)}">
+        <div class="db-baseline-ribbon db-baseline-ribbon--clone">
+          <span>${escapeHtml(baseline.label)}</span>
+          <code>${escapeHtml(info.repo)}</code>
+          <span>${escapeHtml(cloneSubtitle)}</span>
+          ${realAppLink}
+        </div>
+        <iframe
+          class="db-live-preview-frame"
+          title="Sandbox clone preview"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          src="${escapeHtml(info.url)}"
+          loading="lazy"
+        ></iframe>
+      </div>`
+    }
+
+    // Default to the REAL repo iframe whenever the local dev server is up.
+    // Auth-gated routes are an honest signal (login prompt = real app), not
+    // a reason to mask reality with a harness. The harness fallback only
+    // kicks in when the dev server itself is not running.
+    const authNote =
+      auth.mode === "none"
+        ? ""
+        : `<div class="db-baseline-auth-note" role="note">
+            <strong>${escapeHtml(authLabel)}</strong>
+            <span>${escapeHtml(auth.summary)} Open the app in a new tab to sign in if the iframe redirects to login.</span>
+          </div>`
     return `<div class="db-live-preview-state db-live-preview-state--ready db-live-preview-state--baseline" data-state="baseline">
       <div class="db-baseline-ribbon">
         <span>${escapeHtml(baseline.label)}</span>
         <code>${escapeHtml(info.repo)}</code>
         <span>${escapeHtml(baseline.surface)}</span>
-        <a href="${escapeHtml(info.url)}" target="_blank" rel="noreferrer">Open app ↗</a>
+        <a href="${escapeHtml(info.url)}" target="_blank" rel="noreferrer">Open real app ↗</a>
       </div>
-      ${authCallout}
+      ${authNote}
       <iframe
         class="db-live-preview-frame"
         title="Selected repo baseline preview"

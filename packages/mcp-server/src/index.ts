@@ -6,7 +6,9 @@
  * Transport: stdio (MCP standard for local CLI clients).
  *
  * Env:
- *   DASH_REGISTRY_URL   — registry base URL (default: https://ds.dash.com)
+ *   DASH_REGISTRY_URL   — registry base URL (default: http://localhost:3000,
+ *                         aligned with `dash` CLI. Export
+ *                         DASH_REGISTRY_URL=https://ds.dash.com for prod.)
  *   DASH_REGISTRY_TOKEN — optional bearer token
  *
  * Response format: markdown (per shadcn MCP convention). Each tool returns

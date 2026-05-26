@@ -32,7 +32,7 @@ dash --help
 dash init
 
 # 2. Add components — deps resolved recursively
-dash add button card dialog
+dash add button card sidebar
 
 # 3. Find what's available
 dash search "table"
@@ -173,9 +173,9 @@ Resolved in this order (first hit wins):
 1. `--registry-url` CLI flag
 2. `components.json` → `registries["@dash"].url`
 3. `DASH_REGISTRY_URL` environment variable
-4. Default: `https://ds.dash.com`
+4. Default: `http://localhost:3000` (local-dev convention; CLI + MCP server both default here)
 
-For local development against the dev server: `DASH_REGISTRY_URL=http://localhost:3000`.
+For production consumer repos: `export DASH_REGISTRY_URL=https://ds.dash.com` in shell rc, or pass `--registry-url https://ds.dash.com` per command.
 
 ### Auth
 
@@ -235,6 +235,27 @@ Known limitation in v1 — the merger is regex-based. Open `app/globals.css`, se
 
 **`dash` not found after global install**
 `pnpm i -g` doesn't update your shell's PATH cache. Open a new terminal or `hash -r` (bash/zsh).
+
+## Local Development (Dash team)
+
+When developing the CLI or testing consumer-side integration end-to-end, the registry must run locally — the CLI fetches `/r/<name>.json` from whatever URL it resolves.
+
+```bash
+# Terminal 1: start docs site (serves the registry at /r/*.json)
+cd /Users/irfanprimaputra.b/Work/dash/dash-ds
+pnpm --filter @dash/docs dev
+# → http://localhost:3000
+
+# Terminal 2: smoke test the CLI against a throwaway project
+mkdir /tmp/dash-test && cd /tmp/dash-test
+dash init --yes --registry-url http://localhost:3000
+dash add button card sidebar --yes
+dash list --registry-url http://localhost:3000
+```
+
+The CLI default resolves to `http://localhost:3000` (matches the docs dev server). For production deployment override via `DASH_REGISTRY_URL=https://ds.dash.com` in shell rc or `--registry-url https://ds.dash.com` per command.
+
+> If you see `Warning: missing peer tailwindcss>=3.0.0` after `dash init`, install Tailwind in the consumer project: `pnpm add -D tailwindcss postcss autoprefixer && pnpm dlx tailwindcss init`. The CLI does not auto-install Tailwind to avoid overwriting your existing config.
 
 ## Development
 

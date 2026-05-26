@@ -25,12 +25,17 @@ import { evaluatePromptScope } from "./prd-evaluator.js"
 import { loadDesignContext } from "./design-loader.js"
 import { loadSkillContext } from "./skill-loader.js"
 import { composeSystemPrompt, inferRepoContextPack } from "./prompt-composer.js"
+import { introspectRepo } from "./repo-introspector.js"
+import { loadExistingFilesContext } from "./existing-file-reader.js"
 import { extractText, parseResponse } from "./response-parser.js"
 import { validateOutput } from "./validator.js"
+import { detectOutputMode } from "./output-mode-detector.js"
 import type {
   ChainDeps,
+  ExistingFilesContext,
   GenerateInput,
   GenerateResult,
+  RepoIntrospection,
 } from "./types.js"
 
 /** Default model label — overridable per call. Codex CLI uses its own config unless env overrides it. */
@@ -88,7 +93,7 @@ export async function generateWithSkillChain(
   const loadDesign = deps.loadDesign ?? (() => loadDesignContext({ cwd: input.repoPath }))
   const loadSkill = deps.loadSkill ?? loadSkillContext
 
-  const [design, skill] = await Promise.all([
+  const [design, skill, introspection, existingFiles] = await Promise.all([
     loadDesign().catch(() => ({
       cardinalRules: "",
       designContract: "",
@@ -104,10 +109,33 @@ export async function generateWithSkillChain(
       detectedRepoStack: null,
       schemaVersion: 0,
     })),
+    // Layer A — repo introspection (best-effort, never blocks generation).
+    introspectRepo(repoContext.repoSlug).catch<RepoIntrospection | null>(() => null),
+    // Phase C / Sprint 2A — resolve route mentions in prompt to real files +
+    // read their content. Best-effort. Empty context if anything fails.
+    loadExistingFilesContext({
+      prompt: input.prompt,
+      contextPack: repoContext,
+    }).catch<ExistingFilesContext>(() => ({ resolutions: [], files: [] })),
   ])
 
   // ── Stage 4: compose system prompt ───────────────────────────────────────
-  const systemPrompt = composeSystemPrompt({ prd: prdEval, design, skill, repoContext })
+  // Sprint 2B — derive output mode from prompt + S2A existingFiles context.
+  // The model gets explicit mode=new-file vs mode=patch instructions and
+  // CURRENT FILE STATE lines for any patch-eligible file.
+  const outputMode = detectOutputMode({
+    prompt: input.prompt,
+    existingFiles,
+  })
+  const systemPrompt = composeSystemPrompt({
+    prd: prdEval,
+    design,
+    skill,
+    repoContext,
+    introspection,
+    existingFiles,
+    outputMode,
+  })
 
   // ── Stage 5: call Claude ─────────────────────────────────────────────────
   if (!deps.anthropic) {
@@ -140,7 +168,10 @@ export async function generateWithSkillChain(
   const parsed = parseResponse(rawText)
 
   // ── Stage 7: validate ────────────────────────────────────────────────────
-  const validation = validateOutput(parsed, design)
+  // Sprint 2B — thread existingFiles so patch-mode outputs can be vetted
+  // against the real on-disk content (path existence, additions-only hex
+  // checks, hunk header sanity).
+  const validation = validateOutput(parsed, design, { existingFiles })
 
   return {
     kind: "generated",
@@ -154,6 +185,7 @@ export async function generateWithSkillChain(
       repoContext,
       designSources: design.loadedSources,
       skillSources: skill.sources,
+      existingFiles,
     },
   }
 }

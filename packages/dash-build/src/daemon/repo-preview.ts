@@ -20,7 +20,33 @@ export interface RepoPreviewConfig {
   url: string
   installCommand: string
   startCommand: string
+  sourceMode: RepoPreviewSourceMode
 }
+
+export type RepoPreviewSourceMode =
+  | "online-env"
+  | "online-default"
+  | "local-dev"
+  | "sandbox-clone"
+
+/**
+ * Minimal duck-typed shape the resolver needs from the persisted sandbox
+ * state. We intentionally don't import `SandboxStatePersisted` from
+ * state/types here: (a) the `clone_running` value + `devServerPort` field are
+ * added by the F1 workspace track and may land slightly later, and (b) the
+ * resolver doesn't need the full shape (history, runId, etc.) — only state +
+ * port. Decoupling keeps F2 free of F1's type-version cadence and avoids a
+ * forced merge order between the tracks.
+ */
+export interface SandboxStateForResolver {
+  state: string
+  /** Only present when `state === "clone_running"`. */
+  devServerPort?: number | null
+}
+
+export type SandboxStateProvider = (
+  repo: string,
+) => SandboxStateForResolver | null | undefined
 
 export type RepoPreviewMode = "local-dev" | "mock-shell"
 export type RepoPreviewAuthMode =
@@ -68,6 +94,10 @@ export interface RepoManifestEntry {
   localDirName: string
   portEnv: string
   defaultPort: number
+  /** Default staging/online URL for this repo. `null` = no online preview available. */
+  onlineUrl: string | null
+  /** Env var name that overrides `onlineUrl` (e.g. for staging vs prod swap). */
+  onlineUrlEnv: string
   shell: RepoBaselineModel["shell"]
 }
 
@@ -76,6 +106,8 @@ export interface RepoPreviewInfo extends RepoPreviewConfig {
   baseline: RepoBaselineModel
   status: RepoPreviewStatus
   message: string
+  /** Which source the resolved `url` points to. */
+  sourceMode: RepoPreviewSourceMode
   pid?: number
   error?: string
 }
@@ -116,9 +148,19 @@ export const REPO_PREVIEW_MANIFEST: readonly RepoManifestEntry[] = [
     localDirName: "next-portal-v2-web",
     portEnv: "DASH_BUILD_PORTAL_V2_PORT",
     defaultPort: 3100,
+    onlineUrl: null,
+    onlineUrlEnv: "DASH_BUILD_PORTAL_V2_ONLINE_URL",
     shell: {
       title: "Portal v2 baseline",
-      nav: ["Home", "Trips", "Payments", "Support"],
+      nav: [
+        "Deliveries",
+        "Address",
+        "Billing",
+        "Outlets",
+        "Users",
+        "Policies",
+        "Integrations",
+      ],
       primaryAction: "Preview rider flow",
       contentHints: [
         "Customer-facing ride workspace",
@@ -159,9 +201,27 @@ export const REPO_PREVIEW_MANIFEST: readonly RepoManifestEntry[] = [
     localDirName: "next-backoffice-web",
     portEnv: "DASH_BUILD_BACKOFFICE_PORT",
     defaultPort: 3101,
+    onlineUrl: "https://stg-back-office.dashelectric.co",
+    onlineUrlEnv: "DASH_BUILD_BACKOFFICE_ONLINE_URL",
     shell: {
       title: "Backoffice baseline",
-      nav: ["Dashboard", "Mitra", "Orders", "Payroll", "Audit"],
+      nav: [
+        "Dashboard",
+        "Talent Pool",
+        "Delivery",
+        "Return",
+        "COD",
+        "Attendance",
+        "Shift",
+        "Inbound",
+        "Broadcast",
+        "Client Data Sync",
+        "Client",
+        "Outlet",
+        "Pitstop",
+        "Mitra",
+        "Pengaturan",
+      ],
       primaryAction: "Open ops workspace",
       contentHints: [
         "Dense admin navigation for repeated operations work",
@@ -185,25 +245,88 @@ export function isRepoPreviewAllowed(repo: string | null | undefined): repo is s
   return Boolean(resolveRepoManifest(repo))
 }
 
-export function resolveRepoPreviewConfig(repo: string | null | undefined): RepoPreviewConfig | null {
+export function resolveRepoPreviewConfig(
+  repo: string | null | undefined,
+  sandboxStateProvider?: SandboxStateProvider | null,
+): RepoPreviewConfig | null {
   const manifest = resolveRepoManifest(repo)
   if (!manifest) return null
   const dashRoot = process.env.DASH_BUILD_DASH_ROOT ?? path.join(homedir(), "Dash")
   const dir = process.env[manifest.localDirEnv] ?? path.join(dashRoot, manifest.localDirName)
   const port = Number(process.env[manifest.portEnv] ?? manifest.defaultPort)
+
+  // Resolution priority (highest → lowest):
+  //   1. Sandbox clone dev server (state.json says clone_running + port live)
+  //   2. Env override `DASH_BUILD_<REPO>_ONLINE_URL`
+  //   3. Manifest `onlineUrl` (staging default)
+  //   4. Local dev fallback
+  //
+  // Sandbox-clone wins so when F1's workspace bootstrap stands up a local
+  // clone dev server with the auth-bypass shim, the canvas points there
+  // instead of the auth-walled staging URL. Falls back gracefully when no
+  // provider is wired (older callers, tests) or the state isn't `clone_running`.
+  const sandboxState = sandboxStateProvider
+    ? safeReadSandboxState(sandboxStateProvider, manifest.id)
+    : null
+  let url: string
+  let sourceMode: RepoPreviewSourceMode
+  let effectivePort = port
+
+  if (
+    sandboxState?.state === "clone_running" &&
+    typeof sandboxState.devServerPort === "number" &&
+    Number.isFinite(sandboxState.devServerPort) &&
+    sandboxState.devServerPort > 0
+  ) {
+    effectivePort = sandboxState.devServerPort
+    url = `http://127.0.0.1:${effectivePort}${manifest.defaultRoute}`
+    sourceMode = "sandbox-clone"
+  } else {
+    const envOnline = process.env[manifest.onlineUrlEnv]?.trim() || null
+    if (envOnline) {
+      url = `${envOnline.replace(/\/$/, "")}${manifest.defaultRoute}`
+      sourceMode = "online-env"
+    } else if (manifest.onlineUrl) {
+      url = `${manifest.onlineUrl.replace(/\/$/, "")}${manifest.defaultRoute}`
+      sourceMode = "online-default"
+    } else {
+      url = `http://127.0.0.1:${port}${manifest.defaultRoute}`
+      sourceMode = "local-dev"
+    }
+  }
+
   return {
     repo: manifest.id,
     dir,
-    port,
-    url: `http://127.0.0.1:${port}${manifest.defaultRoute}`,
+    port: effectivePort,
+    url,
+    sourceMode,
     installCommand: `cd ${shellQuote(dir)} && npm install`,
-    startCommand: `cd ${shellQuote(dir)} && npm run dev -- -p ${port}`,
+    startCommand: `cd ${shellQuote(dir)} && npm run dev -- -p ${effectivePort}`,
   }
 }
 
-export async function getRepoPreviewInfo(repo: string | null | undefined): Promise<RepoPreviewInfo | null> {
+/**
+ * Wrap the provider call so a faulty / legacy Store implementation can never
+ * crash the resolver path. A null return = "fall through to env/online/local".
+ */
+function safeReadSandboxState(
+  provider: SandboxStateProvider,
+  repo: string,
+): SandboxStateForResolver | null {
+  try {
+    return provider(repo) ?? null
+  } catch {
+    return null
+  }
+}
+
+export async function getRepoPreviewInfo(
+  repo: string | null | undefined,
+  sandboxStateProvider?: SandboxStateProvider | null,
+): Promise<RepoPreviewInfo | null> {
   const manifest = resolveRepoManifest(repo)
-  const config = resolveRepoPreviewConfig(repo)
+  const config = resolveRepoPreviewConfig(repo, sandboxStateProvider)
   if (!manifest || !config) return null
   const local = managed.get(config.repo)
   const exists = existsSync(config.dir)
@@ -219,6 +342,39 @@ export async function getRepoPreviewInfo(repo: string | null | undefined): Promi
     shell: manifest.shell,
     unavailableReason,
   })
+
+  // Sandbox-clone short-circuits: when F1's bootstrap has the local clone
+  // dev server alive (state.json: clone_running + devServerPort), we treat
+  // it as authoritative. The shim handles auth bypass so we don't need the
+  // staging URL or local-dev probe in this branch. If the dev server is
+  // actually down despite state being `clone_running` (stale ref), the
+  // iframe will surface its own connection error — the dashboard can then
+  // re-trigger bootstrap via F3's cascade.
+  if (config.sourceMode === "sandbox-clone") {
+    return {
+      ...config,
+      metadata: manifest,
+      baseline: baseline(),
+      status: "running",
+      message: `Sandbox clone dev server (127.0.0.1:${config.port}) with auth-bypass shim.`,
+    }
+  }
+
+  // Online sources short-circuit local dev probe — they're assumed always
+  // reachable. If they're not, the iframe will show its own error and the
+  // user can fall back to local dev via env override.
+  if (config.sourceMode === "online-env" || config.sourceMode === "online-default") {
+    return {
+      ...config,
+      metadata: manifest,
+      baseline: baseline(),
+      status: "running",
+      message:
+        config.sourceMode === "online-env"
+          ? "Live staging URL (env override)."
+          : "Live staging URL.",
+    }
+  }
 
   if (!exists) {
     return {
@@ -281,8 +437,11 @@ export async function getRepoPreviewInfo(repo: string | null | undefined): Promi
   }
 }
 
-export async function startRepoPreview(repo: string | null | undefined): Promise<RepoPreviewInfo | null> {
-  const before = await getRepoPreviewInfo(repo)
+export async function startRepoPreview(
+  repo: string | null | undefined,
+  sandboxStateProvider?: SandboxStateProvider | null,
+): Promise<RepoPreviewInfo | null> {
+  const before = await getRepoPreviewInfo(repo, sandboxStateProvider)
   if (!before) return null
   if (before.status === "running" || before.status === "starting") return before
   if (before.status === "missing" || before.status === "dependencies_missing") return before
@@ -312,7 +471,7 @@ export async function startRepoPreview(repo: string | null | undefined): Promise
   while (Date.now() < deadline) {
     if (await isHttpReachable(before.url)) {
       entry.status = "running"
-      return getRepoPreviewInfo(repo)
+      return getRepoPreviewInfo(repo, sandboxStateProvider)
     }
     await sleep(500)
   }

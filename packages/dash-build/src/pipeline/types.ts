@@ -23,6 +23,7 @@ import type {
   AnthropicLike,
   GenerateResult,
   ParsedFile,
+  ParsedPatch,
   RepoContextPack,
   ValidationResult,
 } from "../skills/types.js"
@@ -61,6 +62,10 @@ export interface ApprovePRResult {
 export interface GenerationArtifact {
   promptId: string
   files: ParsedFile[]
+  /** Sprint 2B — unified-diff patches against existing files. Applied by
+   *  the orchestrator via PatchApplier; all-or-nothing semantics so a
+   *  conflict on patch N rolls back patches 0..N-1 before failing. */
+  patches?: ParsedPatch[]
   explanation: string
   validation: ValidationResult
   generatedAt: string

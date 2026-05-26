@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { extractText, isSafePath, parseResponse } from "../response-parser.js"
+import {
+  extractText,
+  isSafePath,
+  parseFenceHeader,
+  parseResponse,
+} from "../response-parser.js"
 
 describe("isSafePath", () => {
   it("accepts relative POSIX paths", () => {
@@ -21,7 +26,12 @@ describe("isSafePath", () => {
 
 describe("parseResponse", () => {
   it("returns empty result for empty input", () => {
-    expect(parseResponse("")).toEqual({ files: [], explanation: "" })
+    // Sprint 2B added an empty `patches` array to the schema; both shapes
+    // are valid because callers iterate either field.
+    const r = parseResponse("")
+    expect(r.files).toEqual([])
+    expect(r.patches ?? []).toEqual([])
+    expect(r.explanation).toBe("")
   })
 
   it("extracts a single fenced file block with bracketed path", () => {
@@ -91,6 +101,118 @@ describe("parseResponse", () => {
     expect(r.explanation).not.toContain("code")
     expect(r.explanation).toContain("before")
     expect(r.explanation).toContain("after")
+  })
+})
+
+describe("parseFenceHeader (Sprint 2B)", () => {
+  it("classifies legacy language tokens as new-file", () => {
+    expect(parseFenceHeader("tsx")).toEqual({ mode: "new-file", language: "tsx" })
+    expect(parseFenceHeader("ts")).toEqual({ mode: "new-file", language: "ts" })
+  })
+
+  it("classifies mode=new-file fence header", () => {
+    expect(parseFenceHeader("mode=new-file")).toEqual({
+      mode: "new-file",
+      language: "text",
+    })
+  })
+
+  it("classifies mode=patch fence header with default language=diff", () => {
+    expect(parseFenceHeader("mode=patch")).toEqual({
+      mode: "patch",
+      language: "diff",
+    })
+  })
+
+  it("classifies mode=new-file:tsx as new-file + tsx language", () => {
+    expect(parseFenceHeader("mode=new-file:tsx")).toEqual({
+      mode: "new-file",
+      language: "tsx",
+    })
+  })
+
+  it("classifies mode=patch:tsx as patch with tsx language hint", () => {
+    expect(parseFenceHeader("mode=patch:tsx")).toEqual({
+      mode: "patch",
+      language: "tsx",
+    })
+  })
+})
+
+describe("parseResponse (Sprint 2B mode= variants)", () => {
+  it("parses a mode=new-file block as a regular file", () => {
+    const raw = [
+      "```mode=new-file [src/foo.tsx]",
+      "export const Foo = () => null",
+      "```",
+    ].join("\n")
+    const r = parseResponse(raw)
+    expect(r.files).toHaveLength(1)
+    expect(r.files[0]).toMatchObject({
+      path: "src/foo.tsx",
+      content: "export const Foo = () => null",
+    })
+    expect(r.patches ?? []).toHaveLength(0)
+  })
+
+  it("parses a mode=patch block into ParsedPatch", () => {
+    const patchBody = [
+      "@@ -10,3 +10,4 @@",
+      " existing line",
+      "+new line",
+      " another existing line",
+    ].join("\n")
+    const raw = ["```mode=patch [src/foo.tsx]", patchBody, "```"].join("\n")
+    const r = parseResponse(raw)
+    expect(r.files).toHaveLength(0)
+    expect(r.patches).toHaveLength(1)
+    expect(r.patches![0]).toMatchObject({
+      kind: "patch",
+      path: "src/foo.tsx",
+      language: "diff",
+    })
+    expect(r.patches![0].patchContent).toContain("@@ -10,3 +10,4 @@")
+    expect(r.patches![0].patchContent).toContain("+new line")
+  })
+
+  it("supports mixed output (new-file + patch in one response)", () => {
+    const raw = [
+      "```mode=new-file [src/new.tsx]",
+      "export const N = () => null",
+      "```",
+      "",
+      "```mode=patch [src/existing.tsx]",
+      "@@ -1,1 +1,2 @@",
+      " old",
+      "+added",
+      "```",
+    ].join("\n")
+    const r = parseResponse(raw)
+    expect(r.files.map((f) => f.path)).toEqual(["src/new.tsx"])
+    expect((r.patches ?? []).map((p) => p.path)).toEqual(["src/existing.tsx"])
+  })
+
+  it("strips patch blocks from explanation text", () => {
+    const raw = [
+      "before patch",
+      "```mode=patch [a.ts]",
+      "@@ -1,1 +1,2 @@",
+      " x",
+      "+y",
+      "```",
+      "after patch",
+    ].join("\n")
+    const r = parseResponse(raw)
+    expect(r.explanation).toContain("before patch")
+    expect(r.explanation).toContain("after patch")
+    expect(r.explanation).not.toContain("@@ -1,1")
+  })
+
+  it("rejects unsafe patch paths same as new-file paths", () => {
+    const raw = "```mode=patch [../../etc/passwd]\n@@ -1,1 +1,2 @@\n a\n+b\n```"
+    const r = parseResponse(raw)
+    expect(r.files).toHaveLength(0)
+    expect(r.patches ?? []).toHaveLength(0)
   })
 })
 

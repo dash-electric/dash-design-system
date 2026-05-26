@@ -3,6 +3,7 @@ import type { Store } from "../../state/store.js"
 import type { Broadcaster } from "../../ws/broadcaster.js"
 import type { Orchestrator } from "../../../pipeline/orchestrator.js"
 import { cleanupOne } from "../../../preview/index.js"
+import { removeRunArtifacts } from "../../../runs/artifact-store.js"
 import {
   badRequest,
   methodNotAllowed,
@@ -87,7 +88,12 @@ export async function handlePromptsRoute(
   if (pathname === "/api/prompts/reset") {
     if (req.method !== "POST") return methodNotAllowed(res)
     const removed = await store.clearPrompts()
-    await Promise.all(removed.map((p) => cleanupOne(p.id)))
+    await Promise.all(
+      removed.flatMap((p) => [
+        cleanupOne(p.id).catch(() => false),
+        removeRunArtifacts(p.id).catch(() => false),
+      ]),
+    )
     broadcaster.broadcast("prompts:changed", {
       status: "reset",
       removed: removed.length,

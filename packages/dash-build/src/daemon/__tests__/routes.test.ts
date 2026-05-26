@@ -199,12 +199,18 @@ describe("HTTP routes", () => {
     expect(r.status).toBe(400)
   })
 
-  it("GET /api/repo-preview returns structured fallback baseline", async () => {
+  it("GET /api/repo-preview returns structured baseline backed by the default online URL", async () => {
+    // Phase D online URL refactor: backoffice ships an `onlineUrl` default
+    // pointing at staging, so the preview short-circuits to status="running"
+    // with sourceMode="online-default" instead of probing the local dev
+    // server. The metadata + baseline shell stay the same — only the
+    // resolved status changes.
     const r = await fetch(`${baseUrl}/api/repo-preview?repo=dash/backoffice`)
     expect(r.status).toBe(200)
     const body = await r.json()
     expect(body.ok).toBe(true)
-    expect(body.preview.status).toBe("missing")
+    expect(body.preview.status).toBe("running")
+    expect(body.preview.sourceMode).toBe("online-default")
     expect(body.preview.metadata).toMatchObject({
       id: "dash/backoffice",
       label: "Backoffice",
@@ -219,11 +225,12 @@ describe("HTTP routes", () => {
       repo: "dash/backoffice",
       label: "Backoffice",
       previewMode: "local-dev",
-      unavailableReason: "Local repo folder is not configured on this machine.",
     })
     expect(body.preview.baseline.shell.nav).toContain("Mitra")
-    expect(body.html).toContain("db-baseline-shell")
-    expect(body.html).toContain("Backoffice baseline")
+    // Real-iframe path: rendered HTML embeds the staging URL + honest auth
+    // note instead of the synthetic baseline-shell fallback.
+    expect(body.html).toContain("<iframe")
+    expect(body.html).toContain("stg-back-office.dashelectric.co")
     expect(body.html).toContain("Preview harness required")
   })
 
@@ -233,6 +240,53 @@ describe("HTTP routes", () => {
     const body = await r.json()
     expect(body.ok).toBe(false)
     expect(body.preview).toBeNull()
+  })
+
+  it("GET /api/repo-preview returns sandbox-clone when state=clone_running", async () => {
+    // F2 resolver priority: sandbox-clone outranks env / manifest onlineUrl
+    // / local-dev. When the workspace bootstrap (F1) reports clone_running
+    // with a live devServerPort, the resolver must point the canvas at the
+    // local clone so the auth-bypass shim takes effect.
+    //
+    // We monkey-patch the store's getSandboxState so we don't need to import
+    // F1's not-yet-landed `clone_running` state value or `devServerPort`
+    // field. The resolver duck-types both, so any record matching the shape
+    // takes precedence regardless of the persisted SandboxStateValue enum.
+    const originalGetSandboxState = (
+      daemon.store as unknown as { getSandboxState?: unknown }
+    ).getSandboxState
+    ;(daemon.store as unknown as Record<string, unknown>).getSandboxState = (
+      slug: string,
+    ) =>
+      slug === "dash/backoffice"
+        ? { state: "clone_running", devServerPort: 3101 }
+        : null
+
+    try {
+      const r = await fetch(`${baseUrl}/api/repo-preview?repo=dash/backoffice`)
+      expect(r.status).toBe(200)
+      const body = await r.json()
+      expect(body.ok).toBe(true)
+      expect(body.preview.status).toBe("running")
+      expect(body.preview.sourceMode).toBe("sandbox-clone")
+      expect(body.preview.url).toBe("http://127.0.0.1:3101/delivery")
+      expect(body.preview.port).toBe(3101)
+      // Rendered HTML drops the yellow auth note (shim bypasses auth) and
+      // swaps to the success-toned clone ribbon variant.
+      expect(body.html).toContain("db-baseline-ribbon--clone")
+      expect(body.html).toContain('data-clone-preview="dash/backoffice"')
+      expect(body.html).not.toContain("db-baseline-auth-note")
+      // Iframe points at the local clone, not staging.
+      expect(body.html).toContain("127.0.0.1:3101")
+      expect(body.html).not.toContain('src="https://stg-back-office')
+    } finally {
+      if (originalGetSandboxState === undefined) {
+        delete (daemon.store as unknown as Record<string, unknown>).getSandboxState
+      } else {
+        ;(daemon.store as unknown as Record<string, unknown>).getSandboxState =
+          originalGetSandboxState
+      }
+    }
   })
 
   it("dashboard allows local generation with OpenAI only", async () => {

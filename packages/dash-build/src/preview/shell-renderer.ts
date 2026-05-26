@@ -220,7 +220,7 @@ export function renderShell(opts: ShellRenderInput): string {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0/dist/tailwind.min.css">
   <style>${FALLBACK_TOKENS}</style>
   <style>
-    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif; background: #f7f5fb; color: #1a1424; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif; background: var(--bg-weak-50); color: var(--text-strong-950); }
     #root { padding: 24px; min-height: 100vh; box-sizing: border-box; }
     .dash-preview-harness-app {
       display: grid;
@@ -339,10 +339,10 @@ export function renderShell(opts: ShellRenderInput): string {
     }
     .dash-preview-error {
       padding: 16px 20px;
-      background: #fdecec;
-      border: 1px solid #f4b5b5;
+      background: var(--state-error-lighter);
+      border: 1px solid var(--state-error-light);
       border-radius: 8px;
-      color: #a32d2d;
+      color: var(--state-error-dark);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 13px;
       white-space: pre-wrap;

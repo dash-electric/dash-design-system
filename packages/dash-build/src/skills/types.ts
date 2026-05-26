@@ -10,6 +10,9 @@
  */
 
 import type { ClarificationQuestion } from "../clarification/types.js"
+import type { RepoIntrospection } from "./repo-introspector.js"
+
+export type { RepoIntrospection } from "./repo-introspector.js"
 
 // ---------------------------------------------------------------------------
 // Stage 1 — PRD evaluation
@@ -130,17 +133,81 @@ export interface RepoContextPack {
 }
 
 // ---------------------------------------------------------------------------
+// Stage 3.5 — Existing files context (Phase C / Sprint 2A)
+//   Path resolver detects route mentions in the prompt and maps them to real
+//   files inside the selected repo on disk. existing-file-reader reads + caps
+//   their content so the prompt-composer (S2B) can inject `## CURRENT FILE
+//   STATE` sections and switch downstream pipeline into patch / edit mode.
+// ---------------------------------------------------------------------------
+
+export interface PathResolution {
+  /** Absolute path to the existing file on disk. */
+  filePath: string
+  /** Route this file is mapped to (e.g. "/provider" or "/en/deliveries"). */
+  route: string
+  /** 0..1 — higher = stronger evidence it's the file the user is talking about. */
+  confidence: number
+  /** Short human-readable explanation of why this resolution surfaced. */
+  reason: string
+}
+
+export interface ExistingFileContent {
+  /** Absolute path on disk. */
+  filePath: string
+  /** Detected language hint (js/jsx/ts/tsx/css/json/md/unknown). */
+  language: string
+  /** File content (possibly truncated — see `truncated`). */
+  content: string
+  /** True when content was truncated to fit prompt budget. */
+  truncated: boolean
+  /** Full size in bytes of the file on disk. */
+  fullSize: number
+}
+
+export interface ExistingFilesContext {
+  /** All path resolutions surfaced for the prompt, sorted by confidence desc. */
+  resolutions: PathResolution[]
+  /** Files actually read (top-N candidates). */
+  files: ExistingFileContent[]
+}
+
+// ---------------------------------------------------------------------------
 // Stage 4 — Response parsing
 // ---------------------------------------------------------------------------
 
 export interface ParsedFile {
+  /** Sprint 2B — discriminator. Default "file" keeps back-compat with code
+   *  that destructures ParsedFile without checking `kind`. */
+  kind?: "file"
   path: string
   language: string
   content: string
 }
 
+/**
+ * Sprint 2B — surgical patch against an existing file. Emitted by the model
+ * inside a ```mode=patch [path]``` code fence as a unified diff. The
+ * orchestrator routes these to `PatchApplier.applyPatch` instead of
+ * `BranchManager.writeGeneratedFiles`.
+ */
+export interface ParsedPatch {
+  kind: "patch"
+  /** Path the patch applies to — same shape as ParsedFile.path. */
+  path: string
+  /** Language hint (best-effort, may be "diff" or the original ext). */
+  language: string
+  /** Raw unified-diff text. Caller passes this straight to `git apply`. */
+  patchContent: string
+}
+
+export type ParsedOutput = ParsedFile | ParsedPatch
+
 export interface ParsedResponse {
+  /** Backwards-compatible full-file outputs (mode=new-file or legacy
+   *  ```tsx [path]``` fences). */
   files: ParsedFile[]
+  /** Sprint 2B — unified-diff patches against existing files (mode=patch). */
+  patches?: ParsedPatch[]
   explanation: string
 }
 
@@ -200,6 +267,9 @@ export type GenerateResult =
         repoContext?: RepoContextPack
         designSources: string[]
         skillSources: string[]
+        /** Phase C — existing files + path resolutions injected into prompt.
+         *  Orchestrator (S2B) uses this to decide patch-mode vs greenfield. */
+        existingFiles?: ExistingFilesContext | null
       }
     }
   | {

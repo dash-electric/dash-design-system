@@ -50,12 +50,114 @@ export interface WorkspaceState {
   activeBranch: string | null
 }
 
+// ──────────────────────────────────────────────────────────────────────────
+// P1.0 Workspace shape — additive Project / Thread / Run wrapping over the
+// existing PromptRecord pipeline. The legacy `prompts[]` array stays as the
+// canonical store for status transitions; `runs[]` is a 1:1 mirror plus
+// project/thread linkage so the UI can return to a project later.
+// ──────────────────────────────────────────────────────────────────────────
+
+export type ProjectMode = "existing-repo"
+export type ProjectStatus = "active" | "archived"
+
+export interface Project {
+  id: string
+  workspaceId: "local"
+  name: string
+  mode: ProjectMode
+  repoFullName: string | null
+  defaultBranch: string
+  theme: string
+  status: ProjectStatus
+  createdAt: string
+}
+
+export type ThreadStatus =
+  | "planning"
+  | "generating"
+  | "preview_ready"
+  | "published"
+  | "failed"
+
+export interface Thread {
+  id: string
+  projectId: string
+  title: string
+  activeRunId: string | null
+  status: ThreadStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Run {
+  /** Same id as the underlying PromptRecord (no separate identity yet). */
+  id: string
+  threadId: string
+  projectId: string
+  prompt: string
+  status: PromptStatus
+  repo: string | null
+  branch: string | null
+  /** Path to context.json on disk if persisted, else null. */
+  contextPackRef: string | null
+  /** Path to run artifact dir on disk if persisted, else null. */
+  artifactDir: string | null
+  /** Foundation match score (0-100) once validation finishes. */
+  validationScore: number | null
+  createdAt: string
+  updatedAt: string
+  error: string | null
+  prUrl: string | null
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Phase D1 — Sandbox state persisted per consumer repo (clone lifecycle).
+// `sandboxState` is keyed by repoSlug (e.g. "dash/backoffice"). The state
+// machine lives in src/runs/sandbox-state.ts; this is its disk shape.
+// ──────────────────────────────────────────────────────────────────────────
+
+export type SandboxStateValue =
+  | "clean"
+  | "cloned"
+  | "shim_applied"
+  | "idle"
+  | "generating"
+  | "preview_ready"
+  | "publishing"
+  | "sweep"
+  | "stale"
+
+export interface SandboxTransitionRecord {
+  from: SandboxStateValue
+  to: SandboxStateValue
+  at: string
+}
+
+export interface SandboxStatePersisted {
+  repoSlug: string
+  state: SandboxStateValue
+  history: SandboxTransitionRecord[]
+  /** ISO timestamp of the last meaningful change (boot, transition, sync). */
+  lastActivity: string
+  /** Active run id when state ∈ {generating, preview_ready, publishing}, else null. */
+  runId: string | null
+  /** Absolute path to the clone dir, e.g. ~/Work/dash-build-clones/dash__backoffice. */
+  clonePath: string
+  /** SHA of the preview-shim apply commit on the current main, or null. */
+  shimCommitSha: string | null
+}
+
 export interface DaemonState {
   version: string
   startedAt: string
   auth: AuthState
   prompts: PromptRecord[]
   workspace: WorkspaceState
+  projects: Project[]
+  threads: Thread[]
+  runs: Run[]
+  /** Phase D1 — sandbox lifecycle per repoSlug. Empty on first boot. */
+  sandboxState: Record<string, SandboxStatePersisted>
 }
 
 export interface AuthUpdateOpenAI {
@@ -84,7 +186,100 @@ export function createInitialState(): DaemonState {
     },
     prompts: [],
     workspace: { activeRepo: null, activeBranch: null },
+    projects: [],
+    threads: [],
+    runs: [],
+    sandboxState: {},
   }
+}
+
+function deriveProjectName(repo: string | null | undefined): string {
+  if (!repo) return "Unassigned"
+  const tail = repo.split("/").pop() ?? repo
+  return tail
+    .replace(/^next-/, "")
+    .replace(/-(web|fe|backoffice)$/, "")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .trim() || repo
+}
+
+function migrateLegacyToRuns(
+  prompts: PromptRecord[],
+  existingProjects: Project[],
+  existingThreads: Thread[],
+): { projects: Project[]; threads: Thread[]; runs: Run[] } {
+  const projects = [...existingProjects]
+  const threads = [...existingThreads]
+  const runs: Run[] = []
+  const projectKey = (repo: string | null) => repo ?? "__unassigned__"
+
+  const ensureProjectFor = (repo: string | null, when: string): Project => {
+    const key = projectKey(repo)
+    const found = projects.find((p) => projectKey(p.repoFullName) === key)
+    if (found) return found
+    const p: Project = {
+      id: `proj_legacy_${projects.length + 1}`,
+      workspaceId: "local",
+      name: deriveProjectName(repo),
+      mode: "existing-repo",
+      repoFullName: repo,
+      defaultBranch: "main",
+      theme: "shared",
+      status: "active",
+      createdAt: when,
+    }
+    projects.unshift(p)
+    return p
+  }
+
+  const ensureThreadFor = (projectId: string, when: string): Thread => {
+    const found = threads.find((t) => t.projectId === projectId)
+    if (found) return found
+    const t: Thread = {
+      id: `thr_legacy_${threads.length + 1}`,
+      projectId,
+      title: "Legacy import",
+      activeRunId: null,
+      status: "planning",
+      createdAt: when,
+      updatedAt: when,
+    }
+    threads.unshift(t)
+    return t
+  }
+
+  // Oldest first so activeRunId on thread ends pointing at the most recent.
+  const ordered = [...prompts].sort((a, b) =>
+    a.createdAt.localeCompare(b.createdAt),
+  )
+  for (const p of ordered) {
+    const project = ensureProjectFor(p.repo, p.createdAt)
+    const thread = ensureThreadFor(project.id, p.createdAt)
+    const run: Run = {
+      id: p.id,
+      threadId: thread.id,
+      projectId: project.id,
+      prompt: p.text,
+      status: p.status,
+      repo: p.repo,
+      branch: p.branch,
+      contextPackRef: null,
+      artifactDir: null,
+      validationScore: null,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+      error: p.error,
+      prUrl: p.prUrl,
+    }
+    runs.push(run)
+    thread.activeRunId = run.id
+    thread.updatedAt = run.updatedAt
+  }
+
+  // Match the unshift order used elsewhere — newest first.
+  runs.reverse()
+  return { projects, threads, runs }
 }
 
 export function normalizeDaemonState(input: unknown): DaemonState {
@@ -97,6 +292,24 @@ export function normalizeDaemonState(input: unknown): DaemonState {
     }
     workspace?: Partial<WorkspaceState>
   }
+
+  const prompts = Array.isArray(parsed.prompts) ? parsed.prompts : base.prompts
+  const hasWorkspaceShape =
+    Array.isArray(parsed.projects) &&
+    Array.isArray(parsed.threads) &&
+    Array.isArray(parsed.runs)
+
+  const { projects, threads, runs } = hasWorkspaceShape
+    ? {
+        projects: parsed.projects as Project[],
+        threads: parsed.threads as Thread[],
+        runs: parsed.runs as Run[],
+      }
+    : migrateLegacyToRuns(prompts, [], [])
+
+  const sandboxState = normalizeSandboxStateMap(
+    (parsed as { sandboxState?: unknown }).sandboxState,
+  )
 
   return {
     version: typeof parsed.version === "string" ? parsed.version : base.version,
@@ -120,7 +333,7 @@ export function normalizeDaemonState(input: unknown): DaemonState {
           : base.auth.github.repos,
       },
     },
-    prompts: Array.isArray(parsed.prompts) ? parsed.prompts : base.prompts,
+    prompts,
     workspace: {
       activeRepo:
         parsed.workspace?.activeRepo === undefined
@@ -131,5 +344,58 @@ export function normalizeDaemonState(input: unknown): DaemonState {
           ? base.workspace.activeBranch
           : parsed.workspace.activeBranch,
     },
+    projects,
+    threads,
+    runs,
+    sandboxState,
   }
+}
+
+const VALID_SANDBOX_STATES: ReadonlySet<SandboxStateValue> = new Set([
+  "clean",
+  "cloned",
+  "shim_applied",
+  "idle",
+  "generating",
+  "preview_ready",
+  "publishing",
+  "sweep",
+  "stale",
+])
+
+function normalizeSandboxStateMap(
+  input: unknown,
+): Record<string, SandboxStatePersisted> {
+  if (!input || typeof input !== "object") return {}
+  const out: Record<string, SandboxStatePersisted> = {}
+  for (const [key, raw] of Object.entries(input as Record<string, unknown>)) {
+    if (typeof key !== "string" || !key) continue
+    if (!raw || typeof raw !== "object") continue
+    const entry = raw as Partial<SandboxStatePersisted>
+    if (!entry.state || !VALID_SANDBOX_STATES.has(entry.state)) continue
+    const history = Array.isArray(entry.history)
+      ? entry.history.filter(
+          (h): h is SandboxTransitionRecord =>
+            !!h &&
+            typeof h === "object" &&
+            typeof (h as SandboxTransitionRecord).at === "string" &&
+            VALID_SANDBOX_STATES.has((h as SandboxTransitionRecord).from) &&
+            VALID_SANDBOX_STATES.has((h as SandboxTransitionRecord).to),
+        )
+      : []
+    out[key] = {
+      repoSlug: typeof entry.repoSlug === "string" ? entry.repoSlug : key,
+      state: entry.state,
+      history,
+      lastActivity:
+        typeof entry.lastActivity === "string"
+          ? entry.lastActivity
+          : new Date(0).toISOString(),
+      runId: typeof entry.runId === "string" ? entry.runId : null,
+      clonePath: typeof entry.clonePath === "string" ? entry.clonePath : "",
+      shimCommitSha:
+        typeof entry.shimCommitSha === "string" ? entry.shimCommitSha : null,
+    }
+  }
+  return out
 }

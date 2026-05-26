@@ -41,11 +41,29 @@ export function renderLayout(opts: LayoutOptions): string {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <title>${escapeHtml(opts.title)} · Dash Build</title>
+    <script>
+      // Phase A1 — apply stored / system theme BEFORE first paint to avoid
+      // a flash of wrong theme. Mirrors Tailwind / shadcn pattern.
+      (function () {
+        try {
+          var t = localStorage.getItem('dash-build-theme');
+          var sys = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var dark = t === 'dark' || (t == null && sys);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) { /* SSR-safe no-op */ }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <!-- Phase B3 — highlight.js dual-theme CSS. Light is active by default;
+         the dark sheet is toggled via the disabled attribute by the theme
+         toggle handler in client/app.ts so syntax colors flip with .dark. -->
+    <link rel="stylesheet" id="hljs-light" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" />
+    <link rel="stylesheet" id="hljs-dark" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" disabled />
+    <script defer src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
     <link rel="stylesheet" href="/static/app.css" />
   </head>
   <body>

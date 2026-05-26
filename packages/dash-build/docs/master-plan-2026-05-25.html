@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Dash Build — Master Plan</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "default",
+    flowchart: { htmlLabels: true, curve: "basis" },
+    sequence: { useMaxWidth: true },
+    gantt: { useMaxWidth: true }
+  });
+</script>
+<style>
+  :root {
+    --ink: #1a1424;
+    --mute: #6b6478;
+    --rule: #e6e1ee;
+    --paper: #ffffff;
+    --paper-2: #faf8fd;
+    --primary: #5e2aac;
+    --primary-soft: #f1ecf9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    background: var(--paper-2);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 28px 80px;
+  }
+  header {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 26px;
+    letter-spacing: -0.015em;
+  }
+  header p {
+    margin: 0;
+    color: var(--mute);
+    font-size: 14px;
+  }
+  nav.toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 14px 0 0;
+  }
+  nav.toc a {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  nav.toc a:hover {
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+  section.diagram {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 18px 22px 22px;
+    margin: 22px 0;
+    box-shadow: 0 6px 18px rgba(26, 20, 36, 0.04);
+  }
+  section.diagram h2 {
+    margin: 0 0 4px;
+    font-size: 17px;
+    color: var(--primary);
+  }
+  section.diagram .sub {
+    color: var(--mute);
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+  .mermaid {
+    background: var(--paper);
+    text-align: center;
+    overflow-x: auto;
+  }
+  footer {
+    margin-top: 40px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    color: var(--mute);
+    font-size: 12px;
+  }
+  code { font-family: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Dash Build — Master Plan & End-to-End</h1>
+  <p>Snapshot 2026-05-25 · 7 diagram + flow tujuan, arsitektur 3-surface, dan AI co-pilot mapping.</p>
+  <nav class="toc">
+    <a href="#d1">1 · Big Picture</a>
+    <a href="#d2">2 · Persona × Surface × AI</a>
+    <a href="#d3">3 · End-to-End Journey</a>
+    <a href="#d4">4 · Surface 1 Docs</a>
+    <a href="#d5">5 · Surface 2 Builder</a>
+    <a href="#d6">6 · Surface 3 Owner</a>
+    <a href="#d7">7 · Phasing Timeline</a>
+  </nav>
+</header>
+
+<section class="diagram" id="d1">
+  <h2>1 · 3-Surface Architecture (big picture)</h2>
+  <p class="sub">Dash Build = 3 surface internal: Docs · Builder · Owner. Setiap surface terhubung ke real Dash repos, DS registry, dan production deploy.</p>
+  <div class="mermaid">
+flowchart LR
+    subgraph DBT["Dash Build Platform (internal, online)"]
+        direction TB
+        S1["🗂 Surface 1<br/>Documentation"]:::doc
+        S2["🛠 Surface 2<br/>Generate Workspace"]:::builder
+        S3["⚙ Surface 3<br/>Owner Dashboard"]:::owner
+
+        S1 -. "DS gap surfaces" .-> S3
+        S2 -. "branch + run events" .-> S3
+        S3 -. "approved DS update" .-> S1
+        S3 -. "merge gate" .-> S2
+    end
+
+    REPOS[("Real Dash repos<br/>backoffice, portal-v2, BE")]
+    DS[("Dash DS registry<br/>@dash/cli, components, blocks")]
+    PROD[("Production deploy<br/>via existing CI/CD")]
+
+    S2 <--> REPOS
+    S2 --> DS
+    S1 --> DS
+    S3 --> REPOS
+    S3 --> PROD
+    DS --> S2
+
+    classDef doc fill:#eef,stroke:#88a
+    classDef builder fill:#fef,stroke:#a8a
+    classDef owner fill:#ffe,stroke:#aa8
+  </div>
+</section>
+
+<section class="diagram" id="d2">
+  <h2>2 · Persona × Surface × AI Co-pilot</h2>
+  <p class="sub">Setiap surface punya AI dedicated. Owner BUKAN solo manage 10 hal — Owner Co-pilot handle triage, manusia approve.</p>
+  <div class="mermaid">
+flowchart TB
+    subgraph U[Users]
+        PM[PM / Designer]
+        ENG[Engineer]
+        OPS[Ops / HR / Finance]
+        DSM[DS Maintainer]
+        OWN[Owner / Lead]
+    end
+
+    subgraph AGENTS["AI Co-pilots (Hermes orchestration)"]
+        DocAI["📚 Docs Curator AI<br/>(gap detector,<br/>library indexer)"]
+        BuildAI["✨ Build AI<br/>(skill chain + Codex,<br/>introspector, validator)"]
+        OwnerAI["🎯 Owner Co-pilot<br/>(merge triage, conflict resolver,<br/>cost monitor, push safety)"]
+    end
+
+    PM --> S2
+    ENG --> S2
+    OPS --> S2
+    DSM --> S1
+    OWN --> S3
+
+    S1 -.- DocAI
+    S2 -.- BuildAI
+    S3 -.- OwnerAI
+
+    DocAI <--> OwnerAI
+    BuildAI <--> OwnerAI
+  </div>
+</section>
+
+<section class="diagram" id="d3">
+  <h2>3 · End-to-End Journey (12 step prompt → production)</h2>
+  <p class="sub">Flow penuh: PM prompt → Build AI generate → preview real → owner approve → merge → production. Plus DS candidate parallel path.</p>
+  <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor PM as PM/Designer
+    participant S2 as Surface 2<br/>Generate Workspace
+    participant BAI as Build AI
+    participant CLONE as Clone Sandbox<br/>(~/dash-build-clones/)
+    participant ORIG as Original Repo<br/>(backoffice)
+    participant S3 as Surface 3<br/>Owner Dashboard
+    participant OAI as Owner AI
+    participant OWN as Owner
+    participant PROD as Production
+
+    PM->>S2: "Tambahin filter mitra by status di /provider"
+    S2->>BAI: intake + clarification gate
+    BAI->>BAI: PRD → design → TRD<br/>load: design.md, registry, real schema
+    BAI->>S2: 1 clarification (single-choice)
+    PM->>S2: answer
+    BAI->>CLONE: generate file ke clone (real backoffice + preview-mode patch)
+    CLONE-->>S2: preview iframe (clone running)
+    PM->>S2: review preview ✓
+    PM->>S2: click "Publish"
+    S2->>ORIG: extract generated-only files<br/>(strip preview-mode patches)
+    S2->>ORIG: create branch dash-build/&lt;runId&gt;
+    S2->>S3: emit event "new branch + PR"
+
+    Note over S3,OWN: Owner inbox receives signal
+    OAI->>OAI: auto-review diff vs cardinal rules<br/>check overlap vs preview-shim<br/>scan cost API budget
+    OAI->>OWN: triage card "ready / needs review / blocked"
+    OWN->>S3: approve merge
+    S3->>ORIG: merge to main
+    ORIG->>PROD: existing CI deploy
+    PROD-->>PM: feature live
+
+    Note over BAI: parallel: if BuildAI saw new component pattern
+    BAI->>OAI: emit DS candidate signal
+    OAI->>S3: surface candidate in DS lane
+    OWN->>S3: approve candidate
+    S3->>S1: push to docs/registry review queue
+  </div>
+</section>
+
+<section class="diagram" id="d4">
+  <h2>4 · Surface 1 — Documentation Flow</h2>
+  <p class="sub">Docs Curator AI index registry, detect missing pattern, route ke Owner approval, kemudian publish.</p>
+  <div class="mermaid">
+flowchart LR
+    subgraph S1["📚 Surface 1 — Documentation"]
+        direction TB
+        DocList[Component & Block List]
+        DocGap[DS Gap Inbox]
+        DocPromote[Promote Queue]
+        DocDetail[Per-component Doc Page]
+    end
+
+    DocAI -.->|index existing| DocList
+    DocAI -.->|detect missing pattern| DocGap
+    DocAI -.->|render new doc| DocDetail
+
+    DocGap -->|surface to Owner| OwnerDashboard["Surface 3 Owner"]
+    OwnerDashboard -->|approved promotion| DocPromote
+    DocPromote -.->|publish| DocList
+  </div>
+</section>
+
+<section class="diagram" id="d5">
+  <h2>5 · Surface 2 — Generate Workspace (focus saat ini)</h2>
+  <p class="sub">TopBar + Rail + Canvas. Build AI generate ke Clone Sandbox, preview iframe, publish event ke Owner queue.</p>
+  <div class="mermaid">
+flowchart LR
+    subgraph S2["🛠 Surface 2 — Generate Workspace"]
+        direction TB
+        TopBar["TopBar<br/>project · tabs · route · auth"]
+        Rail["Conversation Rail<br/>chat + composer"]
+        Canvas["Canvas<br/>Preview / Code"]
+    end
+
+    Prompt[User Prompt] --> Rail
+    Rail --> BuildAI
+    BuildAI -->|generate| Clone[Clone Sandbox]
+    Clone -->|iframe| Canvas
+    BuildAI -->|file diff| Canvas
+    BuildAI -->|stage signal| Rail
+    Canvas -->|Publish| S3Inbox[Surface 3 Branch Queue]
+  </div>
+</section>
+
+<section class="diagram" id="d6">
+  <h2>6 · Surface 3 — Owner Dashboard (AI-assisted)</h2>
+  <p class="sub">Owner Co-pilot handle triage 80%: auto-review diff, conflict detection, cost alert, anomaly flag. Owner manusia approve critical 20%.</p>
+  <div class="mermaid">
+flowchart TB
+    subgraph S3["⚙ Surface 3 — Owner Dashboard"]
+        direction TB
+        BranchQ[Branch Merge Queue]
+        DSQ[DS Candidate Queue]
+        Activity[Activity Log<br/>multi-user runs]
+        Cost[Cost Monitor<br/>OpenAI/Codex usage]
+        Health[Repo Health<br/>preview-shim drift, sync status]
+        Audit[Audit Trail]
+    end
+
+    S2 -.->|"branch + diff"| BranchQ
+    S2 -.->|"DS gap candidate"| DSQ
+    S2 -.->|"API call usage"| Cost
+    S2 -.->|"run events"| Activity
+
+    OwnerAI -.->|"auto-review<br/>conflict detection<br/>cost spike alert"| BranchQ
+    OwnerAI -.->|"rank by reusability"| DSQ
+    OwnerAI -.->|"anomaly flag"| Activity
+    OwnerAI -.->|"budget warning"| Cost
+    OwnerAI -.->|"drift alarm"| Health
+
+    BranchQ -->|approve| Main[main branch]
+    DSQ -->|approve| S1Push[Surface 1 docs push]
+    Main --> Prod[production deploy]
+  </div>
+</section>
+
+<section class="diagram" id="d7">
+  <h2>7 · Phasing Timeline (Gantt)</h2>
+  <p class="sub">Foundation done minggu ini. Surface 2 polish minggu depan. Surface 1+3 build awal Juni. Internal beta target awal Juli.</p>
+  <div class="mermaid">
+gantt
+    title Dash Build Phasing
+    dateFormat YYYY-MM-DD
+    section Foundation
+    Surface 2 shell + IA (P1.0-P1.2)       :done, 2026-05-15, 11d
+    Layer A schema introspector            :done, 2026-05-25, 1d
+    CSS audit + Layer C spec               :done, 2026-05-25, 1d
+    Online URL preview                     :done, 2026-05-25, 1d
+    section Surface 2 Polish
+    Clone sandbox + preview-shim system    :p1, 2026-05-26, 3d
+    Repo switcher visible + history drawer :p1, after p1, 2d
+    Composer toolbar enrichment            :p1, after p1, 2d
+    Extract-and-publish flow               :p1, after p1, 3d
+    section Surface 1 Build
+    Component list + DS gap inbox          :s1, 2026-06-05, 5d
+    Doc Curator AI integration             :s1, after s1, 3d
+    section Surface 3 Build
+    Branch Merge Queue + Owner AI triage   :s3, 2026-06-13, 5d
+    Cost monitor + Activity log            :s3, after s3, 3d
+    DS candidate lane + promote flow       :s3, after s3, 3d
+    Hermes orchestration wire              :s3, after s3, 5d
+    section Productionize
+    Multi-user auth + RBAC                 :prod, 2026-07-05, 5d
+    Internal beta launch                   :milestone, after prod, 1d
+  </div>
+</section>
+
+<footer>
+  Sumber: <code>packages/dash-build/docs/master-plan-2026-05-25.md</code> · Render lokal via Mermaid v11 CDN · Tidak butuh server, double-click file di Finder.
+</footer>
+
+</div>
+</body>
+</html>

@@ -12,7 +12,7 @@ import {
   defaultSkillChainRunner,
   Worker,
 } from "../pipeline/index.js"
-import { AuthenticatedOpenAIClient } from "../auth/openai/index.js"
+import { AuthenticatedOpenAIClient, AutoReconnect } from "../auth/openai/index.js"
 import { GitHubAppClient } from "../integrations/github/index.js"
 import { SessionStore } from "../clarification/session-store.js"
 import { handleClarificationRequest } from "../clarification/api-routes.js"
@@ -57,12 +57,21 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
   let orchestrator: Orchestrator | null = null
   let worker: Worker | null = null
   let clarificationStore: SessionStore | null = null
+  // Sprint 1B — OpenAI auto-reconnect helper. Always constructed so the
+  // manual /api/auth/openai/reconnect endpoint has something to call even
+  // when the heavier pipeline (orchestrator/worker) is disabled in tests.
+  const openAIClient = new AuthenticatedOpenAIClient()
+  const autoReconnect = new AutoReconnect({
+    client: openAIClient,
+    store,
+    broadcaster,
+  })
+  let stopAutoReconnect: (() => void) | null = null
 
   if (enablePipeline) {
     clarificationStore = new SessionStore()
     await clarificationStore.reload().catch(() => 0)
 
-    const openAIClient = new AuthenticatedOpenAIClient()
     const githubClient = new GitHubAppClient()
 
     const sessionStoreRef = clarificationStore
@@ -109,7 +118,12 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
       })
       return
     }
-    void router(req, res, { store, broadcaster, orchestrator: orchestrator ?? undefined })
+    void router(req, res, {
+      store,
+      broadcaster,
+      orchestrator: orchestrator ?? undefined,
+      autoReconnect,
+    })
   })
 
   server.on("upgrade", (req, socket, head) => {
@@ -131,7 +145,27 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
   // Start worker after server is listening
   worker?.start()
 
+  // Sprint 1B — best-effort: if auth was previously connected but the current
+  // probe fails, AutoReconnect tries to recover before the user notices. We
+  // never await the result — daemon boot must not block on this.
+  try {
+    const savedAuth = store.getAuth().openai
+    if (savedAuth.connected) {
+      void autoReconnect.checkAndReconnect().catch(() => {
+        /* swallow — UI will show disconnected state */
+      })
+    }
+  } catch {
+    /* swallow — never break daemon startup */
+  }
+  stopAutoReconnect = autoReconnect.start()
+
   const close = async () => {
+    if (stopAutoReconnect) {
+      stopAutoReconnect()
+      stopAutoReconnect = null
+    }
+    autoReconnect.stop()
     worker?.stop()
     orchestrator?.dispose()
     broadcaster.closeAll()

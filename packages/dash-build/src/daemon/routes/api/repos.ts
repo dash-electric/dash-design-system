@@ -1,6 +1,10 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
 import type { Store } from "../../state/store.js"
-import { isRepoPreviewAllowed, listRepoPreviewManifests } from "../../repo-preview.js"
+import {
+  isRepoPreviewAllowed,
+  listRepoPreviewManifests,
+  resolveRepoManifest,
+} from "../../repo-preview.js"
 import { badRequest, methodNotAllowed, readJsonBody, sendJson } from "../_helpers.js"
 
 /**
@@ -34,6 +38,10 @@ export function handleReposRoute(
         ? body.branch.trim()
         : "main"
       await store.setActiveRepo(repo, branch)
+      if (repo) {
+        const manifest = resolveRepoManifest(repo)
+        store.ensureProject(repo, { theme: manifest?.theme })
+      }
       return sendJson(res, 200, { ok: true, repo, branch })
     })()
     return

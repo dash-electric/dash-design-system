@@ -9,17 +9,31 @@
 import type {
   DashTheme,
   DesignContext,
+  ExistingFileContent,
+  ExistingFilesContext,
   PRDEval,
   RepoContextPack,
+  RepoIntrospection,
   RepoSurface,
   SkillContext,
 } from "./types.js"
+import { describeOutputMode, type OutputMode } from "./output-mode-detector.js"
 
 export interface ComposeInput {
   prd: PRDEval
   design: DesignContext
   skill: SkillContext
   repoContext: RepoContextPack
+  /** Optional Layer A repo introspection (real Prisma/enums/endpoints/components). */
+  introspection?: RepoIntrospection | null
+  /** Optional Phase C — existing files + path resolutions for the user's
+   *  prompt. S2B consumes this to inject `## CURRENT FILE STATE` and switch
+   *  the model into patch/edit mode instead of greenfield. */
+  existingFiles?: ExistingFilesContext | null
+  /** Sprint 2B — output mode hint (new-file / patch / mixed). When omitted,
+   *  defaults to "mixed" so the model can decide per file based on whether
+   *  the target path appears in CURRENT FILE STATE. */
+  outputMode?: OutputMode
 }
 
 /** Top-level banned imports embedded verbatim in the system prompt. */
@@ -227,6 +241,225 @@ function renderRepoContext(ctx: RepoContextPack): string {
   ].join("\n")
 }
 
+function hasAnyIntrospection(intr: RepoIntrospection | null | undefined): intr is RepoIntrospection {
+  if (!intr) return false
+  return (
+    intr.prismaModels.length > 0 ||
+    intr.prismaEnums.length > 0 ||
+    intr.feEnums.length > 0 ||
+    intr.endpointSignatures.length > 0 ||
+    intr.reusableComponents.length > 0
+  )
+}
+
+function renderIntrospection(intr: RepoIntrospection): string {
+  const lines: string[] = []
+  lines.push(`Source repo slug: ${intr.repoSlug}`)
+  lines.push(`Parsed sources: ${intr.sources.length}. Missing sources: ${intr.missingSources.length}.`)
+
+  // Prisma models (top 30 inline with field name+type, rest as name+count)
+  if (intr.prismaModels.length > 0) {
+    lines.push("")
+    lines.push(`Real Prisma models for repo ${intr.repoSlug}:`)
+    const inlineLimit = 30
+    const head = intr.prismaModels.slice(0, inlineLimit)
+    const tail = intr.prismaModels.slice(inlineLimit)
+    for (const model of head) {
+      const fieldSummary = model.fields
+        .slice(0, 25)
+        .map((f) => `${f.name}: ${f.type}${f.isList ? "[]" : ""}${f.optional ? "?" : ""}`)
+        .join(", ")
+      const extra = model.fields.length > 25 ? ` …(+${model.fields.length - 25} more fields)` : ""
+      lines.push(`- ${model.name} (${model.fields.length} fields): ${fieldSummary}${extra}`)
+    }
+    for (const model of tail) {
+      lines.push(`- ${model.name} (${model.fields.length} fields)`)
+    }
+  }
+
+  // Prisma enums
+  if (intr.prismaEnums.length > 0) {
+    lines.push("")
+    lines.push("Real Prisma enums:")
+    for (const e of intr.prismaEnums) {
+      lines.push(`- ${e.name}: ${e.values.join(", ")}`)
+    }
+  }
+
+  // FE enums
+  if (intr.feEnums.length > 0) {
+    lines.push("")
+    lines.push("Real FE enums:")
+    for (const e of intr.feEnums) {
+      const vals = e.values.slice(0, 30).join(", ")
+      const more = e.values.length > 30 ? ` …(+${e.values.length - 30} more)` : ""
+      lines.push(`- ${e.name}: ${vals}${more}`)
+    }
+  }
+
+  // Endpoints (cap rendered to 50 most relevant — keep prompt budget)
+  if (intr.endpointSignatures.length > 0) {
+    lines.push("")
+    lines.push("Real existing endpoints (subset):")
+    const cap = 50
+    for (const e of intr.endpointSignatures.slice(0, cap)) {
+      lines.push(`- ${e.method} ${e.path} → ${e.functionName}(...)`)
+    }
+    if (intr.endpointSignatures.length > cap) {
+      lines.push(`- …(+${intr.endpointSignatures.length - cap} more endpoint signatures truncated)`)
+    }
+  }
+
+  // Components (cap rendered to 50)
+  if (intr.reusableComponents.length > 0) {
+    lines.push("")
+    lines.push("Reusable existing components (consider before creating new):")
+    const cap = 50
+    for (const c of intr.reusableComponents.slice(0, cap)) {
+      lines.push(`- ${c.name} (import: ${c.importPath})`)
+    }
+    if (intr.reusableComponents.length > cap) {
+      lines.push(`- …(+${intr.reusableComponents.length - cap} more components truncated)`)
+    }
+  }
+
+  lines.push("")
+  lines.push(
+    "WHEN generating code, use these EXACT field names + enum values + import paths from above. Do NOT invent alternates. If you need a field/enum/endpoint not listed, mark it as TODO and explain why it's missing.",
+  )
+  return lines.join("\n")
+}
+
+// ---------------------------------------------------------------------------
+// Sprint 2B — CURRENT FILE STATE renderer + output-mode-aware fence helpers
+// ---------------------------------------------------------------------------
+
+function hasAnyExistingFiles(ctx: ExistingFilesContext | null | undefined): ctx is ExistingFilesContext {
+  if (!ctx) return false
+  return Array.isArray(ctx.files) && ctx.files.length > 0
+}
+
+/** Prepend line numbers — helps the model anchor unified-diff hunks. */
+function numberLines(content: string): string {
+  const lines = content.split("\n")
+  const width = String(lines.length).length
+  return lines
+    .map((line, idx) => `${String(idx + 1).padStart(width, " ")}\t${line}`)
+    .join("\n")
+}
+
+function renderExistingFile(file: ExistingFileContent): string {
+  const lang = file.language || "text"
+  const truncated = file.truncated ? "yes" : "no"
+  return [
+    `File: ${file.filePath}`,
+    `Language: ${lang}`,
+    `Size: ${file.fullSize} bytes`,
+    `Content (truncated? ${truncated}):`,
+    "```" + lang,
+    numberLines(file.content),
+    "```",
+  ].join("\n")
+}
+
+function renderExistingFiles(ctx: ExistingFilesContext): string {
+  const lines: string[] = []
+  lines.push(
+    `Path resolver surfaced ${ctx.files.length} existing file(s) from the selected repo. These are the REAL current contents on disk.`,
+    "",
+    "RULES:",
+    "- If you modify any file listed below, you MUST output it as a PATCH (mode=patch) — NOT a full file body.",
+    "- The unified-diff hunk MUST match the surrounding context (the numbered lines above show the exact current state).",
+    "- Do NOT rewrite or recreate these files from scratch — that loses unrelated code.",
+    "",
+  )
+  if (ctx.resolutions.length > 0) {
+    lines.push("Path resolutions (sorted by confidence):")
+    for (const r of ctx.resolutions.slice(0, 10)) {
+      lines.push(
+        `- ${r.filePath} (route ${r.route}, confidence ${r.confidence.toFixed(2)}): ${r.reason}`,
+      )
+    }
+    lines.push("")
+  }
+  for (const file of ctx.files) {
+    lines.push(renderExistingFile(file))
+    lines.push("")
+  }
+  return lines.join("\n").trimEnd()
+}
+
+/** Render the Sprint 2B output-format section. */
+function renderOutputFormatSection(
+  ctx: ComposeInput,
+  hasExisting: boolean,
+  outputMode: OutputMode,
+): string[] {
+  const lines: string[] = []
+  lines.push(
+    "Output format: for EACH file, choose either NEW-FILE mode or PATCH mode and use the matching fence header.",
+    "",
+    "NEW-FILE mode — use when creating a brand-new file (the path does NOT appear in CURRENT FILE STATE):",
+    "",
+    "```mode=new-file [path/to/file.tsx]",
+    "// full file content",
+    "```",
+    "",
+    "PATCH mode — REQUIRED when editing a file listed in CURRENT FILE STATE:",
+    "",
+    "```mode=patch [path/to/existing-file.tsx]",
+    "@@ -45,3 +45,8 @@",
+    "   existing line",
+    "+  new line 1",
+    "+  new line 2",
+    "   existing line",
+    "```",
+    "",
+    "Patch rules:",
+    "- Emit a VALID unified diff. Each hunk header `@@ -<oldStart>,<oldLen> +<newStart>,<newLen> @@` MUST be present.",
+    "- Context lines start with a single space, additions with `+`, deletions with `-`.",
+    "- Multiple hunks per file are fine. Do NOT include a `diff --git` header — the path bracketed in the fence is the canonical signal.",
+    "- The hunk context MUST match the CURRENT FILE STATE above (line numbers shown for reference only — the diff itself uses standard unified-diff offsets).",
+    "",
+    "Routing rules:",
+    "- If a file appears in CURRENT FILE STATE, the output MUST be mode=patch.",
+    "- If a file does NOT appear in CURRENT FILE STATE, default to mode=new-file unless the user explicitly says to edit it.",
+    "- Legacy ```<lang> [path]``` fences without `mode=` are still accepted and treated as NEW-FILE for backward compatibility.",
+    "",
+    describeOutputMode(outputMode),
+    "",
+  )
+  if (!hasExisting) {
+    lines.push(
+      "(No CURRENT FILE STATE was injected for this prompt — there are no existing files to patch. Default every block to mode=new-file.)",
+      "",
+    )
+  }
+  lines.push(
+    "ALWAYS include a first file named `preview.tsx` when the request creates or changes UI.",
+    "`preview.tsx` is the canvas artifact shown to the user before publish. It must be self-contained:",
+    "- export a default React component;",
+    "- use mock data inline;",
+    "- avoid `@/`, repo aliases, app router imports, server components, filesystem imports, and external Dash repo components;",
+    "- use only React plus plain CSS/Tailwind-like utility classes that can run in the sandbox;",
+    "- use Dash semantic tokens / CSS variables only; do not use raw hex values in className, style objects, CSS strings, or token fallbacks;",
+    "- mirror the generated route/content surface enough for product/design review, even if production files use registry components;",
+    "- style all controls, tables, filters, cards, badges, and empty/loading/error states explicitly; never leave browser-default buttons, inputs, or tables in the preview;",
+    ctx.repoContext.existingShell
+      ? `- do not generate a standalone app shell, sidebar, topbar, or duplicate navigation in preview.tsx. Dash Build wraps preview.tsx with the selected repo shell (${ctx.repoContext.existingNavItems.join(", ") || "known repo nav"}), active nav "${ctx.repoContext.targetNavLabel ?? "the target nav"}", and route ${ctx.repoContext.targetRoute ?? ctx.repoContext.defaultRoute ?? "the target route"}. Render only the feature/page content that belongs inside that route slot.`
+      : "- render a compact Dash shell around the generated surface and clearly label any repo ambiguity.",
+    "",
+    "Multiple files = multiple fenced blocks. After all code blocks, write a short",
+    "plain-text explanation (2-5 sentences) covering: design decisions, any banned-",
+    "import replacements, voice/audit considerations, and follow-up TODOs.",
+    "",
+    "If the prompt requires audit trail (legal/financial fields per CR-2), include",
+    "an `audit_log` insert in the same transaction and surface a TODO if the backend",
+    "table doesn't yet exist.",
+  )
+  return lines
+}
+
 export function composeSystemPrompt(ctx: ComposeInput): string {
   const cardinalBlock =
     ctx.design.cardinalRules.trim() ||
@@ -247,7 +480,18 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     ctx.design.designContract.trim() ||
     "Use the global Dash product character: operational density, semantic tokens, registry-first components, no card-inside-card layouts, explicit loading/empty/error/success states, and repo-specific implementation patterns."
 
-  return [
+  const hasIntro = hasAnyIntrospection(ctx.introspection)
+  const hasExisting = hasAnyExistingFiles(ctx.existingFiles)
+  const outputMode: OutputMode = ctx.outputMode ?? (hasExisting ? "patch" : "new-file")
+
+  // Section numbering — flows through both optional sections so the markdown
+  // tree stays consistent even when one (or both) are absent.
+  let n = 6
+  const sectionNum = (): number => ++n // post-increment style: increment then read
+  // Reset to a known anchor — start at 7 for the first conditional section.
+  n = 6
+
+  const out: string[] = [
     "# Dash Build — System Prompt",
     "",
     "You are generating code for the Dash platform (PT Dash Elektrik Indonesia).",
@@ -278,54 +522,52 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     "",
     renderRepoContext(ctx.repoContext),
     "",
-    "## 7. PRD Context",
+  ]
+
+  if (hasIntro) {
+    out.push(
+      `## ${sectionNum()}. Repo Introspection (REAL schema, do not hallucinate)`,
+      "",
+      renderIntrospection(ctx.introspection as RepoIntrospection),
+      "",
+    )
+  }
+
+  if (hasExisting) {
+    out.push(
+      `## ${sectionNum()}. CURRENT FILE STATE (do NOT recreate, EDIT)`,
+      "",
+      renderExistingFiles(ctx.existingFiles as ExistingFilesContext),
+      "",
+    )
+  }
+
+  out.push(
+    `## ${sectionNum()}. PRD Context`,
     "",
     `Sections touched: ${ctx.prd.sectionsTouched}. Confidence: ${ctx.prd.confidence}.`,
     prdBlock,
     "",
-    "## 8. Banned Imports",
+    `## ${sectionNum()}. Banned Imports`,
     "",
     `DO NOT import any of: ${BANNED_IMPORTS.map((b) => `\`${b}\``).join(", ")}.`,
     "Replacements: useState + hand-rolled validation. axios or native fetch. Jotai (portal-v2) or Zustand 5 (basecamp) for global state.",
     "",
-    "## 9. Component Reuse / Gap Rule",
+    `## ${sectionNum()}. Component Reuse / Gap Rule`,
     "",
     "Reuse existing Dash DS registry components and existing repo components before creating new UI. Search/import according to the repo stack mandate.",
     "If a needed component does not exist, new components are allowed, but mark them in the explanation as `component candidate` / `gap for DS review` with the intended theme and reuse rationale.",
     "",
-    "## 10. Token Usage",
+    `## ${sectionNum()}. Token Usage`,
     "",
     "Use Dash semantic tokens only — `bg-primary-500`, `text-text-strong-950`, `border-stroke-soft-200`, `bg-bg-white-0`.",
     "Never raw hex (`#5e2aac` / `#7C4FC4` / `#fff`). Dash Purple canonical = `#5e2aac` via `--primary-base`.",
     "",
-    "## 11. Output Format (STRICT)",
+    `## ${sectionNum()}. Output Format (STRICT)`,
     "",
-    "For each file you create or modify, output a fenced code block with the path in brackets:",
+    ...renderOutputFormatSection(ctx, hasExisting, outputMode),
     "",
-    "```tsx [src/components/example.tsx]",
-    "// file content here",
-    "```",
-    "",
-    "ALWAYS include a first file named `preview.tsx` when the request creates or changes UI.",
-    "`preview.tsx` is the canvas artifact shown to the user before publish. It must be self-contained:",
-    "- export a default React component;",
-    "- use mock data inline;",
-    "- avoid `@/`, repo aliases, app router imports, server components, filesystem imports, and external Dash repo components;",
-    "- use only React plus plain CSS/Tailwind-like utility classes that can run in the sandbox;",
-    "- use Dash semantic tokens / CSS variables only; do not use raw hex values in className, style objects, CSS strings, or token fallbacks;",
-    "- mirror the generated route/content surface enough for product/design review, even if production files use registry components;",
-    "- style all controls, tables, filters, cards, badges, and empty/loading/error states explicitly; never leave browser-default buttons, inputs, or tables in the preview;",
-    ctx.repoContext.existingShell
-      ? `- do not generate a standalone app shell, sidebar, topbar, or duplicate navigation in preview.tsx. Dash Build wraps preview.tsx with the selected repo shell (${ctx.repoContext.existingNavItems.join(", ") || "known repo nav"}), active nav "${ctx.repoContext.targetNavLabel ?? "the target nav"}", and route ${ctx.repoContext.targetRoute ?? ctx.repoContext.defaultRoute ?? "the target route"}. Render only the feature/page content that belongs inside that route slot.`
-      : "- render a compact Dash shell around the generated surface and clearly label any repo ambiguity.",
-    "",
-    "Multiple files = multiple fenced blocks. After all code blocks, write a short",
-    "plain-text explanation (2-5 sentences) covering: design decisions, any banned-",
-    "import replacements, voice/audit considerations, and follow-up TODOs.",
-    "",
-    "If the prompt requires audit trail (legal/financial fields per CR-2), include",
-    "an `audit_log` insert in the same transaction and surface a TODO if the backend",
-    "table doesn't yet exist.",
-    "",
-  ].join("\n")
+  )
+
+  return out.join("\n")
 }
