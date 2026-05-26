@@ -167,11 +167,14 @@ describe("Worker", () => {
     )
     const worker = new Worker({ orchestrator, store, intervalMs: 60_000 })
     const p = await orchestrator.submitPrompt({ text: "x", repo: "acme/x" })
-    await new Promise((r) => setTimeout(r, 20))
-    // After processPrompt's first run, status was set to failed because the
-    // catch happens inside processPrompt itself (not the worker). The worker's
-    // own retry path only fires when orchestrator.processPrompt itself throws.
-    // Verify failure surfaced with classified message.
+    // Poll until prompt reaches a terminal state. CI runners are slower than
+    // local; a fixed sleep races on shared GitHub hosts.
+    const deadline = Date.now() + 2000
+    while (Date.now() < deadline) {
+      const cur = store.getPrompt(p.promptId)
+      if (cur?.status === "failed" || cur?.status === "completed") break
+      await new Promise((r) => setTimeout(r, 20))
+    }
     const prompt = store.getPrompt(p.promptId)
     expect(prompt?.status).toBe("failed")
     expect(prompt?.error).toMatch(/Transient|fetch failed/)

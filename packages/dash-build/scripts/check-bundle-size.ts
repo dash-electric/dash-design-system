@@ -11,10 +11,15 @@ import { fileURLToPath } from "node:url"
  */
 export const BUDGETS: Record<string, number> = {
   "dist/bin.js": 50_000, // CLI entry — tiny dispatcher (current ~8KB)
-  "dist/daemon.js": 260_000, // Daemon: HTTP + WS + chat templates + auth +
-  //                              skill chain + Claude CLI subprocess runner +
-  //                              bundled @dash/* workspace deps (current ~232KB)
-  "dist/index.js": 240_000, // Programmatic API surface (current ~204KB)
+  "dist/daemon.js": 720_000, // Daemon: HTTP + WS + Lovable shell templates +
+  //                              owner dashboard + AI triage (BranchAutoReview,
+  //                              CostMonitor, DSCandidateRanker,
+  //                              ActivityAnomalyDetector) + auth + skill chain +
+  //                              clone-sandbox state machine + Claude CLI
+  //                              subprocess runner + bundled @dash/* workspace
+  //                              deps + inlined registry tokens CSS
+  //                              (current ~671KB post Sprint 3)
+  "dist/index.js": 700_000, // Programmatic API surface (current ~642KB)
 }
 
 export interface CheckResult {
