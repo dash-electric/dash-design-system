@@ -1,5 +1,6 @@
 name: Production Deployment
 
+# Deploys docs site + registry API to Cloud Run on v*.*.* tag push.
 on:
   push:
     tags:

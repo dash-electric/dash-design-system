@@ -1,5 +1,6 @@
 name: Staging Deployment
 
+# Deploys docs site + registry API to Cloud Run on push to main.
 on:
   push:
     branches:
