@@ -75,7 +75,7 @@ export function handleUpgrade(
 
   let buffer = Buffer.alloc(0)
 
-  socket.on("data", (chunk) => {
+  socket.on("data", (chunk: Buffer) => {
     buffer = Buffer.concat([buffer, chunk])
     while (true) {
       const decoded = decodeFrame(buffer)
