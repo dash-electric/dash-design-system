@@ -180,7 +180,14 @@ export class GitOps {
     return new Promise((resolve, reject) => {
       const child = spawn(this.gitBin, args, {
         cwd: this.workdir,
-        env: { ...process.env, ...this.env },
+        env: {
+          ...process.env,
+          GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "Dash Build",
+          GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "dash-build@local",
+          GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "Dash Build",
+          GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "dash-build@local",
+          ...this.env,
+        },
         stdio: ["ignore", "pipe", "pipe"],
       })
       let stdout = ""

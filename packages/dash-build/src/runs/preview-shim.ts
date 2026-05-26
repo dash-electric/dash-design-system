@@ -727,7 +727,14 @@ async function runGit(args: string[], cwd: string): Promise<GitResult> {
     const child = spawn("git", args, {
       cwd,
       stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
+      env: {
+        ...process.env,
+        GIT_TERMINAL_PROMPT: "0",
+        GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "Dash Build",
+        GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "dash-build@local",
+        GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "Dash Build",
+        GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "dash-build@local",
+      },
     })
     let stdout = ""
     let stderr = ""
