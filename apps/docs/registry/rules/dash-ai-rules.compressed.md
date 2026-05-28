@@ -52,6 +52,10 @@
 
 DON'T: raw `@radix-ui/*` imports, raw hex, shadcn `variant="default"`, copy entire shadcn file, hardcode `text-white` on light surfaces.
 
+## Border + shadow policy
+
+Default: border OR shadow, not both. Exception (allowed combo) for floating-above-workspace surfaces: Modal, Drawer, Sheet, AlertDialog, Popover, Tooltip, HoverCard, DropdownMenu, ContextMenu, Menubar, NavigationMenu, Toaster, DatePicker, Carousel, BulkActionBar, sticky toolbars. Card `elevated` variant also exempt. Inline workspace cards stay flat (one or the other).
+
 ## Decorative gradient policy
 
 No decorative gradients on in-app workflow surfaces. Carve-outs (allowed): auth shells (login/register/reset/verify), chart fills (SVG `<linearGradient>` / `conic-gradient` inside Chart), brand showcase pages (Foundation/Theme Studio/Brand Assets), Dash Build's own dashboard meta-surface, `FancyButton` sheen.

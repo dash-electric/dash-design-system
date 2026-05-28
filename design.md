@@ -108,7 +108,12 @@ Use these density defaults unless the target repo already has tighter tokens:
   workspace. Standard Card primitive (widget, content block) follows the 16px
   default from Figma source.
 - Use hairline borders and spacing changes before large shadows, blur, or
-  oversized rounded containers.
+  oversized rounded containers. Default: hairline border OR shadow, not both.
+  Exception — floating surfaces above the workspace MAY combine border + shallow
+  shadow for elevation clarity: Modal, Drawer, Sheet, Alert Dialog, Popover,
+  Tooltip, HoverCard, DropdownMenu, ContextMenu, Menubar, NavigationMenu,
+  Toaster, DatePicker, Carousel, BulkActionBar, and fixed/sticky toolbars
+  when scrolled. Inline workspace cards stay border-or-shadow, never both.
 
 If a surface looks soft, puffy, or inflated, reduce padding first, then radius,
 then shadow. Preserve readable hit targets for actual controls.

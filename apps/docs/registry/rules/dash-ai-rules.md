@@ -260,6 +260,22 @@ Avoid raw colors. Always reach for semantic tokens:
    - External signals: BMKG (weather), Lebaran rate freeze (holiday pricing)
    - Patterns: 3-miss auto-suspend, surge factor X.Y×, dispatch radius
 
+## Border + shadow policy
+
+Default: hairline border OR shadow, not both. This keeps inline workspace cards
+flat and scannable.
+
+**Exception — floating surfaces above the workspace MAY combine border +
+shallow shadow** for elevation clarity. Allowed list:
+
+Modal, Drawer, Sheet, AlertDialog, Popover, Tooltip, HoverCard, DropdownMenu,
+ContextMenu, Menubar, NavigationMenu, Toaster, DatePicker, Carousel,
+BulkActionBar, fixed/sticky toolbars when scrolled.
+
+Inline workspace cards (Card primitive in a list, table row, dashboard widget)
+stay border-or-shadow, never both. The Card `elevated` variant is the one
+explicit Card exception — intentionally elevated above the page surface.
+
 ## Decorative gradient policy
 
 No decorative `linear-gradient` / `radial-gradient` / `conic-gradient` /
