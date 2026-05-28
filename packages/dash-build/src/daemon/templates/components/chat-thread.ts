@@ -77,12 +77,15 @@ export function renderChatMessage(msg: ChatMessage): string {
     .filter(Boolean)
     .join(" ")
 
+  // Bubble inner: typing dots when running, otherwise text directly inside
+  // .db-chat-bubble (no inner wrapper span — removed 2026-05-28 to simplify
+  // DOM. .db-chat-bubble-text had no CSS rules, was pure structural noise).
   const bubbleInner =
     status === "running"
       ? `<span class="db-chat-typing" aria-label="Builder is thinking">
           <span></span><span></span><span></span>
         </span>`
-      : `<span class="db-chat-bubble-text">${escapeHtml(msg.content)}</span>`
+      : escapeHtml(msg.content)
 
   const filesBlock =
     msg.files && msg.files.length > 0

@@ -361,10 +361,9 @@ export const DASHBOARD_JS = `
     if (status === "running") {
       bubble.innerHTML = '<span class="db-chat-typing" aria-label="Builder is thinking"><span></span><span></span><span></span></span>';
     } else {
-      var txt = document.createElement("span");
-      txt.className = "db-chat-bubble-text";
-      txt.textContent = content;
-      bubble.appendChild(txt);
+      // Text goes directly into .db-chat-bubble — no inner wrapper span.
+      // Removed .db-chat-bubble-text 2026-05-28 (purely structural, no CSS).
+      bubble.textContent = content;
     }
     li.appendChild(bubble);
     thread.appendChild(li);
