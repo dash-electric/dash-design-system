@@ -472,14 +472,14 @@ export async function renderComponentPreview(
 
   // 6. Build Sandpack files map. `/index.tsx` and `/App.tsx` are template-
   //    owned and read-only to prevent the user clobbering them. `/Component.tsx`
-  //    is the active editable file. `/dash-tokens.css`, `/mocks.json`, and
-  //    `/public/index.html` are hidden from the file tree.
+  //    is the active editable file. `/dash-tokens.css` + `/mocks.json` hidden
+  //    from the file tree.
   //
-  //    `/public/index.html` overrides Sandpack's default iframe shell so the
-  //    generated component renders with Tailwind utility classes (CDN play),
-  //    Plus Jakarta Sans (Google Fonts), and Dash Layer 0 CSS variables
-  //    available globally. Without it the iframe would render with browser
-  //    defaults — unstyled "lab demo" look the user pushed back on.
+  //    NOTE (2026-05-28): we DO NOT ship `/public/index.html` anymore — the
+  //    `react-ts` template ignores it and Sandpack leaks the raw HTML/JSX
+  //    comments into the iframe content. Tailwind CDN + Plus Jakarta Sans +
+  //    Dash token preset are injected at runtime from `index.tsx` via
+  //    document.head.appendChild on first mount (idempotent via id checks).
   const files: Record<string, SandpackFile> = {
     "/index.tsx": { code: template.indexTsx, hidden: true, readOnly: true },
     "/App.tsx": { code: template.appTsx, hidden: true, readOnly: true },
@@ -491,11 +491,6 @@ export async function renderComponentPreview(
     },
     "/mocks.json": {
       code: JSON.stringify(mergedMocks, null, 2),
-      hidden: true,
-      readOnly: true,
-    },
-    "/public/index.html": {
-      code: template.indexHtml,
       hidden: true,
       readOnly: true,
     },

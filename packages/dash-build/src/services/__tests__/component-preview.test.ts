@@ -33,17 +33,20 @@ describe("component-preview service", () => {
     expect(res.ok).toBe(true)
     if (!res.ok) return
     const paths = new Set(Object.keys(res.sandpack.files))
-    // The core scaffold files are always present.
+    // The core scaffold files are always present. /public/index.html is NOT
+    // shipped — Sandpack's react-ts template ignores it and leaked the raw
+    // HTML/JSX comments into the iframe. Tailwind + font now injected via
+    // index.tsx at runtime instead.
     for (const required of [
       "/App.tsx",
       "/Component.tsx",
       "/dash-tokens.css",
       "/index.tsx",
       "/mocks.json",
-      "/public/index.html",
     ]) {
       expect(paths.has(required)).toBe(true)
     }
+    expect(paths.has("/public/index.html")).toBe(false)
     expect(res.sandpack.template).toBe("react-ts")
     expect(res.sandpack.entry).toBe("/index.tsx")
     // Any additional files MUST belong to the @dash/ui local bundle — we
@@ -54,8 +57,7 @@ describe("component-preview service", () => {
         path === "/Component.tsx" ||
         path === "/dash-tokens.css" ||
         path === "/index.tsx" ||
-        path === "/mocks.json" ||
-        path === "/public/index.html"
+        path === "/mocks.json"
       if (!isCore) {
         expect(path.startsWith("/node_modules/@dash/ui/")).toBe(true)
       }
@@ -83,34 +85,33 @@ describe("component-preview service", () => {
       "/App.tsx",
       "/dash-tokens.css",
       "/mocks.json",
-      "/public/index.html",
     ]) {
       expect(res.sandpack.files[path]?.readOnly).toBe(true)
       expect(res.sandpack.files[path]?.hidden).toBe(true)
     }
   })
 
-  it("ships /public/index.html with Tailwind CDN + Plus Jakarta Sans + dash token mapping", async () => {
+  it("index.tsx injects Tailwind CDN + Plus Jakarta Sans + Dash token preset at runtime", async () => {
     const res = await renderComponentPreview({
       componentSource: VALID_COMPONENT,
     })
     expect(res.ok).toBe(true)
     if (!res.ok) return
-    const html = res.sandpack.files["/public/index.html"]?.code ?? ""
-    // Tailwind CDN (Play build) injected so utility classes like
-    // bg-success-light resolve at runtime.
-    expect(html).toContain("cdn.tailwindcss.com")
+    const entry = res.sandpack.files["/index.tsx"]?.code ?? ""
+    // Tailwind CDN (Play build) injected from entry so utility classes like
+    // bg-success-light resolve at runtime. Sandpack's react-ts template
+    // ignores /public/index.html so head injection from entry is the only
+    // reliable hook.
+    expect(entry).toContain("cdn.tailwindcss.com")
     // Plus Jakarta Sans preloaded so generated components inherit Dash type.
-    expect(html).toContain("Plus+Jakarta+Sans")
-    expect(html).toContain("fonts.googleapis.com")
+    expect(entry).toContain("Plus+Jakarta+Sans")
+    expect(entry).toContain("fonts.googleapis.com")
     // Tailwind preset maps utility class names to Dash CSS variables so the
     // generator can emit `bg-success-light` and have it resolve to the right
-    // token. Both base + light + lighter must be present for the semantic set.
-    expect(html).toContain("var(--bg-success-light)")
-    expect(html).toContain("var(--bg-information-base)")
-    expect(html).toContain("var(--primary-base)")
-    // Sandpack still needs a `#root` mount node.
-    expect(html).toContain('id="root"')
+    // token.
+    expect(entry).toContain("var(--bg-success-light)")
+    expect(entry).toContain("var(--bg-information-base)")
+    expect(entry).toContain("var(--primary-base)")
   })
 
   it("dash-tokens.css carries semantic state tokens generator components rely on", async () => {
