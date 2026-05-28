@@ -19,7 +19,7 @@
  */
 
 import type { IncomingMessage, ServerResponse } from "node:http"
-import { promises as fs } from "node:fs"
+import { promises as fs, readFileSync } from "node:fs"
 import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import {
@@ -37,14 +37,27 @@ import {
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const TEMPLATE_DIR = resolve(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "..",
-  "preview-template",
-)
+// Depth differs between bundled + source mode — see component-preview.ts for
+// the canonical TEMPLATE_DIR resolution. Probe candidates and pick the first
+// that has the canonical App.tsx.
+const TEMPLATE_CANDIDATES = [
+  resolve(__dirname, "..", "preview-template"),
+  resolve(__dirname, "..", "..", "preview-template"),
+  resolve(__dirname, "..", "..", "..", "preview-template"),
+  resolve(__dirname, "..", "..", "..", "..", "preview-template"),
+  resolve(__dirname, "..", "..", "..", "..", "..", "preview-template"),
+]
+const TEMPLATE_DIR = (() => {
+  for (const candidate of TEMPLATE_CANDIDATES) {
+    try {
+      readFileSync(resolve(candidate, "App.tsx"), "utf8")
+      return candidate
+    } catch {
+      // try next
+    }
+  }
+  return TEMPLATE_CANDIDATES[1]!
+})()
 
 const ALLOWED_TEMPLATE_FILES = new Set([
   "App.tsx",

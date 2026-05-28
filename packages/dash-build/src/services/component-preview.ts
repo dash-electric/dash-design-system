@@ -136,9 +136,30 @@ const DASH_DS_PREFIX = "@dash/"
 /** Template directory — relative to this file. */
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-// `dist/services/component-preview.js` → `../../preview-template`
-// `src/services/component-preview.ts`  → `../../preview-template`
-const TEMPLATE_DIR = resolve(__dirname, "..", "..", "preview-template")
+// Depth differs between bundled + source mode:
+//   - tsup bundles into single `dist/daemon.js`     → __dirname = <pkg>/dist/
+//     → `../preview-template` resolves to <pkg>/preview-template/
+//   - vitest runs `src/services/component-preview.ts` → __dirname = <pkg>/src/services/
+//     → `../../preview-template` resolves to <pkg>/preview-template/
+// Probe both; pick whichever has the canonical App.tsx.
+const TEMPLATE_CANDIDATES = [
+  resolve(__dirname, "..", "preview-template"),
+  resolve(__dirname, "..", "..", "preview-template"),
+  resolve(__dirname, "..", "..", "..", "preview-template"),
+]
+const TEMPLATE_DIR = (() => {
+  for (const candidate of TEMPLATE_CANDIDATES) {
+    try {
+      readFileSync(resolve(candidate, "App.tsx"), "utf8")
+      return candidate
+    } catch {
+      // try next
+    }
+  }
+  // Fall back to first candidate so the existing error path keeps the same
+  // shape (caller surfaces "Failed to read preview template at <path>").
+  return TEMPLATE_CANDIDATES[0]!
+})()
 
 // ---------------------------------------------------------------------------
 // Template cache
