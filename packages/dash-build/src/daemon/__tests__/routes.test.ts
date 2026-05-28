@@ -70,7 +70,11 @@ describe("HTTP routes", () => {
     expect(r.status).toBe(200)
     const html = await r.text()
     expect(html).toContain("db-workspace-shell")
-    expect(html).toContain('id="db-preview-mount"')
+    // Integration step 2026-05-28: hand-written placeholder swapped for
+    // renderPreviewPanel — exposes db-preview-panel wrapper + db-preview-sandpack
+    // mount consumed by client preview-mount.js.
+    expect(html).toContain('id="db-preview-panel"')
+    expect(html).toContain('id="db-preview-sandpack"')
     expect(html).toContain('data-component-id="run-abc"')
   })
 

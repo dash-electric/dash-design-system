@@ -105,6 +105,7 @@ export function renderLayout(opts: LayoutOptions): string {
     ${footer}
     ${toastContainer()}
     <script src="/static/app.js"></script>
+    <script src="/static/preview-mount.js" defer></script>
   </body>
 </html>`
 }

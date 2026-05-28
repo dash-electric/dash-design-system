@@ -21,6 +21,7 @@ import { escapeHtml, renderLayout } from "./layout.js"
 import { renderSidebar, projectsToRecents } from "./sidebar.js"
 import { renderPromptInput } from "./components/prompt-input.js"
 import { renderChatThread } from "./components/chat-thread.js"
+import { renderPreviewPanel } from "./components/preview-panel.js"
 
 export interface WorkspaceOptions {
   /** Active run id (matches a PromptRecord). Optional — null = empty state. */
@@ -111,18 +112,14 @@ export function renderWorkspace(
   // the real preview via this id.
   const componentId = opts.runId ?? ""
 
-  const previewPanel = `<section
-    id="db-preview-mount"
-    class="db-preview-mount"
-    data-component-id="${escapeHtml(componentId)}"
-    aria-label="Component preview"
-  >
-    <div class="db-preview-empty">
-      <span class="db-preview-empty-icon" aria-hidden="true">◇</span>
-      <p class="db-preview-empty-title">Preview will appear here</p>
-      <p class="db-preview-empty-body">Send a prompt on the left to generate a component. Agent B will mount the live render here once ready.</p>
-    </div>
-  </section>`
+  // Component preview chrome — 5 tabs (Component live, Diff/BE/Audit/Files
+  // placeholder), Sandpack mount inside Component tab, context-map footer.
+  // Sandpack auto-bootstraps via /static/preview-mount.js (loaded from layout).
+  const previewPanel = renderPreviewPanel({
+    componentId,
+    promptId: opts.runId ?? null,
+    activeTab: "component",
+  })
 
   const chatThread = renderChatThread({
     messages: [],
