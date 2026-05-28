@@ -172,6 +172,12 @@ export function renderWorkspace(
     activeTab: "component",
     context: initialBlob ? initialBlob.contextMap : undefined,
     diffSnapshot: initialBlob ? initialBlob.diffSnapshot ?? null : null,
+    beImpactSnapshot: initialBlob ? initialBlob.beImpactSnapshot ?? null : null,
+    auditSnapshot: initialBlob ? initialBlob.auditSnapshot ?? null : null,
+    filesSnapshot: initialBlob ? initialBlob.filesSnapshot ?? null : null,
+    validationSnapshot: initialBlob
+      ? initialBlob.validationSnapshot ?? null
+      : null,
   })
   const initialPreviewScript = renderInitialPreviewScript(initialBlob)
 

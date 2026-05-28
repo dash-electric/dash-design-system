@@ -22,19 +22,26 @@
  */
 
 import { existsSync } from "node:fs"
-import { readFile, readdir } from "node:fs/promises"
+import { readFile, readdir, stat } from "node:fs/promises"
 import { join, relative, sep } from "node:path"
 import {
   DEFAULT_RUNS_ROOT,
   readIntakeSnapshot,
   readRunPatches,
   resolveRunDir,
+  type IntakeSnapshot,
 } from "../runs/artifact-store.js"
 import {
   detectBannedImports,
   detectDashDsImports,
 } from "../services/component-preview.js"
-import type { DiffSnapshotEntry } from "./templates/components/preview-panel.js"
+import type {
+  AuditSnapshot,
+  BeImpactSnapshot,
+  DiffSnapshotEntry,
+  FileSnapshotEntry,
+  ValidationSnapshot,
+} from "./templates/components/preview-panel.js"
 
 export interface PreviewInitialBlob {
   /** Stable id the client script matches against `data-component-id`. */
@@ -56,12 +63,340 @@ export interface PreviewInitialBlob {
    * compile — workspace.ts coerces `undefined` to `null`.
    */
   diffSnapshot?: DiffSnapshotEntry[]
+  /**
+   * Tier 2 #4a — BE Impact cold-load payload. Derived from
+   * `<runDir>/intake.json`. Optional so older blobs still typecheck.
+   */
+  beImpactSnapshot?: BeImpactSnapshot
+  /**
+   * Tier 2 #4b — Audit cold-load payload. Mixes intake.audit (prompt-time
+   * CR-3 trigger) with validator events from events.jsonl (post-generation
+   * outcome). Optional so older blobs still typecheck.
+   */
+  auditSnapshot?: AuditSnapshot
+  /**
+   * Tier 2 #4c — Files cold-load payload. Listing of `<runDir>/files/`
+   * walked alphabetically with directories first.
+   */
+  filesSnapshot?: FileSnapshotEntry[]
+  /**
+   * Tier 2 #7 — Validation cold-load payload. Aggregates validator findings
+   * from events.jsonl so the Diff tab surfaces validator outcomes inline
+   * (rule ids hit, severity counts, pass/fail).
+   */
+  validationSnapshot?: ValidationSnapshot
 }
 
 interface DiscoveredFile {
   /** Path RELATIVE to `<runDir>/files/`, using forward slashes. */
   path: string
   content: string
+  size: number
+}
+
+// ---------------------------------------------------------------------------
+// Tier 2 #4a / #4b / #4c / #7 — snapshot builders.
+//
+// These all degrade gracefully: any read failure returns `null` / an empty
+// snapshot, never throws. Cold-load is best-effort; an in-flight or partially
+// persisted run still renders the placeholder. The Sandpack mount and SSE
+// flow are unaffected.
+// ---------------------------------------------------------------------------
+
+/**
+ * Required-endpoint inference per scenario. Mirrors the orchestrator's
+ * scenario-classifier vocabulary (`extend_fe_be`, `new_feature_fe_be`,
+ * `fe_only`, `bugfix_existing`). Kept narrow on purpose — we surface the
+ * most useful prompt-time hint without trying to be an exhaustive planner.
+ */
+function inferRequiredEndpoints(
+  scenario: string | null,
+  existing: Array<{ method: string; path: string }>,
+): Array<{ description: string; scenario?: string }> {
+  if (!scenario) return []
+  const lower = scenario.toLowerCase()
+  const out: Array<{ description: string; scenario?: string }> = []
+  if (lower.includes("extend") || lower.includes("aggregate")) {
+    const sample = existing[0]
+    if (sample) {
+      out.push({
+        description: `${sample.method} ${sample.path}/aggregate (extend existing endpoint)`,
+        scenario,
+      })
+    } else {
+      out.push({
+        description: "New aggregate endpoint to back the extended FE view",
+        scenario,
+      })
+    }
+  }
+  if (lower.includes("new_feature") || lower.includes("new-feature")) {
+    out.push({
+      description: "New BE route + handler for the feature surface",
+      scenario,
+    })
+  }
+  return out
+}
+
+function buildBeImpactSnapshot(
+  intake: IntakeSnapshot | null,
+): BeImpactSnapshot | null {
+  if (!intake) return null
+  const existing = intake.beEndpoints.slice(0, 30).map((ep) => ({
+    method: ep.method,
+    path: ep.path,
+    file: ep.file,
+  }))
+  const dbTables = (intake.dbSchema.tables ?? []).map((name) => ({ name }))
+  const requiredEndpoints = inferRequiredEndpoints(
+    intake.scenario ?? null,
+    existing,
+  )
+  return {
+    scenario: intake.scenario ?? null,
+    existingEndpoints: existing,
+    dbTables,
+    requiredEndpoints,
+  }
+}
+
+/**
+ * Walk additions of a unified diff and pull out tokens that look like audit
+ * call sites. Mirrors the regex in skills/validator.ts so the UI surface and
+ * the validator stay aligned without sharing state.
+ */
+const AUDIT_CALL_PATTERNS: Array<{ re: RegExp; label: string }> = [
+  { re: /\bauditLog\s*\.\s*create\s*\(/, label: "auditLog.create(...)" },
+  { re: /\bwriteAuditLog\s*\(/, label: "writeAuditLog(...)" },
+  { re: /\blogAudit\s*\(/, label: "logAudit(...)" },
+  { re: /\baudit\s*\.\s*(?:create|log)\s*\(/, label: "audit.create(...)" },
+  { re: /\baudit_log\s*\.\s*create\s*\(/, label: "audit_log.create(...)" },
+]
+
+function detectAuditCallsInFiles(files: DiscoveredFile[]): string[] {
+  const hits = new Set<string>()
+  for (const file of files) {
+    for (const { re, label } of AUDIT_CALL_PATTERNS) {
+      if (re.test(file.content)) hits.add(label)
+    }
+  }
+  return Array.from(hits)
+}
+
+function buildAuditSnapshot(
+  intake: IntakeSnapshot | null,
+  files: DiscoveredFile[],
+  validationEvents: ValidationEvent[],
+): AuditSnapshot | null {
+  // No intake snapshot AND no validation events means we don't have enough
+  // signal — fall back to placeholder.
+  if (!intake && validationEvents.length === 0) return null
+
+  const detected = intake?.audit.detected ?? false
+  const sensitiveFields = intake?.audit.requiredFields ?? []
+  const pattern = intake?.audit.reasonsCode[0] ?? null
+  const auditCalls = detectAuditCallsInFiles(files)
+
+  // Map validator findings related to CR-3 / audit into the checklist.
+  const auditChecks: AuditSnapshot["validatorChecks"] = []
+  for (const ev of validationEvents) {
+    for (const check of ev.checks) {
+      if (
+        check.ruleId.includes("CR-3") ||
+        check.ruleId === "DS-COVERAGE" ||
+        check.ruleId === "STACK-MANDATE"
+      ) {
+        auditChecks.push({
+          ruleId: check.ruleId,
+          status: check.status,
+          message: check.message,
+        })
+      }
+    }
+  }
+
+  // Derive status.
+  // - `pass`     — intake said audit not required OR (required AND audit call found)
+  // - `missing`  — required AND no audit call AND output has files
+  // - `required` — required AND no files yet (in-flight) OR ambiguous
+  let status: "pass" | "required" | "missing"
+  if (!detected) {
+    status = "pass"
+  } else if (auditCalls.length > 0) {
+    status = "pass"
+  } else if (files.length > 0) {
+    status = "missing"
+  } else {
+    status = "required"
+  }
+
+  const reason = intake?.audit.detected
+    ? `CR-3 triggered by ${pattern ?? "sensitive field"} bucket`
+    : "No CR-3 sensitive keywords found"
+
+  return {
+    status,
+    reason,
+    pattern,
+    sensitiveFields,
+    auditCalls,
+    validatorChecks: auditChecks,
+  }
+}
+
+function buildFilesSnapshot(
+  metas: DiscoveredFileMeta[],
+): FileSnapshotEntry[] {
+  return metas
+    .map((f) => {
+      const dot = f.path.lastIndexOf(".")
+      const type = dot >= 0 ? f.path.slice(dot + 1).toLowerCase() : ""
+      return { path: f.path, size: f.size, type }
+    })
+    .sort((a, b) => {
+      const aHasDir = a.path.includes("/")
+      const bHasDir = b.path.includes("/")
+      if (aHasDir !== bHasDir) return aHasDir ? -1 : 1
+      return a.path.localeCompare(b.path)
+    })
+}
+
+// ---------------------------------------------------------------------------
+// events.jsonl reader for AOP validation events
+// ---------------------------------------------------------------------------
+
+interface ValidationCheck {
+  ruleId: string
+  status: "pass" | "warn" | "fail"
+  message?: string
+  severity?: "high" | "medium" | "low"
+  file?: string | null
+}
+
+interface ValidationEvent {
+  checks: ValidationCheck[]
+  /** Whether overall outcome was pass. */
+  passed: boolean
+  /** Optional score 0-100. */
+  score: number | null
+  warnings: string[]
+}
+
+/**
+ * Read the persisted AOP events.jsonl and project every `validate` event into
+ * a flat ValidationEvent[]. Missing / malformed file → empty list.
+ *
+ * The AOP validate envelope is:
+ *   { type: "validate", payload: { checks: [{name, status, durationMs, output}], overall, scope } }
+ *
+ * We also accept a legacy/alternate shape where checks carry { ruleId, severity,
+ * message, file } so the orchestrator can surface the rich validator output it
+ * already computes. Both shapes are merged.
+ */
+async function readValidationEvents(
+  runDir: string,
+): Promise<ValidationEvent[]> {
+  const file = join(runDir, "events.jsonl")
+  if (!existsSync(file)) return []
+  let raw: string
+  try {
+    raw = await readFile(file, "utf8")
+  } catch {
+    return []
+  }
+  const out: ValidationEvent[] = []
+  for (const line of raw.split("\n")) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    let evt: unknown
+    try {
+      evt = JSON.parse(trimmed)
+    } catch {
+      continue
+    }
+    if (!evt || typeof evt !== "object") continue
+    const e = evt as { type?: string; payload?: unknown }
+    if (e.type !== "validate") continue
+    const payload = (e.payload ?? {}) as {
+      checks?: Array<{
+        name?: string
+        ruleId?: string
+        status?: string
+        message?: string
+        output?: string
+        severity?: string
+        file?: string | null
+      }>
+      overall?: string
+      score?: number
+      warnings?: string[]
+    }
+    const checks: ValidationCheck[] = []
+    for (const c of payload.checks ?? []) {
+      const ruleId = c.ruleId ?? c.name ?? "unknown"
+      const status = (c.status === "fail" || c.status === "warn" || c.status === "pass"
+        ? c.status
+        : c.status === "skip"
+          ? "warn"
+          : "pass") as "pass" | "warn" | "fail"
+      checks.push({
+        ruleId,
+        status,
+        message: c.message ?? c.output,
+        severity:
+          c.severity === "high" || c.severity === "medium" || c.severity === "low"
+            ? c.severity
+            : undefined,
+        file: c.file ?? null,
+      })
+    }
+    out.push({
+      checks,
+      passed: payload.overall === "pass",
+      score: typeof payload.score === "number" ? payload.score : null,
+      warnings: Array.isArray(payload.warnings) ? payload.warnings : [],
+    })
+  }
+  return out
+}
+
+function buildValidationSnapshot(
+  events: ValidationEvent[],
+): ValidationSnapshot | null {
+  if (events.length === 0) return null
+  // Use the LATEST validate event as the canonical outcome — earlier events
+  // are retries / partial passes that the user already past.
+  const latest = events[events.length - 1]!
+  const findings = latest.checks
+    .filter((c) => c.status !== "pass")
+    .map((c) => ({
+      ruleId: c.ruleId,
+      severity: (c.severity ?? (c.status === "fail" ? "high" : "low")) as
+        | "high"
+        | "medium"
+        | "low",
+      message: c.message ?? `${c.ruleId} ${c.status}`,
+      file: c.file ?? null,
+    }))
+  const counts = { high: 0, medium: 0, low: 0 }
+  for (const f of findings) counts[f.severity] += 1
+  // rule-id histogram
+  const ruleMap = new Map<string, number>()
+  for (const f of findings) {
+    ruleMap.set(f.ruleId, (ruleMap.get(f.ruleId) ?? 0) + 1)
+  }
+  const rulesHit = Array.from(ruleMap.entries())
+    .map(([ruleId, count]) => ({ ruleId, count }))
+    .sort((a, b) => b.count - a.count || a.ruleId.localeCompare(b.ruleId))
+  return {
+    passed: latest.passed,
+    score: latest.score ?? (latest.passed ? 100 : 60),
+    counts,
+    findings,
+    rulesHit,
+    warnings: latest.warnings,
+  }
 }
 
 /**
@@ -91,8 +426,56 @@ async function readUiFiles(filesDir: string): Promise<DiscoveredFile[]> {
       } catch {
         continue
       }
+      let size = 0
+      try {
+        size = Buffer.byteLength(content, "utf8")
+      } catch {
+        size = content.length
+      }
       const rel = relative(filesDir, abs).split(sep).join("/")
-      out.push({ path: rel, content })
+      out.push({ path: rel, content, size })
+    }
+  }
+  await walk(filesDir)
+  return out
+}
+
+interface DiscoveredFileMeta {
+  /** Path RELATIVE to `<runDir>/files/`, using forward slashes. */
+  path: string
+  size: number
+}
+
+/**
+ * Walk `<runDir>/files/` recursively for ALL file types — used by the Files
+ * tab. Returns size + path metadata, not content. Returns an empty array
+ * when the dir doesn't exist.
+ */
+async function readAllFilesMeta(filesDir: string): Promise<DiscoveredFileMeta[]> {
+  if (!existsSync(filesDir)) return []
+  const out: DiscoveredFileMeta[] = []
+  async function walk(dir: string): Promise<void> {
+    let entries: import("node:fs").Dirent[]
+    try {
+      entries = await readdir(dir, { withFileTypes: true })
+    } catch {
+      return
+    }
+    for (const entry of entries) {
+      const abs = join(dir, entry.name)
+      if (entry.isDirectory()) {
+        await walk(abs)
+        continue
+      }
+      let size = 0
+      try {
+        const st = await stat(abs)
+        size = st.size
+      } catch {
+        continue
+      }
+      const rel = relative(filesDir, abs).split(sep).join("/")
+      out.push({ path: rel, size })
     }
   }
   await walk(filesDir)
@@ -211,6 +594,20 @@ export async function loadInitialPreview(
     body: picked.content,
   })
 
+  // Tier 2 #4a / #4b / #4c / #7 — additional cold-load snapshots. Each is
+  // best-effort: a missing intake / events file / file list yields `undefined`
+  // so the workspace template renders the placeholder for that tab instead.
+  const validationEvents = await readValidationEvents(runDir).catch(() => [])
+  const allMetas = await readAllFilesMeta(join(runDir, "files")).catch(() => [])
+
+  const beImpactSnapshot = buildBeImpactSnapshot(intake) ?? undefined
+  const auditSnapshot =
+    buildAuditSnapshot(intake, files, validationEvents) ?? undefined
+  const filesSnapshot =
+    allMetas.length > 0 ? buildFilesSnapshot(allMetas) : undefined
+  const validationSnapshot =
+    buildValidationSnapshot(validationEvents) ?? undefined
+
   return {
     componentId: resolvedId,
     componentSource: picked.content,
@@ -221,6 +618,10 @@ export async function loadInitialPreview(
       audit,
     },
     diffSnapshot,
+    beImpactSnapshot,
+    auditSnapshot,
+    filesSnapshot,
+    validationSnapshot,
   }
 }
 

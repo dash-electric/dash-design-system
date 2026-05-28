@@ -203,6 +203,253 @@ describe("loadInitialPreview", () => {
     const blob = await loadInitialPreview("prm_ambi", join(root, "runs"))
     expect(blob).toBeNull()
   })
+
+  // ── Tier 2 #4a — BE Impact snapshot cold-load ───────────────────────────
+  it("emits beImpactSnapshot from persisted intake.json", async () => {
+    await seedArtifact("run-be-impact", [
+      {
+        path: "Comp.tsx",
+        content: "export default function C() { return <div>x</div> }",
+      },
+    ])
+    const runDir = resolveRunDir("run-be-impact", join(root, "runs"))
+    await writeFile(
+      join(runDir, "intake.json"),
+      JSON.stringify({
+        scenario: "extend_fe_be",
+        beEndpoints: [
+          {
+            method: "GET",
+            path: "/api/mitra/performance",
+            file: "apps/api/routes/mitra.ts",
+          },
+          {
+            method: "POST",
+            path: "/api/mitra/suspend",
+            file: "apps/api/routes/mitra.ts",
+          },
+        ],
+        dbSchema: { tables: ["mitra", "delivery_order"], prismaPath: null },
+        fePatterns: [],
+        audit: { detected: false, reasonsCode: [], requiredFields: [] },
+      }),
+      "utf8",
+    )
+    const blob = await loadInitialPreview("run-be-impact", join(root, "runs"))
+    expect(blob).not.toBeNull()
+    expect(blob!.beImpactSnapshot).toBeDefined()
+    expect(blob!.beImpactSnapshot!.scenario).toBe("extend_fe_be")
+    expect(blob!.beImpactSnapshot!.existingEndpoints.length).toBe(2)
+    expect(blob!.beImpactSnapshot!.existingEndpoints[0]!.path).toBe(
+      "/api/mitra/performance",
+    )
+    expect(blob!.beImpactSnapshot!.dbTables.length).toBe(2)
+    expect(blob!.beImpactSnapshot!.dbTables[0]!.name).toBe("mitra")
+    // extend_fe_be scenario surfaces an aggregate-extension hint
+    expect(blob!.beImpactSnapshot!.requiredEndpoints.length).toBeGreaterThan(0)
+    expect(blob!.beImpactSnapshot!.requiredEndpoints[0]!.description).toMatch(
+      /aggregate/,
+    )
+  })
+
+  it("omits beImpactSnapshot when no intake.json exists", async () => {
+    await seedArtifact("run-no-intake", [
+      {
+        path: "Comp.tsx",
+        content: "export default function C() { return null }",
+      },
+    ])
+    const blob = await loadInitialPreview("run-no-intake", join(root, "runs"))
+    expect(blob).not.toBeNull()
+    expect(blob!.beImpactSnapshot).toBeUndefined()
+  })
+
+  // ── Tier 2 #4b — Audit snapshot cold-load ───────────────────────────────
+  it("emits auditSnapshot status=missing when CR-3 triggered but no audit call", async () => {
+    await seedArtifact("run-audit-missing", [
+      {
+        path: "PayForm.tsx",
+        content:
+          'export default function PayForm() { return <input name="payment_amount" /> }',
+      },
+    ])
+    const runDir = resolveRunDir("run-audit-missing", join(root, "runs"))
+    await writeFile(
+      join(runDir, "intake.json"),
+      JSON.stringify({
+        scenario: "new_feature_fe_be",
+        beEndpoints: [],
+        dbSchema: { tables: [] },
+        fePatterns: [],
+        audit: {
+          detected: true,
+          reasonsCode: ["inline-edit-with-audit"],
+          requiredFields: ["payment_amount", "newValue"],
+        },
+      }),
+      "utf8",
+    )
+    const blob = await loadInitialPreview(
+      "run-audit-missing",
+      join(root, "runs"),
+    )
+    expect(blob).not.toBeNull()
+    expect(blob!.auditSnapshot).toBeDefined()
+    expect(blob!.auditSnapshot!.status).toBe("missing")
+    expect(blob!.auditSnapshot!.pattern).toBe("inline-edit-with-audit")
+    expect(blob!.auditSnapshot!.sensitiveFields).toContain("payment_amount")
+    expect(blob!.auditSnapshot!.auditCalls.length).toBe(0)
+  })
+
+  it("emits auditSnapshot status=pass when audit call is present in output", async () => {
+    await seedArtifact("run-audit-pass", [
+      {
+        path: "PayForm.tsx",
+        content:
+          'import { auditLog } from "@dash/lib"\nexport default function P() { auditLog.create({ field: "payment" }); return null }',
+      },
+    ])
+    const runDir = resolveRunDir("run-audit-pass", join(root, "runs"))
+    await writeFile(
+      join(runDir, "intake.json"),
+      JSON.stringify({
+        scenario: "new_feature_fe_be",
+        beEndpoints: [],
+        dbSchema: { tables: [] },
+        fePatterns: [],
+        audit: {
+          detected: true,
+          reasonsCode: ["inline-edit-with-audit"],
+          requiredFields: ["payment_amount"],
+        },
+      }),
+      "utf8",
+    )
+    const blob = await loadInitialPreview("run-audit-pass", join(root, "runs"))
+    expect(blob).not.toBeNull()
+    expect(blob!.auditSnapshot!.status).toBe("pass")
+    expect(blob!.auditSnapshot!.auditCalls).toContain("auditLog.create(...)")
+  })
+
+  // ── Tier 2 #4c — Files snapshot cold-load ───────────────────────────────
+  it("emits filesSnapshot with all files sorted (dirs first, then alphabetical)", async () => {
+    await seedArtifact("run-files-list", [
+      { path: "Component.tsx", content: "export default () => null" },
+      { path: "README.md", content: "# hi" },
+      { path: "src/utils.ts", content: "export const x = 1" },
+      { path: "src/hooks/useFoo.ts", content: "export const useFoo = () => {}" },
+    ])
+    const blob = await loadInitialPreview("run-files-list", join(root, "runs"))
+    expect(blob).not.toBeNull()
+    expect(blob!.filesSnapshot).toBeDefined()
+    const paths = blob!.filesSnapshot!.map((f) => f.path)
+    // Dirs come first
+    expect(paths[0]).toMatch(/^src\//)
+    expect(paths[1]).toMatch(/^src\//)
+    // Alphabetical within each group
+    expect(paths.indexOf("src/hooks/useFoo.ts")).toBeLessThan(
+      paths.indexOf("src/utils.ts"),
+    )
+    expect(paths.indexOf("Component.tsx")).toBeLessThan(
+      paths.indexOf("README.md"),
+    )
+    // Type metadata + non-zero size
+    const tsxEntry = blob!.filesSnapshot!.find((f) => f.path === "Component.tsx")
+    expect(tsxEntry?.type).toBe("tsx")
+    expect(tsxEntry!.size).toBeGreaterThan(0)
+  })
+
+  // ── Tier 2 #7 — Validation snapshot cold-load ───────────────────────────
+  it("emits validationSnapshot from events.jsonl validate events", async () => {
+    await seedArtifact("run-validation", [
+      {
+        path: "Comp.tsx",
+        content: "export default function C() { return <div>x</div> }",
+      },
+    ])
+    const runDir = resolveRunDir("run-validation", join(root, "runs"))
+    // Two events — earlier one is a partial pass, latest is the canonical
+    // outcome the snapshot reports.
+    const events = [
+      {
+        v: "1.0.0",
+        type: "validate",
+        runId: "0".repeat(26),
+        seq: 0,
+        ts: "2026-05-28T10:00:00.000Z",
+        payload: {
+          checks: [
+            { name: "DS-COVERAGE", status: "pass", durationMs: 5 },
+          ],
+          overall: "pass",
+          scope: "preliminary",
+        },
+      },
+      {
+        v: "1.0.0",
+        type: "validate",
+        runId: "0".repeat(26),
+        seq: 1,
+        ts: "2026-05-28T10:00:01.000Z",
+        payload: {
+          checks: [
+            {
+              ruleId: "CR-3",
+              status: "fail",
+              durationMs: 8,
+              severity: "high",
+              message: "audit missing",
+              file: "Comp.tsx",
+            },
+            {
+              ruleId: "DS-COVERAGE",
+              status: "fail",
+              durationMs: 5,
+              severity: "high",
+              message: "ratio too low",
+              file: "Comp.tsx",
+            },
+            {
+              ruleId: "STACK-MANDATE",
+              status: "pass",
+              durationMs: 2,
+            },
+          ],
+          overall: "fail",
+          score: 40,
+          warnings: ["check ratio"],
+          scope: "final",
+        },
+      },
+    ]
+    await writeFile(
+      join(runDir, "events.jsonl"),
+      events.map((e) => JSON.stringify(e)).join("\n") + "\n",
+      "utf8",
+    )
+    const blob = await loadInitialPreview("run-validation", join(root, "runs"))
+    expect(blob).not.toBeNull()
+    expect(blob!.validationSnapshot).toBeDefined()
+    expect(blob!.validationSnapshot!.passed).toBe(false)
+    expect(blob!.validationSnapshot!.score).toBe(40)
+    expect(blob!.validationSnapshot!.counts.high).toBe(2)
+    expect(blob!.validationSnapshot!.findings.length).toBe(2)
+    expect(blob!.validationSnapshot!.findings[0]!.ruleId).toBe("CR-3")
+    expect(blob!.validationSnapshot!.rulesHit.length).toBe(2)
+    expect(blob!.validationSnapshot!.warnings).toContain("check ratio")
+  })
+
+  it("omits validationSnapshot when no events.jsonl exists", async () => {
+    await seedArtifact("run-no-events", [
+      {
+        path: "Solo.tsx",
+        content: "export default () => null",
+      },
+    ])
+    const blob = await loadInitialPreview("run-no-events", join(root, "runs"))
+    expect(blob).not.toBeNull()
+    expect(blob!.validationSnapshot).toBeUndefined()
+  })
 })
 
 describe("renderInitialPreviewScript", () => {
