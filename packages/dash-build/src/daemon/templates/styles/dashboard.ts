@@ -5399,8 +5399,10 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
 .db-workspace-canvas-body {
   flex: 1;
   min-height: 0;
-  padding: 16px;
-  overflow: auto;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .db-preview-mount {
@@ -5435,6 +5437,180 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
   margin: 0;
 }
 .db-preview-empty-body { margin: 0; font-size: var(--text-body-sm); }
+
+/* ──────────────────────────────────────────────────────────────────────
+ * Preview panel — Sandpack canvas should fill the whole right pane.
+ * Layout: [tabpanels: flex:1] + [context map footer: auto].
+ * Sandpack's internal .sp-wrapper / .sp-preview / iframe need explicit
+ * h:100% chain because the lib doesn't ship a fluid layout by default.
+ * ────────────────────────────────────────────────────────────────────── */
+.db-preview-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+.db-preview-tabpanels {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.db-preview-tabpanel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.db-preview-tabpanel[hidden] { display: none; }
+.db-preview-tabpanel--component {
+  padding: 12px;
+}
+.db-preview-sandpack {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+.db-preview-sandpack[data-preview-state="idle"],
+.db-preview-sandpack[data-preview-state="loading"] {
+  align-items: center;
+  justify-content: center;
+}
+.db-preview-sandpack-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--mute);
+  max-width: 380px;
+  padding: 32px;
+}
+.db-preview-sandpack-empty-title {
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+  font-size: var(--text-body-md);
+}
+.db-preview-sandpack-empty-body {
+  margin: 0;
+  font-size: var(--text-body-sm);
+}
+.db-preview-sandpack-error {
+  padding: 24px;
+  background: var(--paper-2);
+  border-left: 3px solid var(--error-base, #d92d20);
+  margin: 12px;
+  border-radius: var(--radius-md);
+  max-width: 100%;
+  overflow: auto;
+}
+.db-preview-sandpack-error-title {
+  font-weight: 600;
+  color: var(--error-base, #d92d20);
+  margin: 0 0 4px;
+  font-size: var(--text-body-sm);
+}
+.db-preview-sandpack-error-body {
+  margin: 0;
+  font-size: var(--text-body-sm);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+/* Sandpack lib internals — force fluid fill. */
+.db-preview-sandpack .sp-wrapper,
+.db-preview-sandpack .sp-preview,
+.db-preview-sandpack .sp-stack,
+.db-preview-sandpack .sp-preview-container {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+.db-preview-sandpack .sp-preview-iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  border: 0;
+  background: white;
+}
+
+.db-preview-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px;
+  text-align: center;
+  color: var(--mute);
+}
+.db-preview-placeholder-kicker {
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+}
+.db-preview-placeholder-body {
+  margin: 0;
+  font-size: var(--text-body-sm);
+  max-width: 420px;
+}
+
+/* Context map — compact horizontal strip pinned bottom. Was vertical dl
+ * eating 5 rows of vertical space; now one row, 4 inline fields. */
+.db-preview-context-map {
+  border-top: 1px solid var(--rule);
+  background: var(--paper-2);
+  padding: 8px 16px;
+  flex-shrink: 0;
+}
+.db-preview-context-list {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  align-items: center;
+}
+.db-preview-context-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.db-preview-context-item dt {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+.db-preview-context-item dd {
+  font-size: var(--text-body-sm);
+  color: var(--ink);
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 `
 
 /**
