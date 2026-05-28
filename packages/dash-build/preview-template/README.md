@@ -8,10 +8,11 @@ directory is the surrounding harness.
 
 | File | Role |
 |---|---|
+| `index.html` | Iframe shell — Tailwind CDN + Plus Jakarta Sans + dash-token mapping (Tier 1 / Phase 0E) |
 | `index.tsx` | Sandpack entry — mounts `<App />` |
 | `App.tsx` | Wraps `<Component />` with token CSS + mocks |
 | `Component.tsx.placeholder` | Default body when no LLM output is present |
-| `dash-tokens.css` | Layer 0 token variables |
+| `dash-tokens.css` | Layer 0 token variables (neutrals, primary, semantic state, spacing, typography) |
 | `mocks.json` | Fixtures (4 mitra, 3 orders, stats) |
 | `package.json` | Template-only deps (react, react-dom) |
 | `tsconfig.json` | Strict TS for in-browser bundler |

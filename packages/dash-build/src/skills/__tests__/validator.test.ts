@@ -469,4 +469,260 @@ describe("validateOutput", () => {
     expect(r.score).toBe(0)
     expect(r.passed).toBe(false)
   })
+
+  // ── Phase 0D — DS coverage gate ──────────────────────────────────────────
+  describe("DS coverage gate (Phase 0D)", () => {
+    it("rejects raw-HTML output on a UI-shaped prompt as high severity", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/dashboard.tsx",
+            content: [
+              // 3 imports, 0 dash → ratio 0/3 = 0% → fires the Phase 0D
+              // import-ratio gate (high severity).
+              'import * as React from "react"',
+              'import clsx from "clsx"',
+              'import { useState } from "react"',
+              "export const Dashboard = () => {",
+              "  const [open, setOpen] = useState(false)",
+              "  return (",
+              '    <div className="bg-primary-base text-text-strong-950">',
+              '      <div className={clsx("bg-success-light", open && "is-open")}>',
+              "        All systems go",
+              "      </div>",
+              "    </div>",
+              "  )",
+              "}",
+            ].join("\n"),
+          },
+        ]),
+        EMPTY_DESIGN,
+        { prompt: "build me a dashboard with mitra stats" },
+      )
+      const dsErrs = r.errors.filter((e) => e.ruleId === "DS-COVERAGE")
+      expect(dsErrs.length).toBeGreaterThan(0)
+      // The Phase 0D import-ratio gate is the high-severity blocker. Phase B's
+      // raw-utility metric may also fire as a medium DS-COVERAGE finding —
+      // both are valid signals.
+      expect(dsErrs.some((e) => e.severity === "high")).toBe(true)
+      expect(r.passed).toBe(false)
+    })
+
+    it("accepts output that imports a Dash DS atom", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/dashboard.tsx",
+            content: [
+              'import * as React from "react"',
+              'import { Badge } from "@dash/ui/badge"',
+              "export const Dashboard = () =>",
+              '  <div className="bg-primary-base text-text-strong-950">',
+              "    <Badge>active</Badge>",
+              "  </div>",
+            ].join("\n"),
+          },
+        ]),
+        EMPTY_DESIGN,
+        { prompt: "build me a dashboard with mitra stats" },
+      )
+      expect(r.errors.find((e) => e.ruleId === "DS-COVERAGE")).toBeUndefined()
+    })
+
+    it("does not fire on non-UI-shaped prompts", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/util.ts",
+            language: "ts",
+            content: 'export function add(a: number, b: number) { return a + b }',
+          },
+        ]),
+        EMPTY_DESIGN,
+        { prompt: "write a helper function" },
+      )
+      expect(r.errors.find((e) => e.ruleId === "DS-COVERAGE")).toBeUndefined()
+    })
+
+    it("does not fire when prompt is missing AND output has no TSX", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/util.ts",
+            language: "ts",
+            content: 'export function add(a: number, b: number) { return a + b }',
+          },
+        ]),
+        EMPTY_DESIGN,
+      )
+      expect(r.errors.find((e) => e.ruleId === "DS-COVERAGE")).toBeUndefined()
+    })
+
+    it("stays silent when prompt is omitted (Phase B scorer owns the fallback)", () => {
+      // Conservative default — without an explicit prompt keyword we cannot
+      // confirm the prompt was UI-shaped, so we don't penalize legacy callers
+      // (CLI smoke, direct chain tests) that never thread prompt through.
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/dashboard.tsx",
+            content: [
+              'import * as React from "react"',
+              "import clsx from 'clsx'",
+              'export const Dashboard = () => <div className="bg-success-light">x</div>',
+            ].join("\n"),
+          },
+        ]),
+        EMPTY_DESIGN,
+      )
+      expect(r.errors.find((e) => e.ruleId === "DS-COVERAGE")).toBeUndefined()
+    })
+  })
+
+  // ── Phase B Tier 0C — raw utility-class anti-pattern (DS-COVERAGE-RAW-UTILITY) ──
+  describe("DS-COVERAGE-RAW-UTILITY (Tier 0C)", () => {
+    it("flags raw utility-class status badges as medium-severity", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/dashboard.tsx",
+            content: [
+              'import { Card } from "@dash/ui"',
+              "export const X = () =>",
+              '  <Card><div className="bg-success-light text-success-dark px-3 py-1 rounded-2xl">ON_TRACK</div></Card>',
+            ].join("\n"),
+          },
+        ]),
+        EMPTY_DESIGN,
+        { prompt: "build a status dashboard" },
+      )
+      const dsErr = r.errors.find((e) => e.ruleId === "DS-COVERAGE-RAW-UTILITY")
+      expect(dsErr).toBeDefined()
+      expect(dsErr?.severity).toBe("medium")
+      expect(dsErr?.message).toMatch(/Badge variant/i)
+    })
+
+    it("stays quiet when output uses a Dash DS Badge atom", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/dashboard.tsx",
+            content: [
+              'import { Badge, Card } from "@dash/ui"',
+              "export const X = () => <Card><Badge variant=\"success\">ON_TRACK</Badge></Card>",
+            ].join("\n"),
+          },
+        ]),
+        EMPTY_DESIGN,
+        { prompt: "build a status dashboard" },
+      )
+      expect(r.errors.find((e) => e.ruleId === "DS-COVERAGE-RAW-UTILITY")).toBeUndefined()
+    })
+  })
+
+  // ── Phase B Tier 0J — per-repo stack mandate enforcement ───────────────
+  describe("Stack mandate enforcement (Tier 0J)", () => {
+    function fakeRepoContext(repoSlug: string) {
+      return {
+        selectedRepo: `dash/${repoSlug}`,
+        repoSlug: repoSlug as never,
+        theme: "ride" as const,
+        audience: "x",
+        surface: repoSlug,
+        existingShell: true,
+        requiresNavOrRoute: false,
+        defaultRoute: null,
+        targetRoute: null,
+        targetNavLabel: null,
+        existingNavItems: [],
+        routeRequirement: null,
+        integrationContract: "",
+        dataPolicy: "mock-data-only" as const,
+        ambiguity: null,
+      }
+    }
+
+    it("flags a .tsx file in the backoffice surface (Pages Router + JavaScript)", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/pages/suspensions.tsx",
+            content: 'import { Badge } from "@dash/ui"\nexport default function P() { return <Badge variant="success" className="bg-primary-500 text-text-strong-950">ok</Badge> }',
+          },
+        ]),
+        EMPTY_DESIGN,
+        { repoContext: fakeRepoContext("backoffice") },
+      )
+      const v = r.errors.find((e) => e.ruleId === "STACK-MANDATE")
+      expect(v).toBeDefined()
+      expect(v?.severity).toBe("high")
+      expect(v?.message).toMatch(/backoffice|extension/i)
+    })
+
+    it("flags a forbidden state-mgmt import in the wrong surface", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/pages/x.tsx",
+            content: [
+              'import { atom } from "jotai"',
+              'import { Badge } from "@dash/ui"',
+              'export const X = () => <Badge variant="info" className="bg-primary-500 text-text-strong-950">x</Badge>',
+            ].join("\n"),
+          },
+        ]),
+        EMPTY_DESIGN,
+        { repoContext: fakeRepoContext("basecamp") },
+      )
+      const v = r.errors.find((e) => e.ruleId === "STACK-MANDATE" && e.message.includes("jotai"))
+      expect(v).toBeDefined()
+      expect(v?.severity).toBe("high")
+      expect(r.passed).toBe(false)
+    })
+
+    it("allows preview.tsx escape hatch even on backoffice surface", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "preview.tsx",
+            content: 'import { Badge } from "@dash/ui"\nexport default function Preview() { return <Badge variant="success" className="bg-primary-500 text-text-strong-950">ok</Badge> }',
+          },
+        ]),
+        EMPTY_DESIGN,
+        { repoContext: fakeRepoContext("backoffice") },
+      )
+      expect(r.errors.find((e) => e.ruleId === "STACK-MANDATE")).toBeUndefined()
+    })
+  })
+
+  // ── Phase B Tier 0K — voice register enforcement extension ─────────────
+  describe("Voice register extension (Tier 0K)", () => {
+    it("flags 'kalian' as casual on mitra-facing UI", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/mitra.tsx",
+            content:
+              'export const M = () => <div className="bg-primary-500 text-text-strong-950">Selamat datang kalian, mitra Dash!</div>',
+          },
+        ]),
+        EMPTY_DESIGN,
+      )
+      expect(r.errors.find((e) => e.ruleId === "CR-4")).toBeDefined()
+    })
+
+    it("does NOT flag the formal 'Anda' pronoun", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/mitra.tsx",
+            content:
+              'export const M = () => <div className="bg-primary-500 text-text-strong-950">Selamat datang Anda, mitra Dash.</div>',
+          },
+        ]),
+        EMPTY_DESIGN,
+      )
+      expect(r.errors.find((e) => e.ruleId === "CR-4")).toBeUndefined()
+    })
+  })
 })

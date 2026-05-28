@@ -170,6 +170,7 @@ interface TemplateBlob {
   indexTsx: string
   placeholderTsx: string
   tokensCss: string
+  indexHtml: string
   defaultMocks: Record<string, unknown>
 }
 
@@ -178,16 +179,24 @@ let templateCache: TemplateBlob | null = null
 async function loadTemplate(): Promise<TemplateBlob> {
   if (templateCache) return templateCache
   try {
-    const [appTsx, indexTsx, placeholderTsx, tokensCss, mocksRaw] =
+    const [appTsx, indexTsx, placeholderTsx, tokensCss, indexHtml, mocksRaw] =
       await Promise.all([
         fs.readFile(join(TEMPLATE_DIR, "App.tsx"), "utf8"),
         fs.readFile(join(TEMPLATE_DIR, "index.tsx"), "utf8"),
         fs.readFile(join(TEMPLATE_DIR, "Component.tsx.placeholder"), "utf8"),
         fs.readFile(join(TEMPLATE_DIR, "dash-tokens.css"), "utf8"),
+        fs.readFile(join(TEMPLATE_DIR, "index.html"), "utf8"),
         fs.readFile(join(TEMPLATE_DIR, "mocks.json"), "utf8"),
       ])
     const defaultMocks = JSON.parse(mocksRaw) as Record<string, unknown>
-    templateCache = { appTsx, indexTsx, placeholderTsx, tokensCss, defaultMocks }
+    templateCache = {
+      appTsx,
+      indexTsx,
+      placeholderTsx,
+      tokensCss,
+      indexHtml,
+      defaultMocks,
+    }
     return templateCache
   } catch (err) {
     throw new Error(
@@ -339,8 +348,14 @@ export async function renderComponentPreview(
 
   // 6. Build Sandpack files map. `/index.tsx` and `/App.tsx` are template-
   //    owned and read-only to prevent the user clobbering them. `/Component.tsx`
-  //    is the active editable file. `/dash-tokens.css` + `/mocks.json` are
-  //    hidden from the file tree.
+  //    is the active editable file. `/dash-tokens.css`, `/mocks.json`, and
+  //    `/public/index.html` are hidden from the file tree.
+  //
+  //    `/public/index.html` overrides Sandpack's default iframe shell so the
+  //    generated component renders with Tailwind utility classes (CDN play),
+  //    Plus Jakarta Sans (Google Fonts), and Dash Layer 0 CSS variables
+  //    available globally. Without it the iframe would render with browser
+  //    defaults — unstyled "lab demo" look the user pushed back on.
   const files: Record<string, SandpackFile> = {
     "/index.tsx": { code: template.indexTsx, hidden: true, readOnly: true },
     "/App.tsx": { code: template.appTsx, hidden: true, readOnly: true },
@@ -355,12 +370,30 @@ export async function renderComponentPreview(
       hidden: true,
       readOnly: true,
     },
+    "/public/index.html": {
+      code: template.indexHtml,
+      hidden: true,
+      readOnly: true,
+    },
   }
 
   const warnings: string[] = []
   if (!/export\s+default/.test(req.componentSource)) {
     warnings.push(
       "Component does not appear to `export default` — Sandpack may fail to mount.",
+    )
+  }
+  // Dash DS imports won't resolve via Sandpack's npm CDN until @dash/ui ships
+  // to npm or a self-hosted ESM proxy. The iframe still styles the component
+  // via the Tailwind CDN + Layer 0 tokens, but JSX referencing <Badge /> etc.
+  // will fail to mount until the import resolves.
+  const unresolvableDashImports = Array.from(declaredDeps).filter((d) =>
+    DASH_DS_UNRESOLVABLE.includes(d),
+  )
+  if (unresolvableDashImports.length > 0) {
+    warnings.push(
+      `Dash DS package(s) not yet published to npm: ${unresolvableDashImports.join(", ")}. ` +
+        "Component will render with Tailwind utilities + Layer 0 tokens only.",
     )
   }
 
@@ -386,15 +419,31 @@ export async function renderComponentPreview(
  * Dash production repos run; bump alongside platform upgrades.
  *
  * Unknown packages default to `latest`. Sandpack's npm proxy will resolve.
+ *
+ * `@dash/ui` is the sovereign Dash registry source and is NOT published to
+ * npm — Sandpack's CDN proxy will 404 on import. We declare it as `latest`
+ * so the bundler attempts resolution (and the warning surfaces in the
+ * `warnings` array), but the real DS-bundle plumbing lives in the iframe
+ * `index.html` (Tailwind CDN + dash-tokens.css). When/if `@dash/ui` is
+ * published to npm or proxied through a self-hosted ESM CDN, drop the
+ * warning and bump the version here.
  */
 const VERSION_MAP: Record<string, string> = {
   react: "^18.3.0",
   "react-dom": "^18.3.0",
   clsx: "^2.1.0",
   "tailwind-merge": "^2.5.0",
-  "@dash/ui": "workspace:*",
-  "@dash/registry-schema": "workspace:*",
+  "@dash/ui": "latest",
+  "@dash/registry-schema": "latest",
 }
+
+/** Packages that look like Dash DS imports but won't resolve on npm yet.
+ *  Surfaced as warnings so the UI can hint "DS bundle not yet on npm — using
+ *  Tailwind utility fallback". */
+const DASH_DS_UNRESOLVABLE: readonly string[] = [
+  "@dash/ui",
+  "@dash/registry-schema",
+] as const
 
 function resolveDependencyVersions(
   packages: Iterable<string>,

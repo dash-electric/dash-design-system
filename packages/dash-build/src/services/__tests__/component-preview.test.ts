@@ -38,6 +38,7 @@ describe("component-preview service", () => {
       "/dash-tokens.css",
       "/index.tsx",
       "/mocks.json",
+      "/public/index.html",
     ])
     expect(res.sandpack.template).toBe("react-ts")
     expect(res.sandpack.entry).toBe("/index.tsx")
@@ -59,10 +60,55 @@ describe("component-preview service", () => {
     })
     expect(res.ok).toBe(true)
     if (!res.ok) return
-    for (const path of ["/index.tsx", "/App.tsx", "/dash-tokens.css", "/mocks.json"]) {
+    for (const path of [
+      "/index.tsx",
+      "/App.tsx",
+      "/dash-tokens.css",
+      "/mocks.json",
+      "/public/index.html",
+    ]) {
       expect(res.sandpack.files[path]?.readOnly).toBe(true)
       expect(res.sandpack.files[path]?.hidden).toBe(true)
     }
+  })
+
+  it("ships /public/index.html with Tailwind CDN + Plus Jakarta Sans + dash token mapping", async () => {
+    const res = await renderComponentPreview({
+      componentSource: VALID_COMPONENT,
+    })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    const html = res.sandpack.files["/public/index.html"]?.code ?? ""
+    // Tailwind CDN (Play build) injected so utility classes like
+    // bg-success-light resolve at runtime.
+    expect(html).toContain("cdn.tailwindcss.com")
+    // Plus Jakarta Sans preloaded so generated components inherit Dash type.
+    expect(html).toContain("Plus+Jakarta+Sans")
+    expect(html).toContain("fonts.googleapis.com")
+    // Tailwind preset maps utility class names to Dash CSS variables so the
+    // generator can emit `bg-success-light` and have it resolve to the right
+    // token. Both base + light + lighter must be present for the semantic set.
+    expect(html).toContain("var(--bg-success-light)")
+    expect(html).toContain("var(--bg-information-base)")
+    expect(html).toContain("var(--primary-base)")
+    // Sandpack still needs a `#root` mount node.
+    expect(html).toContain('id="root"')
+  })
+
+  it("dash-tokens.css carries semantic state tokens generator components rely on", async () => {
+    const res = await renderComponentPreview({
+      componentSource: VALID_COMPONENT,
+    })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    const tokens = res.sandpack.files["/dash-tokens.css"]?.code ?? ""
+    // Semantic state set (Phase 0E): success/warning/error/information.
+    expect(tokens).toContain("--bg-success-light")
+    expect(tokens).toContain("--bg-warning-light")
+    expect(tokens).toContain("--bg-error-light")
+    expect(tokens).toContain("--bg-information-light")
+    // Body font must resolve to Plus Jakarta Sans.
+    expect(tokens).toContain("Plus Jakarta Sans")
   })
 
   it.each(BANNED_PREVIEW_IMPORTS)(
@@ -97,6 +143,28 @@ export default function F(){return <Button>Hi</Button>}`
     expect(res.sandpack.dependencies["@dash/ui"]).toBeDefined()
     expect(res.sandpack.dependencies["react"]).toBeDefined()
     expect(res.sandpack.dependencies["react-dom"]).toBeDefined()
+  })
+
+  it("declares @dash/ui dependency as a semver range (not workspace:* — Sandpack rejects it)", async () => {
+    const src = `import { Badge } from "@dash/ui/badge"
+import * as React from "react"
+export default function F(){return <Badge>x</Badge>}`
+    const res = await renderComponentPreview({ componentSource: src })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    const v = res.sandpack.dependencies["@dash/ui"]
+    expect(v).toBeDefined()
+    expect(v).not.toMatch(/^workspace:/)
+  })
+
+  it("warns when @dash/ui is imported because the package is not on npm yet", async () => {
+    const src = `import { Badge } from "@dash/ui/badge"
+import * as React from "react"
+export default function F(){return <Badge>x</Badge>}`
+    const res = await renderComponentPreview({ componentSource: src })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    expect(res.warnings.some((w) => w.includes("@dash/ui"))).toBe(true)
   })
 
   it("serializes mockData overrides on top of the default fixtures", async () => {
