@@ -17,6 +17,7 @@ import { AuthenticatedOpenAIClient, AutoReconnect } from "../auth/openai/index.j
 import { GitHubAppClient } from "../integrations/github/index.js"
 import { SessionStore } from "../clarification/session-store.js"
 import { handleClarificationRequest } from "../clarification/api-routes.js"
+import { AOPEmitter } from "../observability/aop-emitter.js"
 // pid-file lives alongside this file in src/daemon/pid-file.ts
 
 export interface DaemonServerOptions {
@@ -94,6 +95,20 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
 
     const githubClient = new GitHubAppClient()
 
+    // AOP emitter — broadcasts pipeline events over WebSocket so the chat
+    // thread can stream Claude Code-style action log live. Without this
+    // injection orchestrator falls back to NullAOPEmitter (events ga
+    // broadcast) and builder bubbles stuck at typing-dots placeholder.
+    const aopEmitter = new AOPEmitter({
+      broadcaster,
+      logger: {
+        warn: (msg, meta) => {
+          // eslint-disable-next-line no-console
+          console.warn(`[aop] ${msg}`, meta ?? "")
+        },
+      },
+    })
+
     const sessionStoreRef = clarificationStore
     orchestrator = new Orchestrator({
       store,
@@ -103,6 +118,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
       github: defaultGithubProvider(githubClient),
       skillChain: defaultSkillChainRunner(),
       expireSessions: (ms) => sessionStoreRef.expire(ms),
+      aopEmitter,
       // Production daemon enables BE-aware intake (catalog + classifier +
       // audit-trail). Unit tests construct Orchestrator without this flag so
       // hermetic vague prompts ("do thing") don't trip the ambiguous gate.

@@ -784,6 +784,51 @@ export const DASHBOARD_JS = `
   scrollChatToBottom();
   hydrateInlineClarifications();
 
+  // ---------- Soft chat refresh (workspace iteration) ----------
+  // Polls /api/prompts/<id> until the artifact lands, then fetches the
+  // workspace HTML and swaps just the #db-chat-thread DOM. Preserves
+  // optimistic bubbles, scroll position, and the Sandpack mount.
+  function softRefreshChat(runId) {
+    if (!runId) return;
+    var attempts = 0;
+    var maxAttempts = 60; // 60 * 500ms = 30s
+    function poll() {
+      attempts++;
+      fetch("/api/prompts/" + encodeURIComponent(runId), { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          var status = data && data.status;
+          var ready =
+            status === "awaiting_approval" ||
+            status === "approved" ||
+            status === "failed";
+          if (!ready) {
+            if (attempts < maxAttempts) setTimeout(poll, 500);
+            return;
+          }
+          // Artifact ready — fetch workspace HTML + swap chat thread.
+          fetch("/workspace/" + encodeURIComponent(runId), { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.text() : ""; })
+            .then(function (html) {
+              if (!html) return;
+              var parser = new DOMParser();
+              var doc = parser.parseFromString(html, "text/html");
+              var fresh = doc.getElementById("db-chat-thread");
+              var current = document.getElementById("db-chat-thread");
+              if (fresh && current && current.parentNode) {
+                current.parentNode.replaceChild(fresh, current);
+                scrollChatToBottom();
+              }
+            })
+            .catch(function () { /* defensive */ });
+        })
+        .catch(function () {
+          if (attempts < maxAttempts) setTimeout(poll, 500);
+        });
+    }
+    setTimeout(poll, 800);
+  }
+
   // ---------- Submit prompt ----------
   var submitBtn = document.getElementById("db-prompt-submit");
   var input = document.getElementById("db-prompt-input");
@@ -792,6 +837,11 @@ export const DASHBOARD_JS = `
 
   function submitPrompt() {
     if (!submitBtn || !input) return;
+    // Double-submit guard: ignore re-fires while a previous submit is still
+    // in-flight. Cmd+Enter spam previously appended N optimistic bubbles
+    // because the button-disabled check was wired in but the keydown
+    // handler bypassed it (submitPrompt() called directly).
+    if (submitBtn.disabled) return;
     var text = input.value.trim();
     if (!text) {
       input.focus();
@@ -860,6 +910,11 @@ export const DASHBOARD_JS = `
               rebinds[ri].setAttribute("data-component-id", resp.id);
             }
           } catch (e) { /* defensive */ }
+          // Soft chat refresh: poll workspace HTML until artifact ready, then
+          // swap just the chat thread DOM so the builder placeholder fills
+          // with the rendered action stream (server-rendered). No full page
+          // reload = preserves optimistic bubbles + scroll position.
+          softRefreshChat(resp.id);
           return;
         }
         // Legacy /dashboard path (pre-pivot fallback) — keep soft refresh.
