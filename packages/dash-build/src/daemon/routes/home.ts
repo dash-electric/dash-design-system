@@ -2,6 +2,7 @@ import type { ServerResponse } from "node:http"
 import type { Store } from "../state/store.js"
 import { renderHome } from "../templates/home.js"
 import { renderWorkspace } from "../templates/workspace.js"
+import { loadInitialPreview } from "../preview-initial.js"
 import { sendHtml } from "./_helpers.js"
 
 /**
@@ -21,13 +22,23 @@ export function handleHome(res: ServerResponse, store: Store): void {
  *
  * The run id is forwarded to `renderWorkspace` so the preview mount carries
  * a `data-component-id` Agent B can use to hydrate the live preview later.
+ *
+ * Cold-load preview (2026-05-28): when a persisted run artifact exists for
+ * `runId`, we read the component source from disk and inject it as an
+ * inline `window.__DASH_PREVIEW_INIT` blob so Sandpack mounts on first
+ * paint. Skips silently for in-flight / patch-only / banned-import runs;
+ * the placeholder + SSE flow continue to work.
  */
-export function handleWorkspace(
+export async function handleWorkspace(
   res: ServerResponse,
   store: Store,
   runId: string | null,
-): void {
-  const html = renderWorkspace(store, { runId: runId ?? null })
+): Promise<void> {
+  const initialPreview = await loadInitialPreview(runId)
+  const html = renderWorkspace(store, {
+    runId: runId ?? null,
+    initialPreview,
+  })
   sendHtml(res, 200, html)
 }
 

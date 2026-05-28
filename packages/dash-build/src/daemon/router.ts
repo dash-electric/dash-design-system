@@ -57,7 +57,7 @@ export async function router(
       return handleHome(res, deps.store)
     }
     if (isWorkspacePath(pathname)) {
-      return handleWorkspace(res, deps.store, workspaceRunId(pathname))
+      return await handleWorkspace(res, deps.store, workspaceRunId(pathname))
     }
     if (pathname === "/dashboard") {
       return handleDashboard(res, deps.store, deps.orchestrator)
