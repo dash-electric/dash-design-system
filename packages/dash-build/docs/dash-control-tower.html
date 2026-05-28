@@ -880,6 +880,174 @@ ul.dash-list .li-marker.todo { color: var(--text-soft-400); }
   }
 }
 
+/* ===================================================== */
+/* DASH DS COMPONENT — Stat bar chart (CSS, no JS lib)    */
+/* ===================================================== */
+.stat-chart {
+  display: flex; flex-direction: column;
+  gap: var(--spacing-8);
+  padding: var(--spacing-12) 0;
+}
+.stat-chart-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 60px;
+  align-items: center;
+  gap: var(--spacing-12);
+  font-size: 12px;
+}
+.stat-chart-label {
+  color: var(--text-strong-950);
+  font-weight: 500;
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+.stat-chart-bar-wrap {
+  height: 20px;
+  background: var(--bg-weak-50);
+  border-radius: var(--radius-4);
+  position: relative;
+  overflow: hidden;
+}
+.stat-chart-bar {
+  height: 100%;
+  background: var(--state-information-base);
+  border-radius: var(--radius-4);
+  transition: width 400ms var(--ease-out);
+}
+.stat-chart-bar.best { background: var(--state-success-base); }
+.stat-chart-bar.worst { background: var(--state-warning-base); }
+.stat-chart-bar.fail { background: var(--state-error-base); }
+.stat-chart-bar.cost { background: var(--primary-base); }
+.stat-chart-bar-overlay {
+  position: absolute;
+  height: 100%;
+  background: var(--state-warning-base);
+  opacity: 0.3;
+  border-radius: var(--radius-4);
+}
+.stat-chart-value {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-sub-600);
+  text-align: right;
+}
+.stat-chart-legend {
+  display: flex; gap: var(--spacing-16); flex-wrap: wrap;
+  padding-top: var(--spacing-12);
+  border-top: 1px solid var(--stroke-soft-200);
+  margin-top: var(--spacing-8);
+  font-size: 11.5px;
+  color: var(--text-sub-600);
+}
+.stat-chart-legend span { display: inline-flex; align-items: center; gap: var(--spacing-4); }
+.stat-chart-legend span::before {
+  content: '';
+  width: 10px; height: 10px;
+  border-radius: var(--radius-4);
+  background: var(--legend-color, var(--state-information-base));
+}
+
+/* ===================================================== */
+/* DASH DS COMPONENT — Stage step card                    */
+/* ===================================================== */
+.stage-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-12);
+  counter-reset: stage;
+}
+.stage-card {
+  background: var(--bg-white-0);
+  border: 1px solid var(--stroke-sub-300);
+  border-radius: var(--radius-8);
+  padding: var(--spacing-16);
+  position: relative;
+  counter-increment: stage;
+}
+.stage-card::before {
+  content: counter(stage);
+  position: absolute;
+  top: -10px; left: 16px;
+  width: 22px; height: 22px;
+  background: var(--primary-base);
+  color: var(--text-white-0);
+  border-radius: var(--radius-full);
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700;
+  font-family: var(--mono);
+}
+.stage-card-head {
+  display: flex; align-items: baseline; gap: var(--spacing-10);
+  margin-bottom: var(--spacing-8);
+  padding-top: var(--spacing-2);
+}
+.stage-card-head h4 {
+  margin: 0;
+  font-size: 14px; font-weight: 600;
+  color: var(--text-strong-950);
+}
+.stage-card-head .time {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-sub-600);
+}
+.stage-card pre {
+  margin: var(--spacing-8) 0 0;
+  font-size: 11.5px;
+}
+.stage-card ul.dash-list { margin: var(--spacing-8) 0 0; }
+
+/* ===================================================== */
+/* DASH DS COMPONENT — Reality matrix (data check)        */
+/* ===================================================== */
+.reality-matrix {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-4);
+}
+.reality-row {
+  display: grid;
+  grid-template-columns: 200px 70px 1fr;
+  align-items: center;
+  gap: var(--spacing-12);
+  padding: var(--spacing-8) var(--spacing-10);
+  background: var(--bg-weak-50);
+  border-radius: var(--radius-6);
+  font-size: 12.5px;
+  border-left: 3px solid var(--stroke-sub-300);
+}
+.reality-row.real { border-left-color: var(--state-success-base); }
+.reality-row.mock { border-left-color: var(--state-warning-base); }
+.reality-row.todo { border-left-color: var(--state-faded-base); }
+.reality-row .reality-layer { font-weight: 600; color: var(--text-strong-950); }
+.reality-row .reality-status { font-size: 11px; font-weight: 600; }
+.reality-row.real .reality-status { color: var(--state-success-dark); }
+.reality-row.mock .reality-status { color: var(--state-warning-dark); }
+.reality-row.todo .reality-status { color: var(--text-sub-600); }
+.reality-row .reality-note { color: var(--text-sub-600); font-size: 12px; }
+
+/* Checklist (observation) */
+.checklist {
+  list-style: none; padding: 0; margin: var(--spacing-8) 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-6) var(--spacing-16);
+}
+@media (max-width: 768px) { .checklist { grid-template-columns: 1fr; } }
+.checklist li {
+  display: flex; gap: var(--spacing-8); align-items: flex-start;
+  font-size: 13px;
+  color: var(--text-strong-950);
+}
+.checklist li::before {
+  content: '';
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--bg-sub-300);
+  border-radius: var(--radius-4);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
 /* Prototype disclaimer badge (Q10) */
 .prototype-badge {
   display: inline-flex; align-items: center; gap: var(--spacing-4);
@@ -951,6 +1119,7 @@ ul.dash-list .li-marker.todo { color: var(--text-soft-400); }
     <a href="#dash-ds">Dash DS</a>
     <a href="#dash-dashboard">Dashboard</a>
     <a href="#ai-agent">AI Agent</a>
+    <a href="#playbook">Playbook</a>
     <a href="#prd-trd">PRD &amp; TRD</a>
   </nav>
   <div class="topbar-spacer"></div>
@@ -1768,6 +1937,297 @@ data: {"runId":"01J9X","status":"pass","checks":["typecheck","ds-rule"]}</code><
         <li><span class="li-marker">③</span> <span><strong>Improve DS</strong>: aggregate decision tree → mana komponen sering "candidate but not picked" → roadmap signal.</span></li>
       </ul>
     </div>
+  </div>
+</section>
+
+<!-- ============================ E2E PLAYBOOK ============================ -->
+<section class="section" id="playbook">
+  <span class="anchor"></span>
+  <div class="section-header">
+    <span class="section-tag">08 / E2E PLAYBOOK</span>
+    <h2>Test Dash Build dari awal sampai PR</h2>
+    <span class="meta">30-45 menit · 7 stage</span>
+  </div>
+
+  <!-- Data reality matrix -->
+  <div class="card">
+    <div class="card-head">
+      <h3>Data reality check — baca dulu</h3>
+      <span class="badge badge-lighter s-warning"><span class="dot"></span>baca sebelum test</span>
+    </div>
+    <p class="text-paragraph-sm text-sub-600">Mana yang real, mana yang mock. PR yang lu approve = real PR di GitHub.</p>
+    <div class="reality-matrix">
+      <div class="reality-row real"><span class="reality-layer">AI agent reasoning</span><span class="reality-status">REAL</span><span class="reality-note">OpenAI API beneran, bayar token</span></div>
+      <div class="reality-row real"><span class="reality-layer">Code generation</span><span class="reality-status">REAL</span><span class="reality-note">TSX/JSX output nyata</span></div>
+      <div class="reality-row real"><span class="reality-layer">Repo clone</span><span class="reality-status">REAL</span><span class="reality-note">git clone repo target asli</span></div>
+      <div class="reality-row real"><span class="reality-layer">GitHub PR creation</span><span class="reality-status">REAL</span><span class="reality-note">PR muncul di repo, visible ke team</span></div>
+      <div class="reality-row mock"><span class="reality-layer">Iframe preview data</span><span class="reality-status">MOCK</span><span class="reality-note">4 mitra fixture (Budi/Siti/Andi/Rina)</span></div>
+      <div class="reality-row mock"><span class="reality-layer">Auth di preview</span><span class="reality-status">MOCK</span><span class="reality-note">preview-user auto-login admin</span></div>
+      <div class="reality-row mock"><span class="reality-layer">Cost telemetry Dashboard</span><span class="reality-status">FIXTURE</span><span class="reality-note">OpenAI Usage API wiring = TODO</span></div>
+      <div class="reality-row todo"><span class="reality-layer">Tribe app heartbeat</span><span class="reality-status">ENDPOINT-ONLY</span><span class="reality-note">Dashboard receive, tribe app emit = belum</span></div>
+    </div>
+  </div>
+
+  <!-- Stage flow diagram -->
+  <div class="card">
+    <div class="card-head"><h3>7-stage flow</h3></div>
+    <div class="mermaid-wrap">
+<div class="mermaid">
+flowchart LR
+  classDef setup fill:#f5f7fa,stroke:#717784,color:#0e121b;
+  classDef boot fill:#ebf1ff,stroke:#335cff,color:#0e121b;
+  classDef gen fill:#efeaf7,stroke:#5e2aac,color:#0e121b;
+  classDef ship fill:#e0faec,stroke:#178c4e,color:#0e121b;
+
+  S0[0 · Setup<br/>5 min<br/>deps + OpenAI + GitHub]:::setup
+  S1[1 · Boot daemon<br/>2 min<br/>node dist/bin.js]:::boot
+  S2[2 · Connect auth<br/>3 min<br/>OpenAI + GitHub + repo]:::boot
+  S3[3 · Bootstrap sandbox<br/>3-5 min<br/>clone + install + dev]:::boot
+  S4[4 · Type prompt + gen<br/>5-10 min<br/>AI + DS query + emit]:::gen
+  S5[5 · Preview iframe<br/>3 min<br/>interact + validate]:::gen
+  S6[6 · Approve + PR<br/>3 min<br/>branch + commit + gh PR]:::ship
+  S7[7 · Cleanup<br/>2 min<br/>stop daemon + close PR]:::setup
+
+  S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
+</div>
+    </div>
+  </div>
+
+  <!-- Latency chart -->
+  <div class="card">
+    <div class="card-head"><h3>Latency per stage (lazy mode current)</h3></div>
+    <div class="stat-chart">
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">Clone</span>
+        <div class="stat-chart-bar-wrap" aria-label="Clone latency: best 15s, worst 30s, max 180s">
+          <div class="stat-chart-bar best" style="width: 8.3%;" title="best 15s"></div>
+          <div class="stat-chart-bar-overlay" style="left: 8.3%; width: 8.3%;" title="worst 30s"></div>
+        </div>
+        <span class="stat-chart-value">15-30s</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">npm install</span>
+        <div class="stat-chart-bar-wrap" aria-label="npm install: best 60s, worst 180s">
+          <div class="stat-chart-bar best" style="width: 33.3%;" title="best 60s"></div>
+          <div class="stat-chart-bar-overlay" style="left: 33.3%; width: 66.7%;" title="worst 180s"></div>
+        </div>
+        <span class="stat-chart-value">60-180s</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">next dev cold</span>
+        <div class="stat-chart-bar-wrap" aria-label="next dev cold: best 60s, worst 180s">
+          <div class="stat-chart-bar best" style="width: 33.3%;" title="best 60s"></div>
+          <div class="stat-chart-bar-overlay" style="left: 33.3%; width: 66.7%;" title="worst 180s"></div>
+        </div>
+        <span class="stat-chart-value">60-180s</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">AI planning</span>
+        <div class="stat-chart-bar-wrap" aria-label="AI planning: 5-40s">
+          <div class="stat-chart-bar" style="width: 2.8%;" title="best 5s"></div>
+          <div class="stat-chart-bar-overlay" style="left: 2.8%; width: 19.4%;" title="worst 40s"></div>
+        </div>
+        <span class="stat-chart-value">5-40s</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">PR create</span>
+        <div class="stat-chart-bar-wrap" aria-label="PR create: 3-10s">
+          <div class="stat-chart-bar best" style="width: 1.7%;" title="best 3s"></div>
+          <div class="stat-chart-bar-overlay" style="left: 1.7%; width: 3.9%;" title="worst 10s"></div>
+        </div>
+        <span class="stat-chart-value">3-10s</span>
+      </div>
+      <div class="stat-chart-legend">
+        <span style="--legend-color: var(--state-success-base);">Best case</span>
+        <span style="--legend-color: var(--state-warning-base); opacity: 0.6;">Worst case spread</span>
+        <span style="--legend-color: var(--text-soft-400);">Scale: 0-180s (3 menit)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost chart -->
+  <div class="card">
+    <div class="card-head">
+      <h3>Cost per prompt typical</h3>
+      <span class="badge badge-lighter s-information">OpenAI tokens</span>
+    </div>
+    <div class="stat-chart">
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">Simple page</span>
+        <div class="stat-chart-bar-wrap">
+          <div class="stat-chart-bar cost" style="width: 5%;"></div>
+        </div>
+        <span class="stat-chart-value">$0.02-0.10</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">Complex (block-heavy)</span>
+        <div class="stat-chart-bar-wrap">
+          <div class="stat-chart-bar cost" style="width: 25%;"></div>
+        </div>
+        <span class="stat-chart-value">$0.20-0.50</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">Wizard / multi-step</span>
+        <div class="stat-chart-bar-wrap">
+          <div class="stat-chart-bar cost" style="width: 50%;"></div>
+        </div>
+        <span class="stat-chart-value">$0.50-1.00</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">Budget cap (hard)</span>
+        <div class="stat-chart-bar-wrap">
+          <div class="stat-chart-bar fail" style="width: 100%;"></div>
+        </div>
+        <span class="stat-chart-value">$2.00</span>
+      </div>
+      <div class="stat-chart-legend">
+        <span style="--legend-color: var(--primary-base);">Typical run</span>
+        <span style="--legend-color: var(--state-error-base);">Cap (abort)</span>
+        <span style="--legend-color: var(--text-soft-400);">Scale: 0-$2.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7 stage cards -->
+  <div class="card">
+    <div class="card-head"><h3>Stage-by-stage commands</h3></div>
+    <div class="stage-grid">
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Setup (one-time)</h4><span class="time">5 min</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Install deps + auth OpenAI + auth GitHub.</p>
+<pre><code>cd /Users/irfanprimaputra.b/Work/dash/dash-ds
+pnpm install
+pnpm --filter @dash/build build
+gh auth status   # verify GitHub auth ready</code></pre>
+        <p style="margin: var(--spacing-8) 0 0; font-size: 12px; color: var(--text-sub-600);">OpenAI: BYO key <code>sk-...</code> atau <code>codex login --device-auth</code>.</p>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Boot daemon</h4><span class="time">2 min</span></div>
+<pre><code>cd packages/dash-build
+node dist/bin.js
+# tekan Enter → "Web UI" default
+# browser auto-buka :7777/dashboard</code></pre>
+        <ul class="dash-list">
+          <li><span class="li-marker ok">✓</span> Dashboard render section Connect OpenAI + GitHub + Pick Repo + Prompt</li>
+          <li><span class="li-marker err">✗</span> Kalau error: <code>lsof -i :7777</code> cek port conflict</li>
+        </ul>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Connect auth</h4><span class="time">3 min</span></div>
+        <ul class="dash-list">
+          <li><span class="li-marker">①</span> Paste OpenAI key <code>sk-...</code> di form → Submit → status hijau</li>
+          <li><span class="li-marker">②</span> Click "Install GitHub App" → install flow atau stub callback</li>
+          <li><span class="li-marker">③</span> Dropdown repo → pilih <code>backoffice</code> atau <code>portal-v2</code> (allow-listed)</li>
+        </ul>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Bootstrap sandbox</h4><span class="time">3-5 min</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Click "Bootstrap". State flip: <code>idle → clone_running → install_running → dev_starting → dev_live</code></p>
+        <ul class="dash-list">
+          <li><span class="li-marker">🟡</span> <code>clone_running</code> ~15-30s</li>
+          <li><span class="li-marker">🟡</span> <code>install_running</code> ~60-180s (paling lama)</li>
+          <li><span class="li-marker">🟡</span> <code>dev_starting</code> ~60-180s (next dev cold)</li>
+          <li><span class="li-marker ok">🟢</span> <code>dev_live · :3101</code> — iframe load tanpa HTTP 500 = <strong>validate W1.1 fix</strong></li>
+        </ul>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Type prompt + generate</h4><span class="time">5-10 min</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">3 contoh prompt (pilih satu):</p>
+<pre><code>A) Halaman list mitra dengan filter status (active/suspended/
+   pending), search by name, pagination. Total count di topbar.
+
+B) Halaman approve refund per outlet. DataTable dengan kolom
+   outlet, amount, status, requested_at. Bulk select + approve/
+   reject action. Drawer kanan untuk detail per row.
+
+C) Settings page dengan 3 tab: Account, Integrations, Team.</code></pre>
+        <p style="margin: var(--spacing-8) 0 0; font-size: 12px; color: var(--text-sub-600);">Skill chain jalan: <code>dash-intake → dash-prd → dash-design → dash-trd → Skill v4 + Codex</code>. Foundation score muncul di end.</p>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Preview iframe</h4><span class="time">3 min</span></div>
+        <ul class="dash-list">
+          <li><span class="li-marker ok">✓</span> Route baru muncul (<code>/mitra</code>, <code>/refunds</code>, <code>/settings</code>)</li>
+          <li><span class="li-marker ok">✓</span> Component pakai Dash DS (Button, DataTable, Badge, Drawer)</li>
+          <li><span class="li-marker ok">✓</span> Bulk select → <strong>BulkActionBar muncul</strong> (kalau prompt B)</li>
+          <li><span class="li-marker warn">!</span> Data list = 4 mitra fixture, by design</li>
+        </ul>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Approve + PR</h4><span class="time">3 min</span></div>
+<pre><code># Review tab "Diff" → check generated files
+# Review tab "Plan" → AI rationale
+# Review tab "Validation" → typecheck + DS-rule
+
+# Click "Approve & Open PR" →
+# Branch: dash-build/&lt;runId&gt;
+# Commit: feat: add &lt;feature&gt; via Dash Build [run &lt;id&gt;]
+# PR opened via gh API</code></pre>
+        <div class="alert alert-warning" style="margin: var(--spacing-8) 0 0;">
+          <span class="alert-icon">!</span>
+          <div><strong>JANGAN merge ke main production</strong> kecuali udah review beneran. Branch terisolasi aman buat eksperimen.</div>
+        </div>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Cleanup</h4><span class="time">2 min</span></div>
+<pre><code># Stop daemon (Ctrl+C di terminal)
+
+# Kill iframe dev server
+lsof -i :3101 | awk 'NR>1 {print $2}' | xargs kill -9
+
+# Delete test PR
+gh pr close &lt;pr-number&gt; --delete-branch</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Observation checklist -->
+  <div class="card">
+    <div class="card-head"><h3>Observation checklist (isi pas test)</h3></div>
+    <ul class="checklist">
+      <li>Boot daemon time terukur</li>
+      <li>Bootstrap E2E time terukur</li>
+      <li>Iframe loaded TANPA HTTP 500</li>
+      <li>Prompt understood (no clarify stuck)</li>
+      <li>Foundation score &gt; 70</li>
+      <li>Generated code 100% @dash registry</li>
+      <li>BulkActionBar usable (kalau prompt B)</li>
+      <li>PR opened successfully</li>
+      <li>Cost incurred match estimate</li>
+      <li>Friction/issue logged</li>
+    </ul>
+  </div>
+
+  <!-- Known limitations -->
+  <div class="card">
+    <div class="card-head">
+      <h3>Known limitations (jangan kaget)</h3>
+      <span class="badge badge-lighter s-faded">expected</span>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Behavior</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>Data list = 4 mitra fixture</td><td>Sandbox shim mock — by design</td></tr>
+        <tr><td>Auth = auto-login admin</td><td>Preview shim bypass — by design</td></tr>
+        <tr><td>Dashboard <code>/owner</code> = partial stub</td><td>Real telemetry wiring belum</td></tr>
+        <tr><td><code>@dash-electric/*</code> ga install via npm</td><td>Belum publish ke registry</td></tr>
+        <tr><td>AI agent thinking ga visible step-by-step</td><td>AOP emit di daemon belum — spec exists</td></tr>
+        <tr><td>Tribe app health kosong di Dashboard</td><td>Tribe apps belum emit heartbeat</td></tr>
+        <tr><td>Cost widget = fixture</td><td>OpenAI Usage API wiring TODO</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert alert-info">
+    <span class="alert-icon">i</span>
+    <div>Full playbook MD: <code>packages/dash-build/docs/E2E-TEST-PLAYBOOK-2026-05-28.md</code> · Designer brief: <code>packages/dash-build/docs/Q12-DESIGNER-SESSION-BRIEF-2026-05-28.md</code></div>
   </div>
 </section>
 
