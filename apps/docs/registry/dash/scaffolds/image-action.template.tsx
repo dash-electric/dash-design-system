@@ -119,6 +119,10 @@ export function ImageActionTemplate({
   const [reasonError, setReasonError] = React.useState<string | undefined>(undefined)
   const [saving, setSaving] = React.useState(false)
   const [loadError, setLoadError] = React.useState<string | undefined>(undefined)
+  // Loading flag — covers the gap between modal open and `img.onload` so the
+  // canvas pane shows a skeleton instead of a blank rectangle (design.md A8
+  // — every async surface needs loading + empty + error + success branches).
+  const [loadingImage, setLoadingImage] = React.useState(false)
 
   // @placeholder DOMAIN_LOGIC
   // -------------------------------------------------------------------------
@@ -140,16 +144,19 @@ export function ImageActionTemplate({
       setLoadError("Browser tidak mendukung canvas. Mohon gunakan browser lain.")
       return
     }
+    setLoadingImage(true)
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.onload = () => {
       canvas.width = img.naturalWidth
       canvas.height = img.naturalHeight
       ctx.drawImage(img, 0, 0)
+      setLoadingImage(false)
     }
     img.onerror = () => {
       // Mitra-facing voice: formal "Anda", no slang. See rules § Voice.
       setLoadError("Gambar gagal dimuat. Mohon coba beberapa saat lagi.")
+      setLoadingImage(false)
     }
     img.src = entity.originalUrl
   }, [open, entity.originalUrl])
@@ -162,6 +169,7 @@ export function ImageActionTemplate({
       setEditReason("")
       setReasonError(undefined)
       setLoadError(undefined)
+      setLoadingImage(false)
     }
   }, [open])
 
@@ -263,6 +271,18 @@ export function ImageActionTemplate({
               className="block h-auto w-full"
               aria-label={`Editor gambar untuk ${entity.fieldName}`}
             />
+            {/* Loading skeleton — overlays canvas until img.onload fires. */}
+            {loadingImage ? (
+              <div
+                role="status"
+                aria-live="polite"
+                aria-label="Memuat gambar"
+                className="absolute inset-0 flex min-h-[200px] items-center justify-center bg-bg-weak-50"
+              >
+                <div className="size-8 animate-spin rounded-full border-2 border-stroke-soft-200 border-t-primary-base" />
+                <span className="sr-only">Memuat gambar...</span>
+              </div>
+            ) : null}
           </div>
 
           <div className="space-y-1">

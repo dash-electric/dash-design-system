@@ -47,13 +47,21 @@ const FancyLoader = React.forwardRef<HTMLDivElement, FancyLoaderProps>(
             className="dash-fancy-float"
             aria-hidden
           >
-            <circle cx="140" cy="140" r="120" fill="#F3E8FF" className="dash-fancy-pulse" />
-            <circle cx="140" cy="140" r="90" fill="#E9D5FF" opacity="0.6" className="dash-fancy-pulse-d" />
-            <path d="M140 60s-40 10-40 30v50c0 30 20 50 40 60 20-10 40-30 40-60V90c0-20-40-30-40-30Z" fill="#A78BFA" className="dash-fancy-shield" />
-            <rect x="120" y="130" width="40" height="35" rx="4" fill="#6366F1" className="dash-fancy-lock" />
-            <path d="M127 130v-10c0-7 6-13 13-13s13 6 13 13v10" stroke="#6366F1" strokeWidth="6" strokeLinecap="round" className="dash-fancy-lock" />
-            <circle cx="140" cy="142" r="4" fill="#F3F4F6" />
-            <rect x="138" y="145" width="4" height="10" rx="1" fill="#F3F4F6" />
+            {/*
+             * Layer-1 token discipline (audit C2): all SVG fills bind to
+             * foundation tokens so theme overrides and dark-mode flip work.
+             * - outer halos: dash-purple-50 / -100 (lightest brand ramp)
+             * - shield body: dash-purple-300 (mid-saturation, soft tint)
+             * - lock body + bow: dash-purple-500 (canonical brand purple)
+             * - lock highlights: bg-weak-50 (semantic surface, dark-mode safe)
+             */}
+            <circle cx="140" cy="140" r="120" fill="var(--dash-purple-50)" className="dash-fancy-pulse" />
+            <circle cx="140" cy="140" r="90" fill="var(--dash-purple-100)" opacity="0.6" className="dash-fancy-pulse-d" />
+            <path d="M140 60s-40 10-40 30v50c0 30 20 50 40 60 20-10 40-30 40-60V90c0-20-40-30-40-30Z" fill="var(--dash-purple-300)" className="dash-fancy-shield" />
+            <rect x="120" y="130" width="40" height="35" rx="4" fill="var(--dash-purple-500)" className="dash-fancy-lock" />
+            <path d="M127 130v-10c0-7 6-13 13-13s13 6 13 13v10" stroke="var(--dash-purple-500)" strokeWidth="6" strokeLinecap="round" className="dash-fancy-lock" />
+            <circle cx="140" cy="142" r="4" fill="var(--bg-weak-50)" />
+            <rect x="138" y="145" width="4" height="10" rx="1" fill="var(--bg-weak-50)" />
           </svg>
           <div className="space-y-3 text-center">
             <h2 className="text-xl font-semibold text-text-strong-950">{title}</h2>
