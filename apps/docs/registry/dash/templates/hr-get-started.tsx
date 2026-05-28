@@ -33,7 +33,7 @@ export function HrGetStarted({ brand, onSubmit, className }: HrGetStartedProps) 
   return (
     <div className={cn("min-h-screen flex flex-col bg-bg-white-0", className)}>
       {/* Top bar — brand + help + close */}
-      <header className="flex items-center justify-between px-6 lg:px-10 py-5">
+      <header className="flex items-center justify-between px-6 lg:px-10 py-6">
         {brand ?? (
           <div className="flex items-center gap-2">
             <div className="size-8 rounded-lg bg-(--primary-base) grid place-items-center text-text-white-0 font-semibold">
@@ -141,7 +141,7 @@ export function HrGetStarted({ brand, onSubmit, className }: HrGetStartedProps) 
       </main>
 
       {/* Footer */}
-      <footer className="flex items-center justify-between px-6 lg:px-10 py-5 text-xs text-text-soft-400">
+      <footer className="flex items-center justify-between px-6 lg:px-10 py-6 text-xs text-text-soft-400">
         <span>© 2024 Synergy HR</span>
         <Button tone="neutral" style="ghost" size="sm">🌐 ENG</Button>
       </footer>

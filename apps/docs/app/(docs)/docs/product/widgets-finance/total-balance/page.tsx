@@ -75,7 +75,7 @@ export default function FinanceTotalBalanceWidgetPage() {
           title="$0.00"
           preview={
             <div className="max-w-md">
-              <div className="relative flex h-[178px] flex-col rounded-2xl bg-bg-white-0 p-5 pb-4 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
+              <div className="relative flex h-[178px] flex-col rounded-2xl bg-bg-white-0 p-6 pb-4 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="text-xs text-text-sub-600">Total Balance</div>
@@ -110,7 +110,7 @@ export default function FinanceTotalBalanceWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Container</strong> — 178px tall rounded-2xl card, ring-stroke-soft-200, shadow-sm.</li>
           <li><strong>Header</strong> — 2-line label/amount (title-h5) + green +5% Badge + compact Currency Select on the right.</li>
           <li><strong>Step line</strong> — 6 monthly steps, MMM tick formatter. Source uses ChartStepLine (recharts).</li>
@@ -122,8 +122,8 @@ export default function FinanceTotalBalanceWidgetPage() {
 
 function TotalBalanceCard() {
   return (
-    <div className="relative flex h-[178px] flex-col rounded-2xl bg-gradient-to-br from-success-lighter to-bg-white-0 p-5 pb-4 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
-      <div className="flex flex-col gap-5">
+    <div className="relative flex h-[178px] flex-col rounded-2xl bg-gradient-to-br from-success-lighter to-bg-white-0 p-6 pb-4 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
+      <div className="flex flex-col gap-6">
         <div className="flex items-start justify-between">
           <div>
             <div className="text-xs text-text-sub-600">Total Balance</div>

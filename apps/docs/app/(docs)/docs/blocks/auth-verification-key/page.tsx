@@ -35,7 +35,7 @@ export default function AuthVerificationKeyDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>4-digit grid via <code>InputOTP maxLength={4}</code>, slots sized 56×56 with <code>text-lg</code>.</li>
           <li>Submit button disabled until value reaches 4 chars.</li>
           <li>For 6-digit phone OTP use the existing <code>verification-otp</code> block instead.</li>

@@ -73,7 +73,7 @@ export default function PortalBillingPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Title block</strong> — verbatim source: <code>{`t('title')`}</code> = “Billing”, subtitle = “View and manage your billing information”. No primary CTA.</li>
           <li><strong>Filters</strong> — search by transaction ID/description, date range picker, status multi-select, type multi-select. From <code>billing.filters.*</code>: “Search transactions”, “Date Range”, “Status”, “Type”, “Clear All”, “Select All”, “Clear”, “Apply”.</li>
           <li><strong>Table columns</strong> — verbatim from <code>billing.table.*</code>: Transaction ID · Type · Payment · &hellip;.</li>
@@ -84,7 +84,7 @@ export default function PortalBillingPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>InputRoot</code> / <code>Input</code> / <code>InputIcon</code> — search.</li>
           <li><code>Button</code> — Clear / Apply filter actions.</li>
           <li><code>IconButton</code> — row kebab.</li>

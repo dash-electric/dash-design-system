@@ -39,7 +39,7 @@ export default function FinanceTransactionsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Page header + summary stat row.</li>
           <li>Transactions <code>DataTable</code> with merchant + amount + status + date columns.</li>
           <li>Filter + search + export controls in the toolbar.</li>

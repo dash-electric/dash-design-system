@@ -53,7 +53,7 @@ const socialButtonVariants = cva(
         sm: "h-9 px-3 rounded-lg gap-2 [&_svg]:size-4",
         md: "h-10 px-4 rounded-[10px] gap-2 [&_svg]:size-5",  // Figma default
         lg: "h-11 px-4 rounded-[10px] gap-2 [&_svg]:size-5",
-        xl: "h-12 px-5 rounded-[10px] gap-2.5 [&_svg]:size-5",
+        xl: "h-12 px-6 rounded-[10px] gap-2.5 [&_svg]:size-5",
       },
       block: {
         true: "w-full",

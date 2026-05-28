@@ -141,7 +141,7 @@ return open ? <ImageEditorWithAudit proofUrl={url} proofType="pickup" editorId={
           responsible for the audit-write transaction. Mandatory flow per
           dash-ai-rules.md § Audit Trail:
         </p>
-        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-5">
+        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-6">
           <li>Receive <code>onSave</code> payload — blob + crop + rotation + reason.</li>
           <li>Upload blob to <code>proof-edited/&lt;entity-id&gt;/&lt;file&gt;</code> (NEVER overwrite <code>proof-original/</code>).</li>
           <li>Insert <code>t_&lt;entity&gt;_audit_log</code> row BEFORE updating the entity row — in a transaction.</li>
@@ -151,7 +151,7 @@ return open ? <ImageEditorWithAudit proofUrl={url} proofType="pickup" editorId={
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for any mitra-disputable image edit: POD, POP, KYC re-submission, vehicle condition photo.</li>
           <li><strong>Use</strong> as the canonical example when a tribe asks "how do I add image-edit to my flow?" — point at this block before they reach for <code>react-easy-crop</code>.</li>
           <li><strong>Don't</strong> use for free-form drawing / annotation — that's a different scaffold (DOMAIN_RENDER=annotate).</li>
@@ -185,7 +185,7 @@ return open ? <ImageEditorWithAudit proofUrl={url} proofType="pickup" editorId={
       </DocsSection>
 
       <DocsSection title="Accessibility">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Keyboard: <kbd>Esc</kbd> cancels (with confirmation when changes pending); <kbd>Enter</kbd> saves when focus is outside the textarea.</li>
           <li>Each crop handle is <code>role="slider"</code> with <code>aria-label</code> identifying its corner.</li>
           <li>Crop area is a labelled <code>role="group"</code> ("Area crop") for screen-reader context.</li>

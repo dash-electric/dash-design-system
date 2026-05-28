@@ -209,7 +209,7 @@ export default function PackageTrackingTimelineDocsPage() {
           Ride). It also reuses the shared <code>proof-image-viewer</code> for
           the zoom overlay. The Logistic-specific layer is:
         </p>
-        <ul className="mt-2 text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="mt-2 text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Hero with theme-accent rail + live ETA countdown.</li>
           <li>COD panel — Logistic-only concept (Ride has no COD).</li>
           <li>Proof image grid → opens shared viewer.</li>
@@ -221,7 +221,7 @@ export default function PackageTrackingTimelineDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on the mitra app + customer portal package detail screen.</li>
           <li><strong>Use</strong> when COD or proof images are part of the delivery contract — they're surfaced as first-class panels.</li>
           <li><strong>Don't</strong> use as a backoffice dispatcher view — that's <code>delivery-status-timeline</code> directly, no overlay needed.</li>

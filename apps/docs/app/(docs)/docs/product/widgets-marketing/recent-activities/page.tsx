@@ -148,7 +148,7 @@ function RecentActivitiesCard() {
   const [tab, setTab] = React.useState<"today" | "yesterday" | "week">("today")
   return (
     <div className="w-full rounded-2xl bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
-      <div className="p-5">
+      <div className="p-6">
         <div className="flex items-start gap-3">
           <div className="flex-1">
             <div className="text-sm font-semibold text-text-strong-950">Recent Activities</div>
@@ -167,10 +167,10 @@ function RecentActivitiesCard() {
         <input
           type="text"
           placeholder="Search for activities..."
-          className="h-12 w-full border-y border-stroke-soft-200 bg-transparent pl-[50px] pr-5 text-sm text-text-strong-950 caret-(--primary-base) placeholder:text-text-soft-400 focus:outline-none"
+          className="h-12 w-full border-y border-stroke-soft-200 bg-transparent pl-[48px] pr-6 text-sm text-text-strong-950 caret-(--primary-base) placeholder:text-text-soft-400 focus:outline-none"
         />
       </div>
-      <div className="p-5">
+      <div className="p-6">
         <Timeline />
       </div>
     </div>
@@ -252,7 +252,7 @@ export default function RecentActivitiesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Header: 14px semibold title + 12px sub-line ("5 new activities today"), neutral-stroke Details button.</li>
           <li>Search: card variant uses a 48px h row with top/bottom stroke-soft borders; bare uses an inline Input with Kbd.</li>
           <li>Timeline icon node: 28px circle, bg-white + ring-stroke-soft, shadow-regular-xs.</li>

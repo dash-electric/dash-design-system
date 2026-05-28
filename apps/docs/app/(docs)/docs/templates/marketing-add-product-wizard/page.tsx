@@ -322,7 +322,7 @@ function PreviewCard({ state }: { state: WizardState }) {
 
   return (
     <div className="relative w-full min-w-0 sm:w-[352px] sm:shrink-0">
-      <div className="relative z-10 flex w-full flex-col gap-6 rounded-3xl border border-stroke-soft-200 bg-bg-white-0 p-6 pb-7 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.12)]">
+      <div className="relative z-10 flex w-full flex-col gap-6 rounded-3xl border border-stroke-soft-200 bg-bg-white-0 p-6 pb-8 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.12)]">
         {/* SKU */}
         <div className="flex items-center gap-1.5">
           <RiInformation2Line className="size-3.5 text-text-disabled-300" />
@@ -509,7 +509,7 @@ function StepGeneral({
       />
       <DashedDivider />
 
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-8">
         {/* Name */}
         <div className="flex flex-col gap-1.5">
           <LabelWithTooltip
@@ -626,7 +626,7 @@ function StepPricing({
       />
       <DashedDivider />
 
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-8">
         {/* Currency */}
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="product-currency">Currency</Label>
@@ -778,7 +778,7 @@ function StepImage({
 
       {/* Uploaded images */}
       {state.images.length > 0 ? (
-        <div className="flex w-full flex-col gap-5">
+        <div className="flex w-full flex-col gap-6">
           {state.images.map(({ url, name, ext, size, isMain }) => {
             const isCover = state.coverImageUrl === url
             return (
@@ -847,7 +847,7 @@ function StepStock({
       />
       <DashedDivider />
 
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-8">
         {/* SKU */}
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="product-sku" hint="e.g. AW5-GPS-40-001">
@@ -975,7 +975,7 @@ function StepSummary({ state }: { state: WizardState }) {
         <DashedDivider />
         <SummaryRow label="Descriptions" value={view.description} />
         <DashedDivider />
-        <div className="flex gap-7">
+        <div className="flex gap-8">
           <SummaryRow label="Category" value={view.category} className="flex-1" />
           <DashedDividerVertical />
           <SummaryRow
@@ -1110,8 +1110,8 @@ function AddProductWizardShell({ initial }: { initial?: Partial<WizardState> }) 
       <div className="flex flex-1 flex-col-reverse md:grid md:grid-cols-[minmax(0,600fr)_minmax(0,628fr)]">
         {/* Left pane — live preview */}
         <div className="flex flex-col md:py-2 md:pl-2 lg:pl-0">
-          <div className="flex w-full flex-1 flex-col items-center justify-center bg-bg-weak-50 py-9 md:rounded-2xl lg:py-0">
-            <div className="flex w-full flex-col gap-5 px-4 sm:w-auto">
+          <div className="flex w-full flex-1 flex-col items-center justify-center bg-bg-weak-50 py-8 md:rounded-2xl lg:py-0">
+            <div className="flex w-full flex-col gap-6 px-4 sm:w-auto">
               <div>
                 <div className="text-sm font-medium text-text-sub-600">Preview</div>
                 <div className="mt-1 text-xs text-text-soft-400">
@@ -1132,7 +1132,7 @@ function AddProductWizardShell({ initial }: { initial?: Partial<WizardState> }) 
             onContinue={goNext}
             canContinue={canContinue}
           />
-          <div className="flex h-full w-full flex-col justify-center px-8 py-9">
+          <div className="flex h-full w-full flex-col justify-center px-8 py-8">
             {state.step === 0 ? <StepGeneral state={state} onChange={patch} /> : null}
             {state.step === 1 ? <StepPricing state={state} onChange={patch} /> : null}
             {state.step === 2 ? <StepImage state={state} onChange={patch} /> : null}
@@ -1251,7 +1251,7 @@ const goNext = () =>
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Sidebar (212px)</strong> — Catalyst logo, vertical step list (5 items, 44px tall + 32px gap), animated rail indicator on right edge, footer copyright. Each step shows <em>Step N/5</em> label + step name; completed steps get a green check icon, active step uses primary text + rail.</li>
           <li><strong>Header navigation</strong> — Top row inside the right pane. Left: <code>LinkButton</code> &quot;Back to {`{prev step label}`}&quot; (hidden on step 1). Right: <code>Save Draft</code> (Neutral stroke) + <code>Continue / Complete</code> (Primary filled) + close <code>CompactButton</code>.</li>
           <li><strong>Preview column</strong> — Left half of the content grid (600fr / 628fr). Soft <code>bg-bg-weak-50</code> backdrop, &quot;Preview&quot; / &quot;This is how your product will appear.&quot; eyebrow, and a 352px-wide product card rendered live.</li>

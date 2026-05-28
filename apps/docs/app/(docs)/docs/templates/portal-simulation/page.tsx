@@ -211,7 +211,7 @@ export default function PortalSimulationPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Announcement bar</b> — sticky top, full-width information color, marquee text "Sandbox mode enabled".</li>
           <li><b>Header sandbox pill</b> — small warning-lighter pill next to the locale select. Always visible while sandbox is active.</li>
           <li><b>Info Banner</b> — repeats sandbox messaging inside the content area so it survives if the marquee is dismissed.</li>
@@ -222,7 +222,7 @@ export default function PortalSimulationPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Use</b> for developer-facing sandbox surfaces where every action needs an explicit "this is not production" reminder.</li>
           <li><b>Use</b> when the production page redirects users elsewhere — the docs page is the historical record of the UX.</li>
           <li><b>Don't</b> reuse the announcement bar marquee for non-sandbox messaging; reserve it for environment switching.</li>

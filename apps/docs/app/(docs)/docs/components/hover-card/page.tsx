@@ -235,7 +235,7 @@ export default function HoverCardDocsPage() {
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• <strong>Trigger</strong> — must be a focusable element (button, link). Avoid wrapping plain spans.</li>
           <li>• <strong>Open conditions</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li>Mouse hover after <code className="text-xs">openDelay</code>.</li>
               <li>Keyboard focus (immediate).</li>
               <li>Touch — does NOT open. Provide an alternate Popover for touch flows.</li>

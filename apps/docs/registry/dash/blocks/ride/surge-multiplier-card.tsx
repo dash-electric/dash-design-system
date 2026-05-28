@@ -178,7 +178,7 @@ export function SurgeMultiplierCard({
       {/* Hero band — multiplier value, large. */}
       <div
         className={cn(
-          "relative flex flex-col items-center justify-center gap-2 border-b px-5 py-6 transition-colors",
+          "relative flex flex-col items-center justify-center gap-2 border-b px-6 py-6 transition-colors",
           heroClasses,
         )}
       >
@@ -212,7 +212,7 @@ export function SurgeMultiplierCard({
       </div>
 
       {/* Body — countdown, earning, waiting orders. */}
-      <CardContent className="space-y-3 px-5 py-4">
+      <CardContent className="space-y-3 px-6 py-4">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 text-sm text-text-sub-600">
             <ClockIcon aria-hidden className="size-4" />

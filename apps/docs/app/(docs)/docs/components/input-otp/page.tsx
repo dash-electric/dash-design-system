@@ -241,7 +241,7 @@ export default function InputOtpDocsPage() {
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• <strong>Role</strong> — renders a hidden <code className="text-xs">input</code> spanning all slots; visible slots are presentational. SR reads it as a single text field.</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li>Typing fills the next slot automatically.</li>
               <li><code className="text-xs">Backspace</code> clears the current slot and moves back.</li>
               <li><code className="text-xs">←</code> / <code className="text-xs">→</code> navigates slots.</li>

@@ -46,7 +46,7 @@ export default function MitraSuspendPageDocsPage() {
         title="Composition"
         description="A vertical product surface composed from generic primitives — proves the @dash kit can express Dash-specific PRDs."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>ListDetailPage</code> — resizable horizontal split (35/65 default).</li>
           <li><strong>List pane</strong> — search + filter sticky toolbar, mitra rows showing miss count, tribe, region.</li>
           <li><strong>Detail pane</strong> — header (avatar + suspend status badge), flag-reason card, KPI tiles (last 7-day misses, total dispatch, accept rate), 7-day history list, action footer.</li>
@@ -56,7 +56,7 @@ export default function MitraSuspendPageDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> as-is for the Auto Suspend Mitra screen in Halo-dash.</li>
           <li><strong>Use</strong> as a reference for any rule-driven flag-and-act workflow (fraud review, fee dispute, KYC challenge).</li>
           <li><strong>Use</strong> when the audit trail matters — the action footer is designed to record reason + reviewer.</li>

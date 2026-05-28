@@ -130,7 +130,7 @@ export default function HRTimeOffWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Gauge</strong> — 208px semi-arc, primary-base stroke, value + "OUT OF N" centred.</li>
           <li><strong>Request row</strong> — leading icon (warning/success/error fill) + date + type in parens + tone badge.</li>
         </ul>

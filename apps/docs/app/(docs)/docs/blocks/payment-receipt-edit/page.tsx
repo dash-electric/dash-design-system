@@ -215,7 +215,7 @@ return open ? (
           responsible for the audit-write transaction. Mandatory flow per
           dash-ai-rules.md § Audit Trail:
         </p>
-        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-5">
+        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-6">
           <li>
             Receive <code>onSave</code> payload — receiptId, originalAmount,
             newAmount, editReason, note, editorId, timestamp, approverId.
@@ -246,7 +246,7 @@ return open ? (
           the consequence visible during input rather than ambushing the user
           at submit-time.
         </p>
-        <ul className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             Default threshold: <strong>Rp 500.000</strong> (50_000_000 cents).
             Override per-tribe via <code>requiresApprovalThreshold</code>.
@@ -269,7 +269,7 @@ return open ? (
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Use</strong> for any backoffice/ops correction to a payment
             receipt amount — refund parsial, salah input, penyesuaian.
@@ -337,7 +337,7 @@ return open ? (
       </DocsSection>
 
       <DocsSection title="Accessibility">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             All required inputs marked with <code>*</code> in the label and{" "}
             <code>aria-invalid</code> on error.

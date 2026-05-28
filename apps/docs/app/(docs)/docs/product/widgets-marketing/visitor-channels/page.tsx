@@ -111,7 +111,7 @@ export default function VisitorChannelsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card shell with header (label + KPI + Badge + Details button).</li>
           <li>CategoryBarChart — 3 colored segments separated by 5px gaps.</li>
           <li>Line divider.</li>
@@ -127,7 +127,7 @@ export default function VisitorChannelsWidgetPage() {
 
 function WidgetShell({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("relative flex w-full flex-col gap-5 rounded-2xl bg-bg-white-0 p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200", className)}>
+    <div className={cn("relative flex w-full flex-col gap-6 rounded-2xl bg-bg-white-0 p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200", className)}>
       {children}
     </div>
   )

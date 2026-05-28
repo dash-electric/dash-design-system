@@ -152,7 +152,7 @@ export default function TimeOffWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — clock icon + Time Off label + See All link.</li>
           <li><strong>Gauge</strong> — semi-arc 100×50 viewBox, primary stroke, soft-200 track. Value + unit centred.</li>
           <li><strong>Request row</strong> — circular status icon + date (sm strong) + type (sm sub) + Badge tone matching the status.</li>
@@ -161,7 +161,7 @@ export default function TimeOffWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Usage">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Cap the list at 3 rows — direct deeper queries to the full Time Off log via See&nbsp;All.</li>
           <li>Sort newest-first; status tone tells the story, not row order.</li>
           <li>When usage exceeds 80% of the cap, consider escalating the gauge stroke to warning-base in the consuming dashboard.</li>

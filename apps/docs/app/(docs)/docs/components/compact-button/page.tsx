@@ -162,7 +162,7 @@ export default function CompactButtonDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-base text-text-sub-600 leading-relaxed space-y-2 list-disc pl-5 max-w-2xl">
+        <ul className="text-base text-text-sub-600 leading-relaxed space-y-2 list-disc pl-6 max-w-2xl">
           <li><strong>CompactButton</strong> (20-24px): toast close, popover close, sticker dismiss, data-cell inline action, filter chip dismiss.</li>
           <li><strong>IconButton</strong> (28-44px): toolbar, table row action, header utility, modal close.</li>
           <li>Never substitute one for the other — the size difference is part of the visual language.</li>

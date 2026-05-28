@@ -289,7 +289,7 @@ export default function CheckboxDocsPage() {
         <DocsExample
           title='"Personalize your tour" — Suggested + Self-guided'
           preview={
-            <div className="max-w-md rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5 shadow-(--shadow-custom-sm)">
+            <div className="max-w-md rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6 shadow-(--shadow-custom-sm)">
               <div className="flex items-center gap-3 mb-4">
                 <span className="size-8 rounded-full bg-bg-weak-50 inline-flex items-center justify-center text-icon-soft-400">
                   <Tune className="size-4" />

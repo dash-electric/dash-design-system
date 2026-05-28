@@ -212,7 +212,7 @@ const config = {
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• <strong>Role</strong> — ChartContainer renders <code className="text-xs">role=&quot;img&quot;</code> by default. Override via <code className="text-xs">role=&quot;graphics-document&quot;</code> for richer SR support.</li>
           <li>• <strong>ARIA you add</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">aria-label</code> on ChartContainer summarizing the chart (&quot;Dispatch per tribe last 7 days, Reservasi vs Express bar chart&quot;).</li>
               <li><code className="text-xs">aria-describedby</code> linking to a hidden table containing the raw values — most reliable SR fallback.</li>
             </ul>

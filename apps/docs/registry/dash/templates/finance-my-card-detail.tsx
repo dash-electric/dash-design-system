@@ -110,7 +110,7 @@ export function FinanceMyCardDetail({
       {/* Body: card preview + info */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[420px_1fr]">
         {/* Left — gradient preview */}
-        <div className="relative overflow-hidden rounded-2xl p-5 text-static-white bg-gradient-to-br from-(--dash-purple-700) via-(--dash-purple-500) to-(--dash-purple-900) shadow-custom-md">
+        <div className="relative overflow-hidden rounded-2xl p-6 text-static-white bg-gradient-to-br from-(--dash-purple-700) via-(--dash-purple-500) to-(--dash-purple-900) shadow-custom-md">
           <div className="flex items-start justify-between">
             <Badge appearance="lighter" status="success" size="sm">Active</Badge>
             <div className="size-8 rounded-full bg-static-white/15" aria-hidden />
@@ -134,7 +134,7 @@ export function FinanceMyCardDetail({
         </div>
 
         {/* Right — info grid + action row */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           <dl className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
             <div className="flex justify-between gap-3 border-b border-stroke-soft-200 py-2">
               <dt className="text-sm text-text-sub-600">Card Number</dt>

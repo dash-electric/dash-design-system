@@ -140,7 +140,7 @@ export default function FinanceMajorExpensesWidgetPage() {
         </DocsSection>
 
         <DocsSection title="Anatomy">
-          <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+          <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
             <li><strong>Horizontal bars</strong> — 16px bar size, 48px Y-axis label rail, 2px radius. Source uses ResponsiveContainer @ 86px height.</li>
             <li><strong>X axis</strong> — bottom ticks, compact number formatter (no axis line).</li>
             <li><strong>Hover</strong> — dot anchor at bar end + dark tooltip showing currency value.</li>

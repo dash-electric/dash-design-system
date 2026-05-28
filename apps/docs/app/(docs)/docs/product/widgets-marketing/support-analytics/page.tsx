@@ -64,7 +64,7 @@ function SupportAnalyticsWidget() {
   return (
     <div className="relative flex w-full flex-col rounded-2xl bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
       {/* Header */}
-      <div className="flex flex-col gap-3 p-5">
+      <div className="flex flex-col gap-3 p-6">
         <div className="flex items-start gap-2">
           <div className="flex-1">
             <div className="flex items-center gap-1">
@@ -167,7 +167,7 @@ function SupportAnalyticsWidget() {
 
       {/* Tabs */}
       <Tabs defaultValue="all-tickets">
-        <TabsList variant="line" className="px-5">
+        <TabsList variant="line" className="px-6">
           <TabsTrigger value="all-tickets">All Tickets</TabsTrigger>
           <TabsTrigger value="open-tickets" disabled>
             Open Tickets
@@ -176,7 +176,7 @@ function SupportAnalyticsWidget() {
             Solved Tickets
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="all-tickets" className="mt-0 px-5 py-4">
+        <TabsContent value="all-tickets" className="mt-0 px-6 py-4">
           <table className="w-full">
             <thead className="text-left">
               <tr>
@@ -195,10 +195,10 @@ function SupportAnalyticsWidget() {
             </tbody>
           </table>
         </TabsContent>
-        <TabsContent value="open-tickets" className="mt-0 px-5 py-4 text-sm text-text-sub-600">
+        <TabsContent value="open-tickets" className="mt-0 px-6 py-4 text-sm text-text-sub-600">
           Open Tickets content
         </TabsContent>
-        <TabsContent value="solved-tickets" className="mt-0 px-5 py-4 text-sm text-text-sub-600">
+        <TabsContent value="solved-tickets" className="mt-0 px-6 py-4 text-sm text-text-sub-600">
           Solved Tickets content
         </TabsContent>
       </Tabs>
@@ -206,7 +206,7 @@ function SupportAnalyticsWidget() {
       <div className="border-t border-stroke-soft-200" />
 
       {/* Recent Tickets */}
-      <div className="p-5 pt-4">
+      <div className="p-6 pt-4">
         <div className="text-[11px] text-text-soft-400">Recent Tickets</div>
         <div className="mt-4 flex flex-col gap-4">
           <TicketCard name="James Brown" priority="High" status="solved" time="48m" id="#TKT-98744" avatarLetter="J" />
@@ -274,7 +274,7 @@ function TicketCard({
         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px]">
           <span className="text-text-soft-400">{priority}</span>
           <span className="text-text-soft-400">·</span>
-          <span className={cn("inline-flex items-center gap-[5px]", meta.color)}>
+          <span className={cn("inline-flex items-center gap-[4px]", meta.color)}>
             <meta.Icon className="size-3" />
             {meta.label}
           </span>
@@ -314,7 +314,7 @@ export default function SupportAnalyticsWidgetPage() {
         <DocsExample
           title="No tickets yet"
           preview={
-            <div className="max-w-md mx-auto rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200 text-center">
+            <div className="max-w-md mx-auto rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200 text-center">
               <div className="text-sm font-medium text-text-strong-950">Support Analytics</div>
               <div className="mt-2 text-xs text-text-sub-600">No support tickets in this window.</div>
             </div>
@@ -336,7 +336,7 @@ export default function SupportAnalyticsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Header: KPI (24px) + 12px sub-line + period select. Pill row sits below.</li>
           <li>Chart: 116px tall, active bar primary-base, inactive faded-light, gap 1.5.</li>
           <li>Target: faded-dark label + 24px SVG arrow tail + dashed connector to the right edge.</li>

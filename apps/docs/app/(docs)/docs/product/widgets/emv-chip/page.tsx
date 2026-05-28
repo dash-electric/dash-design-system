@@ -92,7 +92,7 @@ export default function EmvChipWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Outer rounded rect (4px corner) — fill color.</li>
           <li>Inner rect — 2px corner, transparent fill, 20% black stroke.</li>
           <li>Crosshair lines — divide the inner pad into 4 contacts.</li>

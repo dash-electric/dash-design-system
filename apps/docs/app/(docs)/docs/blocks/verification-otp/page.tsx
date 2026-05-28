@@ -36,7 +36,7 @@ export default function VerificationOtpDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>6 segmented input boxes — auto-advance on keystroke, paste-aware.</li>
           <li>Resend code <code>LinkButton</code> with a 30-second cooldown timer.</li>
           <li>Phone number is masked (<code>+62 812-****-9412</code>) above the inputs.</li>
@@ -45,7 +45,7 @@ export default function VerificationOtpDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for mitra phone verification during signup.</li>
           <li><strong>Use</strong> for sensitive-action confirmation (large payout, account deletion).</li>
           <li><strong>Use</strong> for MFA challenge on suspicious logins.</li>

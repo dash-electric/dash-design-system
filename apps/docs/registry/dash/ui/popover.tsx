@@ -11,7 +11,7 @@ import { cn } from "@/registry/dash/lib/utils"
  *   width 320  | radius 16 (rounded-2xl) | bg bg-white-0
  *   stroke 1px stroke-soft-200          | shadow shadow-custom-shadows-medium
  *
- * Inner Content frame: pad 20 (p-5), gap 16 (vertical stack)
+ * Inner Content frame: pad 24 (p-6 — Dash grid, Figma was 20), gap 16 (vertical stack)
  * Inner Footer frame:  pad 16/20, gap 12 — supplied by consumer
  *
  * Previously shipped with bogus tokens `shadow-custom-md` (undefined) and
@@ -34,7 +34,7 @@ const PopoverContent = React.forwardRef<
       sideOffset={sideOffset}
       data-slot="popover-content"
       className={cn(
-        "z-50 w-80 rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5 shadow-custom-shadows-medium",
+        "z-50 w-80 rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6 shadow-custom-shadows-medium",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
         "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",

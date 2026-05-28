@@ -134,7 +134,7 @@ export default function QuickTransferWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — swap icon + title + Advanced stroke button with gear icon.</li>
           <li><strong>Contact row</strong> — "My Contacts (n)" label + ChevLeft/ChevRight carousel controls.</li>
           <li><strong>Contact pill</strong> — soft chip with avatar (sm) + name; visually distinct from raw avatar grid.</li>

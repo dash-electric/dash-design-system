@@ -74,7 +74,7 @@ export default function RegistryPage() {
         title="Authoring workflow"
         description="The 4-step loop every contributor runs."
       >
-        <ol className="text-sm text-text-sub-600 list-decimal pl-5 space-y-2">
+        <ol className="text-sm text-text-sub-600 list-decimal pl-6 space-y-2">
           <li>
             <strong className="text-text-strong-950">Design</strong> the component in Figma + write
             the TSX under <code className="text-xs">registry/dash/ui/&lt;name&gt;.tsx</code>.
@@ -100,7 +100,7 @@ export default function RegistryPage() {
       </DocsSection>
 
       <DocsSection title="Deep dives">
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
             <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/registry/registry-json">
               registry.json

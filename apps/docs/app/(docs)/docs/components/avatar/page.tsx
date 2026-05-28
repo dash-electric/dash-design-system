@@ -378,7 +378,7 @@ export default function AvatarDocsPage() {
         <DocsExample
           title="Wei Chen — online"
           preview={
-            <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 max-w-xs px-6 py-5 shadow-(--shadow-custom-md) relative">
+            <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 max-w-xs px-6 py-6 shadow-(--shadow-custom-md) relative">
               <button aria-label="Close" className="absolute right-3 top-3 size-5 text-icon-soft-400 hover:text-text-strong-950">✕</button>
               <div className="flex flex-col items-center text-center gap-2">
                 <Avatar size="2xl">
@@ -408,7 +408,7 @@ export default function AvatarDocsPage() {
           title="Thanks for supporting Wei Chen!"
           preview={
             <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 max-w-sm shadow-(--shadow-custom-md)">
-              <div className="px-6 py-5 flex flex-col items-center text-center gap-2">
+              <div className="px-6 py-6 flex flex-col items-center text-center gap-2">
                 <Avatar size="2xl">
                   <AvatarImage src="https://i.pravatar.cc/120?u=creator" />
                   <AvatarFallback>WC</AvatarFallback>

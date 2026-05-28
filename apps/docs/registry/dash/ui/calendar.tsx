@@ -10,7 +10,7 @@ import "react-day-picker/style.css"
 /**
  * Calendar — Figma 1:1 parity (node 435:8548 Date Picker).
  *
- * Outer: p-5 bg-bg-white-0 rounded-[20px] (the popover provides border).
+ * Outer: p-6 bg-bg-white-0 rounded-[20px] (the popover provides border).
  * Header: 36h bg-bg-weak-50 rounded-lg, 24x24 r-6 compact buttons.
  * Day label: 14/20 medium text-soft-400, 40x40.
  * Day cell (40x40 r-8):
@@ -35,7 +35,7 @@ export function Calendar({
     <DayPicker
       data-slot="calendar"
       showOutsideDays={showOutsideDays}
-      className={cn("p-5 bg-bg-white-0 text-text-strong-950", className)}
+      className={cn("p-6 bg-bg-white-0 text-text-strong-950", className)}
       classNames={{
         months: "flex flex-col sm:flex-row gap-6",
         month: "flex flex-col gap-2",

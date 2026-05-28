@@ -67,7 +67,7 @@ export default function MarketingDashboardDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Sidebar</b> — CompanySwitch (Catalyst) + Main nav (Overview / Analytics / Products / Orders / Discounts / Apps) + Others (Settings / Support) + UserButton (James Brown).</li>
           <li><b>Header</b> — Avatar 48 + “James Brown” + “Welcome back to Catalyst 👋🏻” + Search + Notification + Date select + Filter + New Product CTA.</li>
           <li><b>KPI row</b> — WidgetTotalSales / WidgetTotalVisitors / WidgetConversionRate (3 cards, 344px each).</li>
@@ -78,7 +78,7 @@ export default function MarketingDashboardDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Avatar / AvatarImage / AvatarFallback — header user + sidebar UserButton.</li>
           <li>Button (size, style, tone) — Filter, Report, New Product CTA.</li>
           <li>Badge / StatusBadge — KPI deltas (+2%, -1.4%).</li>
@@ -330,10 +330,10 @@ export function Sidebar({ activeHref }: { activeHref: string }) {
           </span>
         </button>
       </div>
-      <div className="px-5"><div className="h-px bg-stroke-soft-200" /></div>
+      <div className="px-6"><div className="h-px bg-stroke-soft-200" /></div>
 
       {/* Nav */}
-      <div className="flex flex-1 flex-col gap-5 px-5 pb-4 pt-5">
+      <div className="flex flex-1 flex-col gap-6 px-6 pb-4 pt-6">
         <div>
           <div className="p-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">Main</div>
           <div className="space-y-1">
@@ -374,7 +374,7 @@ export function Sidebar({ activeHref }: { activeHref: string }) {
         </div>
       </div>
 
-      <div className="px-5"><div className="h-px bg-stroke-soft-200" /></div>
+      <div className="px-6"><div className="h-px bg-stroke-soft-200" /></div>
 
       {/* User profile */}
       <div className="p-3">
@@ -403,7 +403,7 @@ export function PageHeader({
   actions?: React.ReactNode
 }) {
   return (
-    <header className="flex min-h-[88px] items-center gap-3 px-8 py-5">
+    <header className="flex min-h-[88px] items-center gap-3 px-8 py-6">
       <div className="flex flex-1 items-center gap-3.5">
         {icon}
         <div className="space-y-0.5">
@@ -475,7 +475,7 @@ export function WidgetShell({
   return (
     <div
       className={
-        "relative flex w-full flex-col gap-3 rounded-2xl bg-bg-white-0 p-5 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200 " +
+        "relative flex w-full flex-col gap-3 rounded-2xl bg-bg-white-0 p-6 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200 " +
         (className ?? "")
       }
     >

@@ -115,7 +115,7 @@ export function HrNotificationSettings({ className }: HrNotificationSettingsProp
 
           {/* Upgrade promo */}
           <Card className="bg-(--dash-purple-50) border-(--primary-alpha-16)">
-            <CardContent className="flex items-start gap-4 py-5">
+            <CardContent className="flex items-start gap-4 py-6">
               <span className="size-10 rounded-full bg-(--primary-base) text-text-white-0 grid place-items-center shrink-0">
                 <Sparkles className="size-5" />
               </span>

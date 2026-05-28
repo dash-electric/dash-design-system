@@ -190,7 +190,7 @@ export default function ColorPickerDocsPage() {
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• <strong>Saturation/hue squares</strong> — react-colorful primitives expose <code className="text-xs">role=&quot;slider&quot;</code> with <code className="text-xs">aria-valuetext</code> announcing the current hex.</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">Tab</code> walks: saturation → hue → hex input → preset chips.</li>
               <li><code className="text-xs">Arrow keys</code> nudge the saturation/hue pointer by 1 unit; with <code className="text-xs">Shift</code> by 10 units.</li>
             </ul>

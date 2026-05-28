@@ -114,7 +114,7 @@ export default function DeliveryStatusTimelineDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Card wrapper with header (delivery ID + event count).</li>
           <li>Vertical <code>ol</code> with category-colored dot + Badge label + relative time (Tooltip = absolute time on hover).</li>
           <li>Each row is a button — click to expand inline (status code, full timestamp, actor ID, full note).</li>
@@ -128,7 +128,7 @@ export default function DeliveryStatusTimelineDocsPage() {
         <p className="text-sm text-text-sub-600 max-w-2xl">
           All 26 ts-delivery-service statuses collapse into 5 visual categories. The mapping is exported as <code>STATUS_CATEGORY</code> for reuse in badges/filters/charts elsewhere.
         </p>
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong className="text-text-soft-400">neutral (grey)</strong> — PENDING_PAYMENT, QUEUEING, ALLOCATING, PREPARING, PENDING_PICKING_UP, PENDING_PICKUP, PENDING_DELIVERY, PENDING_RETURN.</li>
           <li><strong className="text-primary-base">in-progress (Dash purple)</strong> — PICKING_UP, ARRIVED_AT_PICKUP_POINT, IN_DELIVERY, ARRIVED_AT_DESTINATION, IN_RETURN, ARRIVED_AT_RETURN_POINT, RETURN_TO_HUB.</li>
           <li><strong className="text-state-success-base">success (green)</strong> — COMPLETED, VERIFIED, RETURNED.</li>
@@ -138,7 +138,7 @@ export default function DeliveryStatusTimelineDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on Control Tower delivery-detail drawer to show status progression at a glance.</li>
           <li><strong>Use</strong> on portal-v2 client tracking page (public token-gated route).</li>
           <li><strong>Use</strong> in backoffice <code>/mgmt/v1/deliveries/:deliveryUID</code> detail page.</li>

@@ -113,7 +113,7 @@ export default function RealTimeVisitorsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card shell with standard header.</li>
           <li>Bubble chart 312×156: 3 packed circles sized by share %, region name inside, percentage below.</li>
           <li>Legend rows: colored dot + region name + visitor count + trend arrow + delta.</li>
@@ -127,7 +127,7 @@ export default function RealTimeVisitorsWidgetPage() {
 
 function WidgetShell({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("relative flex w-full flex-col gap-5 rounded-2xl bg-bg-white-0 p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200", className)}>
+    <div className={cn("relative flex w-full flex-col gap-6 rounded-2xl bg-bg-white-0 p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200", className)}>
       {children}
     </div>
   )

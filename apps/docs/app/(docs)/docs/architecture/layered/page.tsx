@@ -81,7 +81,7 @@ export default function LayeredArchitecturePage() {
         {heroMetrics.map((m) => (
           <div
             key={m.label}
-            className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-4 py-5"
+            className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-4 py-6"
           >
             <div className="text-3xl font-semibold tabular-nums text-(--dash-purple-600) leading-none">
               {m.value}
@@ -363,7 +363,7 @@ export default function LayeredArchitecturePage() {
           {layers.map((layer) => (
             <div
               key={layer.num}
-              className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5"
+              className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6"
               style={{ borderLeftWidth: 4, borderLeftColor: layer.accent }}
             >
               <div className="flex items-center justify-between mb-2">
@@ -498,7 +498,7 @@ export function AssignRoute() {
         title="How it works — 4 steps"
         description="From a fresh consumer repo to a fully themed product UI."
       >
-        <ol className="space-y-4 text-sm text-text-sub-600 list-decimal pl-5">
+        <ol className="space-y-4 text-sm text-text-sub-600 list-decimal pl-6">
           <li>
             <span className="font-medium text-text-strong-950">Bootstrap.</span>{" "}
             <code className="text-xs">dash init --theme logistic</code> writes{" "}
@@ -566,7 +566,7 @@ export const logistic = defineTheme({
             <div className="text-[11px] uppercase tracking-wider text-text-soft-400 mb-2">
               Locked · Layer 0–1
             </div>
-            <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-5">
+            <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-6">
               <li>Token names and tiers</li>
               <li>Primitive API surface (props, slots, refs)</li>
               <li>Focus ring, contrast, touch target</li>
@@ -578,7 +578,7 @@ export const logistic = defineTheme({
             <div className="text-[11px] uppercase tracking-wider text-text-soft-400 mb-2">
               Flexible · Layer 2–3
             </div>
-            <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-5">
+            <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-6">
               <li>Accent token values</li>
               <li>Voice / copy register</li>
               <li>Density preset</li>
@@ -610,7 +610,7 @@ export const logistic = defineTheme({
           ].map((b) => (
             <div
               key={b.h}
-              className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5"
+              className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6"
               style={{ borderTopWidth: 3, borderTopColor: "#5e2aac" }}
             >
               <div className="text-sm font-semibold text-text-strong-950 mb-2">

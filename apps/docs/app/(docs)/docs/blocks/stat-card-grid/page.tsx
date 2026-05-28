@@ -49,7 +49,7 @@ export default function StatCardGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Wraps a configurable-column grid of <code>Card</code> + <code>Stat</code> tiles.</li>
           <li>Each tile: <code>StatLabel</code> + <code>StatValue</code> + <code>StatTrend</code> (up/down/flat).</li>
           <li>Trend values support <code>+12</code>, <code>+12.4%</code>, raw absolute strings.</li>
@@ -58,7 +58,7 @@ export default function StatCardGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> at the top of any backoffice dashboard.</li>
           <li><strong>Use</strong> as a quick KPI snapshot inside a settings detail pane.</li>
           <li><strong>Don't</strong> use for trend visualization — pair with <code>AnalyticsGrid</code> which has chart panels.</li>

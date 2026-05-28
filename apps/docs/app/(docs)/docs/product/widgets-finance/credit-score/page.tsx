@@ -128,7 +128,7 @@ export default function FinanceCreditScoreWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Headline line</strong> — paragraph-lg sub-600 with <em>credit score</em> + numeric in strong-950.</li>
           <li><strong>Caption</strong> — paragraph-xs sub-600 (band qualifier).</li>
           <li><strong>Emoji medallion</strong> — 44px circle, bg-warning-lighter background, single emoji glyph.</li>

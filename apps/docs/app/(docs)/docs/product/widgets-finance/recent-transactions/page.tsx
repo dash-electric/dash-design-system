@@ -136,7 +136,7 @@ export default function FinanceRecentTransactionsWidgetPage() {
                   <SegmentedItem size="sm" value="outgoing">Outgoing</SegmentedItem>
                   <SegmentedItem size="sm" value="pending">Pending</SegmentedItem>
                 </SegmentedControl>
-                <div className="flex flex-col items-center gap-3 p-5 pt-8">
+                <div className="flex flex-col items-center gap-3 p-6 pt-8">
                   <EmptyStateIllustration kind="recent-transactions" />
                   <p className="text-center text-sm text-text-soft-400">No records of transactions yet.<br />Please check back later.</p>
                 </div>
@@ -158,7 +158,7 @@ export default function FinanceRecentTransactionsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>SegmentedControl</strong> — 3 segments, Incoming default.</li>
           <li><strong>Row</strong> — 40px circular icon bubble (tinted per type) + name/description (sm/xs) + amount/date (right-aligned) + ghost chevron CompactButton.</li>
           <li><strong>Type bubble palette</strong> — `other`=white-0 ring, `rent`=success-lighter, `tax`=feature-lighter, `phone`=warning-lighter, `internet`=information-lighter, `donate`=highlighted-lighter, `electricity`=away-lighter, `gas`=error-lighter, `water`=verified-lighter.</li>
@@ -180,7 +180,7 @@ function WidgetShell({
   className?: string
 }) {
   return (
-    <div className={cn("rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-4 pb-5 shadow-sm", className)}>
+    <div className={cn("rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-4 pb-6 shadow-sm", className)}>
       <div className="flex items-center gap-2 min-h-8 mb-3">
         <div className="flex flex-1 items-center gap-2 text-sm font-medium text-text-strong-950">{title}</div>
         {action}

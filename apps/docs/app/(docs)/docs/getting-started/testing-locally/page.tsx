@@ -119,7 +119,7 @@ export default function TestingLocallyPage() {
             },
           ]}
         />
-        <div className="mt-6 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5">
+        <div className="mt-6 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6">
           <div className="text-xs uppercase tracking-[0.16em] font-medium text-text-soft-400 mb-2">
             Pre-flight check
           </div>
@@ -138,7 +138,7 @@ claude --version  # → optional; or check Cursor app is installed`}
         title="2. Quick start — 5-minute happy path"
         description="If you just want to see the docs site running locally, this is the entire flow. No CLI install, no token. Stop here if browsing the docs is all you need."
       >
-        <div className="rounded-xl border border-stroke-soft-200 bg-bg-weak-50 p-5 space-y-4">
+        <div className="rounded-xl border border-stroke-soft-200 bg-bg-weak-50 p-6 space-y-4">
           <pre className="text-xs leading-relaxed text-text-strong-950 font-mono whitespace-pre-wrap">
             {`# 1. Clone the repo (HTTPS or SSH — your choice)
 git clone https://github.com/irfanputra-design/dash.git
@@ -474,7 +474,7 @@ prompt hint   "Use Dash DS" picked up via AGENTS.md`}
             imagePlaceholder="Split-pane editor showing the block source with audit-trail logging, useState hook, formal 'Anda' copy, and Canvas API usage all annotated."
             imageHeight="lg"
           >
-            <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+            <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
               <li>
                 <strong>useState only</strong> — no{" "}
                 <code className="text-xs">useForm</code>,{" "}
@@ -811,7 +811,7 @@ Tag the area with one of:
         title="10. What's next after testing"
         description="If everything above worked, you're ready to use Dash DS in real work. Here's where pilot users go from here."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-2">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-2">
           <li>
             Join the <strong className="text-text-strong-950">#dash-ds-pilot</strong>{" "}
             Slack channel (ask Irfan for the invite if you can&apos;t see it).
@@ -896,7 +896,7 @@ Tag the area with one of:
           </Link>
         </div>
 
-        <div className="mt-6 rounded-xl border border-stroke-soft-200 bg-bg-weak-50 p-5">
+        <div className="mt-6 rounded-xl border border-stroke-soft-200 bg-bg-weak-50 p-6">
           <div className="text-xs uppercase tracking-[0.16em] font-medium text-text-soft-400 mb-2">
             Pilot transparency
           </div>

@@ -77,7 +77,7 @@ export default function PromoCardsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Two soft circles in the top-right corner — 20%/40% brand opacity for layered glow.</li>
           <li>Round avatar mark using the brand’s first letter, full-opacity brand fill.</li>
           <li>Headline copy + Learn More LinkButton.</li>

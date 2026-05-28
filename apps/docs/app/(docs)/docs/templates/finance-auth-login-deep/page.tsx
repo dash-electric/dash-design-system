@@ -71,7 +71,7 @@ export default function FinanceAuthLoginDeepPage() {
         </DocsSection>
 
         <DocsSection title="Anatomy">
-          <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+          <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
             <li>
               <code>AuthHeader</code> — Apex 40×40 logo + "Don&apos;t have an account?" /
               "Register" <code>LinkButton</code>.
@@ -119,7 +119,7 @@ Footer       : © 2024 Apex Financial`}
         </DocsSection>
 
         <DocsSection title="Primitive substitutions">
-          <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+          <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
             <li>
               <code>@/components/ui/input</code> Root/Wrapper/Icon/Input →{" "}
               <code>@/registry/dash/ui/input</code> InputRoot/InputIcon/Input.
@@ -272,7 +272,7 @@ function PasswordField({ id }: { id: string }) {
 function LoginCard() {
   return (
     <div className="w-full max-w-[472px] px-4">
-      <div className="flex w-full flex-col gap-6 rounded-[20px] bg-bg-white-0 p-5 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200 md:p-8">
+      <div className="flex w-full flex-col gap-6 rounded-[20px] bg-bg-white-0 p-6 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200 md:p-8">
         <div className="flex flex-col items-center gap-2">
           <IconHalo>
             <RiUserFill className="size-6 text-text-sub-600 lg:size-8" />

@@ -37,7 +37,7 @@ export default function AnalyticsGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Top row — 3 <code>Card</code> + <code>Stat</code> KPI tiles with trend indicators.</li>
           <li>Bottom row — recharts <code>AreaChart</code> (dispatch trend) + <code>BarChart</code> (tribe split).</li>
           <li>Recharts <code>ChartConfig</code> typed and themed via Dash CSS variables.</li>
@@ -46,7 +46,7 @@ export default function AnalyticsGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> as a dashboard section above more detailed tables.</li>
           <li><strong>Use</strong> for tribe lead's weekly review snapshot.</li>
           <li><strong>Use</strong> on overview/home routes where breadth beats depth.</li>

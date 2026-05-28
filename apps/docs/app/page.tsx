@@ -128,14 +128,14 @@ export default function LandingPage() {
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
               href="/docs"
-              className="inline-flex items-center gap-1.5 h-10 px-5 rounded-md bg-(--dash-purple-500) text-static-white text-sm font-medium hover:bg-(--dash-purple-600) transition-colors"
+              className="inline-flex items-center gap-1.5 h-10 px-6 rounded-md bg-(--dash-purple-500) text-static-white text-sm font-medium hover:bg-(--dash-purple-600) transition-colors"
             >
               Get started
               <ArrowUpRight className="size-3.5" strokeWidth={2} />
             </Link>
             <Link
               href="/docs/components"
-              className="inline-flex items-center gap-1.5 h-10 px-5 rounded-md bg-white/10 text-static-white text-sm font-medium hover:bg-white/15 transition-colors"
+              className="inline-flex items-center gap-1.5 h-10 px-6 rounded-md bg-white/10 text-static-white text-sm font-medium hover:bg-white/15 transition-colors"
             >
               Browse components
             </Link>
@@ -153,7 +153,7 @@ export default function LandingPage() {
                 <Link
                   key={cat.href}
                   href={cat.href}
-                  className="group relative bg-static-black p-6 lg:p-8 flex flex-col gap-5 min-h-56 transition-colors hover:bg-white/[0.03]"
+                  className="group relative bg-static-black p-6 lg:p-8 flex flex-col gap-6 min-h-56 transition-colors hover:bg-white/[0.03]"
                 >
                   <div className="flex-1 flex items-start">
                     <div className="size-14 rounded-lg border border-white/15 flex items-center justify-center text-white/80 [&_svg]:size-6 group-hover:border-(--dash-purple-400) group-hover:text-(--dash-purple-300) transition-colors">

@@ -43,7 +43,7 @@ export default function HRAuthStyle2LoginPage() {
         />
       </DocsSection>
       <DocsSection title="Anatomy">
-        <ul className="list-disc pl-5 space-y-1.5 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1.5 text-sm text-text-sub-600">
           <li><strong>Layout</strong> — same 608px form column, right column hosts a static product image card.</li>
           <li><strong>Image card</strong> — rounded-l-20 + ring-4 stroke-white-0 + shadow-regular-md, image clipped to the right edge.</li>
           <li><strong>Form</strong> — identical to Style 1 login.</li>

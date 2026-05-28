@@ -143,10 +143,10 @@ export function FinanceSidebar({ active }: { active: FinanceNavId }) {
       <div className="p-3">
         <CompanySwitch />
       </div>
-      <div className="px-5">
+      <div className="px-6">
         <Divider />
       </div>
-      <div className="flex flex-1 flex-col gap-5 px-5 pb-4 pt-5">
+      <div className="flex flex-1 flex-col gap-6 px-6 pb-4 pt-6">
         {/* Main */}
         <div className="space-y-2">
           <div className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">
@@ -203,7 +203,7 @@ export function FinanceSidebar({ active }: { active: FinanceNavId }) {
           </div>
         </div>
       </div>
-      <div className="px-5">
+      <div className="px-6">
         <Divider />
       </div>
       <div className="p-3">
@@ -229,7 +229,7 @@ export function FinanceHeader({
   showSearch = true,
 }: FinanceHeaderProps) {
   return (
-    <header className="flex min-h-[88px] flex-col gap-4 px-8 py-5 md:flex-row md:items-center md:justify-between md:gap-3">
+    <header className="flex min-h-[88px] flex-col gap-4 px-8 py-6 md:flex-row md:items-center md:justify-between md:gap-3">
       <div className="flex flex-1 items-center gap-3.5">
         {icon}
         <div className="space-y-1">

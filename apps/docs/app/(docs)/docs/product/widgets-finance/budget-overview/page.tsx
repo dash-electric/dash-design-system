@@ -136,7 +136,7 @@ export default function FinanceBudgetOverviewWidgetPage() {
             <div className="max-w-md">
               <WidgetShell title={<><RiFileChartLine className="size-4 text-icon-sub-600" /> Budget Overview</>}>
                 <Divider />
-                <div className="flex h-[284px] flex-col items-center justify-center gap-3 p-5">
+                <div className="flex h-[284px] flex-col items-center justify-center gap-3 p-6">
                   <RiFileChartLine className="size-10 text-icon-soft-400" />
                   <p className="text-center text-sm text-text-soft-400">
                     You do not have any cards yet.<br />Click the button to add one.
@@ -164,7 +164,7 @@ export default function FinanceBudgetOverviewWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>KPI row</strong> — 3 columns separated by vertical dividers (lg). Each = 40px circular icon ring + uppercase 2xs caption + label-md amount + colored Badge delta.</li>
           <li><strong>Range Select</strong> — `compact` `xsmall`, end-aligned content, defaults to <em>Last Year</em>.</li>
           <li><strong>Legend</strong> — three 8px dots, lg+ only inline next to the Select; on mobile they re-render under the chart.</li>

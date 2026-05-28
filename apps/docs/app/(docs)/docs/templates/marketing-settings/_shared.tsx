@@ -20,7 +20,7 @@ export function SectionHeader({
   description: string
 }) {
   return (
-    <div className="flex w-full flex-col gap-3.5 px-5 py-4 sm:flex-row sm:items-center">
+    <div className="flex w-full flex-col gap-3.5 px-6 py-4 sm:flex-row sm:items-center">
       <div className="flex-1">
         <div className="text-base font-medium text-text-strong-950">{title}</div>
         <div className="mt-1 text-sm text-text-sub-600">{description}</div>
@@ -45,7 +45,7 @@ export function SubTabs({
   current: string
 }) {
   return (
-    <div className="flex items-center gap-6 border-b border-stroke-soft-200 px-5">
+    <div className="flex items-center gap-6 border-b border-stroke-soft-200 px-6">
       {tabs.map((t) => (
         <span
           key={t}
@@ -64,7 +64,7 @@ export function SubTabs({
 }
 
 export function SectionBody({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col gap-5 p-6">{children}</div>
+  return <div className="flex flex-col gap-6 p-6">{children}</div>
 }
 
 /** Dashed horizontal rule used between every row in the modal source. */
@@ -129,7 +129,7 @@ export function ToggleRow({
     )
   }
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-6">
       {control}
       <div>
         <div className="text-sm font-medium text-text-strong-950">{label}</div>

@@ -50,7 +50,7 @@ export default function HrDashboardDocsPage() {
         title="Composition"
         description="5-widget layout composed entirely from @dash primitives."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Status Tracker</strong> — Absent + Away sub-sections, avatar + reason + duration per row.</li>
           <li><strong>Notes</strong> — 3 quick notes with category badges (Today / Meeting / Important).</li>
           <li><strong>Schedule</strong> — week-strip + today&apos;s events list with meeting / event / holiday tags.</li>
@@ -60,7 +60,7 @@ export default function HrDashboardDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> as the daily home for HR portals.</li>
           <li><strong>Use</strong> as starter shell for employee self-serve dashboards.</li>
           <li><strong>Don&apos;t</strong> use for L1/L2 ticket dashboards — reach for <code>HaloDash3Pane</code>.</li>

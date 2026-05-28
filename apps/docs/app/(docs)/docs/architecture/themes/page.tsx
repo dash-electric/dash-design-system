@@ -283,7 +283,7 @@ export default function ThemesPage() {
         {heroMetrics.map((m) => (
           <div
             key={m.label}
-            className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-4 py-5"
+            className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-4 py-6"
           >
             <div className="text-3xl font-semibold tabular-nums text-(--dash-purple-600) leading-none">
               {m.value}
@@ -443,7 +443,7 @@ export default function ThemesPage() {
           {themes.map((t) => (
             <div
               key={t.key}
-              className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5"
+              className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6"
             >
               <div className="flex items-start gap-4">
                 {/* swatch */}
@@ -529,7 +529,7 @@ export default function ThemesPage() {
       >
         <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 overflow-hidden">
           <div
-            className="px-5 py-4 border-b border-stroke-soft-200"
+            className="px-6 py-4 border-b border-stroke-soft-200"
             style={{
               background:
                 "linear-gradient(90deg, rgba(94,42,172,0.06) 0%, rgba(94,42,172,0) 100%)",
@@ -566,7 +566,7 @@ export default function ThemesPage() {
                 p: "Tenant runs dash init --theme trellis-acme. Layer 1 primitives now render in tenant brand. Zero Layer 0–1 forks. Zero per-tenant component code.",
               },
             ].map((step, i) => (
-              <li key={step.t} className="px-5 py-4 flex items-start gap-4">
+              <li key={step.t} className="px-6 py-4 flex items-start gap-4">
                 <div className="flex flex-col items-center pt-0.5">
                   <span
                     className="inline-flex items-center justify-center h-6 w-6 rounded-full text-[10px] font-semibold text-white"
@@ -596,7 +596,7 @@ export default function ThemesPage() {
         title="Adding a new theme"
         description="The Trellis template is the canonical example. A tenant onboards in ~1 day."
       >
-        <ol className="space-y-3 text-sm text-text-sub-600 list-decimal pl-5">
+        <ol className="space-y-3 text-sm text-text-sub-600 list-decimal pl-6">
           <li>Copy <code className="text-xs">themes/trellis-template.ts</code> to <code className="text-xs">themes/trellis-acme.ts</code>.</li>
           <li>Replace accent + dark from tenant brand assets. Verify WCAG AA contrast against <code className="text-xs">--bg-white-0</code> and <code className="text-xs">--bg-strong-950</code>.</li>
           <li>Set voice register from tenant config (formal / casual / mixed).</li>

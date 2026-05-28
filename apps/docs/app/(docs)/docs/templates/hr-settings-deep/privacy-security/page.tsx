@@ -491,7 +491,7 @@ export default function HrSettingsDeepPrivacySecurityPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong>Change Password</strong> — three masked Input rows with eye
             toggle. Below: 3-segment level bar (length / uppercase / number)

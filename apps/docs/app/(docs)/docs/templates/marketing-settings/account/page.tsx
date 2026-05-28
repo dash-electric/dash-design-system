@@ -41,7 +41,7 @@ function ProfileForm() {
         label="Profile Photo"
         hint="Min 400x400px, PNG or JPEG formats."
         control={
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6">
             <Avatar size="lg" className="relative">
               <AvatarImage src="" alt="James" />
               <AvatarFallback>JB</AvatarFallback>
@@ -308,9 +308,9 @@ export default function MarketingSettingsAccountPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>Section header (label-md / paragraph-sm) + Discard + Save Changes buttons.</li>
-          <li>Horizontal sub-tabs row (px-5) with underline active state.</li>
+          <li>Horizontal sub-tabs row (px-6) with underline active state.</li>
           <li>Form rows: <code>grid-cols-[minmax(0,1fr),312px]</code> (Profile) or <code>[1fr,256px]</code> (Language).</li>
           <li>Switch rows use control-then-label flex layout; Profile rows use label-then-control grid.</li>
           <li>Every row separated by a 1px <code>border-dashed</code> divider.</li>

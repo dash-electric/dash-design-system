@@ -52,7 +52,7 @@ const CounterTextarea = React.forwardRef<
         value={v}
         maxLength={maxLength}
         onChange={(e) => { if (onChange) onChange(e); if (typeof value !== "string") setInner(e.target.value) }}
-        className={`pb-7 ${className ?? ""}`}
+        className={`pb-8 ${className ?? ""}`}
         {...props}
       />
       <span className="pointer-events-none absolute bottom-2 right-3 text-xs text-text-soft-400">
@@ -164,7 +164,7 @@ export default function TextareaDocsPage() {
 
       <DocsSection title="With character counter">
         <p className="text-sm text-text-sub-600 max-w-2xl">
-          Compose Textarea + position-absolute counter at bottom-right. Apply <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">pb-7</code> to the textarea so user text doesn&apos;t overlap the counter.
+          Compose Textarea + position-absolute counter at bottom-right. Apply <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">pb-8</code> to the textarea so user text doesn&apos;t overlap the counter.
         </p>
         <DocsExample
           title='"Tell us about yourself" 0/200'
@@ -178,7 +178,7 @@ export default function TextareaDocsPage() {
           code={`function CounterTextarea({ value, onChange, maxLength }) {
   return (
     <div className="relative">
-      <Textarea value={value} onChange={onChange} maxLength={maxLength} className="pb-7" />
+      <Textarea value={value} onChange={onChange} maxLength={maxLength} className="pb-8" />
       <span className="absolute bottom-2 right-3 text-xs text-text-soft-400">
         {value.length}/{maxLength}
       </span>
@@ -352,7 +352,7 @@ export default function TextareaDocsPage() {
             { name: "invalid", type: "boolean", defaultValue: "false", description: "Renders red border + red focus ring. Pair with error-tone description below." },
             { name: "disabled", type: "boolean", defaultValue: "false", description: "bg-weak-50 + opacity-50 + cursor-not-allowed." },
             { name: "maxLength", type: "number", description: "Native HTML maxLength. Counter UI is composed separately (see Use Case above)." },
-            { name: "className", type: "string", description: "Apply pb-7 when adding the bottom-right counter to leave space for it." },
+            { name: "className", type: "string", description: "Apply pb-8 when adding the bottom-right counter to leave space for it." },
           ]}
         />
       </DocsSection>

@@ -155,7 +155,7 @@ pnpm dlx dash add button card dashboard-shell`}
             <Link
               key={link.href}
               href={link.href}
-              className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5 transition-colors hover:border-(--dash-purple-300) hover:bg-(--dash-purple-50)/30"
+              className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6 transition-colors hover:border-(--dash-purple-300) hover:bg-(--dash-purple-50)/30"
             >
               <div className="flex items-baseline justify-between mb-1.5">
                 <h3 className="font-semibold text-text-strong-950 group-hover:text-(--dash-purple-700) transition-colors">

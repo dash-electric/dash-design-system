@@ -83,7 +83,7 @@ export function Style1Shell({
 }) {
   return (
     <div className="grid min-h-[860px] lg:grid-cols-[608px,minmax(0,1fr)] bg-bg-white-0">
-      <div className="flex h-full flex-col px-6 lg:px-11 lg:py-6">
+      <div className="flex h-full flex-col px-6 lg:px-12 lg:py-6">
         <AuthHeader flow={flow} />
         <div className="flex flex-1 flex-col py-6 lg:py-24">
           <div className="mx-auto flex w-full max-w-[392px] flex-col gap-6">{children}</div>
@@ -108,7 +108,7 @@ export function Style2Shell({
 }) {
   return (
     <div className="grid min-h-[860px] lg:grid-cols-[608px,minmax(0,1fr)] bg-bg-white-0">
-      <div className="flex h-full flex-col px-6 lg:px-11 lg:py-6">
+      <div className="flex h-full flex-col px-6 lg:px-12 lg:py-6">
         <AuthHeader flow={flow} />
         <div className="flex flex-1 flex-col py-6 lg:py-24">
           <div className="mx-auto flex w-full max-w-[392px] flex-col gap-6">{children}</div>
@@ -135,7 +135,7 @@ export function Style3Shell({
 }) {
   return (
     <div className="grid min-h-[860px] lg:grid-cols-[608px,minmax(0,1fr)] bg-bg-white-0">
-      <div className="flex h-full flex-col px-6 lg:px-11 lg:py-6">
+      <div className="flex h-full flex-col px-6 lg:px-12 lg:py-6">
         <AuthHeader flow={flow} />
         <div className="flex flex-1 flex-col py-6 lg:py-24">
           <div className="mx-auto flex w-full max-w-[392px] flex-col gap-6">{children}</div>
@@ -187,7 +187,7 @@ export function SliderPreview() {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-[624px] px-5 text-center">
+      <div className="w-full max-w-[624px] px-6 text-center">
         <h3 className="text-xl font-semibold">Stay in Control of Your Time Off</h3>
         <p className="mt-2 min-h-12 text-base text-text-sub-600">
           Track your time off balance and manage requests with the Time Off widget, ensuring a stress-free experience.

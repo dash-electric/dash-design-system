@@ -153,7 +153,7 @@ const ActivityFeedItem = React.forwardRef<HTMLLIElement, ActivityFeedItemProps>(
         </FeedAvatar>
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <div className="flex items-baseline gap-0.5 flex-wrap text-sm leading-5">
-            <span className="inline-flex items-baseline gap-[3px]">
+            <span className="inline-flex items-baseline gap-[2px]">
               <span className="font-medium text-text-strong-950">{user.name}</span>
               <span className="font-normal text-text-sub-600">{action}</span>
               {target ? (
@@ -220,7 +220,7 @@ const ActivityFeedFile = React.forwardRef<HTMLDivElement, ActivityFeedFileProps>
           onClick={onDownload}
           aria-label={`Download ${name}`}
           className={cn(
-            "inline-flex items-center justify-center px-[5px] border-l border-stroke-soft-200",
+            "inline-flex items-center justify-center px-1 border-l border-stroke-soft-200",
             "text-icon-soft-400 hover:text-text-strong-950 hover:bg-bg-weak-50",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--dash-purple-300)",
           )}

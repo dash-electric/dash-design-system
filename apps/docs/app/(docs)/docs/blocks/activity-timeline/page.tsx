@@ -38,7 +38,7 @@ export default function ActivityTimelineDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Wrapped in <code>Card</code> with <code>CardHeader</code> + <code>CardTitle</code> + <code>CardDescription</code>.</li>
           <li>Each event row: status icon + <code>Avatar</code> initials + actor + verb + target + relative time + optional <code>Badge</code>.</li>
           <li>Icon set: <code>Truck</code> (dispatch), <code>CheckCircle2</code> (success), <code>AlertTriangle</code> (warning), <code>UserPlus</code> (mitra), <code>Receipt</code> (payout), <code>MessageSquare</code> (note).</li>
@@ -47,7 +47,7 @@ export default function ActivityTimelineDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for tribe-scoped activity feeds (dispatch, mitra, payout).</li>
           <li><strong>Use</strong> in side panel of <code>ListDetailPage</code> showing "Aktivitas terakhir" for a mitra.</li>
           <li><strong>Use</strong> for Halo-dash agent audit log.</li>

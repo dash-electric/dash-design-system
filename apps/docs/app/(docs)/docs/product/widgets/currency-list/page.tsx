@@ -133,7 +133,7 @@ export default function CurrencyListWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — title left + base-currency pill (flag + code + chevron) on the right.</li>
           <li><strong>Search</strong> — full-width search input below header (icon affix + placeholder + shortcut hint).</li>
           <li><strong>Row</strong> — flag avatar + (name + "1 [base] to [code]" subtitle) + (rate + signed % chip).</li>

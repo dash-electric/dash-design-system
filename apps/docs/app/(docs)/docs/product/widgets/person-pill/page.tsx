@@ -70,7 +70,7 @@ export default function PersonPillWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Pill height 28px (7 × 4px grid).</li>
           <li>Avatar xs (20px) at leading edge, 4px gap to label.</li>
           <li>Active state: success-base 14px circle with white check at trailing edge.</li>

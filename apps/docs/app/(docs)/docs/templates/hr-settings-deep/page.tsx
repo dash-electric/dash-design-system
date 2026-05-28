@@ -105,7 +105,7 @@ export default function HrSettingsDeepOverviewPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Header</strong> — 48px
             circle icon (RiSettings2Line) on a soft-200 ring + title (label-md)
@@ -141,7 +141,7 @@ export default function HrSettingsDeepOverviewPage() {
       </DocsSection>
 
       <DocsSection title="Notes">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             Source files mapped 1:1 from{" "}
             <code>app/(main)/settings/&lt;section&gt;/*.tsx</code> in the HR

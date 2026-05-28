@@ -36,7 +36,7 @@ export default function SettingsIntegrationsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Each integration card: logo + name + description + status <code>Badge</code> + Connect/Disconnect <code>Button</code>.</li>
           <li>Connected variants show last-sync time + Settings link.</li>
           <li>Dash-domain set: BMKG (cuaca), Slack (alerts), BCA (payout), Twilio (SMS OTP), Mixpanel (analytics).</li>
@@ -45,7 +45,7 @@ export default function SettingsIntegrationsDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on Settings → Integrations tab.</li>
           <li><strong>Use</strong> for org-level integration management (admin-only).</li>
           <li><strong>Don't</strong> use for SSO/identity-provider config — that's a separate compliance-critical flow.</li>

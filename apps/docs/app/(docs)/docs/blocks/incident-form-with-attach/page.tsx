@@ -62,7 +62,7 @@ export default function IncidentFormWithAttachDocsPage() {
         title="When to use"
         description="Reach for this block when the OPEN side of the incident state machine (OPEN → IN_MAINTENANCE → MAINTENANCE_COMPLETED → CLOSED) needs a user-facing entry point with proof attachments."
       >
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>Mitra mobile app: report vehicle accident with photos before continuing route</li>
           <li>Ops backoffice: log mitra injury escalation with clinic intake form attached</li>
           <li>Client portal: file customer complaint with screenshot of grievance</li>
@@ -261,7 +261,7 @@ export default function IncidentFormWithAttachDocsPage() {
       </DocsSection>
 
       <DocsSection title="Validation">
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>Type + severity: required (severity defaults to medium).</li>
           <li>Title: min 5, max 120 characters.</li>
           <li>Description: min 20, max 1000 characters. Live counter visible.</li>
@@ -272,7 +272,7 @@ export default function IncidentFormWithAttachDocsPage() {
       </DocsSection>
 
       <DocsSection title="A11y">
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>All inputs have explicit <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">&lt;Label htmlFor&gt;</code>.</li>
           <li>Required fields marked with both color cue + asterisk.</li>
           <li>Error messages live below each field; <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">aria-invalid</code> set on the control.</li>

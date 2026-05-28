@@ -116,7 +116,7 @@ export default function HRCoursesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — RiBook3Line + "Courses" + 260px search input (with ⌘1 kbd) + See All.</li>
           <li><strong>Table</strong> — 4 columns + row action ghost icon button. Min progress column width 144px.</li>
           <li><strong>Status</strong> — Pending = warning tone + RiTimeFill, Completed = success tone + RiCheckboxCircleFill.</li>

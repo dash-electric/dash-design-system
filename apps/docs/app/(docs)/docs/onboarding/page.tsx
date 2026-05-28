@@ -144,7 +144,7 @@ Registry: https://ds.dash.com/r/`}
             imagePlaceholder="Screenshot pending — example error output for each common issue (EACCES, 401, MCP probe fail)."
             imageHeight="sm"
           >
-            <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+            <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
               <li>
                 <strong>pnpm EACCES / permission denied</strong> — your global
                 bin folder isn&apos;t writable. Fix with{" "}
@@ -345,7 +345,7 @@ Pelanggaran), text area catatan opsional, dan audit trail
             imagePlaceholder="Screenshot pending — example drift output (react-hook-form import being suggested)."
             imageHeight="sm"
           >
-            <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+            <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
               <li>
                 <code className="text-xs">react-hook-form</code>,{" "}
                 <code className="text-xs">zod</code>,{" "}
@@ -431,7 +431,7 @@ input with 6 boxes — needed in mitra phone re-verify flow"`}
         title="H. What you're helping with"
         description="Honest critique > polite agreement."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
             <strong>Adoption signal</strong> — does the workflow stick after
             day 2, or do you fall back to copy-paste?
@@ -457,7 +457,7 @@ input with 6 boxes — needed in mitra phone re-verify flow"`}
         title="I. Out of scope (don't do)"
         description="A few hard lines to keep the pilot honest."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
             <strong>Don&apos;t modify Dash production code via DS.</strong> The
             DS is purely additive — components arrive in your repo as source you
@@ -482,7 +482,7 @@ input with 6 boxes — needed in mitra phone re-verify flow"`}
       </DocsSection>
 
       <DocsSection title="Cross-references">
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
             <Link
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"

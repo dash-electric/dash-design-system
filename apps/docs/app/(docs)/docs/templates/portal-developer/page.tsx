@@ -66,7 +66,7 @@ function WidgetCard({
 }) {
   return (
     <div className="overflow-hidden rounded-2xl bg-bg-white-0 ring-1 ring-inset ring-stroke-soft-200">
-      <div className="flex h-14 items-center justify-between px-5">
+      <div className="flex h-14 items-center justify-between px-6">
         <p className="text-base font-medium text-text-strong-950">{title}</p>
         {action}
       </div>
@@ -113,7 +113,7 @@ export default function PortalDeveloperPage() {
                     <TabsContent value="host-to-host" className="py-8">
                       <WidgetCard title="API access">
                         <ContentDivider>Credentials</ContentDivider>
-                        <div className="flex flex-col gap-4 p-5">
+                        <div className="flex flex-col gap-4 p-6">
                           <FieldGroup>
                             <Field>
                               <Label>Client Key</Label>
@@ -149,7 +149,7 @@ export default function PortalDeveloperPage() {
                           </FieldGroup>
                         </div>
                         <ContentDivider>API endpoint</ContentDivider>
-                        <div className="flex flex-col gap-3 p-5">
+                        <div className="flex flex-col gap-3 p-6">
                           <Field>
                             <Label>Base URL</Label>
                             <div className="flex items-stretch overflow-hidden rounded-lg border border-stroke-soft-200">
@@ -215,7 +215,7 @@ export default function PortalDeveloperPage() {
                             }
                           >
                             <ContentDivider>Credentials</ContentDivider>
-                            <div className="flex flex-col gap-3 p-5">
+                            <div className="flex flex-col gap-3 p-6">
                               <Field>
                                 <Label>Webhook URL</Label>
                                 <div className="flex items-stretch overflow-hidden rounded-lg border border-stroke-soft-200">
@@ -267,7 +267,7 @@ export default function PortalDeveloperPage() {
                               </span>
                             </ContentDivider>
 
-                            <div className="flex flex-col gap-3 p-5">
+                            <div className="flex flex-col gap-3 p-6">
                               <FieldGroup>
                                 <Field>
                                   <Label>Auth key</Label>
@@ -322,7 +322,7 @@ export default function PortalDeveloperPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Sticky title</b> — <code>position: sticky; top: 0</code>. Page title doesn't scroll out.</li>
           <li><b>Tab strip</b> — also sticky (top: 64px) so the active tab stays visible.</li>
           <li><b>H2H card</b> — three sections divided by ContentDivider: Credentials (Client Key + Client Secret with eye toggle) and API endpoint (base URL with clipboard copy + toast).</li>
@@ -332,7 +332,7 @@ export default function PortalDeveloperPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Use</b> for any developer surface that exposes machine credentials — keep them in read-only mode by default, gate edits behind an explicit Edit click.</li>
           <li><b>Use</b> the eye-toggle + clipboard-with-toast pair every time you render a secret string. Both affordances are user expectation now.</li>
           <li><b>Don't</b> render production credentials without the masked default + sandbox/live environment switch — always show which env the secret belongs to.</li>

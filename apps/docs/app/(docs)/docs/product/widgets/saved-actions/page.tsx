@@ -134,7 +134,7 @@ export default function SavedActionsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — title + See All stroke button.</li>
           <li><strong>Row</strong> — tinted icon circle + (name + subtitle) + amount pill chip + chevron.</li>
           <li><strong>Divider</strong> — soft 1px between rows.</li>

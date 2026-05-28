@@ -44,7 +44,7 @@ export default function MarketingAccountSettingsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Page header + Discard / Save Changes CTAs.</li>
           <li>Left sidebar — two grouped nav lists, icon + label, active highlight.</li>
           <li>Right form — <code>Field</code> rows: Profile Photo, Full Name, Email, Phone Number. Dividers between rows.</li>

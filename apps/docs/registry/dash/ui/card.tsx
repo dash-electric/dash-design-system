@@ -19,7 +19,7 @@ const cardVariants = cva("flex flex-col bg-bg-white-0 text-text-strong-950", {
       none: "",
       sm: "p-3",
       md: "p-4",
-      lg: "p-5",
+      lg: "p-6",
       xl: "p-6",
     },
   },

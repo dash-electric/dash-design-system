@@ -114,7 +114,7 @@ export default function SettingsTabsPageDocs() {
         title="Composition"
         description="Pure layout — drop in the Settings* blocks for instant content."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Left rail — vertical nav driven by <code>sections</code>. Each section is <code>{`{ id, label, icon? }`}</code>.</li>
           <li>Right pane — your content, swapped based on <code>activeId</code>.</li>
           <li>Pairs naturally with the Settings* blocks: <code>SettingsProfile</code>, <code>SettingsTeam</code>, <code>SettingsNotifications</code>, <code>SettingsIntegrations</code>, <code>SettingsPrivacySecurity</code>.</li>
@@ -123,7 +123,7 @@ export default function SettingsTabsPageDocs() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for the user/account settings hub in any backoffice app.</li>
           <li><strong>Use</strong> for tribe-scoped admin settings (company, team, integrations).</li>
           <li><strong>Use</strong> when you have 4-8 settings sections — fewer than 3 doesn't justify nav, more than 10 needs sub-grouping.</li>

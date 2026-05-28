@@ -192,7 +192,7 @@ export default function DashBuildDocsPage() {
           <div className="text-[10px] uppercase tracking-[0.18em] text-text-soft-400 pt-2">
             Dash Build response
           </div>
-          <ul className="text-sm text-text-sub-600 leading-relaxed space-y-1.5 list-disc pl-5">
+          <ul className="text-sm text-text-sub-600 leading-relaxed space-y-1.5 list-disc pl-6">
             <li>Skill chain consults <code className="text-xs">dash-prd</code> for spec scaffolding</li>
             <li>Foundation match: 92/100 against existing <code className="text-xs">refund-approval-list</code> block</li>
             <li>One clarification: &ldquo;Should reject require approver role?&rdquo;</li>

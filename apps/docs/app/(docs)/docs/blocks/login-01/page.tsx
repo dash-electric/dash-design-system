@@ -37,7 +37,7 @@ export default function LoginBlock01DocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Uses @dash primitives: <code>InputRoot</code> + <code>Input</code> + <code>InputIcon</code>, <code>Label</code>, <code>Checkbox</code>, <code>Button</code>.</li>
           <li>Icon-prefixed inputs — <code>Mail</code> and <code>Lock</code> from lucide.</li>
           <li>"Lupa password?" link wired to <code>/forgot-password</code>; swap with your route.</li>
@@ -47,7 +47,7 @@ export default function LoginBlock01DocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for internal Dash login (developers, Halo-dash Ops, tribe leadership).</li>
           <li><strong>Use</strong> when you have no SSO / IdP and email+password is the only path.</li>
           <li><strong>Don't</strong> use when SSO is preferred — reach for <code>Login 02</code> with social buttons.</li>

@@ -158,7 +158,7 @@ export default function DatePrimitivesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><span className="font-medium">Chip box</span> — 48×48, `rounded-lg border`, stacked weekday + date number, centered.</li>
           <li><span className="font-medium">Default</span> — `border-stroke-soft-200 bg-bg-white-0`, day `text-text-sub-600`, date `text-text-strong-950`.</li>
           <li><span className="font-medium">Hover</span> — `bg-bg-weak-50`, border unchanged. Transition `transition-colors`.</li>

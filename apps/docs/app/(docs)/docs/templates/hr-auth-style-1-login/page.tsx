@@ -44,7 +44,7 @@ export default function HRAuthStyle1LoginPage() {
         />
       </DocsSection>
       <DocsSection title="Anatomy">
-        <ul className="list-disc pl-5 space-y-1.5 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1.5 text-sm text-text-sub-600">
           <li><strong>AuthHeader</strong> — brand mark + cross-flow CTA "Don&apos;t have an account? Register".</li>
           <li><strong>HeroIcon</strong> — 96px concentric ring + RiUserLine glyph.</li>
           <li><strong>Social row</strong> — Apple / Google / LinkedIn stroke-style icon-only SocialButtons.</li>

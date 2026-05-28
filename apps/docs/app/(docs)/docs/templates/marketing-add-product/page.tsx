@@ -46,7 +46,7 @@ export default function MarketingAddProductDocsPage() {
         title="Composition"
         description="Composes the marketing dashboard shell + step rail + form column."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Left rail</strong> — vertical <code>StepIndicator</code> walk-through with step label + description.</li>
           <li><strong>Right column</strong> — empty state or partial form (variant per step).</li>
           <li><strong>Footer</strong> — Cancel + Save Draft + Next primary action.</li>

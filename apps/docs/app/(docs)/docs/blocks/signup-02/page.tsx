@@ -36,7 +36,7 @@ export default function SignupBlock02DocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Top: <code>SocialButton brand="google"</code> + <code>SocialButton brand="apple"</code>.</li>
           <li><code>Divider</code> with "atau" caption.</li>
           <li>Bottom: name + email + password + terms checkbox + submit.</li>
@@ -45,7 +45,7 @@ export default function SignupBlock02DocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> when SSO is the preferred signup path but you still accept fallback emails.</li>
           <li><strong>Use</strong> for tribe leadership and developer invitations (Google Workspace).</li>
           <li><strong>Don't</strong> use for mitra mass-recruitment — they don't have SSO; use <code>Signup 01</code> or stepper.</li>

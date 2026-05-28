@@ -162,7 +162,7 @@ function SessionsTable() {
             <TableHead>
               <SortHeader>IP Address</SortHeader>
             </TableHead>
-            <TableHead className="w-[60px] px-5" />
+            <TableHead className="w-[60px] px-6" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -188,7 +188,7 @@ function SessionsTable() {
                 <TableCell className="h-12 text-sm text-text-sub-600">
                   {s.ip}
                 </TableCell>
-                <TableCell className="h-12 w-0 px-5">
+                <TableCell className="h-12 w-0 px-6">
                   <CompactButton
                     variant="ghost"
                     size="md"
@@ -222,7 +222,7 @@ function PrivacySecuritySectionBody() {
       <div className="px-4 lg:px-8">
         <Divider />
       </div>
-      <div className="flex w-full flex-col gap-5 px-4 py-6 lg:px-8">
+      <div className="flex w-full flex-col gap-6 px-4 py-6 lg:px-8">
         <ActionRow
           title="Change Password"
           description="Update password for enhanced account security."
@@ -269,7 +269,7 @@ export default function FinanceSettingsDeepPrivacySecurityPage() {
       </DocsSection>
 
       <DocsSection title="Row inventory">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Change Password</strong> —
             stroke neutral button. "Update password for enhanced account

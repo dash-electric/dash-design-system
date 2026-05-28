@@ -180,7 +180,7 @@ export default function IconsPage() {
             body: "Covers the full Dash domain (logistics, finance, dashboards) plus general UI, brand logos, weather, devices. Browse remixicon.com.",
           },
         ].map((item) => (
-          <div key={item.title} className="rounded-lg border border-border bg-card p-5">
+          <div key={item.title} className="rounded-lg border border-border bg-card p-6">
             <div className="text-sm font-semibold text-foreground mb-1.5">{item.title}</div>
             <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
           </div>
@@ -215,7 +215,7 @@ export default function IconsPage() {
         </p>
         <div className="rounded-lg border border-border bg-card divide-y divide-border">
           {colorSlots.map((slot) => (
-            <div key={slot.token} className="grid grid-cols-1 sm:grid-cols-[120px_1fr_auto] items-center gap-4 px-5 py-4">
+            <div key={slot.token} className="grid grid-cols-1 sm:grid-cols-[120px_1fr_auto] items-center gap-4 px-6 py-4">
               <div className="flex items-center gap-3">
                 <RiNotification3Line className={cn("size-6", slot.className)} />
                 <code className="text-xs text-foreground">{slot.token}</code>
@@ -258,7 +258,7 @@ export default function IconsPage() {
       {/* Usage */}
       <section>
         <h2 className="text-xl font-semibold tracking-tight mb-4">Usage</h2>
-        <div className="rounded-lg bg-(--dash-slate-950) text-(--dash-slate-100) p-5 text-sm overflow-x-auto">
+        <div className="rounded-lg bg-(--dash-slate-950) text-(--dash-slate-100) p-6 text-sm overflow-x-auto">
           <div className="text-(--dash-slate-400) mb-1"># tree-shaken named import</div>
           <div>{`import { RiSearchLine, RiNotification3Line } from "@remixicon/react"
 

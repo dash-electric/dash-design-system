@@ -250,7 +250,7 @@ export default function FinanceTransactionsTableWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Toolbar</strong> — 40px circular history avatar + 2-line title/description + search Input (300px lg) with ⌘1 kbd + See All button.</li>
           <li><strong>Columns</strong> — Select (checkbox) / To-From / Amount / Account / Date &amp; Time / Payment Method / Actions.</li>
           <li><strong>Amount cell</strong> — exit type prefixes a minus sign.</li>

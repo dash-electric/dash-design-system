@@ -38,7 +38,7 @@ export default function TransactionsTableDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Toolbar — <code>InputRoot</code> search + <code>Filter</code> button.</li>
           <li>Row — direction <code>ArrowUpRight</code>/<code>ArrowDownRight</code> + <code>Avatar</code> + description + status <code>Badge</code> + signed amount.</li>
           <li>Amount color-coded: in = success, out = soft neutral, failed = error.</li>
@@ -47,7 +47,7 @@ export default function TransactionsTableDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for mitra payout history page.</li>
           <li><strong>Use</strong> inside <code>FinanceDashboard</code> as the "Recent activity" section.</li>
           <li><strong>Use</strong> for any signed-amount ledger (refunds, adjustments, cashback).</li>

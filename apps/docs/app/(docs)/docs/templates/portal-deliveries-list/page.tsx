@@ -115,7 +115,7 @@ export default function PortalDeliveriesListDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Sidebar</b> — Dash logo + 9 nav items (Deliveries · Outlets · Addresses · Users · Policies · Billing · Settings · Developer · Simulation) + UserButton bottom.</li>
           <li><b>Header</b> — Page title &ldquo;Deliveries&rdquo; + subtitle + right cluster: Notification bell · Language select (EN/ID) · Theme switch · Avatar.</li>
           <li><b>Action row</b> — New delivery (primary CTA, RiAddFill) · Bulk upload (RiUpload2Line) · Generate (RiSparklingLine, AI) · Export reconciliation (RiDownload2Line).</li>
@@ -128,7 +128,7 @@ export default function PortalDeliveriesListDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>WidgetBox.Root / Header / Footer — analytics tiles + table wrapper.</li>
           <li>Button (variant primary / neutral, mode filled / stroke / lighter).</li>
           <li>InputRoot / Input / InputIcon — search input.</li>
@@ -284,7 +284,7 @@ export function PortalSidebar({ activeHref }: { activeHref: string }) {
   return (
     <aside className="hidden lg:flex w-[272px] shrink-0 flex-col self-stretch border-r border-stroke-soft-200 bg-bg-white-0">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-4">
+      <div className="flex items-center gap-3 px-6 py-4">
         <span className="inline-flex size-9 items-center justify-center rounded-lg bg-bg-strong-950 text-sm font-bold text-text-white-0">
           D
         </span>
@@ -293,10 +293,10 @@ export function PortalSidebar({ activeHref }: { activeHref: string }) {
           <div className="text-[11px] text-text-sub-600">PT Pharma Indonesia</div>
         </div>
       </div>
-      <div className="px-5"><div className="h-px bg-stroke-soft-200" /></div>
+      <div className="px-6"><div className="h-px bg-stroke-soft-200" /></div>
 
       {/* Main nav */}
-      <div className="flex flex-1 flex-col gap-5 px-5 pb-4 pt-5">
+      <div className="flex flex-1 flex-col gap-6 px-6 pb-4 pt-6">
         <div>
           <div className="p-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">Main</div>
           <div className="space-y-1">

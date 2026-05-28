@@ -49,7 +49,7 @@ function AreaSpark({ values, width = 200, height = 86 }: { values: number[]; wid
 function CampaignDataWidget() {
   return (
     <div className="relative flex w-full flex-col overflow-hidden rounded-2xl bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
-      <div className="flex items-start gap-2 p-5 pb-4">
+      <div className="flex items-start gap-2 p-6 pb-4">
         <div className="flex-1">
           <div className="flex items-center gap-1">
             <span className="text-sm font-medium text-text-sub-600">Campaign Data</span>
@@ -104,7 +104,7 @@ export default function CampaignDataWidgetPage() {
         <DocsExample
           title="No campaign running"
           preview={
-            <div className="max-w-md mx-auto rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+            <div className="max-w-md mx-auto rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
               <div className="text-sm font-medium text-text-sub-600">Campaign Data</div>
               <div className="mt-2 text-xs text-text-soft-400">No active campaign — start one to see daily spend.</div>
             </div>
@@ -127,7 +127,7 @@ export default function CampaignDataWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card: rounded-2xl, overflow-hidden (clips chart edges), shadow-regular-xs ring stroke-soft-200.</li>
           <li>Header pad: 20/20/16/20, KPI 24px + lighter success Badge "Last 15 days", neutral-stroke 28px Details button.</li>
           <li>Chart pane: 86px h, 2-column grid split by faded-lighter top border.</li>

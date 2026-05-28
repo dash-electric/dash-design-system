@@ -120,12 +120,12 @@ function NotificationsSectionBody() {
       <div className="px-4 lg:px-8">
         <Divider />
       </div>
-      <div className="flex w-full flex-col gap-5 px-4 py-6 lg:px-8">
+      <div className="flex w-full flex-col gap-6 px-4 py-6 lg:px-8">
         <FieldRow
           label="General Notifications"
           description="Notifications about transactions, balance and exclusive offers."
         >
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-6">
             <SwitchRow
               id="fs-trx-alerts"
               title="Transaction Alerts"
@@ -152,7 +152,7 @@ function NotificationsSectionBody() {
           label="Notification Method"
           description="Choose how you prefer to receive notifications."
         >
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-6">
             <CheckboxRow
               id="fs-email-notif"
               title="Email Notifications"
@@ -179,7 +179,7 @@ function NotificationsSectionBody() {
           label="Theme Options"
           description="Pick theme to personalize experience."
         >
-          <RadioGroup defaultValue="light" className="flex flex-col gap-5">
+          <RadioGroup defaultValue="light" className="flex flex-col gap-6">
             <RadioRow
               id="fs-theme-light"
               value="light"
@@ -222,7 +222,7 @@ export default function FinanceSettingsDeepNotificationsPage() {
       </DocsSection>
 
       <DocsSection title="Row inventory">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">
               Transaction Alerts

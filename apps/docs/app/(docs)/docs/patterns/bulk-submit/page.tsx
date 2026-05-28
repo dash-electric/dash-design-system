@@ -47,7 +47,7 @@ export default function BulkSubmitPatternPage() {
         title="When to use"
         description="Reach for this pattern when one user action fans out to N independent backend calls and any subset may fail."
       >
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>Submitting a multi-order delivery to a batch dispatch endpoint</li>
           <li>Bulk-inviting mitra via email/SMS</li>
           <li>Bulk-updating outlet operating hours</li>
@@ -68,7 +68,7 @@ export default function BulkSubmitPatternPage() {
         title="Anatomy"
         description="The submit function is injected so the pattern works against any batch endpoint."
       >
-        <ol className="list-decimal pl-5 space-y-2 text-sm text-text-sub-600">
+        <ol className="list-decimal pl-6 space-y-2 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Per-row status map</strong> —{" "}
             <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">Record&lt;id, RowStatus&gt;</code>.
@@ -121,7 +121,7 @@ export default function BulkSubmitPatternPage() {
       </DocsSection>
 
       <DocsSection title="Pair with">
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>
             <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">@dash/multi-item-form</code> — collect N rows before dispatching
           </li>

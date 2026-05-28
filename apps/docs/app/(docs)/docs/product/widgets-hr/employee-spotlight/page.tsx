@@ -119,7 +119,7 @@ export default function HREmployeeSpotlightWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>SegmentedControl</strong> — 3 tabs, full width.</li>
           <li><strong>Sticker frame</strong> — decorative SVG frame with the 72px avatar centred.</li>
           <li><strong>Comment row</strong> — 40px avatar + xs name + sm message + heart toggle.</li>

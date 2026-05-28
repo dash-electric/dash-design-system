@@ -254,7 +254,7 @@ export default function MetricsPage() {
           {heroMetrics.map((m) => (
             <div
               key={m.label}
-              className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5"
+              className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6"
               style={{
                 borderTopWidth: 3,
                 borderTopColor: m.accent ?? "var(--state-feature-base)",
@@ -434,7 +434,7 @@ export default function MetricsPage() {
             personality intact.
           </p>
           <div
-            className="mt-5 border-l-4 pl-4 italic text-base font-medium text-text-strong-950"
+            className="mt-6 border-l-4 pl-4 italic text-base font-medium text-text-strong-950"
             style={{ borderLeftColor: "var(--dash-purple-600)" }}
           >
             &ldquo;Same foundation, different product face.&rdquo;
@@ -468,7 +468,7 @@ export default function MetricsPage() {
 
       {/* ============ Cross-links ============================================== */}
       <DocsSection title="Deeper context">
-        <ul className="text-sm text-text-sub-600 space-y-2 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-2 list-disc pl-6">
           <li>
             <Link
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"

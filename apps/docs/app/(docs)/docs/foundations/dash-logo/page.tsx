@@ -53,7 +53,7 @@ export default function DashLogoDocsPage() {
           title="Dash Electric — full brand card"
           preview={
             <div className="rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6 max-w-4xl">
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center gap-3 mb-6">
                 <DashLogo variant="mark" style="original" size="lg" />
                 <div>
                   <div className="text-base font-semibold text-text-strong-950">Dash Electric</div>

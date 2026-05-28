@@ -151,7 +151,7 @@ export default function NetBalanceWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card shell + See All link.</li>
           <li>Headline = 20px semibold tabular-nums balance + small change Badge on the same baseline.</li>
           <li>Sparkline = 1.5px polyline + soft gradient fill, fills the card width.</li>

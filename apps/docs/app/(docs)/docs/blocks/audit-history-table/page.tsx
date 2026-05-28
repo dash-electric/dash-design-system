@@ -163,7 +163,7 @@ export default function AuditHistoryTableDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             Filter bar — search (editor name, 350ms debounce) + field
             multi-select (auto-hides when only one field present) + date range
@@ -189,7 +189,7 @@ export default function AuditHistoryTableDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Use</strong> on any entity that mutates legal/financial
             fields — proof images (POD/POP), payment amounts, signatures,
@@ -297,7 +297,7 @@ return (
       </DocsSection>
 
       <DocsSection title="Accessibility">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             Sortable headers expose <code>aria-sort</code> with{" "}
             <code>ascending</code> / <code>descending</code> / <code>none</code>.

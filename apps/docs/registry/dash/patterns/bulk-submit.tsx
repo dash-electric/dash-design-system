@@ -124,7 +124,7 @@ export function BulkSubmit<T extends BulkItem>({
 
   return (
     <Card>
-      <CardContent className="space-y-2 pt-5">
+      <CardContent className="space-y-2 pt-6">
         {items.map((item) => {
           const status = statuses[item.id] ?? "idle"
           return (

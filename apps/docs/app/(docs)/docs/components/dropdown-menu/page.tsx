@@ -366,7 +366,7 @@ export default function DropdownMenuDocsPage() {
           <li>• <strong>Role</strong> — Content is <code className="text-xs">role=&quot;menu&quot;</code>; items are <code className="text-xs">menuitem</code> / <code className="text-xs">menuitemcheckbox</code> / <code className="text-xs">menuitemradio</code>.</li>
           <li>• <strong>Trigger</strong> — gets <code className="text-xs">aria-haspopup=&quot;menu&quot;</code> + <code className="text-xs">aria-expanded</code> auto-wired.</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">Enter</code> / <code className="text-xs">Space</code> / <code className="text-xs">↓</code> opens the menu and focuses the first item.</li>
               <li><code className="text-xs">↑</code> / <code className="text-xs">↓</code> walks items, looping at edges.</li>
               <li><code className="text-xs">→</code> opens a submenu; <code className="text-xs">←</code> closes it.</li>
@@ -376,7 +376,7 @@ export default function DropdownMenuDocsPage() {
             </ul>
           </li>
           <li>• <strong>ARIA you add</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li>Icon-only Trigger requires <code className="text-xs">aria-label</code>.</li>
               <li>Use DropdownMenuLabel to group items semantically (renders <code className="text-xs">role=&quot;presentation&quot;</code>).</li>
             </ul>

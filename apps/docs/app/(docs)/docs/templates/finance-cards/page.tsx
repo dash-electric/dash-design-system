@@ -41,7 +41,7 @@ export default function FinanceCardsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Page header with title + subtitle + period select + Schedule / Add Card CTAs.</li>
           <li>Filter row — <code>SegmentedControl</code> (All/Virtual/Physical) + search <code>Input</code> + Filter + Sort by buttons.</li>
           <li>Card grid — each tile = gradient preview (purple for active virtual, neutral for expired, dark for physical) + status <code>Badge</code> + masked number / expiry / CVC footer.</li>

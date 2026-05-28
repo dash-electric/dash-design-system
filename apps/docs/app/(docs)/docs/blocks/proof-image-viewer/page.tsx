@@ -136,7 +136,7 @@ export default function ProofImageViewerDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             Toolbar — label + "telah diedit" badge (if audit), zoom -/% /+,
             reset, compare toggle (when audit present), custom actions.
@@ -162,7 +162,7 @@ export default function ProofImageViewerDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Use</strong> in backoffice dispatch detail panels, KYC
             review queues, vehicle condition inspection screens, claim
@@ -263,7 +263,7 @@ return (
       </DocsSection>
 
       <DocsSection title="Accessibility">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             Viewer is a focusable <code>role=&quot;group&quot;</code> with an{" "}
             <code>aria-label</code> mirroring the proof label.

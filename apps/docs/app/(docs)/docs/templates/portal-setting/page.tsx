@@ -58,7 +58,7 @@ function WidgetCard({
 }) {
   return (
     <div className="overflow-hidden rounded-2xl bg-bg-white-0 ring-1 ring-inset ring-stroke-soft-200">
-      <div className="flex h-14 items-center justify-between px-5">
+      <div className="flex h-14 items-center justify-between px-6">
         <p className="text-base font-medium text-text-strong-950">{title}</p>
         {action}
       </div>
@@ -113,7 +113,7 @@ export default function PortalSettingPage() {
                         }
                       >
                         <ContentDivider>Profile info</ContentDivider>
-                        <div className="flex flex-col gap-4 p-5">
+                        <div className="flex flex-col gap-4 p-6">
                           <Avatar size="2xl">
                             <AvatarFallback>SP</AvatarFallback>
                           </Avatar>
@@ -163,7 +163,7 @@ export default function PortalSettingPage() {
                           }
                         >
                           <ContentDivider>Detail</ContentDivider>
-                          <div className="flex flex-col gap-4 p-5">
+                          <div className="flex flex-col gap-4 p-6">
                             <RadioGroup
                               value={policy}
                               onValueChange={(v) => setPolicy(v as "optional" | "mandatory")}
@@ -197,7 +197,7 @@ export default function PortalSettingPage() {
                           {policy === "mandatory" ? (
                             <>
                               <ContentDivider>Info</ContentDivider>
-                              <div className="flex flex-col gap-3 p-5">
+                              <div className="flex flex-col gap-3 p-6">
                                 <div className="flex flex-col gap-1">
                                   <p className="text-[10px] font-medium uppercase tracking-wider text-text-soft-400">
                                     Active date
@@ -207,7 +207,7 @@ export default function PortalSettingPage() {
                                   </p>
                                 </div>
                                 <Divider />
-                                <div className="flex gap-7">
+                                <div className="flex gap-8">
                                   <div className="flex flex-1 flex-col gap-1">
                                     <p className="text-[10px] font-medium uppercase tracking-wider text-text-soft-400">
                                       Last changed by
@@ -226,7 +226,7 @@ export default function PortalSettingPage() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between border-t border-stroke-soft-200 px-5 py-4">
+                              <div className="flex items-center justify-between border-t border-stroke-soft-200 px-6 py-4">
                                 <p className="text-sm text-text-sub-600">
                                   Code batches are managed under Policies.
                                 </p>
@@ -241,7 +241,7 @@ export default function PortalSettingPage() {
                         {/* Delivery creation configuration */}
                         <WidgetCard title="Delivery creation configuration">
                           <ContentDivider>Package field validation</ContentDivider>
-                          <div className="flex flex-col gap-4 p-5">
+                          <div className="flex flex-col gap-4 p-6">
                             <div className="flex flex-col gap-4 rounded-xl bg-bg-white-0 p-4 shadow-xs ring-1 ring-inset ring-stroke-soft-200">
                               <div className="flex items-start justify-between">
                                 <div className="flex flex-col gap-1">
@@ -307,7 +307,7 @@ export default function PortalSettingPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Tabs</b> — Account detail (always) + Dash setting (super_admin only). Horizontal strip, default underline style.</li>
           <li><b>Account card</b> — Profile info section with Avatar + Full name + Email (disabled) + Phone (disabled, +62 prefix). Edit + Reset password actions in card header.</li>
           <li><b>Governance policy</b> — Two cards (Optional / Mandatory) inside a RadioGroup. Selecting Mandatory opens a ConfirmationModal in production; on confirm, the Info section appears showing active date + last changed by/at + "Go to policies" footer.</li>
@@ -316,7 +316,7 @@ export default function PortalSettingPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Use</b> for account + tenant settings hubs where the user toggles between personal scope and admin scope.</li>
           <li><b>Use</b> the "select first, confirm second" pattern (radio → confirmation modal) for irreversible tenant-wide policy changes.</li>
           <li><b>Use</b> the Info section pattern (Active date + Last changed by / Last changed at) whenever a policy carries audit weight.</li>

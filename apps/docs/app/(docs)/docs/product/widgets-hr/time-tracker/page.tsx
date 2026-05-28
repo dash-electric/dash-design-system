@@ -110,7 +110,7 @@ export default function HRTimeTrackerWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Project picker</strong> — brand glyph + project name + chevron, h-8, rounded-t-10, bg-weak-50.</li>
           <li><strong>Body</strong> — state label (Awaiting / Ongoing, micro-uppercase) + mono clock 02:44:22 + action row.</li>
           <li><strong>Awaiting action</strong> — primary text "Start Time Tracker" with Play icon.</li>

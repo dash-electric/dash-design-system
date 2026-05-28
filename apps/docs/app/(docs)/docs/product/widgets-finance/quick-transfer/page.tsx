@@ -142,7 +142,7 @@ export default function FinanceQuickTransferWidgetPage() {
             <div className="max-w-md">
               <WidgetShell title={<><RiArrowLeftRightLine className="size-4 text-icon-sub-600" /> Quick Transfer</>}>
                 <Divider />
-                <div className="flex h-[260px] flex-col items-center justify-center gap-3 p-5">
+                <div className="flex h-[260px] flex-col items-center justify-center gap-3 p-6">
                   <EmptyStateIllustration kind="quick-transfer" />
                   <p className="text-center text-sm text-text-soft-400">You do not have any funds to transfer.<br />Please check back later.</p>
                   <Button tone="neutral" style="stroke" size="xs"><RiAddLine /> Add Funds</Button>
@@ -167,7 +167,7 @@ export default function FinanceQuickTransferWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Contacts header</strong> — uppercase caption + 2 ghost CompactButton (prev/next).</li>
           <li><strong>Contact pill</strong> — pill-shaped, 20px avatar + name. Selected = bg-weak-50 + animated success check.</li>
           <li><strong>Amount card</strong> — header strip (bg-weak-50) with brand glyph + label + chevron, body = title-h4 currency input + Available footer.</li>

@@ -203,7 +203,7 @@ export default function PortalPoliciesPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Information banner</b> — light-gray panel introducing the policy + "Learn more" external link. Dismissible (state persisted in localStorage in production).</li>
           <li><b>Page header</b> — title + subtitle + Generate Codes primary button. Button is disabled when the one-time-code policy is not enabled under <code>/setting</code>.</li>
           <li><b>SegmentedControl</b> — Active / Expired toggle. Filters batch list server-side.</li>
@@ -213,7 +213,7 @@ export default function PortalPoliciesPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Use</b> for governance pages where a tenant manages monthly batched assets (delivery codes, vouchers, access tokens).</li>
           <li><b>Use</b> the information banner pattern at the top whenever the feature is gated by an upstream setting — the banner doubles as discoverability.</li>
           <li><b>Don't</b> use this layout for single-resource configuration — use the Settings tabs template instead.</li>

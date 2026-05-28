@@ -167,7 +167,7 @@ export default function DashboardShellDocsPage() {
         title="Composition"
         description="A thin layout shell — no opinions on routing, state, or data fetching."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Sidebar uses the <code>Sidebar</code> primitive — collapsible on mobile, sticky on desktop.</li>
           <li>Topbar uses <code>Topbar</code> with <code>brand</code> on the left and <code>headerActions</code> on the right.</li>
           <li>Main area is a vertically scrollable region; the sidebar and topbar stay pinned.</li>
@@ -178,7 +178,7 @@ export default function DashboardShellDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> as the layout for any signed-in backoffice route — Halo-dash, Tribe-Express, developer admin.</li>
           <li><strong>Use</strong> when you need a persistent sidebar nav across pages.</li>
           <li><strong>Use</strong> when the page has a single primary content area (KPIs, tables, forms).</li>

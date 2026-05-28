@@ -42,7 +42,7 @@ export default function HrProfileSettingsDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for any settings page with 6+ sections that benefits from vertical nav.</li>
           <li><strong>Don&apos;t</strong> use for &lt;4 sections — reach for <code>SettingsTabsPage</code> (horizontal).</li>
           <li>Tab nav state is stub — wire to your router or local state.</li>

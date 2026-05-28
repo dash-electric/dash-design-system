@@ -38,7 +38,7 @@ export default function OrdersTableDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Toolbar — <code>Checkbox</code> (select all) + bulk action <code>Button</code>s + <code>Filter</code> icon button.</li>
           <li>Header row — sortable columns with sort indicators.</li>
           <li>Body rows — <code>Checkbox</code> + dispatch id + mitra <code>Avatar</code> + route + amount + status <code>Badge</code> + assignee + overflow menu.</li>
@@ -47,7 +47,7 @@ export default function OrdersTableDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for any queue-style table where bulk operations are common.</li>
           <li><strong>Use</strong> for dispatch log, payout log, ticket inbox.</li>
           <li><strong>Use</strong> when assignee + status badge are both needed per row.</li>

@@ -41,7 +41,7 @@ export function WidgetShell({
   return (
     <div
       className={cn(
-        "group/widget relative flex h-full flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5 shadow-regular-xs",
+        "group/widget relative flex h-full flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6 shadow-regular-xs",
         "transition-all duration-150 hover:border-stroke-strong-950 hover:shadow-card-sm hover:ring-1 hover:ring-(--primary-alpha-16)",
         className,
       )}

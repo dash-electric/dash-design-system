@@ -78,7 +78,7 @@ function ProductPerformanceWidget() {
   const pctOf = (v: number) => Math.round((v / max) * 100)
 
   return (
-    <div className="relative flex w-full flex-col gap-5 rounded-2xl bg-bg-white-0 p-5 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
+    <div className="relative flex w-full flex-col gap-6 rounded-2xl bg-bg-white-0 p-6 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex items-start gap-2">
         <div className="flex-1">
           <span className="text-sm font-medium text-text-sub-600">Product Performance</span>
@@ -161,7 +161,7 @@ export default function ProductPerformanceWidgetPage() {
         <DocsExample
           title="No products to score"
           preview={
-            <div className="max-w-sm mx-auto rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+            <div className="max-w-sm mx-auto rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
               <div className="text-sm font-medium text-text-sub-600">Product Performance</div>
               <div className="mt-3 grid grid-cols-5 gap-2.5 h-40">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -188,8 +188,8 @@ export default function ProductPerformanceWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
-          <li>Card: rounded-2xl, gap-5, padding-5, ring stroke-soft-200, shadow-regular-xs.</li>
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
+          <li>Card: rounded-2xl, gap-6, padding-5, ring stroke-soft-200, shadow-regular-xs.</li>
           <li>Range picker: 5-segment <code>SegmentedControl</code> (1D/1W/1M/3M/1Y).</li>
           <li>Bars: 158px max h, 52px min h, warning-base fill, 8px radius, 10px gap.</li>
           <li>Bar labels: % at top, letter at bottom — both 11px static-white.</li>

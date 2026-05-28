@@ -100,7 +100,7 @@ export default function StockMarketTrackerWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — title with line-chart icon + ACME ticker dropdown (stroke button, chevron-down).</li>
           <li><strong>Range picker</strong> — full-width SegmentedControl (sm) with 5 fixed items.</li>
           <li><strong>Headline</strong> — large tabular-nums price + lighter success badge (change %).</li>

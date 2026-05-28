@@ -114,7 +114,7 @@ export default function HRCourseProgressWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — RiBook3Line + "Course Progress" + neutral-stroke "See All" button.</li>
           <li><strong>Ring</strong> — 80px ProgressCircle with % label centred.</li>
           <li><strong>Body</strong> — course title (label-sm), description (paragraph-xs, sub-600), underlined primary LinkButton.</li>

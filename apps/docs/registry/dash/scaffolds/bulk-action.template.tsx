@@ -138,7 +138,7 @@ export function BulkActionTemplate<T extends BulkActionItem>({
 
   return (
     <Card>
-      <CardContent className="space-y-2 pt-5">
+      <CardContent className="space-y-2 pt-6">
         {items.map((item) => {
           const status = statuses[item.id] ?? "idle"
           return (

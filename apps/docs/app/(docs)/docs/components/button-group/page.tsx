@@ -218,7 +218,7 @@ export default function ButtonGroupDocsPage() {
         <DocsExample
           title="Inside a Stock Market Tracker card"
           preview={
-            <div className="max-w-md rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5 shadow-(--shadow-custom-sm)">
+            <div className="max-w-md rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6 shadow-(--shadow-custom-sm)">
               <div className="flex items-center justify-between mb-4">
                 <div className="inline-flex items-center gap-2">
                   <Chart className="size-4 text-icon-soft-400" />
@@ -273,7 +273,7 @@ export default function ButtonGroupDocsPage() {
         <DocsExample
           title="Savings Card with carousel control"
           preview={
-            <div className="max-w-md rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5 shadow-(--shadow-custom-md) relative overflow-hidden">
+            <div className="max-w-md rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6 shadow-(--shadow-custom-md) relative overflow-hidden">
               <div className="flex items-center gap-3 mb-6">
                 <span className="size-8 rounded-md bg-(--state-information-base) inline-flex items-center justify-center text-static-white text-xs font-semibold">≡</span>
                 <Contactless className="size-4 text-icon-soft-400" />

@@ -56,7 +56,7 @@ export default function CustomerSegmentsWidgetPage() {
           preview={
             <WidgetShell card className="max-w-sm">
               <HeaderRow delta="+5.8%" up />
-              <div className="mt-5 flex items-center gap-6">
+              <div className="mt-6 flex items-center gap-6">
                 <DonutChart data={SEGMENTS} circleSize={98} />
                 <Legend rows={SEGMENTS.filter((s) => s.id !== "others")} total={TOTAL} />
               </div>
@@ -92,7 +92,7 @@ export default function CustomerSegmentsWidgetPage() {
           preview={
             <WidgetShell card className="max-w-sm">
               <HeaderRow delta="-3.4%" up={false} />
-              <div className="mt-5 flex items-center gap-6">
+              <div className="mt-6 flex items-center gap-6">
                 <DonutChart data={SEGMENTS} circleSize={98} />
                 <Legend rows={SEGMENTS.filter((s) => s.id !== "others")} total={TOTAL} />
               </div>
@@ -108,7 +108,7 @@ export default function CustomerSegmentsWidgetPage() {
           preview={
             <WidgetShell card className="max-w-sm">
               <HeaderRow delta="0%" up />
-              <div className="mt-5 flex items-center justify-center h-[112px] rounded-lg border border-dashed border-stroke-soft-200 text-xs text-text-soft-400">
+              <div className="mt-6 flex items-center justify-center h-[112px] rounded-lg border border-dashed border-stroke-soft-200 text-xs text-text-soft-400">
                 No customer segments yet.
               </div>
             </WidgetShell>
@@ -130,7 +130,7 @@ export default function CustomerSegmentsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Header: label + tooltip info icon + "+5.8% vs last week" delta copy (no Details button).</li>
           <li>Donut chart: 98px diameter (card) / 112px (bare). Arcs proportional to value.</li>
           <li>Legend: 3 rows (Premium / Regular / New). Each: dot + name + USD value + share %.</li>
@@ -156,7 +156,7 @@ function WidgetShell({
     <div
       className={cn(
         "relative flex w-full flex-col",
-        card && "rounded-2xl bg-bg-white-0 p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200",
+        card && "rounded-2xl bg-bg-white-0 p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200",
         className,
       )}
     >
@@ -232,7 +232,7 @@ function Legend({ rows }: { rows: Segment[]; total: number }) {
   const fmt = (v: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(v)
   return (
-    <div className="flex flex-1 flex-col gap-[13px]">
+    <div className="flex flex-1 flex-col gap-[12px]">
       {rows.map((s) => {
         const pct = s.share
         return (

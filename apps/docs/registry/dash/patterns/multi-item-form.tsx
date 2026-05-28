@@ -184,7 +184,7 @@ export function MultiItemForm({ onSubmit }: MultiItemFormProps = {}) {
           const rowErrors = errors[index] ?? {}
           return (
             <Card key={index}>
-              <CardContent className="space-y-3 pt-5">
+              <CardContent className="space-y-3 pt-6">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium uppercase tracking-wider text-text-soft-400">
                     Delivery #{index + 1}

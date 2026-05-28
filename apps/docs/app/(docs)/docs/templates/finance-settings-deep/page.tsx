@@ -117,7 +117,7 @@ export default function FinanceSettingsDeepOverviewPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Left rail</strong> — 264px
             fixed column on <code>lg+</code>, hidden below. Header: "Settings"
@@ -149,7 +149,7 @@ export default function FinanceSettingsDeepOverviewPage() {
       </DocsSection>
 
       <DocsSection title="Notes">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             Source mapped 1:1 from{" "}
             <code>app/settings/&lt;section&gt;/*.tsx</code> in the Finance

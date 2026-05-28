@@ -227,7 +227,7 @@ export default function HRScheduleWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>DayPicker</strong> — 7 columns. Active = primary disc + white text, inactive = stroke pill.</li>
           <li><strong>Search</strong> — medium Input + Cmd1 kbd + filter button.</li>
           <li><strong>Tabs</strong> — 3 horizontal tabs with leading icon and equal flex.</li>

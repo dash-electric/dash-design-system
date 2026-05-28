@@ -42,7 +42,7 @@ export default function ButtonEmailVerificationDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Trigger <code>Button</code> + controlled <code>Modal</code>.</li>
           <li>Modal body — heading + <code>InputOTP</code> + resend / manual-code links.</li>
           <li>Modal footer — Cancel + Verify primary action.</li>

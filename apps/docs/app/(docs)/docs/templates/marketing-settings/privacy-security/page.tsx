@@ -69,7 +69,7 @@ const SESSIONS: Array<{ id: string; icon: React.ElementType; label: string; loca
 
 function ActiveSessionsForm() {
   return (
-    <div className="flex w-full min-w-0 flex-col gap-5 p-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between md:gap-6">
         <div>
           <div className="text-sm font-medium text-text-strong-950">Active Sessions</div>
@@ -88,7 +88,7 @@ function ActiveSessionsForm() {
               <TableHead>Browser</TableHead>
               <TableHead>Location</TableHead>
               <TableHead>IP Address</TableHead>
-              <TableHead className="w-0 px-5" />
+              <TableHead className="w-0 px-6" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -106,7 +106,7 @@ function ActiveSessionsForm() {
                   </TableCell>
                   <TableCell className="h-12 text-sm text-text-sub-600">{s.location}</TableCell>
                   <TableCell className="h-12 text-sm text-text-sub-600">{s.ip}</TableCell>
-                  <TableCell className="h-12 w-0 px-5">
+                  <TableCell className="h-12 w-0 px-6">
                     <CompactButton variant="ghost" size="md" fullRadius aria-label="Revoke session">
                       <Close />
                     </CompactButton>
@@ -196,7 +196,7 @@ export default function MarketingSettingsPrivacySecurityPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>Sessions table: 532px min-width, 48px row height; browser cell uses 32px rounded-full faded badge holding the brand icon.</li>
           <li>Revoke action: <code>CompactButton</code> ghost / fullRadius / size=md, glyph = <code>RiCloseLine</code>.</li>
           <li>Header CTAs use xsmall stroke buttons; Log Out All uses <code>destructive</code> tone.</li>

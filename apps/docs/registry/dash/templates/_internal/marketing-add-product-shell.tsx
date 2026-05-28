@@ -98,7 +98,7 @@ export function MarketingAddProductShell({
         {/* Right: Preview */}
         <aside>
           <Card className="sticky top-6">
-            <CardContent className="p-5 space-y-4">
+            <CardContent className="p-6 space-y-4">
               <div>
                 <h3 className="text-sm font-semibold text-text-strong-950">Preview</h3>
                 <p className="text-xs text-text-sub-600">This is how your product will appear.</p>

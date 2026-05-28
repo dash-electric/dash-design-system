@@ -152,7 +152,7 @@ export function SettingsFieldRow({
   className,
 }: SettingsFieldRowProps) {
   return (
-    <div className={cn("flex flex-col gap-3 py-5 lg:flex-row lg:gap-8", className)}>
+    <div className={cn("flex flex-col gap-3 py-6 lg:flex-row lg:gap-8", className)}>
       <div className="lg:w-[420px] lg:shrink-0">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-medium text-text-strong-950">{label}</h3>

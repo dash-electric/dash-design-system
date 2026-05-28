@@ -49,7 +49,7 @@ const PROFILE_TABS = [
 function ProfileSettingsPanel() {
   return (
     <SectionCard>
-      <div className="flex gap-5">
+      <div className="flex gap-6">
         <Avatar size="3xl">
           <AvatarFallback>SW</AvatarFallback>
         </Avatar>
@@ -323,7 +323,7 @@ export default function HrSettingsDeepProfilePage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             Avatar upload row — <code>Avatar size=&quot;3xl&quot;</code> (64px) +
             label/hint block + <em>Upload</em> xs stroke button.

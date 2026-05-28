@@ -249,7 +249,7 @@ export default function PortalUsersPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Toolbar</b> — search input (300px) + Filter popover + <b>Invite User</b> primary button. Floating FAB on mobile.</li>
           <li><b>Table columns (super_admin)</b> — Name (Avatar+Name), Email, Outlet, Role, Status, Actions.</li>
           <li><b>Table columns (other roles)</b> — Name, Email, Role, Status, Actions (Outlet column hidden).</li>
@@ -260,7 +260,7 @@ export default function PortalUsersPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Use</b> for any tenant-scoped team directory where role + invite lifecycle matter.</li>
           <li><b>Use</b> the Avatar+Name compound cell whenever the row represents a person — the avatar carries identity faster than the email column.</li>
           <li><b>Don't</b> reuse the role badge palette for non-user contexts — Super Admin = primary purple is a brand contract.</li>

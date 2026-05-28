@@ -135,7 +135,7 @@ export function ThemeToggle() {
         title="Testing dark mode"
         description="Three ways to verify your build looks right both directions."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-2">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-2">
           <li>
             <strong className="text-text-strong-950">Toggle in-app:</strong>{" "}
             click the theme toggle (above). Halo-dash topbar ships one out of the box.

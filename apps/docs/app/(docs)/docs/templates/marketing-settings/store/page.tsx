@@ -200,7 +200,7 @@ function ContactInformationForm() {
 
 function DiscountReminderForm() {
   const row = (label: string, month: string, hint: string, on: boolean) => (
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-6">
       <Checkbox defaultChecked={on} />
       <div>
         <div className="flex flex-wrap items-center gap-1">
@@ -294,7 +294,7 @@ export default function MarketingSettingsStorePage() {
           title="Seasonal reminder opt-ins"
           description="3 checkboxes — Black Friday (November) and End of Season (January) checked by default; Summary Sale (June) off."
           preview={<StorePreview tab="Discount Reminder" />}
-          code={`<div className="flex items-center gap-5">
+          code={`<div className="flex items-center gap-6">
   <Checkbox defaultChecked />
   <div>
     <div className="flex gap-1">

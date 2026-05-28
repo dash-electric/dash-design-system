@@ -317,7 +317,7 @@ function PagedTable() {
           title="Teams members pagination"
           preview={
             <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 shadow-(--shadow-custom-sm) overflow-hidden">
-              <header className="flex items-center justify-between px-5 py-4 border-b border-stroke-soft-200">
+              <header className="flex items-center justify-between px-6 py-4 border-b border-stroke-soft-200">
                 <div className="inline-flex items-center gap-3">
                   <span className="size-8 rounded-full bg-bg-weak-50 inline-flex items-center justify-center text-icon-soft-400">
                     <Team className="size-4" />
@@ -332,7 +332,7 @@ function PagedTable() {
                   <Button size="icon-sm" tone="neutral" style="ghost" aria-label="Notifications"><Bell /></Button>
                 </div>
               </header>
-              <div className="px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
+              <div className="px-6 py-4 flex items-center justify-between gap-3 flex-wrap">
                 <div>
                   <div className="text-sm font-semibold text-text-strong-950">Members</div>
                   <div className="text-xs text-text-sub-600">Display all the team members and essential details.</div>
@@ -342,7 +342,7 @@ function PagedTable() {
                   <Button size="sm" tone="primary" leftIcon={<Add />}>Invite Member</Button>
                 </div>
               </div>
-              <div className="px-5 pb-3 flex items-center justify-between gap-3 flex-wrap">
+              <div className="px-6 pb-3 flex items-center justify-between gap-3 flex-wrap">
                 <div className="inline-flex items-center gap-1 rounded-md bg-bg-weak-50 p-1">
                   {["All", "Active", "Absent"].map((t, i) => (
                     <button
@@ -370,7 +370,7 @@ function PagedTable() {
                 <thead className="bg-bg-weak-50">
                   <tr className="text-left">
                     {["Member name","Title","Project","Member documents","Status"].map((c) => (
-                      <th key={c} className="px-5 py-2 text-[11px] uppercase tracking-wider text-text-soft-400 font-medium">{c}</th>
+                      <th key={c} className="px-6 py-2 text-[11px] uppercase tracking-wider text-text-soft-400 font-medium">{c}</th>
                     ))}
                   </tr>
                 </thead>
@@ -381,12 +381,12 @@ function PagedTable() {
                     ["Arthur Taylor",   "Entrepreneur / CEO",     "Spotify",       "taylor-arthur.pdf",  "Absent"],
                   ].map((row) => (
                     <tr key={row[0]} className="text-text-strong-950">
-                      {row.map((c, i) => <td key={i} className="px-5 py-3 text-sm">{c}</td>)}
+                      {row.map((c, i) => <td key={i} className="px-6 py-3 text-sm">{c}</td>)}
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <footer className="px-5 py-3 border-t border-stroke-soft-200 flex items-center justify-between gap-3 flex-wrap">
+              <footer className="px-6 py-3 border-t border-stroke-soft-200 flex items-center justify-between gap-3 flex-wrap">
                 <span className="text-sm text-text-sub-600">Page {pageFull} of {total}</span>
                 <PaginationRow current={pageFull} total={total} onSelect={setPageFull} />
                 <ItemsPerPage value={perPage} onChange={setPerPage} options={[7, 10, 25, 50]} />

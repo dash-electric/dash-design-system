@@ -567,7 +567,7 @@ export default function InputDocsPage() {
               <Field>
                 <Label required>Address</Label>
                 <div className="relative">
-                  <Textarea placeholder="Enter your full address here…" maxLength={200} className="min-h-[80px] pb-7" />
+                  <Textarea placeholder="Enter your full address here…" maxLength={200} className="min-h-[80px] pb-8" />
                   <span className="pointer-events-none absolute bottom-2 right-3 text-xs text-text-soft-400">0/200</span>
                 </div>
                 <Hint tone="neutral">Input your residential address for HR records.</Hint>

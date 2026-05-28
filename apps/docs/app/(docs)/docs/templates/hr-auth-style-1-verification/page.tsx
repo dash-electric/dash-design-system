@@ -40,7 +40,7 @@ export default function HRAuthStyle1VerificationPage() {
         />
       </DocsSection>
       <DocsSection title="Anatomy">
-        <ul className="list-disc pl-5 space-y-1.5 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1.5 text-sm text-text-sub-600">
           <li><strong>HeroIcon</strong> — RiMailCheckLine glyph.</li>
           <li><strong>Copy</strong> — "We&apos;ve sent a code to james@alignui.com".</li>
           <li><strong>InputOTP</strong> — 4-slot one-time code input.</li>

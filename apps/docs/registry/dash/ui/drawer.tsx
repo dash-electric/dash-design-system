@@ -14,7 +14,7 @@ import { cn } from "@/registry/dash/lib/utils"
  *   bg bg-white-0 | shadow-custom-shadows-large (matches 8-layer drop + inner)
  *
  * Sections:
- *   Header / Footer / Content all pad=20 (p-5)
+ *   Header / Footer / Content all pad=20 (p-6)
  *   Internal dividers: pad=6/20 (Content Divider [1.1])
  *
  * Sizes (Dash extension — Figma only ships 400px; we expose sm..xl + full):
@@ -143,7 +143,7 @@ const DrawerHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLD
     <div
       ref={ref}
       data-slot="drawer-header"
-      className={cn("flex flex-col gap-1 p-5 border-b border-stroke-soft-200", className)}
+      className={cn("flex flex-col gap-1 p-6 border-b border-stroke-soft-200", className)}
       {...props}
     />
   ),
@@ -181,7 +181,7 @@ const DrawerBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
     <div
       ref={ref}
       data-slot="drawer-body"
-      className={cn("flex-1 overflow-y-auto p-5", className)}
+      className={cn("flex-1 overflow-y-auto p-6", className)}
       {...props}
     />
   ),
@@ -194,7 +194,7 @@ const DrawerFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLD
       ref={ref}
       data-slot="drawer-footer"
       className={cn(
-        "flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-5 border-t border-stroke-soft-200",
+        "flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-6 border-t border-stroke-soft-200",
         className,
       )}
       {...props}

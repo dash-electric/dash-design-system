@@ -65,7 +65,7 @@ export default function PortalDashboardShellPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Sidebar header</strong> — clickable Dash logo + collapse toggle (<code>RiSidebarUnfoldLine</code>). Hotkey <code>⌘B</code> / <code>Ctrl+B</code>.</li>
           <li><strong>Main nav</strong> — section label “MAIN” (uppercase subheading-xs text-text-soft-400). Items: Deliveries · Address · Billing · Outlets · Users · Policies · Developers (filtered by <code>userRole</code> + feature flags + client config).</li>
           <li><strong>Settings & support</strong> — section label “OTHERS”: Settings · Support (WhatsApp) · Help (external dash-guides.lovable.app).</li>
@@ -78,7 +78,7 @@ export default function PortalDashboardShellPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>IconButton</code> — mobile menu trigger + collapse toggle.</li>
           <li><code>Avatar</code> + <code>DropdownMenu</code> — user profile button (UserButton in source).</li>
           <li><code>Tooltip</code> — notification bell blocked state.</li>
@@ -197,17 +197,17 @@ export function PortalSidebar() {
             </div>
           </div>
         </div>
-        <div className="px-5">
+        <div className="px-6">
           <div className="h-px bg-stroke-soft-200" />
         </div>
 
         {/* Nav */}
-        <div className="flex flex-1 flex-col gap-5 px-5 pb-4 pt-5">
+        <div className="flex flex-1 flex-col gap-6 px-6 pb-4 pt-6">
           <NavGroup label="Main" items={NAV_LINKS} />
           <NavGroup label="Others" items={OTHER_LINKS} />
         </div>
 
-        <div className="px-5">
+        <div className="px-6">
           <div className="h-px bg-stroke-soft-200" />
         </div>
 
@@ -271,8 +271,8 @@ function NavGroup({
 
 export function PortalDashboardHeader() {
   return (
-    <div className="sticky top-0 z-30 h-[90px] w-full bg-bg-white-0 px-8 py-5">
-      <header className="flex h-16 w-full items-center justify-between px-5 lg:justify-end">
+    <div className="sticky top-0 z-30 h-[90px] w-full bg-bg-white-0 px-8 py-6">
+      <header className="flex h-16 w-full items-center justify-between px-6 lg:justify-end">
         <IconButton style="ghost" tone="neutral" size="md" aria-label="Menu" className="lg:hidden">
           <RiMenuLine className="size-5" />
         </IconButton>

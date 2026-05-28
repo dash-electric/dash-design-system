@@ -58,7 +58,7 @@ export function FinanceRegister({
 
   return (
     <div className={cn("relative min-h-screen flex flex-col bg-bg-weak-50", className)}>
-      <header className="flex items-center justify-between px-6 py-5 lg:px-10">
+      <header className="flex items-center justify-between px-6 py-6 lg:px-10">
         {brand}
         <div className="flex items-center gap-2 text-sm text-text-sub-600">
           <span className="hidden sm:inline">Already have an account?</span>
@@ -203,7 +203,7 @@ export function FinanceRegister({
         </form>
       </main>
 
-      <footer className="flex flex-col items-center justify-between gap-2 px-6 py-5 sm:flex-row sm:px-10">
+      <footer className="flex flex-col items-center justify-between gap-2 px-6 py-6 sm:flex-row sm:px-10">
         <p className="text-xs text-text-sub-600">© 2024 Apex Financial</p>
         <p className="text-xs text-text-sub-600">ENG</p>
       </footer>

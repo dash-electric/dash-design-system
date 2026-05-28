@@ -183,7 +183,7 @@ export default function HintDocsPage() {
       <DocsSection title="Accessibility">
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• <strong>Role mapping</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">tone=&quot;error&quot;</code> renders <code className="text-xs">role=&quot;alert&quot;</code> + <code className="text-xs">aria-live=&quot;assertive&quot;</code>.</li>
               <li>Other tones render plain text — link via <code className="text-xs">aria-describedby</code> for SR announcement when the related field gains focus.</li>
             </ul>

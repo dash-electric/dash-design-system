@@ -44,7 +44,7 @@ export default function HRAuthStyle3LoginPage() {
         />
       </DocsSection>
       <DocsSection title="Anatomy">
-        <ul className="list-disc pl-5 space-y-1.5 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1.5 text-sm text-text-sub-600">
           <li><strong>Testimonial</strong> — title-h5 paragraph with "HR Management" bolded.</li>
           <li><strong>Author block</strong> — 48px purple avatar (Matthew Johnson) + name + role line.</li>
           <li><strong>Cropped image</strong> — rounded-l-20 product screenshot that bleeds off the right edge.</li>

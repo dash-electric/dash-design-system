@@ -41,7 +41,7 @@ export default function MyCardsStackDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Each card uses gradient + brand color + last-4 digit display.</li>
           <li><code>Eye / EyeOff</code> icon toggles balance/card-number masking.</li>
           <li>Bottom <code>Badge</code> + <code>Button</code> row for kind label + top-up CTA.</li>
@@ -50,7 +50,7 @@ export default function MyCardsStackDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on the mitra finance landing — pair with <code>FinanceDashboard</code> template.</li>
           <li><strong>Use</strong> for "Wallet" tab in any settings hub.</li>
           <li><strong>Don't</strong> use for full transaction history — that's <code>TransactionsTable</code>.</li>

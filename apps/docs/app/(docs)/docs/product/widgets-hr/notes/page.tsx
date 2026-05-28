@@ -132,7 +132,7 @@ export default function HRNotesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Check toggle</strong> — circle-line ↔ check-circle-fill. Success-base when checked. Animates 200ms.</li>
           <li><strong>Body</strong> — title (label-sm) + description (sm sub-600). Strikethrough state muted to soft-400.</li>
           <li><strong>Badges row</strong> — wrapped row of lighter badges. Disabled tone when note is checked.</li>

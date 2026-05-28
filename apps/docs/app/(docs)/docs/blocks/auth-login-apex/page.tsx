@@ -35,7 +35,7 @@ export default function AuthLoginApexDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Icon-only 3-up SSO row via <code>grid grid-cols-3 gap-3</code>.</li>
           <li>Remember + forgot row sits between the form and the CTA.</li>
           <li>Designed for the Halo-dash internal ops portal.</li>

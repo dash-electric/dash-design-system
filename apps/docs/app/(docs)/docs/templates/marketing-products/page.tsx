@@ -61,7 +61,7 @@ export default function MarketingProductsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Header</b> — Shopping bag icon disc + “My Products” + subtitle + New Product CTA.</li>
           <li><b>Summary</b> — 4 KPI tiles: Total Products 248 (+12 this week), Active Listings 186 (+2% of total), Total Sales 8,944 (+2.1% this week), Total Revenue $8,944 (-0.5% vs last week).</li>
           <li><b>Toolbar</b> — Search products… input + Grid/List RadioGroup + Last 7 days + Newest + Filter.</li>
@@ -70,7 +70,7 @@ export default function MarketingProductsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>InputRoot / Input / InputIcon — Search.</li>
           <li>RadioGroup — Grid/List view toggle.</li>
           <li>CompactButton — card top-right more menu.</li>
@@ -164,7 +164,7 @@ function ProductsPreview() {
 
 function Tile({ label, value, delta, suffix, up }: { label: string; value: string; delta?: string; suffix: string; up?: boolean }) {
   return (
-    <div className="px-7 first:pl-0 last:pr-0">
+    <div className="px-8 first:pl-0 last:pr-0">
       <div className="text-xs text-text-sub-600">{label}</div>
       <div className="mt-1 flex items-baseline gap-1.5">
         <div className="text-xl font-semibold tracking-tight text-text-strong-950">{value}</div>
@@ -277,7 +277,7 @@ function ProductImage() {
 function EditProductPanel() {
   return (
     <aside className="flex h-fit flex-col self-start rounded-2xl border border-stroke-soft-200 bg-bg-white-0 shadow-regular-xs">
-      <header className="flex items-start gap-3 p-5">
+      <header className="flex items-start gap-3 p-6">
         <div className="flex-1">
           <div className="text-base font-semibold text-text-strong-950">Edit Product</div>
           <div className="mt-1 text-sm text-text-sub-600">Apple Watch S5 GPS 40mm White</div>
@@ -287,7 +287,7 @@ function EditProductPanel() {
         </button>
       </header>
 
-      <div className="space-y-4 px-5 pb-5">
+      <div className="space-y-4 px-6 pb-6">
         <div>
           <div className="text-xs font-medium text-text-strong-950">Product name</div>
           <div className="mt-1.5 inline-flex h-9 w-full items-center rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-2.5 text-sm text-text-strong-950 shadow-regular-xs">
@@ -346,7 +346,7 @@ function EditProductPanel() {
       </div>
 
       <div className="mt-auto border-t border-stroke-soft-200">
-        <div className="grid grid-cols-2 gap-4 p-5">
+        <div className="grid grid-cols-2 gap-4 p-6">
           <FakeButton>Cancel</FakeButton>
           <FakeButton tone="primary">Save Changes</FakeButton>
         </div>

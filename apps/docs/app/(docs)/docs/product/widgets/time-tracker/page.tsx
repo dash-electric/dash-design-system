@@ -120,7 +120,7 @@ export default function TimeTrackerWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Project picker</strong> — brand glyph (rounded square) + name + chevron. Sits in the widget header slot.</li>
           <li><strong>State label</strong> — micro-uppercase "Awaiting" / "ongoing" above the clock.</li>
           <li><strong>Clock</strong> — font-mono, 24px, tabular-nums. Seconds segment muted to text-soft-400.</li>
@@ -129,7 +129,7 @@ export default function TimeTrackerWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Usage">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Drive the state from the parent — never let the widget self-toggle in unit tests.</li>
           <li>Keep the clock visually anchored: do not animate the seconds digit width as it ticks.</li>
           <li>If no project is selected, render the picker placeholder ("Select a project") and disable Start.</li>

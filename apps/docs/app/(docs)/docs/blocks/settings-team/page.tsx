@@ -36,7 +36,7 @@ export default function SettingsTeamDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Invite row — email <code>InputRoot</code> + role <code>Select</code> + Send <code>Button</code>.</li>
           <li>Active members table — <code>Avatar</code> + name + email + role + last active + overflow menu.</li>
           <li>Pending invites section — list with Resend/Cancel actions.</li>
@@ -45,7 +45,7 @@ export default function SettingsTeamDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on Settings → Team tab for tribe leadership.</li>
           <li><strong>Use</strong> for any per-org membership management.</li>
           <li><strong>Don't</strong> use for tribe-wide directory (read-only roster) — use <code>TeamGrid</code>.</li>

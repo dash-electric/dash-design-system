@@ -32,7 +32,7 @@ import { cn } from "@/registry/dash/lib/utils"
  *
  * Two variants exist in source:
  *   - ProductCategories (bare, no card chrome) — used inside larger layouts.
- *   - WidgetProductCategories (rounded-2xl + p-5 + ring + shadow) — standalone widget.
+ *   - WidgetProductCategories (rounded-2xl + p-6 + ring + shadow) — standalone widget.
  */
 
 type Category = {
@@ -97,7 +97,7 @@ function ProductCategoriesBody({ withCard }: { withCard: boolean }) {
     <div
       className={cn(
         "relative flex w-full flex-col",
-        withCard && "rounded-2xl bg-bg-white-0 p-5 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200",
+        withCard && "rounded-2xl bg-bg-white-0 p-6 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200",
       )}
     >
       <div className="flex items-start gap-2">
@@ -195,7 +195,7 @@ export default function ProductCategoriesWidgetPage() {
         <DocsExample
           title="No categories"
           preview={
-            <div className="max-w-sm mx-auto rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200 space-y-3">
+            <div className="max-w-sm mx-auto rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200 space-y-3">
               <div className="text-sm font-medium text-text-sub-600">Product Categories</div>
               <div className="h-8 w-full rounded-sm bg-bg-soft-200" />
               <div className="text-xs text-text-soft-400">Add products to populate categories.</div>
@@ -209,14 +209,14 @@ export default function ProductCategoriesWidgetPage() {
         <DocsPropsTable
           rows={[
             { name: "categories", type: "{ id, label, value, products, growth, weeklyGrowth }[]", description: "Rotated via prev/next arrows. value drives the ProgressChart fill." },
-            { name: "variant", type: '"card" | "bare"', defaultValue: '"card"', description: 'Card adds rounded-2xl + p-5 + ring + shadow. Bare omits all chrome.' },
+            { name: "variant", type: '"card" | "bare"', defaultValue: '"card"', description: 'Card adds rounded-2xl + p-6 + ring + shadow. Bare omits all chrome.' },
             { name: "onDetails", type: "() => void", description: "Click handler for the top-right Details button." },
           ]}
         />
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Header: 14px label + tooltip, 24px KPI + 12px sub-line "+X% vs last week", Details button right.</li>
           <li>Progress: 32px striped bar, 6px pegs every 9px (matches Progress chart Variant A).</li>
           <li>Footer left: category label + paired prev/next arrows (5×5 buttons, stroke-soft ring).</li>

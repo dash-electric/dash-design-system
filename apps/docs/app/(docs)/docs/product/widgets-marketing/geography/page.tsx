@@ -123,7 +123,7 @@ export default function GeographyWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card shell with standard header (count + flag chip beside it).</li>
           <li>Ringed demographics pill: Men · Women · Other with percentages.</li>
           <li>Map canvas (224px). Dotted background + positioned markers.</li>
@@ -140,7 +140,7 @@ export default function GeographyWidgetPage() {
 
 function WidgetShell({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("relative flex w-full flex-col gap-4 rounded-2xl bg-bg-white-0 p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200", className)}>
+    <div className={cn("relative flex w-full flex-col gap-4 rounded-2xl bg-bg-white-0 p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200", className)}>
       {children}
     </div>
   )
@@ -170,7 +170,7 @@ function HeaderRow({ location }: { location: LocationData }) {
 
 function DemographicsPill({ demographics }: { demographics: { men: number; women: number; other: number } }) {
   return (
-    <div className="flex h-7 w-full items-center gap-[3px] rounded-lg bg-bg-white-0 px-1.5 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
+    <div className="flex h-7 w-full items-center gap-[2px] rounded-lg bg-bg-white-0 px-1.5 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex-1 text-center text-[10px] text-text-soft-400">
         Men <span className="text-text-sub-600">{demographics.men}%</span>
       </div>

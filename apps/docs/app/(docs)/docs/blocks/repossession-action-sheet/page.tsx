@@ -240,7 +240,7 @@ export default function RepossessionActionSheetDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             Bottom <code>Drawer</code> (<code>side=&quot;bottom&quot;</code>,{" "}
             <code>size=&quot;xl&quot;</code>) — designed to coexist with the
@@ -283,7 +283,7 @@ viewer         → ∅ (read-only — empty-state copy rendered)`}
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Use</strong> on the Tribe-Express repossession detail
             screen (mobile field-ops app + fleet-manager backoffice).
@@ -370,7 +370,7 @@ viewer         → ∅ (read-only — empty-state copy rendered)`}
           legal/financial entity MUST persist a row in{" "}
           <code>t_repossession_audit_log</code>:
         </p>
-        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-5 max-w-3xl">
+        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-6 max-w-3xl">
           <li>
             <code>action</code> (<code>RepoAction</code>) + previous +{" "}
             <code>next</code> status

@@ -36,7 +36,7 @@ export default function SettingsPrivacySecurityDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Password row — current + new + confirm with strength meter.</li>
           <li>MFA — <code>Switch</code> toggle + recovery code download.</li>
           <li>Active sessions — list with device + location + last active + Revoke button per row.</li>
@@ -45,7 +45,7 @@ export default function SettingsPrivacySecurityDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on Settings → Privacy & security tab.</li>
           <li><strong>Use</strong> when GDPR-style user controls are required (data export, deletion).</li>
           <li><strong>Don't</strong> use for org-wide security policies — those are admin-only and belong elsewhere.</li>
