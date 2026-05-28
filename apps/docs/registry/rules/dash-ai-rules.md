@@ -869,6 +869,17 @@ Examples:
 
 ## Audit Trail (MANDATORY for user-editable fields carrying legal/financial weight)
 
+> **Enforcement note (per RULE-REALITY-AUDIT-2026-05-28 A11):** rule is correct
+> but currently enforced by **naming convention + reviewer attention** only.
+> The DS ships audit-aware blocks (`inline-edit-with-audit`, `image-editor-with-audit`,
+> `bulk-upload-with-status`, `audit-history-table`). A machine lint
+> (`dash audit --rule audit-trail`) is planned to flag any form-block touching
+> `payment|signature|kyc|image-proof|legal` keywords without importing an audit
+> primitive. Until that lands, treat the rule as **advisory but mandatory in
+> review**; reviewers must reject PRs that touch these fields without the
+> audit primitive.
+
+
 Applies to **any field** whose mutation could be the subject of a mitra dispute, regulator audit, or financial reconciliation:
 - Image proof (POD = proof of delivery, POP = proof of pickup, KYC documents)
 - Payment amounts (top-up, payout, adjustment, refund)
