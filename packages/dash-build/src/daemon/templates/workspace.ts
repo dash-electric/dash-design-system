@@ -172,6 +172,28 @@ export function renderWorkspace(
   // The tab strip lives on the workspace shell below, not on the panel itself
   // (see preview-panel.ts header note). Sandpack auto-bootstraps via
   // /static/preview-mount.js (loaded from layout).
+  // Open WebUI #A4 — derive split-view metadata from the cold-load blob.
+  // When variantsSnapshot is present and has >=2 entries, the preview panel
+  // renders two Sandpack mounts side-by-side; otherwise the single-mount
+  // path stays in place (default behaviour).
+  const variantsState =
+    initialBlob &&
+    initialBlob.variantsSnapshot &&
+    initialBlob.variantsSnapshot.list.length >= 2
+      ? {
+          active: initialBlob.variantsSnapshot.active,
+          list: initialBlob.variantsSnapshot.list.map((v) => ({
+            id: v.id,
+            summary: v.summary,
+            score: v.score,
+            passed: v.passed,
+            fileCount: v.fileCount,
+            componentPath: v.componentPath,
+            temperature: v.temperature,
+          })),
+        }
+      : null
+
   const previewPanel = renderPreviewPanel({
     componentId,
     promptId: opts.runId ?? null,
@@ -184,6 +206,7 @@ export function renderWorkspace(
     validationSnapshot: initialBlob
       ? initialBlob.validationSnapshot ?? null
       : null,
+    variants: variantsState,
   })
   const initialPreviewScript = renderInitialPreviewScript(initialBlob)
 

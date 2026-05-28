@@ -14,6 +14,7 @@
 import { toastContainer } from "./components/toast.js"
 import { themeToggle } from "./components/theme-toggle.js"
 import { renderWsIndicator } from "./components/ws-indicator.js"
+import { renderSearchModal } from "./components/search-modal.js"
 
 export function escapeHtml(value: string): string {
   return value
@@ -104,6 +105,7 @@ export function renderLayout(opts: LayoutOptions): string {
     </main>
     ${footer}
     ${toastContainer()}
+    ${renderSearchModal()}
     <script src="/static/app.js"></script>
     <script src="/static/preview-mount.js" defer></script>
   </body>

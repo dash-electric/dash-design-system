@@ -28,8 +28,11 @@ import {
   DEFAULT_RUNS_ROOT,
   readIntakeSnapshot,
   readRunPatches,
+  readVariantComponentSource,
+  readVariantsManifest,
   resolveRunDir,
   type IntakeSnapshot,
+  type VariantsManifest,
 } from "../runs/artifact-store.js"
 import {
   detectBannedImports,
@@ -85,6 +88,26 @@ export interface PreviewInitialBlob {
    * (rule ids hit, severity counts, pass/fail).
    */
   validationSnapshot?: ValidationSnapshot
+  /**
+   * Open WebUI #A4 — A/B variants cold-load payload. When the run was
+   * generated with `variantCount=2`, the orchestrator persists both variant
+   * sources to `<runDir>/variants/<id>/`. The cold-load reads them and ships
+   * them inline so the workspace template can mount the split-view on first
+   * paint (no extra round-trips). Absent for single-variant runs.
+   */
+  variantsSnapshot?: {
+    active: string
+    list: Array<{
+      id: string
+      summary: string
+      score: number
+      passed: boolean
+      fileCount: number
+      componentPath: string | null
+      temperature: number | null
+      componentSource: string
+    }>
+  }
 }
 
 interface DiscoveredFile {
@@ -608,6 +631,19 @@ export async function loadInitialPreview(
   const validationSnapshot =
     buildValidationSnapshot(validationEvents) ?? undefined
 
+  // Open WebUI #A4 — load A/B variants snapshot when present. Best-effort:
+  // missing/malformed manifest degrades to single-variant cold-load. We also
+  // require at least one variant to have a readable component-source.txt;
+  // otherwise the split-view can't render.
+  const variantsManifest = await readVariantsManifest(resolvedId, root).catch(
+    () => null,
+  )
+  let variantsSnapshot: PreviewInitialBlob["variantsSnapshot"]
+  if (variantsManifest) {
+    const built = await loadVariantsSnapshot(variantsManifest, resolvedId, root)
+    if (built) variantsSnapshot = built
+  }
+
   return {
     componentId: resolvedId,
     componentSource: picked.content,
@@ -622,6 +658,41 @@ export async function loadInitialPreview(
     auditSnapshot,
     filesSnapshot,
     validationSnapshot,
+    variantsSnapshot,
+  }
+}
+
+/**
+ * Open WebUI #A4 — read each variant's component-source.txt and zip it with
+ * the manifest entry so the workspace template can render the split view on
+ * first paint. Returns null when no variant has a readable source.
+ */
+async function loadVariantsSnapshot(
+  manifest: VariantsManifest,
+  runId: string,
+  root: string,
+): Promise<PreviewInitialBlob["variantsSnapshot"] | null> {
+  const list: NonNullable<PreviewInitialBlob["variantsSnapshot"]>["list"] = []
+  for (const entry of manifest.list) {
+    const source = await readVariantComponentSource(runId, entry.id, root).catch(
+      () => null,
+    )
+    if (source === null) continue
+    list.push({
+      id: entry.id,
+      summary: entry.summary,
+      score: entry.score,
+      passed: entry.passed,
+      fileCount: entry.fileCount,
+      componentPath: entry.componentPath,
+      temperature: entry.temperature,
+      componentSource: source,
+    })
+  }
+  if (list.length === 0) return null
+  return {
+    active: manifest.active,
+    list,
   }
 }
 

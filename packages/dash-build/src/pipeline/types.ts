@@ -39,6 +39,15 @@ export interface SubmitPromptInput {
   text: string
   repo?: string | null
   branch?: string | null
+  /**
+   * Open WebUI #A4 — opt-in A/B split-view comparison. When 2, the orchestrator
+   * runs the skill chain twice in parallel with slight temperature variation
+   * (0.7 vs 0.9) and persists both outputs so the UI can render a split-view
+   * comparison. Default 1 (single-variant — preserves the existing flow byte
+   * for byte). Values >2 are clamped to 2 to keep parallel LLM cost
+   * predictable.
+   */
+  variantCount?: number
 }
 
 export interface SubmitPromptResult {
@@ -100,6 +109,26 @@ export interface GenerationArtifact {
    *  active, `byo-key` when the encrypted OpenAI key was used, `none` when
    *  the stub provider ran (tests). Persisted in `<runDir>/run.json`. */
   providerMode?: "codex-cli" | "byo-key" | "none" | null
+  /**
+   * Open WebUI #A4 — A/B variants surfaced to the UI. When the run was
+   * submitted with `variantCount: 2`, the orchestrator runs the skill chain
+   * twice in parallel and records each output here. The `active` field
+   * tracks the user's pick (defaults to the better-scoring variant);
+   * `<runDir>/files/` mirrors the active variant so downstream PR creation
+   * keeps working unchanged. Absent for single-variant runs.
+   */
+  variants?: {
+    active: string
+    list: Array<{
+      id: string
+      summary: string
+      score: number
+      passed: boolean
+      fileCount: number
+      componentPath: string | null
+      temperature: number | null
+    }>
+  }
 }
 
 /**
@@ -165,6 +194,20 @@ export interface SkillChainRunner {
     anthropic: AnthropicLike
     /** BE-aware intake context. Optional so legacy tests/stubs still work. */
     intake?: IntakeContext
+    /**
+     * Open WebUI #A4 — variant hint for A/B mode. When set, the chain runner
+     * is invited to diversify the output (e.g. nudge temperature, append a
+     * disambiguating suffix). Single-letter id ('a' / 'b'). Optional so the
+     * default single-variant flow stays unchanged.
+     */
+    variantId?: string
+    /**
+     * Open WebUI #A4 — explicit temperature override for the variant. The
+     * default runner forwards this to the prompt suffix so the LLM nudges
+     * toward divergent outputs. Optional; when omitted the chain uses its
+     * default model temperature.
+     */
+    temperature?: number
   }): Promise<GenerateResult>
 }
 

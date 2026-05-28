@@ -66,6 +66,11 @@ interface NavItem {
 
 const PRIMARY_NAV: NavItem[] = [
   { id: "home", label: "Home", icon: "⌂", href: "/" },
+  // Search is a modal toggle, not a route. The href stays so middle-click /
+  // right-click "open in new tab" surface a sane fallback (the home page).
+  // The client intercepts left-clicks via [data-search-modal-open] and shows
+  // the command-K dialog instead — keeps the icon discoverable for users
+  // who don't know the Cmd/Ctrl+K shortcut.
   { id: "search", label: "Search", icon: "🔍", href: "/?nav=search" },
   { id: "resources", label: "Resources", icon: "◇", href: "/?nav=resources" },
   { id: "connectors", label: "Connectors", icon: "🔗", href: "/?nav=connectors" },
@@ -98,7 +103,11 @@ function renderNavList(
       // tooltip fires on hover for both expanded + collapsed states; the
       // aria-label gives assistive tech a stable name when collapsed.
       const label = escapeHtml(item.label)
-      return `<a class="${cls}" href="${escapeHtml(item.href)}"${aria} title="${label}" aria-label="${label}">
+      // Sidebar Search row doubles as the modal trigger — the client-side
+      // delegate in app.ts watches [data-search-modal-open] for clicks.
+      // We keep the href + native anchor for keyboard / middle-click users.
+      const extra = item.id === "search" ? ' data-search-modal-open="true"' : ""
+      return `<a class="${cls}" href="${escapeHtml(item.href)}"${aria}${extra} title="${label}" aria-label="${label}">
         <span class="db-sidebar-nav-icon" aria-hidden="true">${escapeHtml(item.icon)}</span>
         <span class="db-sidebar-nav-label">${label}</span>
       </a>`

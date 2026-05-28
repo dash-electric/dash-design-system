@@ -588,6 +588,14 @@ export const DASHBOARD_JS = `
     var payload = { text: text };
     if (repoSelect && repoSelect.value) payload.repo = repoSelect.value;
     if (branchInput && branchInput.value) payload.branch = branchInput.value;
+    // Open WebUI '#' adoption — include attached doc ids so the orchestrator
+    // can inject the referenced doc bodies into the LLM prompt.
+    try {
+      var attached = JSON.parse(input.getAttribute("data-attached-docs") || "[]");
+      if (Array.isArray(attached) && attached.length > 0) {
+        payload.attachedDocs = attached;
+      }
+    } catch (e) { /* defensive — ignore malformed attribute */ }
 
     // Optimistic chat bubbles — append user msg + running builder placeholder.
     appendChatMessage("user", text, "ok");
@@ -604,6 +612,8 @@ export const DASHBOARD_JS = `
       })
       .then(function (resp) {
         input.value = "";
+        // Reset attached docs alongside the textarea content.
+        try { input.setAttribute("data-attached-docs", "[]"); } catch (e) {}
         if (pendingBuilder && resp && resp.id) {
           pendingBuilder.setAttribute("data-prompt-id", resp.id);
         }
@@ -698,6 +708,198 @@ export const DASHBOARD_JS = `
       });
     });
   }
+
+  // ---------- Doc-attach autocomplete (Open WebUI '#' adoption) ----------
+  // Detects '#word' tokens in the composer textarea, fetches matching docs
+  // from /api/docs, renders a floating dropdown, and tracks selected doc
+  // ids on the textarea's data-attached-docs attribute. On submit, the IDs
+  // are sent in the POST body so the orchestrator can inject doc bodies
+  // into the LLM prompt as referenced context.
+  function wireDocAttach(textarea) {
+    if (!textarea) return;
+    var dropdown = document.getElementById("db-doc-attach");
+    var listEl = document.getElementById("db-doc-attach-list");
+    if (!dropdown || !listEl) return;
+    var emptyEl = dropdown.querySelector(".db-doc-attach-empty");
+    var DEBOUNCE_MS = 140;
+    var debounceTimer = null;
+    var fetchSeq = 0;
+    var currentResults = [];
+    var selectedIdx = -1;
+    var lastTokenMeta = null;
+
+    function setState(state) {
+      dropdown.setAttribute("data-state", state);
+      dropdown.setAttribute("aria-expanded", state === "open" ? "true" : "false");
+    }
+    function getAttachedDocs() {
+      try {
+        var raw = textarea.getAttribute("data-attached-docs") || "[]";
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) { return []; }
+    }
+    function setAttachedDocs(ids) {
+      try {
+        textarea.setAttribute("data-attached-docs", JSON.stringify(ids));
+      } catch (e) { /* defensive */ }
+    }
+    function close() {
+      setState("hidden");
+      currentResults = [];
+      selectedIdx = -1;
+      lastTokenMeta = null;
+      listEl.innerHTML = "";
+      if (emptyEl) emptyEl.hidden = true;
+    }
+    function detectToken() {
+      // Match '#word' at the cursor — token must be preceded by whitespace
+      // or beginning of input so we don't trigger on '#' inside URLs/hashes.
+      if (typeof textarea.selectionStart !== "number") return null;
+      var pos = textarea.selectionStart;
+      var before = textarea.value.slice(0, pos);
+      var m = before.match(/(?:^|\\s)#([\\w\\-]*)$/);
+      if (!m) return null;
+      var token = m[1];
+      var hashStart = before.length - token.length - 1; // index of '#'
+      return { token: token, hashStart: hashStart, cursor: pos };
+    }
+    function renderList(results) {
+      currentResults = results;
+      listEl.innerHTML = "";
+      if (results.length === 0) {
+        if (emptyEl) emptyEl.hidden = false;
+        selectedIdx = -1;
+        return;
+      }
+      if (emptyEl) emptyEl.hidden = true;
+      var cap = Math.min(6, results.length);
+      for (var i = 0; i < cap; i++) {
+        var doc = results[i];
+        var li = document.createElement("li");
+        li.className = "db-doc-attach-item";
+        li.setAttribute("role", "option");
+        li.setAttribute("data-doc-id", doc.id);
+        li.setAttribute("data-doc-name", doc.name);
+        li.setAttribute("data-index", String(i));
+        li.setAttribute("aria-selected", i === 0 ? "true" : "false");
+        var name = document.createElement("span");
+        name.className = "db-doc-attach-item-name";
+        name.textContent = "#" + doc.name;
+        li.appendChild(name);
+        if (doc.excerpt) {
+          var excerpt = document.createElement("span");
+          excerpt.className = "db-doc-attach-item-excerpt";
+          excerpt.textContent = doc.excerpt.length > 60 ? doc.excerpt.slice(0, 60) + "…" : doc.excerpt;
+          li.appendChild(excerpt);
+        }
+        listEl.appendChild(li);
+      }
+      selectedIdx = 0;
+    }
+    function highlight(idx) {
+      var items = listEl.querySelectorAll(".db-doc-attach-item");
+      for (var i = 0; i < items.length; i++) {
+        items[i].setAttribute("aria-selected", i === idx ? "true" : "false");
+      }
+      selectedIdx = idx;
+      if (idx >= 0 && items[idx] && typeof items[idx].scrollIntoView === "function") {
+        items[idx].scrollIntoView({ block: "nearest" });
+      }
+    }
+    function selectAt(idx) {
+      if (idx < 0 || idx >= currentResults.length) return;
+      var doc = currentResults[idx];
+      if (!doc || !lastTokenMeta) return;
+      var ids = getAttachedDocs();
+      if (ids.indexOf(doc.id) < 0) {
+        ids.push(doc.id);
+        setAttachedDocs(ids);
+      }
+      // Replace '#word' with '#<doc-name> ' so the cursor moves past it.
+      var before = textarea.value.slice(0, lastTokenMeta.hashStart);
+      var after = textarea.value.slice(lastTokenMeta.cursor);
+      var replacement = "#" + doc.name + " ";
+      textarea.value = before + replacement + after;
+      var newCursor = (before + replacement).length;
+      try { textarea.setSelectionRange(newCursor, newCursor); } catch (e) {}
+      close();
+      textarea.focus();
+    }
+    function fetchAndShow(token) {
+      var mySeq = ++fetchSeq;
+      var url = "/api/docs?limit=6";
+      if (token) url += "&q=" + encodeURIComponent(token);
+      fetch(url, { headers: { Accept: "application/json" } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (resp) {
+          if (mySeq !== fetchSeq) return; // stale response
+          if (!resp || !resp.ok || !Array.isArray(resp.docs)) {
+            close();
+            return;
+          }
+          if (resp.docs.length === 0 && token) {
+            // Token present but no matches — still show empty card so the
+            // user knows the picker is alive.
+            currentResults = [];
+            listEl.innerHTML = "";
+            if (emptyEl) emptyEl.hidden = false;
+            setState("open");
+            return;
+          }
+          renderList(resp.docs);
+          setState("open");
+        })
+        .catch(function () { close(); });
+    }
+    textarea.addEventListener("input", function () {
+      if (debounceTimer) { clearTimeout(debounceTimer); }
+      debounceTimer = setTimeout(function () {
+        var meta = detectToken();
+        if (!meta) { close(); return; }
+        lastTokenMeta = meta;
+        fetchAndShow(meta.token);
+      }, DEBOUNCE_MS);
+    });
+    textarea.addEventListener("keydown", function (ev) {
+      if (dropdown.getAttribute("data-state") !== "open") return;
+      if (ev.key === "ArrowDown") {
+        ev.preventDefault();
+        highlight(Math.min(currentResults.length - 1, selectedIdx + 1));
+      } else if (ev.key === "ArrowUp") {
+        ev.preventDefault();
+        highlight(Math.max(0, selectedIdx - 1));
+      } else if (ev.key === "Enter" && selectedIdx >= 0) {
+        ev.preventDefault();
+        selectAt(selectedIdx);
+      } else if (ev.key === "Escape") {
+        ev.preventDefault();
+        close();
+      }
+    });
+    listEl.addEventListener("mousedown", function (ev) {
+      // mousedown not click so we beat the textarea blur.
+      var item = ev.target && ev.target.closest ? ev.target.closest(".db-doc-attach-item") : null;
+      if (!item) return;
+      ev.preventDefault();
+      var idx = Number(item.getAttribute("data-index"));
+      if (Number.isFinite(idx)) selectAt(idx);
+    });
+    listEl.addEventListener("mousemove", function (ev) {
+      var item = ev.target && ev.target.closest ? ev.target.closest(".db-doc-attach-item") : null;
+      if (!item) return;
+      var idx = Number(item.getAttribute("data-index"));
+      if (Number.isFinite(idx) && idx !== selectedIdx) highlight(idx);
+    });
+    textarea.addEventListener("blur", function () {
+      // Defer so a click on the list still registers before close.
+      setTimeout(close, 120);
+    });
+  }
+  // Expose for tests + external triggers.
+  window.dashBuildWireDocAttach = wireDocAttach;
+  // Auto-wire on boot — the composer is rendered once per page.
+  wireDocAttach(document.getElementById("db-prompt-input"));
 
   // ---------- Resizable chat/workspace split ----------
   function bootChatResizer() {
@@ -1990,6 +2192,268 @@ export const DASHBOARD_JS = `
     hookWorkspaceState();
   }
   bootLovableShell();
+
+  // ---------- Search modal (Open WebUI adoption) -----------------------
+  // Global Cmd/Ctrl+K opens the dialog; Esc closes; arrow keys navigate the
+  // result list. Backend at GET /api/search?q=… searches runs/projects/files.
+  //
+  // Result row click routes:
+  //   type=run  → /workspace/<runId>
+  //   type=file → /workspace/<runId>#tab=files (file path passed via hash)
+  //   type=project → /?projects=all&active=<projectId>
+  var SEARCH_DEBOUNCE_MS = 200;
+  var searchModal = document.getElementById("db-search-modal");
+  var searchInput = searchModal
+    ? searchModal.querySelector("[data-search-modal-input]")
+    : null;
+  var searchResults = searchModal
+    ? searchModal.querySelector("[data-search-modal-results]")
+    : null;
+  var searchStatus = searchModal
+    ? searchModal.querySelector("[data-search-modal-status]")
+    : null;
+  var searchDebounceTimer = null;
+  var searchRequestSeq = 0;
+  var searchActiveIndex = -1;
+
+  function openSearchModal() {
+    if (!searchModal) return;
+    searchModal.setAttribute("data-open", "true");
+    searchModal.setAttribute("aria-hidden", "false");
+    if (searchInput) {
+      try { searchInput.focus(); searchInput.select(); }
+      catch (e) { /* defensive */ }
+    }
+  }
+
+  function closeSearchModal() {
+    if (!searchModal) return;
+    searchModal.setAttribute("data-open", "false");
+    searchModal.setAttribute("aria-hidden", "true");
+    // Reset selection so reopens start fresh.
+    searchActiveIndex = -1;
+  }
+
+  function isSearchModalOpen() {
+    return !!(
+      searchModal && searchModal.getAttribute("data-open") === "true"
+    );
+  }
+
+  function formatSearchTimestamp(value) {
+    if (!value) return "";
+    var d = new Date(value);
+    if (isNaN(d.getTime())) return "";
+    var now = Date.now();
+    var diffMs = now - d.getTime();
+    var diffMin = Math.round(diffMs / 60000);
+    if (diffMin < 1) return "just now";
+    if (diffMin < 60) return diffMin + "m ago";
+    var diffHr = Math.round(diffMin / 60);
+    if (diffHr < 24) return diffHr + "h ago";
+    var diffDay = Math.round(diffHr / 24);
+    if (diffDay < 30) return diffDay + "d ago";
+    return d.toLocaleDateString();
+  }
+
+  function searchResultHref(r) {
+    if (!r) return "/";
+    if (r.type === "run" || r.type === "file") {
+      var base = "/workspace/" + encodeURIComponent(r.runId || r.id);
+      if (r.type === "file" && r.path) {
+        return base + "#tab=files&file=" + encodeURIComponent(r.path);
+      }
+      return base;
+    }
+    if (r.type === "project") {
+      return "/?projects=all&active=" + encodeURIComponent(r.id);
+    }
+    return "/";
+  }
+
+  function renderSearchResults(payload) {
+    if (!searchResults || !searchStatus) return;
+    var list = (payload && payload.results) || [];
+    if (list.length === 0) {
+      searchResults.innerHTML = "";
+      searchStatus.removeAttribute("hidden");
+      searchStatus.textContent = payload && payload.q
+        ? "No matches for \\"" + payload.q + "\\""
+        : "Type to search across runs, projects, and files.";
+      searchActiveIndex = -1;
+      return;
+    }
+    searchStatus.setAttribute("hidden", "");
+    var html = "";
+    for (var i = 0; i < list.length; i++) {
+      var r = list[i];
+      var badge = String(r.type || "").toUpperCase();
+      var label = escapeHtml(r.label || r.id || "");
+      var snippet = r.snippet ? escapeHtml(r.snippet) : "";
+      var ts = formatSearchTimestamp(r.timestamp);
+      html += '<li role="option">' +
+        '<button type="button" class="db-search-modal-result"' +
+        ' data-search-result-index="' + i + '"' +
+        ' data-search-result-href="' + escapeHtml(searchResultHref(r)) + '"' +
+        '>' +
+        '<span class="db-search-modal-result-head">' +
+        '<span class="db-search-modal-result-badge" data-type="' + escapeHtml(r.type || "") + '">' + escapeHtml(badge) + '</span>' +
+        '<span class="db-search-modal-result-label">' + label + '</span>' +
+        (ts ? '<span class="db-search-modal-result-time">' + escapeHtml(ts) + '</span>' : '') +
+        '</span>' +
+        (snippet ? '<span class="db-search-modal-result-snippet">' + snippet + '</span>' : '') +
+        '</button>' +
+        '</li>';
+    }
+    searchResults.innerHTML = html;
+    searchActiveIndex = list.length > 0 ? 0 : -1;
+    syncSearchActiveRow();
+  }
+
+  function syncSearchActiveRow() {
+    if (!searchResults) return;
+    var rows = searchResults.querySelectorAll(".db-search-modal-result");
+    for (var i = 0; i < rows.length; i++) {
+      if (i === searchActiveIndex) {
+        rows[i].setAttribute("data-active", "true");
+        try { rows[i].scrollIntoView({ block: "nearest" }); } catch (e) {}
+      } else {
+        rows[i].removeAttribute("data-active");
+      }
+    }
+  }
+
+  function fetchSearch(query) {
+    if (!searchStatus || !searchResults) return;
+    var trimmed = (query || "").trim();
+    if (!trimmed) {
+      searchResults.innerHTML = "";
+      searchStatus.removeAttribute("hidden");
+      searchStatus.textContent = "Type to search across runs, projects, and files.";
+      searchActiveIndex = -1;
+      return;
+    }
+    searchStatus.removeAttribute("hidden");
+    searchStatus.textContent = "Searching…";
+    var mySeq = ++searchRequestSeq;
+    fetch("/api/search?q=" + encodeURIComponent(trimmed) + "&limit=20", {
+      headers: { "Accept": "application/json" }
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (body) {
+        if (mySeq !== searchRequestSeq) return; // stale response
+        if (!body || !body.ok) {
+          searchResults.innerHTML = "";
+          searchStatus.removeAttribute("hidden");
+          searchStatus.textContent = "Search failed — try again.";
+          return;
+        }
+        renderSearchResults(body);
+      })
+      .catch(function () {
+        if (mySeq !== searchRequestSeq) return;
+        searchResults.innerHTML = "";
+        searchStatus.removeAttribute("hidden");
+        searchStatus.textContent = "Search failed — try again.";
+      });
+  }
+
+  function scheduleSearch(query) {
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(function () {
+      fetchSearch(query);
+    }, SEARCH_DEBOUNCE_MS);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
+      scheduleSearch(searchInput.value);
+    });
+    searchInput.addEventListener("keydown", function (ev) {
+      if (!searchResults) return;
+      var rows = searchResults.querySelectorAll(".db-search-modal-result");
+      if (ev.key === "ArrowDown") {
+        ev.preventDefault();
+        if (rows.length === 0) return;
+        searchActiveIndex = (searchActiveIndex + 1) % rows.length;
+        syncSearchActiveRow();
+        return;
+      }
+      if (ev.key === "ArrowUp") {
+        ev.preventDefault();
+        if (rows.length === 0) return;
+        searchActiveIndex =
+          searchActiveIndex <= 0 ? rows.length - 1 : searchActiveIndex - 1;
+        syncSearchActiveRow();
+        return;
+      }
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        var target = rows[searchActiveIndex] || rows[0];
+        if (target) {
+          var href = target.getAttribute("data-search-result-href");
+          if (href) { closeSearchModal(); navigateTo(href); }
+        }
+        return;
+      }
+      if (ev.key === "Escape") {
+        ev.preventDefault();
+        closeSearchModal();
+      }
+    });
+  }
+
+  // Click handler — open trigger + close + row navigation.
+  document.addEventListener("click", function (ev) {
+    var target = ev.target;
+    if (!target || !target.closest) return;
+    var openBtn = target.closest("[data-search-modal-open]");
+    if (openBtn) {
+      ev.preventDefault();
+      openSearchModal();
+      return;
+    }
+    if (!isSearchModalOpen()) return;
+    var closeBtn = target.closest("[data-search-modal-close]");
+    if (closeBtn) {
+      ev.preventDefault();
+      closeSearchModal();
+      return;
+    }
+    var row = target.closest(".db-search-modal-result");
+    if (row) {
+      ev.preventDefault();
+      var href = row.getAttribute("data-search-result-href");
+      if (href) { closeSearchModal(); navigateTo(href); }
+    }
+  });
+
+  // Global keyboard shortcuts — Cmd/Ctrl+K opens search anywhere.
+  document.addEventListener("keydown", function (ev) {
+    if ((ev.metaKey || ev.ctrlKey) && (ev.key === "k" || ev.key === "K")) {
+      ev.preventDefault();
+      if (isSearchModalOpen()) {
+        closeSearchModal();
+      } else {
+        openSearchModal();
+      }
+      return;
+    }
+    if (ev.key === "Escape" && isSearchModalOpen()) {
+      // Esc outside the input (e.g. focus drifted) still closes the modal.
+      ev.preventDefault();
+      closeSearchModal();
+    }
+  });
+
+  // Expose for tests + debugging.
+  window.dashBuildSearchModal = {
+    open: openSearchModal,
+    close: closeSearchModal,
+    isOpen: isSearchModalOpen,
+    fetch: fetchSearch,
+    render: renderSearchResults,
+  };
 
   // ---------- Boot ----------
   setWsState("connecting", "Connecting…");

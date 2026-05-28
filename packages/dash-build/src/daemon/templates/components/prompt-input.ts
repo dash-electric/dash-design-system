@@ -1,4 +1,5 @@
 import { escapeHtml } from "../layout.js"
+import { renderDocAttachDropdown } from "./doc-attach-dropdown.js"
 
 export interface PromptInputOptions {
   value?: string
@@ -54,15 +55,21 @@ export function renderPromptInput(opts: PromptInputOptions = {}): string {
     </div>`
 
   return `<div class="db-prompt-input-wrap">
-    <textarea
-      id="db-prompt-input"
-      class="db-textarea"
-      rows="4"
-      placeholder="${escapeHtml(placeholder)}"
-      aria-label="What do you want to build?"
-      maxlength="4000"
-      ${disabled}
-    >${escapeHtml(value)}</textarea>
+    <div class="db-prompt-input-field">
+      <textarea
+        id="db-prompt-input"
+        class="db-textarea"
+        rows="4"
+        placeholder="${escapeHtml(placeholder)}"
+        aria-label="What do you want to build?"
+        aria-autocomplete="list"
+        aria-controls="db-doc-attach-list"
+        data-attached-docs="[]"
+        maxlength="4000"
+        ${disabled}
+      >${escapeHtml(value)}</textarea>
+      ${renderDocAttachDropdown()}
+    </div>
     ${footer}
   </div>`
 }

@@ -69,9 +69,13 @@ import {
 } from "../preview/index.js"
 import type { BundleResult } from "../preview/index.js"
 import {
+  promoteVariantToCanonical,
   snapshotFromIntake,
   writeIntakeSnapshot,
   writeRunArtifacts,
+  writeVariantArtifacts,
+  writeVariantsManifest,
+  type VariantMetaSummary,
 } from "../runs/artifact-store.js"
 import { estimateUsage, writeCost } from "../runs/cost-ledger.js"
 import type { BranchManager, Workspace } from "../runs/branch-manager.js"
@@ -253,6 +257,10 @@ export class Orchestrator {
    *  callers (auto submitPrompt trigger + manual button click) coalesce into
    *  one clone+shim run instead of racing. */
   private readonly bootstrapInflight: Map<string, Promise<void>> = new Map()
+  /** Open WebUI #A4 — variant-count override per prompt. Set by submitPrompt
+   *  when the caller asks for A/B mode; read by processPrompt before the chain
+   *  call. Cleared on terminal transition via forgetRunEmitter. */
+  private readonly variantCounts: Map<string, number> = new Map()
 
   constructor(opts: OrchestratorOptions) {
     this.store = opts.store
@@ -388,6 +396,12 @@ export class Orchestrator {
       repo: input.repo ?? null,
       branch: input.branch ?? null,
     })
+    // Open WebUI #A4 — opt-in A/B mode. Clamp >2 to 2 so callers can't
+    // accidentally fan out 5 parallel LLM calls; <2 is single-variant flow.
+    const requestedCount = Math.max(1, Math.min(2, Math.floor(input.variantCount ?? 1)))
+    if (requestedCount === 2) {
+      this.variantCounts.set(prompt.id, 2)
+    }
     const queuedStatus = prompt.status
     this.broadcaster.broadcast("prompts:changed", {
       id: prompt.id,
@@ -890,25 +904,97 @@ export class Orchestrator {
     }
 
     // 3. Build SDK client + run skill chain
+    //
+    // Open WebUI #A4 — when the prompt was submitted with variantCount=2, fan
+    // out two parallel chain calls with slight temperature variation (0.7 vs
+    // 0.9). Both must succeed (or at least one — the surviving one wins) for
+    // the run to surface; clarify on EITHER short-circuits the run because
+    // the user can't compare against an empty pane.
     let result: GenerateResult
+    let variantResults: Array<{
+      id: string
+      temperature: number
+      result: GenerateResult
+    }> = []
+    const variantCount = this.variantCounts.get(prompt.id) ?? 1
     try {
       const sdk = await this.anthropic.buildSdkClient()
-      result = await this.skillChain.run({
-        prompt: prompt.text,
-        repoPath,
-        selectedRepo: prompt.repo,
-        anthropic: sdk,
-        intake,
-      })
+      if (variantCount === 2) {
+        const settled = await Promise.allSettled([
+          this.skillChain.run({
+            prompt: prompt.text,
+            repoPath,
+            selectedRepo: prompt.repo,
+            anthropic: sdk,
+            intake,
+            variantId: "a",
+            temperature: 0.7,
+          }),
+          this.skillChain.run({
+            prompt: prompt.text,
+            repoPath,
+            selectedRepo: prompt.repo,
+            anthropic: sdk,
+            intake,
+            variantId: "b",
+            temperature: 0.9,
+          }),
+        ])
+        const tempByIdx = [0.7, 0.9]
+        const ids = ["a", "b"]
+        for (let i = 0; i < settled.length; i++) {
+          const s = settled[i]!
+          if (s.status === "fulfilled") {
+            variantResults.push({
+              id: ids[i]!,
+              temperature: tempByIdx[i]!,
+              result: s.value,
+            })
+          } else {
+            this.logger.warn("variant chain call failed", {
+              id: prompt.id,
+              variant: ids[i],
+              err:
+                s.reason instanceof Error
+                  ? s.reason.message
+                  : String(s.reason),
+            })
+          }
+        }
+        if (variantResults.length === 0) {
+          // Both failed — bubble the first rejection through the standard
+          // failPrompt path so error semantics match single-variant.
+          const firstReject = settled.find((s) => s.status === "rejected")
+          throw firstReject
+            ? (firstReject as PromiseRejectedResult).reason
+            : new Error("variant chain run produced no results")
+        }
+        // Pick the winning result for downstream pipeline (validation /
+        // bundle / sandbox). "generated" beats "clarify" beats "error";
+        // among "generated" the higher score wins.
+        const winner = pickWinnerResult(variantResults)
+        result = winner.result
+      } else {
+        result = await this.skillChain.run({
+          prompt: prompt.text,
+          repoPath,
+          selectedRepo: prompt.repo,
+          anthropic: sdk,
+          intake,
+        })
+      }
     } catch (err) {
+      this.variantCounts.delete(prompt.id)
       return this.failPrompt(prompt, err)
     }
 
     // 4. Branch on chain result
     if (result.kind === "clarify") {
+      this.variantCounts.delete(prompt.id)
       return this.beginClarification(prompt, result.questions, prompt.text)
     }
     if (result.kind === "error") {
+      this.variantCounts.delete(prompt.id)
       return this.failPrompt(
         prompt,
         new PipelineError("skill-chain-failed", result.reason, result.details),
@@ -1032,6 +1118,77 @@ export class Orchestrator {
     this.artifacts.set(prompt.id, artifact)
     await persistArtifact(prompt.id, artifact)
     await this.persistRunArtifact(prompt, artifact)
+
+    // 4b'. Open WebUI #A4 — persist surviving variants under <runDir>/variants/
+    //      and emit a variants.json manifest. The active variant points at
+    //      the chosen "winner" (highest score among generated variants).
+    //      Single-variant runs skip this whole block.
+    if (variantResults.length > 0 && variantCount === 2) {
+      try {
+        const summaries: VariantMetaSummary[] = []
+        let activeId: string | null = null
+        let bestScore = -1
+        for (const v of variantResults) {
+          if (v.result.kind !== "generated") continue
+          const picked = pickComponentSource({
+            promptId: prompt.id,
+            files: v.result.response.files,
+            patches: v.result.response.patches ?? [],
+            explanation: v.result.response.explanation,
+            validation: v.result.validation,
+            generatedAt: artifact.generatedAt,
+          } as GenerationArtifact)
+          await writeVariantArtifacts({
+            runId: prompt.id,
+            variantId: v.id,
+            files: v.result.response.files,
+            componentSource: picked?.content ?? null,
+            componentPath: picked?.path ?? null,
+            meta: {
+              score: v.result.validation.score,
+              passed: v.result.validation.passed,
+              explanation: v.result.response.explanation,
+              temperature: v.temperature,
+            },
+          })
+          summaries.push({
+            id: v.id,
+            summary: summariseVariant(v.result),
+            score: v.result.validation.score,
+            passed: v.result.validation.passed,
+            fileCount: v.result.response.files.length,
+            componentPath: picked?.path ?? null,
+            temperature: v.temperature,
+          })
+          if (v.result.validation.score > bestScore) {
+            bestScore = v.result.validation.score
+            activeId = v.id
+          }
+        }
+        if (summaries.length > 0 && activeId) {
+          await writeVariantsManifest(prompt.id, {
+            active: activeId,
+            list: summaries,
+          })
+          artifact.variants = {
+            active: activeId,
+            list: summaries,
+          }
+          this.broadcaster.broadcast("variants:ready", {
+            runId: prompt.id,
+            promptId: prompt.id,
+            active: activeId,
+            list: summaries,
+          })
+        }
+      } catch (err) {
+        this.logger.warn("variant persistence failed (continuing)", {
+          id: prompt.id,
+          err: (err as Error).message,
+        })
+      }
+    }
+    this.variantCounts.delete(prompt.id)
 
     // 4c. D2 clone-sandbox: start a run branch (or reuse one) and write the
     //     generated output there so approvePR can publish via extract+push.
@@ -1495,6 +1652,54 @@ export class Orchestrator {
     return recovered
   }
 
+  /**
+   * Open WebUI #A4 — record the user's variant pick. Promotes the chosen
+   * variant's files to the canonical `<runDir>/files/` location, updates
+   * the persisted variants.json `active` field, and broadcasts so any
+   * watching dashboard pane can collapse the split view.
+   *
+   * Returns `{ ok: true, active }` on success, or `{ ok: false, error }`
+   * when the run / variant is unknown.
+   */
+  async pickVariant(
+    promptId: string,
+    variantId: string,
+  ): Promise<{ ok: true; active: string } | { ok: false; error: string }> {
+    if (!/^[a-z]$/.test(variantId)) {
+      return { ok: false, error: "invalid_variant_id" }
+    }
+    const artifact = this.getArtifact(promptId)
+    if (!artifact) return { ok: false, error: "unknown_prompt" }
+    if (!artifact.variants) return { ok: false, error: "no_variants_for_run" }
+    const known = artifact.variants.list.some((v) => v.id === variantId)
+    if (!known) return { ok: false, error: "unknown_variant_id" }
+
+    try {
+      await promoteVariantToCanonical(promptId, variantId)
+      await writeVariantsManifest(promptId, {
+        active: variantId,
+        list: artifact.variants.list,
+      })
+      artifact.variants = {
+        active: variantId,
+        list: artifact.variants.list,
+      }
+      this.broadcaster.broadcast("variants:picked", {
+        runId: promptId,
+        promptId,
+        active: variantId,
+      })
+      return { ok: true, active: variantId }
+    } catch (err) {
+      this.logger.warn("pickVariant failed", {
+        id: promptId,
+        variantId,
+        err: (err as Error).message,
+      })
+      return { ok: false, error: (err as Error).message }
+    }
+  }
+
   // ── Internals ────────────────────────────────────────────────────────────
 
   private async setStatus(prompt: PromptRecord, to: PromptStatus): Promise<void> {
@@ -1612,6 +1817,51 @@ ${artifact.explanation}
 
 const ARTIFACT_MANIFEST = "artifact.json"
 const GENERATED_ENTRY_FILE = "__dash_preview_entry.tsx"
+
+/**
+ * Open WebUI #A4 — pick the "best" variant for the canonical pipeline. We
+ * prefer:
+ *   1. Any `generated` result (over clarify / error).
+ *   2. Among generated results, the higher `validation.score`.
+ *   3. Ties broken by lexical variant id ('a' beats 'b') — deterministic.
+ *
+ * Returns the first entry when no generated result exists, so the caller can
+ * still propagate clarify / error semantics through the normal branches.
+ */
+function pickWinnerResult<
+  T extends { id: string; temperature: number; result: GenerateResult },
+>(variants: T[]): T {
+  if (variants.length === 0) {
+    throw new Error("pickWinnerResult: empty variants")
+  }
+  const generated = variants.filter((v) => v.result.kind === "generated")
+  if (generated.length === 0) return variants[0]!
+  return generated
+    .slice()
+    .sort((a, b) => {
+      const aScore =
+        a.result.kind === "generated" ? a.result.validation.score : 0
+      const bScore =
+        b.result.kind === "generated" ? b.result.validation.score : 0
+      if (aScore !== bScore) return bScore - aScore
+      return a.id.localeCompare(b.id)
+    })[0]!
+}
+
+/**
+ * Open WebUI #A4 — derive a short human-readable summary for a variant. We
+ * pull the first non-empty line of the explanation (clamped to 120 chars)
+ * so the UI can render "Variant A · added Card with Suspend CTA" style
+ * captions next to each iframe.
+ */
+function summariseVariant(result: GenerateResult): string {
+  if (result.kind !== "generated") return ""
+  const exp = (result.response.explanation ?? "").trim()
+  if (!exp) return ""
+  const firstLine = exp.split(/\r?\n/).find((l) => l.trim().length > 0) ?? exp
+  const trimmed = firstLine.trim()
+  return trimmed.length > 120 ? `${trimmed.slice(0, 117)}…` : trimmed
+}
 
 /**
  * Pick the "main" generated component file for the SSE preview event.
@@ -1857,13 +2107,22 @@ import { generateWithSkillChain } from "../skills/index.js"
 /**
  * Factory for the default runner that delegates to the real skill chain.
  * Tests inject a stub instead.
+ *
+ * Open WebUI #A4 — when the orchestrator passes a `variantId` / `temperature`,
+ * we append a small directive to the prompt so the underlying LLM nudges
+ * toward divergent outputs. The chain layer itself stays variant-agnostic
+ * — the diversity is encoded purely in the suffix so existing tests / stubs
+ * keep working without schema churn.
  */
 export function defaultSkillChainRunner(): SkillChainRunner {
   return {
     async run(input) {
+      const prompt = input.variantId
+        ? `${input.prompt}\n\n---\nVariant ${input.variantId.toUpperCase()} (temperature ${input.temperature ?? "default"}): generate a distinct interpretation from the other variant — prefer different layout / DS component choices where reasonable, while staying within the Dash design system.`
+        : input.prompt
       return generateWithSkillChain(
         {
-          prompt: input.prompt,
+          prompt,
           repoPath: input.repoPath,
           selectedRepo: input.selectedRepo ?? null,
           intake: input.intake,

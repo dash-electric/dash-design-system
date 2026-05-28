@@ -368,6 +368,10 @@ button { font-family: inherit; }
 
 /* ----- Prompt input ----- */
 .db-prompt-input-wrap { display: flex; flex-direction: column; gap: 12px; }
+/* The field wrapper is positioning context for the doc-attach floating panel
+ * (Open WebUI hash autocomplete). Keep relative so the panel can anchor to
+ * the bottom edge of the textarea reliably. */
+.db-prompt-input-field { position: relative; }
 .db-prompt-input-footer {
   display: flex;
   align-items: center;
@@ -387,6 +391,106 @@ button { font-family: inherit; }
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+/* ----- Doc-attach dropdown (Open WebUI hash adoption) ----- */
+.db-doc-attach {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  max-height: 320px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.db-doc-attach[data-state="hidden"] { display: none; }
+.db-doc-attach-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+.db-doc-attach-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ink);
+}
+.db-doc-attach-item:hover,
+.db-doc-attach-item[aria-selected="true"] {
+  background: var(--primary-soft);
+  outline: none;
+}
+.db-doc-attach-item-name {
+  font-weight: 600;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.db-doc-attach-item-excerpt {
+  font-size: 11px;
+  color: var(--mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.db-doc-attach-empty {
+  margin: 0;
+  padding: 12px 10px;
+  font-size: 12px;
+  color: var(--mute);
+  text-align: center;
+}
+.db-doc-attach-hint {
+  margin: 0;
+  padding: 6px 10px;
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--mute);
+  border-top: 1px solid var(--rule-2);
+  background: var(--paper-3);
+  flex-wrap: wrap;
+}
+.db-doc-attach-hint kbd {
+  display: inline-block;
+  padding: 1px 4px;
+  margin-right: 2px;
+  border-radius: 3px;
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink);
+}
+
+/* Inline chip rendered for an attached doc reference inside the textarea
+ * surface. The textarea itself can't render rich chips, so the client JS
+ * renders the same '#doc-name' token in bold via this colour helper when
+ * mirrored in adjacent UI. For now the chip is a token replacement — keep
+ * the visual contract minimal so future rich-input upgrades reuse it. */
+.db-doc-attach-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  font-size: 11px;
+  font-weight: 600;
 }
 
 /* ----- Button ----- */
@@ -638,6 +742,209 @@ button { font-family: inherit; }
 @media (max-width: 640px) {
   .db-toasts { left: 12px; right: 12px; bottom: 12px; }
   .db-toast { min-width: 0; max-width: none; width: 100%; }
+}
+
+/* ----- Cmd/Ctrl+K search modal (Open WebUI adoption) -------------------
+ * Floating dialog reachable via the sidebar Search icon or the global
+ * Cmd/Ctrl+K shortcut. Backdrop + card both share the .db-search-modal
+ * scope so opening the dialog flips one data attribute. The card lives at
+ * max-width 600px per spec; the input + result list use Dash semantic
+ * tokens so light + dark themes inherit automatically.
+ */
+.db-search-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 96px;
+  z-index: 1100;
+}
+.db-search-modal[data-open="true"] {
+  display: flex;
+}
+.db-search-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: rgba(15, 17, 22, 0.48);
+  cursor: pointer;
+  backdrop-filter: blur(2px);
+}
+.db-search-modal-card {
+  position: relative;
+  width: min(600px, calc(100vw - 32px));
+  max-height: calc(100vh - 160px);
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+.db-search-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.db-search-modal-icon {
+  font-size: 18px;
+  color: var(--ink-muted);
+  line-height: 1;
+}
+.db-search-modal-input {
+  flex: 1;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  outline: none;
+  padding: 4px 0;
+}
+.db-search-modal-input::placeholder {
+  color: var(--ink-muted);
+}
+.db-search-modal-kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  line-height: 1;
+}
+.db-search-modal-status {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.db-search-modal-status[hidden] {
+  display: none;
+}
+.db-search-modal-results {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+.db-search-modal-results:empty {
+  display: none;
+}
+.db-search-modal-result {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: var(--ink);
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+}
+.db-search-modal-result:hover,
+.db-search-modal-result[data-active="true"] {
+  background: var(--primary-soft);
+}
+.db-search-modal-result-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.db-search-modal-result-badge {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  line-height: 1;
+}
+.db-search-modal-result-badge[data-type="run"] {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+.db-search-modal-result-badge[data-type="project"] {
+  color: var(--success);
+  background: var(--success-soft, var(--paper-2));
+}
+.db-search-modal-result-badge[data-type="file"] {
+  color: var(--ink-muted);
+  background: var(--paper-2);
+}
+.db-search-modal-result-label {
+  flex: 1 1 auto;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.db-search-modal-result-time {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.db-search-modal-result-snippet {
+  font-size: 12px;
+  color: var(--ink-muted);
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.db-search-modal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 14px;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-2);
+}
+.db-search-modal-hint {
+  font-size: 11px;
+  color: var(--ink-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.db-search-modal-hint kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+}
+
+@media (max-width: 640px) {
+  .db-search-modal {
+    padding-top: 48px;
+    align-items: stretch;
+  }
+  .db-search-modal-card {
+    width: 100%;
+    max-height: calc(100vh - 64px);
+    margin: 0 12px;
+  }
 }
 
 /* ----- Skeleton placeholders (initial load + reconnect) ----- */
@@ -6409,6 +6716,129 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
   }
   .db-workspace-split {
     grid-template-rows: minmax(0, 40vh) minmax(0, 1fr);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+ * Open WebUI #A4 — A/B split-view layout for the Component tab.
+ *
+ * Two Sandpack mounts side-by-side at desktop (50/50 with a centred
+ * divider), stacking vertically on tablet/mobile breakpoints. Each card
+ * carries its own header (variant id, score, temperature) and a "Pick
+ * this" CTA pinned to the bottom.
+ * ────────────────────────────────────────────────────────────────────── */
+.db-preview-tabpanel--ab {
+  padding: 12px;
+}
+.db-preview-variants {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+.db-preview-variant {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+.db-preview-variant--active {
+  border-color: var(--primary, #5e2aac);
+  box-shadow: 0 0 0 1px var(--primary, #5e2aac) inset;
+}
+.db-preview-variant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  gap: 12px;
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--rule);
+}
+.db-preview-variant-titlewrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.db-preview-variant-title {
+  margin: 0;
+  font-size: var(--text-body-md, 14px);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.db-preview-variant-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--primary, #5e2aac);
+  color: #fff;
+  font-size: var(--text-xs, 11px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.db-preview-variant-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mute);
+  font-size: var(--text-xs, 11px);
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+.db-preview-variant-score {
+  font-weight: 600;
+  color: var(--ink);
+}
+.db-preview-variant-temp { color: var(--mute); }
+.db-preview-variant-summary {
+  margin: 8px 12px 0;
+  font-size: var(--text-body-sm, 13px);
+  color: var(--ink);
+  line-height: 1.4;
+  /* Clamp to ~2 lines without webkit-only properties. */
+  max-height: 2.8em;
+  overflow: hidden;
+}
+.db-preview-viewport-frame--variant {
+  flex: 1;
+  min-height: 0;
+  margin: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--paper-2);
+}
+.db-preview-sandpack--variant {
+  height: 100%;
+  width: 100%;
+}
+.db-preview-variant-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px 12px;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-2);
+}
+.db-preview-variant-pick[aria-pressed="true"] {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* Tablet / mobile — stack vertically so each iframe gets enough vertical
+ * real estate. Keeps the pick CTA reachable without horizontal scroll. */
+@media (max-width: 900px) {
+  .db-preview-variants {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(0, 1fr);
   }
 }
 `

@@ -5,6 +5,10 @@ import type { Orchestrator } from "../../../pipeline/orchestrator.js"
 import { cleanupOne } from "../../../preview/index.js"
 import { removeRunArtifacts } from "../../../runs/artifact-store.js"
 import {
+  readDocBodies,
+  renderReferencedDocsBlock,
+} from "../../../services/doc-index.js"
+import {
   badRequest,
   methodNotAllowed,
   notFound,
@@ -16,6 +20,36 @@ interface PromptBody {
   text?: string
   repo?: string
   branch?: string
+  /**
+   * Open WebUI `#` adoption — opaque doc ids (sha1 prefixes) attached via
+   * the composer's autocomplete picker. Each id is hydrated to its full
+   * markdown body and prepended to the prompt as a referenced-docs block.
+   */
+  attachedDocs?: string[]
+}
+
+/**
+ * Hydrate attached doc bodies and prepend them as a "## Referenced documents"
+ * section to the user prompt. Best-effort: a stale or unknown id is silently
+ * dropped so a missing doc never blocks generation.
+ *
+ * Exported so the orchestrator + tests can re-use the same composition.
+ */
+export async function composePromptWithAttachedDocs(
+  text: string,
+  attachedDocs: string[] | undefined,
+): Promise<string> {
+  if (!Array.isArray(attachedDocs) || attachedDocs.length === 0) return text
+  try {
+    const docs = await readDocBodies(attachedDocs)
+    const block = renderReferencedDocsBlock(docs)
+    if (!block) return text
+    return `${block}\n\n## User prompt\n\n${text}`
+  } catch {
+    // Doc index failure must never block prompt submission — fall back to
+    // the original text.
+    return text
+  }
 }
 
 interface ApproveBody {
@@ -60,10 +94,19 @@ export async function handlePromptsRoute(
       return badRequest(res, "text_required")
     }
 
+    // Open WebUI `#` adoption — hydrate referenced doc bodies into the
+    // prompt before queueing. The composed text flows transparently through
+    // the orchestrator + skill chain + prompt-composer, so no changes are
+    // required to downstream interfaces.
+    const composedText = await composePromptWithAttachedDocs(
+      body.text,
+      body.attachedDocs,
+    )
+
     if (orchestrator) {
       try {
         const result = await orchestrator.submitPrompt({
-          text: body.text,
+          text: composedText,
           repo: body.repo ?? null,
           branch: body.branch ?? null,
         })
@@ -79,7 +122,7 @@ export async function handlePromptsRoute(
 
     // Legacy fallback
     const prompt = store.addPrompt({
-      text: body.text,
+      text: composedText,
       repo: body.repo ?? null,
       branch: body.branch ?? null,
     })

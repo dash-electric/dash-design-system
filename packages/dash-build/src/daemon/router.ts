@@ -20,6 +20,11 @@ import { handleAuthRoute } from "./routes/api/auth.js"
 import { handleOpenAIReconnectRoute } from "./routes/api/auth/reconnect.js"
 import { handleRepoPreviewRoute } from "./routes/api/repo-preview.js"
 import { handleProjectsRoute, isProjectsPath } from "./routes/api/projects.js"
+import {
+  handleRunsMutationRoute,
+  isRunsMutationPath,
+} from "./routes/api/runs.js"
+import { handleSearchRoute, isSearchPath } from "./routes/api/search.js"
 import { handleSandboxRoute, isSandboxPath } from "./routes/api/sandbox.js"
 import {
   handlePreviewApiRoute,
@@ -35,6 +40,7 @@ import { handleOwnerActivity } from "./routes/api/owner/activity.js"
 import { handleDSCandidates } from "./routes/api/ds-candidates.js"
 import { handleExportRoute, isExportPath } from "./routes/api/export.js"
 import { handleThemesRoute, isThemesPath } from "./routes/api/themes.js"
+import { handleDocsRoute, isDocsApiPath } from "./routes/api/docs.js"
 import type { AutoReconnect } from "../auth/openai/auto-reconnect.js"
 
 export interface RouterDeps {
@@ -119,8 +125,22 @@ export async function router(
     if (pathname === "/api/repo-preview" || pathname === "/api/repo-preview/start") {
       return await handleRepoPreviewRoute(req, res, pathname, deps.store)
     }
+    // Open WebUI #A4 — variant picker mutation. MUST come before isProjectsPath
+    // because that handler matches any GET /api/runs/* — without this guard
+    // POST /api/runs/:id/pick-variant would 405 from the projects handler.
+    if (isRunsMutationPath(pathname)) {
+      return await handleRunsMutationRoute(
+        req,
+        res,
+        pathname,
+        deps.orchestrator,
+      )
+    }
     if (isProjectsPath(pathname)) {
       return handleProjectsRoute(req, res, pathname, deps.store)
+    }
+    if (isSearchPath(pathname)) {
+      return await handleSearchRoute(req, res, pathname, deps.store)
     }
     if (isSandboxPath(pathname)) {
       return await handleSandboxRoute(
@@ -166,6 +186,12 @@ export async function router(
     // Tier 6 — Layer 2 theme runtime switcher endpoints.
     if (isThemesPath(pathname)) {
       return await handleThemesRoute(req, res, pathname)
+    }
+    // Open WebUI #A2 — `#` document-attach autocomplete + body endpoints.
+    // Surfaces indexed markdown docs (vault + repo) so the composer can
+    // inject them into the LLM prompt as referenced context.
+    if (isDocsApiPath(pathname)) {
+      return await handleDocsRoute(req, res, pathname, url)
     }
     return notFound(res)
   } catch (err) {

@@ -120,6 +120,23 @@ export interface ValidationSnapshot {
   warnings: string[]
 }
 
+export interface VariantSummary {
+  id: string
+  summary: string
+  score: number
+  passed: boolean
+  fileCount: number
+  componentPath: string | null
+  temperature: number | null
+}
+
+export interface PreviewVariantsState {
+  /** Currently selected winner (mirrors `<runDir>/files/`). */
+  active: string
+  /** All variants the run produced. */
+  list: VariantSummary[]
+}
+
 export interface PreviewPanelOptions {
   /** Stable component identifier — drives Sandpack data-* + SSE refresh. */
   componentId: string
@@ -129,6 +146,15 @@ export interface PreviewPanelOptions {
   activeTab?: PreviewPanelTab
   /** Context map footer fields — placeholders for MVP. */
   context?: PreviewPanelContextMap
+  /**
+   * Open WebUI #A4 — A/B mode metadata. When set, the Component tabpanel
+   * renders two Sandpack mounts side-by-side (one per variant) with a
+   * "Pick this" CTA on each. The client-side preview-mount.js bootstraps
+   * each mount independently using the variants snapshot in
+   * `window.__DASH_PREVIEW_INIT.variantsSnapshot`. Absent ⇒ single mount
+   * (existing behaviour, byte-for-byte preserved).
+   */
+  variants?: PreviewVariantsState | null
   /**
    * Cold-load Diff tab payload. When provided, the Diff tabpanel renders the
    * unified diff (patches) or "+++ new file" view (new-file artifacts) with
@@ -204,11 +230,24 @@ function renderComponentTab(
   componentId: string,
   promptId: string | null,
   active: boolean,
+  variants: PreviewVariantsState | null | undefined,
 ): string {
   const hidden = active ? "" : ' hidden=""'
   const promptAttr = promptId
     ? ` data-prompt-id="${escapeHtml(promptId)}"`
     : ""
+  // Open WebUI #A4 — branch on variants. When 2 variants present, render the
+  // split-view; otherwise render the canonical single-mount layout.
+  if (variants && variants.list.length >= 2) {
+    return `<div
+      role="tabpanel"
+      id="db-preview-panel-component"
+      class="db-preview-tabpanel db-preview-tabpanel--component db-preview-tabpanel--ab"
+      aria-labelledby="db-preview-tab-component"${hidden}>
+      ${renderViewportToggle()}
+      ${renderVariantSplitView(componentId, promptId, variants)}
+    </div>`
+  }
   return `<div
     role="tabpanel"
     id="db-preview-panel-component"
@@ -235,6 +274,100 @@ function renderComponentTab(
         </div>
       </div>
     </div>
+  </div>`
+}
+
+/**
+ * Open WebUI #A4 — split-view markup. Two Sandpack mounts side-by-side, each
+ * with a header (Variant A/B + score) and a "Pick this" CTA. The client-side
+ * preview-mount.js bootstraps each mount independently, keying off
+ * `data-variant-id` and reading the source from
+ * `window.__DASH_PREVIEW_INIT.variantsSnapshot.list[i].componentSource`.
+ *
+ * The CTA POSTs `/api/runs/:runId/pick-variant` and reloads the workspace
+ * (the server side promotes the picked variant to canonical + resets the
+ * single-view).
+ *
+ * Mobile: the split CSS collapses to a vertical stack via media query in
+ * dashboard.ts. The container preserves layout integrity at any breakpoint.
+ */
+function renderVariantSplitView(
+  componentId: string,
+  promptId: string | null,
+  variants: PreviewVariantsState,
+): string {
+  const promptAttr = promptId
+    ? ` data-prompt-id="${escapeHtml(promptId)}"`
+    : ""
+  const runId = promptId ?? componentId
+  const cards = variants.list
+    .slice(0, 2)
+    .map((variant) => {
+      const isActive = variant.id === variants.active
+      const label = variant.id.toUpperCase()
+      const summary = variant.summary
+        ? variant.summary
+        : `Variant ${label} output`
+      const badge = isActive
+        ? `<span class="db-preview-variant-badge db-preview-variant-badge--active" aria-label="Currently active variant">Active</span>`
+        : ""
+      const tempLabel =
+        typeof variant.temperature === "number"
+          ? `<span class="db-preview-variant-temp" aria-label="Temperature">T=${variant.temperature.toFixed(2)}</span>`
+          : ""
+      const scoreLabel = `<span class="db-preview-variant-score">${variant.score}/100</span>`
+      return `<article
+        class="db-preview-variant${isActive ? " db-preview-variant--active" : ""}"
+        data-variant-id="${escapeHtml(variant.id)}"
+        data-variant-active="${isActive ? "true" : "false"}"
+      >
+        <header class="db-preview-variant-header">
+          <div class="db-preview-variant-titlewrap">
+            <h3 class="db-preview-variant-title">Variant ${escapeHtml(label)}</h3>
+            ${badge}
+          </div>
+          <div class="db-preview-variant-meta">
+            ${scoreLabel}
+            ${tempLabel}
+          </div>
+        </header>
+        <p class="db-preview-variant-summary">${escapeHtml(summary)}</p>
+        <div class="db-preview-viewport-frame db-preview-viewport-frame--variant" data-viewport="desktop">
+          <div
+            class="db-preview-sandpack db-preview-sandpack--variant"
+            data-component-id="${escapeHtml(componentId)}"
+            data-variant-id="${escapeHtml(variant.id)}"${promptAttr}
+            data-preview-state="idle"
+            aria-label="Generated component preview, variant ${escapeHtml(label)}"
+          >
+            <div class="db-preview-sandpack-empty" data-preview-empty>
+              <p class="db-preview-sandpack-empty-title">Variant ${escapeHtml(label)} mounting…</p>
+            </div>
+          </div>
+        </div>
+        <footer class="db-preview-variant-footer">
+          <button
+            type="button"
+            class="db-button db-button-primary db-button-compact db-preview-variant-pick"
+            data-variant-pick="${escapeHtml(variant.id)}"
+            data-run-id="${escapeHtml(runId)}"
+            aria-pressed="${isActive ? "true" : "false"}"
+          >
+            ${isActive ? "Active" : "Pick this"}
+          </button>
+        </footer>
+      </article>`
+    })
+    .join("")
+  return `<div
+    class="db-preview-variants"
+    data-variants-split
+    data-run-id="${escapeHtml(runId)}"
+    data-active-variant="${escapeHtml(variants.active)}"
+    role="group"
+    aria-label="Compare generated variants"
+  >
+    ${cards}
   </div>`
 }
 
@@ -724,14 +857,16 @@ function renderContextMap(ctx: PreviewPanelContextMap | undefined): string {
 export function renderPreviewPanel(opts: PreviewPanelOptions): string {
   const active: PreviewPanelTab = opts.activeTab ?? "component"
   const promptId = opts.promptId ?? null
+  const variants = opts.variants ?? null
+  const abAttr = variants && variants.list.length >= 2 ? ' data-ab-mode="true"' : ""
 
   return `<section
     class="db-preview-panel"
     id="db-preview-panel"
-    data-component-id="${escapeHtml(opts.componentId)}"
+    data-component-id="${escapeHtml(opts.componentId)}"${abAttr}
     aria-label="Component preview">
     <div class="db-preview-tabpanels">
-      ${renderComponentTab(opts.componentId, promptId, active === "component")}
+      ${renderComponentTab(opts.componentId, promptId, active === "component", variants)}
       ${renderDiffTab(opts.diffSnapshot ?? null, opts.validationSnapshot ?? null, active === "diff")}
       ${renderBeImpactTab(opts.beImpactSnapshot ?? null, active === "be-impact")}
       ${renderAuditTab(opts.auditSnapshot ?? null, active === "audit")}
