@@ -32,10 +32,40 @@ export interface LayoutOptions {
   version: string
   /** Optional port override for the footer hint. Defaults to env or 7777. */
   port?: number | string
+  /**
+   * Shell variant — "lovable" enables the Lovable-style home + workspace
+   * presentation (hides legacy clone-status badges, suppresses the page
+   * header/footer chrome). Leave undefined for the classic dashboard.
+   */
+  shell?: "lovable"
+  /** Hide the top page header + footer chrome (full-bleed shells). */
+  chromeless?: boolean
 }
 
 export function renderLayout(opts: LayoutOptions): string {
   const port = String(opts.port ?? process.env.DASH_BUILD_PORT ?? "7777")
+  const shellAttr = opts.shell ? ` data-shell="${escapeHtml(opts.shell)}"` : ""
+  const chromeless = opts.chromeless === true
+  const header = chromeless
+    ? ""
+    : `<header class="db-header">
+      <div class="db-brand">
+        <span class="db-brand-mark" aria-hidden="true"></span>
+        <span class="db-brand-name">Dash Build</span>
+        <span class="db-brand-version" aria-label="Version">v${escapeHtml(opts.version)}</span>
+      </div>
+      <div class="db-header-actions">
+        ${renderWsIndicator()}
+        ${themeToggle()}
+        <button class="db-icon-btn" type="button" aria-label="Settings" title="Settings">⚙</button>
+        <button class="db-icon-btn" type="button" aria-label="Account" title="Account">◉</button>
+      </div>
+    </header>`
+  const footer = chromeless
+    ? ""
+    : `<footer class="db-footer">
+      Dash Build · <span class="db-mono">localhost:${escapeHtml(port)}</span> · Layered Architecture Layer 0 brand
+    </footer>`
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -66,27 +96,13 @@ export function renderLayout(opts: LayoutOptions): string {
     <script defer src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
     <link rel="stylesheet" href="/static/app.css" />
   </head>
-  <body>
+  <body${shellAttr}>
     <a class="sr-only" href="#db-main">Skip to main content</a>
-    <header class="db-header">
-      <div class="db-brand">
-        <span class="db-brand-mark" aria-hidden="true"></span>
-        <span class="db-brand-name">Dash Build</span>
-        <span class="db-brand-version" aria-label="Version">v${escapeHtml(opts.version)}</span>
-      </div>
-      <div class="db-header-actions">
-        ${renderWsIndicator()}
-        ${themeToggle()}
-        <button class="db-icon-btn" type="button" aria-label="Settings" title="Settings">⚙</button>
-        <button class="db-icon-btn" type="button" aria-label="Account" title="Account">◉</button>
-      </div>
-    </header>
+    ${header}
     <main class="db-main" id="db-main">
       ${opts.body}
     </main>
-    <footer class="db-footer">
-      Dash Build · <span class="db-mono">localhost:${escapeHtml(port)}</span> · Layered Architecture Layer 0 brand
-    </footer>
+    ${footer}
     ${toastContainer()}
     <script src="/static/app.js"></script>
   </body>
