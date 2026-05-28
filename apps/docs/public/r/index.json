@@ -720,49 +720,57 @@
       "name": "login-01",
       "type": "registry:block",
       "title": "Login 01",
-      "description": "Classic email + password centered with remember-me and forgot-link."
+      "description": "Classic email + password centered with remember-me and forgot-link.",
+      "theme": "shared"
     },
     {
       "name": "login-02",
       "type": "registry:block",
       "title": "Login 02",
-      "description": "Email + password with social SSO row (Google + Apple) above the form."
+      "description": "Email + password with social SSO row (Google + Apple) above the form.",
+      "theme": "shared"
     },
     {
       "name": "login-03",
       "type": "registry:block",
       "title": "Login 03",
-      "description": "Split-screen with branded hero panel + testimonial on the left."
+      "description": "Split-screen with branded hero panel + testimonial on the left.",
+      "theme": "shared"
     },
     {
       "name": "signup-01",
       "type": "registry:block",
       "title": "Signup 01",
-      "description": "Name + email + phone + password centered form with T&C checkbox."
+      "description": "Name + email + phone + password centered form with T&C checkbox.",
+      "theme": "shared"
     },
     {
       "name": "signup-02",
       "type": "registry:block",
       "title": "Signup 02",
-      "description": "Social SSO row above email signup form."
+      "description": "Social SSO row above email signup form.",
+      "theme": "shared"
     },
     {
       "name": "signup-03",
       "type": "registry:block",
       "title": "Signup 03",
-      "description": "Split-screen with feature bullets in left hero panel."
+      "description": "Split-screen with feature bullets in left hero panel.",
+      "theme": "shared"
     },
     {
       "name": "forgot-password-01",
       "type": "registry:block",
       "title": "Forgot Password 01",
-      "description": "Email-only reset request form with back-to-login link."
+      "description": "Email-only reset request form with back-to-login link.",
+      "theme": "shared"
     },
     {
       "name": "verification-otp",
       "type": "registry:block",
       "title": "Verification OTP",
-      "description": "6-digit OTP via InputOTP with resend timer."
+      "description": "6-digit OTP via InputOTP with resend timer.",
+      "theme": "shared"
     },
     {
       "name": "password-input",
@@ -780,73 +788,85 @@
       "name": "auth-register-aurora",
       "type": "registry:block",
       "title": "Auth Register Aurora",
-      "description": "source Aurora — brand mark → single Google SSO → OR divider → first/last/email/password form → FancyButton CTA → footer link."
+      "description": "source Aurora — brand mark → single Google SSO → OR divider → first/last/email/password form → FancyButton CTA → footer link.",
+      "theme": "shared"
     },
     {
       "name": "auth-register-solaris",
       "type": "registry:block",
       "title": "Auth Register Solaris",
-      "description": "source Solaris — brand mark → 2 stacked SSO (Google + Apple) → OR divider → single email → FancyButton CTA → footer."
+      "description": "source Solaris — brand mark → 2 stacked SSO (Google + Apple) → OR divider → single email → FancyButton CTA → footer.",
+      "theme": "shared"
     },
     {
       "name": "auth-login-phoenix",
       "type": "registry:block",
       "title": "Auth Login Phoenix",
-      "description": "source Phoenix — brand mark → email + password (inline forgot) → FancyButton CTA → OR divider → 2 side-by-side SSO → footer."
+      "description": "source Phoenix — brand mark → email + password (inline forgot) → FancyButton CTA → OR divider → 2 side-by-side SSO → footer.",
+      "theme": "shared"
     },
     {
       "name": "auth-login-apex",
       "type": "registry:block",
       "title": "Auth Login Apex",
-      "description": "source Apex — brand mark → 3 side-by-side SSO (Google/Apple/Microsoft) → OR divider → email + password → remember + forgot → FancyButton CTA → footer."
+      "description": "source Apex — brand mark → 3 side-by-side SSO (Google/Apple/Microsoft) → OR divider → email + password → remember + forgot → FancyButton CTA → footer.",
+      "theme": "shared"
     },
     {
       "name": "auth-login-key",
       "type": "registry:block",
       "title": "Auth Login (Key icon)",
-      "description": "source Login Key — 96×96 key-icon header → email + password → remember + forgot → FancyButton CTA. Minimal no-SSO variant."
+      "description": "source Login Key — 96×96 key-icon header → email + password → remember + forgot → FancyButton CTA. Minimal no-SSO variant.",
+      "theme": "shared"
     },
     {
       "name": "auth-register-key",
       "type": "registry:block",
       "title": "Auth Register (Key icon)",
-      "description": "source Register Key — 96×96 key-icon header → first/last/email/password → FancyButton CTA → T&C / privacy legal copy."
+      "description": "source Register Key — 96×96 key-icon header → first/last/email/password → FancyButton CTA → T&C / privacy legal copy.",
+      "theme": "shared"
     },
     {
       "name": "auth-reset-password-key",
       "type": "registry:block",
       "title": "Auth Reset Password (Key icon)",
-      "description": "source Reset Password Key — 96×96 key-icon header → email → FancyButton CTA → support link."
+      "description": "source Reset Password Key — 96×96 key-icon header → email → FancyButton CTA → support link.",
+      "theme": "shared"
     },
     {
       "name": "auth-verification-key",
       "type": "registry:block",
       "title": "Auth Verification (Key icon)",
-      "description": "source Verification Key — 96×96 shield-icon header → 4-digit OTP grid → FancyButton CTA (disabled until complete) → resend link."
+      "description": "source Verification Key — 96×96 shield-icon header → 4-digit OTP grid → FancyButton CTA (disabled until complete) → resend link.",
+      "theme": "shared"
     },
     {
       "name": "transactions-table",
       "type": "registry:block",
       "title": "Transactions Table",
-      "description": "Filter row + transaction rows with status badge + amount + Pagination."
+      "description": "Filter row + transaction rows with status badge + amount + Pagination.",
+      "theme": "shared"
     },
     {
       "name": "team-grid",
       "type": "registry:block",
       "title": "Team Grid",
-      "description": "Avatar grid with role + tribe tags + live status indicator."
+      "description": "Avatar grid with role + tribe tags + live status indicator.",
+      "theme": "shared"
     },
     {
       "name": "orders-table",
       "type": "registry:block",
       "title": "Orders Table",
-      "description": "Dispatch table with bulk-select row + status filter + multi-action bar."
+      "description": "Dispatch table with bulk-select row + status filter + multi-action bar.",
+      "theme": "shared"
     },
     {
       "name": "products-grid",
       "type": "registry:block",
       "title": "Products Grid",
-      "description": "Dispatch pool cards with stock progress + status badge + tribe accent."
+      "description": "Dispatch pool cards with stock progress + status badge + tribe accent.",
+      "theme": "shared"
     },
     {
       "name": "stat-card-grid",
@@ -939,37 +959,43 @@
       "name": "my-cards-stack",
       "type": "registry:block",
       "title": "My Cards Stack",
-      "description": "Banking-card visualization for mitra payout methods, click to swap."
+      "description": "Banking-card visualization for mitra payout methods, click to swap.",
+      "theme": "shared"
     },
     {
       "name": "settings-profile",
       "type": "registry:block",
       "title": "Settings — Profile",
-      "description": "Avatar upload + name/email/phone/bio fields + Save/Cancel footer."
+      "description": "Avatar upload + name/email/phone/bio fields + Save/Cancel footer.",
+      "theme": "shared"
     },
     {
       "name": "settings-notifications",
       "type": "registry:block",
       "title": "Settings — Notifications",
-      "description": "Switch matrix (email × push × SMS) per event type + DND toggle."
+      "description": "Switch matrix (email × push × SMS) per event type + DND toggle.",
+      "theme": "shared"
     },
     {
       "name": "settings-integrations",
       "type": "registry:block",
       "title": "Settings — Integrations",
-      "description": "Cards grid (Slack/WA/Email/BCA/GitHub/BMKG) with connect/disconnect button."
+      "description": "Cards grid (Slack/WA/Email/BCA/GitHub/BMKG) with connect/disconnect button.",
+      "theme": "shared"
     },
     {
       "name": "settings-team",
       "type": "registry:block",
       "title": "Settings — Team",
-      "description": "Team member list with role Select + Invite button."
+      "description": "Team member list with role Select + Invite button.",
+      "theme": "shared"
     },
     {
       "name": "settings-privacy-security",
       "type": "registry:block",
       "title": "Settings — Privacy & Security",
-      "description": "2FA toggle + active sessions list + password change form."
+      "description": "2FA toggle + active sessions list + password change form.",
+      "theme": "shared"
     },
     {
       "name": "mitra-suspend-page",
@@ -993,43 +1019,50 @@
       "name": "badge-upvote-card",
       "type": "registry:block",
       "title": "Badge — Week's Top Contributor",
-      "description": "Ranked contributor list with avatar rows and upvote button (filled when upvoted, stroke otherwise). Ported from Figma Badge [Examples] :: id 2939:19644."
+      "description": "Ranked contributor list with avatar rows and upvote button (filled when upvoted, stroke otherwise). Ported from Figma Badge [Examples] :: id 2939:19644.",
+      "theme": "shared"
     },
     {
       "name": "badge-profile-account",
       "type": "registry:block",
       "title": "Badge — Profile Account Dropdown",
-      "description": "User account dropdown with Badge plan indicator (FREE/PRO/TEAM/ENTERPRISE), keyboard shortcut, Dark Mode switch row, and destructive logout. Ported from Figma Badge [Examples] :: id 2950:5586."
+      "description": "User account dropdown with Badge plan indicator (FREE/PRO/TEAM/ENTERPRISE), keyboard shortcut, Dark Mode switch row, and destructive logout. Ported from Figma Badge [Examples] :: id 2950:5586.",
+      "theme": "shared"
     },
     {
       "name": "avatar-recipient-selection",
       "type": "registry:block",
       "title": "Avatar — Saved Recipients",
-      "description": "Transfer-recipient selection card with avatar rows, account number, keyboard shortcut affordance, and primary New Recipient CTA. Ported from Figma Avatar :: Examples id 2937:14646."
+      "description": "Transfer-recipient selection card with avatar rows, account number, keyboard shortcut affordance, and primary New Recipient CTA. Ported from Figma Avatar :: Examples id 2937:14646.",
+      "theme": "shared"
     },
     {
       "name": "button-export-settings",
       "type": "registry:block",
       "title": "Button — Export Settings Modal",
-      "description": "Settings modal with inline upsell card (NEW Badge + Upgrade CTA), Cancel + Export footer. Ported from Figma Button [Examples] :: id 167874:113157."
+      "description": "Settings modal with inline upsell card (NEW Badge + Upgrade CTA), Cancel + Export footer. Ported from Figma Button [Examples] :: id 167874:113157.",
+      "theme": "shared"
     },
     {
       "name": "button-email-verification",
       "type": "registry:block",
       "title": "Button — Email Verification Modal",
-      "description": "Verification dialog with header icon, 6-slot OTP input, two link-style buttons (Enter code manually / Resend the link), and primary Verify CTA. Ported from Figma Button [Examples] :: id 167874:113174."
+      "description": "Verification dialog with header icon, 6-slot OTP input, two link-style buttons (Enter code manually / Resend the link), and primary Verify CTA. Ported from Figma Button [Examples] :: id 167874:113174.",
+      "theme": "shared"
     },
     {
       "name": "hr-widgets",
       "type": "registry:block",
       "title": "HR Widgets",
-      "description": "Six HR Management dashboard widgets ported from Figma Widgets [HR Management] [1.1]: ScheduleWidget, TimeOffWidget, EmployeeSpotlightWidget, TimeTrackerWidget, NotesWidget, StatusTrackerWidget. Each is a card-wrapped composition built on Dash primitives (Card / Avatar / Badge / ProgressBar / IconButton)."
+      "description": "Six HR Management dashboard widgets ported from Figma Widgets [HR Management] [1.1]: ScheduleWidget, TimeOffWidget, EmployeeSpotlightWidget, TimeTrackerWidget, NotesWidget, StatusTrackerWidget. Each is a card-wrapped composition built on Dash primitives (Card / Avatar / Badge / ProgressBar / IconButton).",
+      "theme": "shared"
     },
     {
       "name": "finance-widgets",
       "type": "registry:block",
       "title": "Finance Widgets",
-      "description": "Six Finance & Banking dashboard widgets ported from Figma Widgets [Finance & Banking] [1.1]: MyCardsWidget, RecentTransactionsWidget, TotalBalanceWidget, QuickTransferWidget, BudgetOverviewWidget, MySubscriptionsWidget. Card-wrapped compositions on Dash primitives with inline sparkline + bar chart fallback (no external chart lib)."
+      "description": "Six Finance & Banking dashboard widgets ported from Figma Widgets [Finance & Banking] [1.1]: MyCardsWidget, RecentTransactionsWidget, TotalBalanceWidget, QuickTransferWidget, BudgetOverviewWidget, MySubscriptionsWidget. Card-wrapped compositions on Dash primitives with inline sparkline + bar chart fallback (no external chart lib).",
+      "theme": "shared"
     },
     {
       "name": "page-header",
@@ -1159,19 +1192,22 @@
       "name": "use-code-field",
       "type": "registry:block",
       "title": "Use Code Field",
-      "description": "Single-purpose 6-digit alphanumeric use-code field for delivery dispatch. Auto-generate via genUseCode(), regenerate button, copy-to-clipboard, RHF-wired. Works standalone or nested inside useFieldArray rows."
+      "description": "Single-purpose 6-digit alphanumeric use-code field for delivery dispatch. Auto-generate via genUseCode(), regenerate button, copy-to-clipboard, RHF-wired. Works standalone or nested inside useFieldArray rows.",
+      "theme": "shared"
     },
     {
       "name": "multi-item-form",
       "type": "registry:block",
       "title": "Multi-Item Form",
-      "description": "Reference pattern: react-hook-form useFieldArray + per-row card + batch submit. Anchors the canonical shape for refactors like 'single-order to multi-order' delivery creation."
+      "description": "Reference pattern: react-hook-form useFieldArray + per-row card + batch submit. Anchors the canonical shape for refactors like 'single-order to multi-order' delivery creation.",
+      "theme": "shared"
     },
     {
       "name": "bulk-submit",
       "type": "registry:block",
       "title": "Bulk Submit",
-      "description": "Pattern for batch endpoint dispatch. Per-row status (idle/pending/success/error), optimistic UI with rollback on individual failure, per-row retry, end-of-run summary toast."
+      "description": "Pattern for batch endpoint dispatch. Per-row status (idle/pending/success/error), optimistic UI with rollback on individual failure, per-row retry, end-of-run summary toast.",
+      "theme": "shared"
     },
     {
       "name": "bulk-upload-with-status",
@@ -1319,151 +1355,176 @@
       "name": "hr-time-off-widget",
       "type": "registry:block",
       "title": "HR Time Off Widget",
-      "description": "Mitra time-off summary card: stacked date rows with status badges (approved / pending / declined). Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Mitra time-off summary card: stacked date rows with status badges (approved / pending / declined). Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-notes-widget",
       "type": "registry:block",
       "title": "HR Notes Widget",
-      "description": "Pinned notes list with author avatar + timestamp meta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Pinned notes list with author avatar + timestamp meta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-time-tracker-widget",
       "type": "registry:block",
       "title": "HR Time Tracker Widget",
-      "description": "Per-mitra running time tracker with start/stop control and accumulated hours readout. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Per-mitra running time tracker with start/stop control and accumulated hours readout. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-employee-spotlight-widget",
       "type": "registry:block",
       "title": "HR Employee Spotlight Widget",
-      "description": "Featured mitra hero card with avatar, role meta, and quick action. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Featured mitra hero card with avatar, role meta, and quick action. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-schedule-widget",
       "type": "registry:block",
       "title": "HR Schedule Widget",
-      "description": "Day-by-day session schedule list with time + attendee thumbnails. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Day-by-day session schedule list with time + attendee thumbnails. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-daily-feedback-widget",
       "type": "registry:block",
       "title": "HR Daily Feedback Widget",
-      "description": "Quick mitra feedback capture rows with sentiment chips. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Quick mitra feedback capture rows with sentiment chips. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-work-hours-widget",
       "type": "registry:block",
       "title": "HR Work Hours Analysis Widget",
-      "description": "Weekly work-hours bar chart with target line + total summary. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Weekly work-hours bar chart with target line + total summary. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-courses-widget",
       "type": "registry:block",
       "title": "HR Courses Widget",
-      "description": "Course enrolment cards with progress bar + module count. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Course enrolment cards with progress bar + module count. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-daily-work-hours-widget",
       "type": "registry:block",
       "title": "HR Daily Work Hours Widget",
-      "description": "Today's accumulated hours readout with goal-progress ring. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Today's accumulated hours readout with goal-progress ring. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-training-analysis-widget",
       "type": "registry:block",
       "title": "HR Training Analysis Widget",
-      "description": "Training completion / pass-rate panel with category breakdown. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Training completion / pass-rate panel with category breakdown. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-employee-rating-widget",
       "type": "registry:block",
       "title": "HR Employee Rating Widget",
-      "description": "Top-rated mitra leaderboard rows with score + delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Top-rated mitra leaderboard rows with score + delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "hr-course-progress-widget",
       "type": "registry:block",
       "title": "HR Course Progress Widget",
-      "description": "Per-course progress rows with percent + last-activity meta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets."
+      "description": "Per-course progress rows with percent + last-activity meta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in hr-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-stock-tracker-widget",
       "type": "registry:block",
       "title": "Finance Stock Tracker Widget",
-      "description": "Single-ticker price card with sparkline + day delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Single-ticker price card with sparkline + day delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-my-cards-widget",
       "type": "registry:block",
       "title": "Finance My Cards Widget",
-      "description": "Carousel of payment cards (EMV chip face) with balance overlay + add-card CTA. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Carousel of payment cards (EMV chip face) with balance overlay + add-card CTA. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-spending-summary-widget",
       "type": "registry:block",
       "title": "Finance Spending Summary Widget",
-      "description": "Category spending bar chart with totals + period selector. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Category spending bar chart with totals + period selector. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-exchange-widget",
       "type": "registry:block",
       "title": "Finance Exchange Widget",
-      "description": "FX exchange input pair (from / to) with live rate + swap action. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "FX exchange input pair (from / to) with live rate + swap action. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-currency-list-widget",
       "type": "registry:block",
       "title": "Finance Currency List Widget",
-      "description": "Currency rows with flag + symbol + 24h delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Currency rows with flag + symbol + 24h delta. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-recent-transactions-widget",
       "type": "registry:block",
       "title": "Finance Recent Transactions Widget",
-      "description": "Reverse-chrono transaction list with merchant logo + signed amount + category chip. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Reverse-chrono transaction list with merchant logo + signed amount + category chip. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-subscriptions-widget",
       "type": "registry:block",
       "title": "Finance Subscriptions Widget",
-      "description": "Active subscription rows with provider logo + next billing date + monthly cost. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Active subscription rows with provider logo + next billing date + monthly cost. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-quick-transfer-widget",
       "type": "registry:block",
       "title": "Finance Quick Transfer Widget",
-      "description": "Frequent-recipient avatar row + amount input for one-tap transfer. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Frequent-recipient avatar row + amount input for one-tap transfer. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-donation-profile-widget",
       "type": "registry:block",
       "title": "Finance Donation Profile Widget",
-      "description": "Recipient profile hero (avatar + cause meta) with donate CTA + progress ring. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Recipient profile hero (avatar + cause meta) with donate CTA + progress ring. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-net-balance-widget",
       "type": "registry:block",
       "title": "Finance Net Balance Widget",
-      "description": "Aggregate account balance hero with month-over-month delta + sparkline. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Aggregate account balance hero with month-over-month delta + sparkline. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-major-expenses-widget",
       "type": "registry:block",
       "title": "Finance Major Expenses Widget",
-      "description": "Top-N category expense breakdown with horizontal bars + period selector. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Top-N category expense breakdown with horizontal bars + period selector. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-credit-score-widget",
       "type": "registry:block",
       "title": "Finance Credit Score Widget",
-      "description": "Credit score gauge with rating band + tip footer. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Credit score gauge with rating band + tip footer. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     },
     {
       "name": "finance-budget-overview-widget",
       "type": "registry:block",
       "title": "Finance Budget Overview Widget",
-      "description": "Annual / yearly budget vs actual stacked bars with category legend. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets."
+      "description": "Annual / yearly budget vs actual stacked bars with category legend. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
+      "theme": "shared"
     }
   ]
 }
