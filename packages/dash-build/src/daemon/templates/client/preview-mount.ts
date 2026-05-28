@@ -20,15 +20,25 @@
  *
  * The script self-bails when the mount element is absent, so it is safe to
  * include on every page if convenient.
+ *
+ * CDN versions are imported from `src/constants/cdn.ts` so the probe script
+ * (`scripts/probe-sandpack-cdn.mjs`) and the embedded runtime can never drift
+ * apart — change one place, both stay in sync.
  */
+
+import {
+  REACT_CDN_URL,
+  REACT_DOM_CLIENT_CDN_URL,
+  SANDPACK_CDN_URL,
+} from "../../../constants/cdn.js"
 
 export const PREVIEW_MOUNT_JS = `
 (function () {
   "use strict";
 
-  var SANDPACK_CDN = "https://esm.sh/@codesandbox/sandpack-react@2.19.10";
-  var REACT_CDN = "https://esm.sh/react@18.3.1";
-  var REACT_DOM_CLIENT_CDN = "https://esm.sh/react-dom@18.3.1/client";
+  var SANDPACK_CDN = ${JSON.stringify(SANDPACK_CDN_URL)};
+  var REACT_CDN = ${JSON.stringify(REACT_CDN_URL)};
+  var REACT_DOM_CLIENT_CDN = ${JSON.stringify(REACT_DOM_CLIENT_CDN_URL)};
 
   function bootstrap() {
     var mount = document.getElementById("db-preview-sandpack");

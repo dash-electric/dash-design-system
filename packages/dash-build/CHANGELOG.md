@@ -51,6 +51,26 @@ All notable changes to `@dash/build` are documented here.
   clone preview" button).
 - Pivot plan tracked in `docs/pivot-plan-2026-05-28.md`.
 
+### Added — dev infra (Tier 4)
+
+- **Dev watch mode for CSS / templates** (Tier 4 #16). Opt-in via
+  `DASH_BUILD_WATCH=1`. The daemon watches CSS + Lovable shell template
+  source files (`dashboard.ts`, `tokens.ts`, `home.ts`, `workspace.ts`,
+  `layout.ts`) and broadcasts `static:refresh` over WS on change. The
+  dashboard client swaps the `<link rel="stylesheet">` href with a
+  cache-bust query string so iteration no longer requires a hard reload.
+  JS hot reload deferred — manual refresh still needed for client app.ts
+  changes. See `src/daemon/dev-watcher.ts`.
+- **CDN healthcheck script** (Tier 4 #19,
+  `scripts/probe-sandpack-cdn.mjs`, `pnpm verify:cdn`). HEADs every
+  Sandpack preview CDN URL so a stale or unpublished version pin fails
+  fast at publish instead of breaking previews at runtime. Version pins
+  centralised in `src/constants/cdn.ts` so the embedded preview script
+  and the probe cannot drift.
+- **`prepublishOnly` hook** (Tier 4 #18). Chains `typecheck`,
+  `audit:css` + `audit:tokens`, `verify:cdn`, `test`, and `build`
+  before npm accepts a publish. Documented in `scripts/README.md`.
+
 ## 0.1.2 — 2026-05-21
 
 ### Changed

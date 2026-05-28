@@ -179,3 +179,58 @@ ensures Dash Build itself does not enforce rules it violates.
 
 Tracks dashboard bundle size deltas. Runs in CI; see `__tests__/` for
 fixtures.
+
+## `probe-sandpack-cdn.mjs`
+
+CI healthcheck for the Sandpack preview CDN URLs. The component preview
+pulls React + react-dom + `@codesandbox/sandpack-react` directly from
+esm.sh at mount time — stale or unpublished version pins silently break
+the preview at runtime. This script HEADs every URL before publish so a
+bad pin fails fast instead.
+
+```bash
+pnpm --filter @dash/build verify:cdn
+```
+
+Version pins live in `src/constants/cdn.ts`. Both the embedded preview
+script (`src/daemon/templates/client/preview-mount.ts`) and this probe
+read from the same source, so versions cannot drift apart — change them
+once and everything stays in sync.
+
+The script also runs automatically as part of `prepublishOnly` (see
+below).
+
+## `prepublishOnly` hook
+
+`package.json` wires a `prepublishOnly` script that fires every time
+someone runs `pnpm publish` (or `npm publish`) against this package. It
+guards npm from receiving builds that fail the audit / typecheck / CDN
+healthcheck or whose tests don't pass:
+
+```jsonc
+"prepublishOnly": "pnpm typecheck && pnpm audit:css && pnpm audit:tokens && pnpm verify:cdn && pnpm test && pnpm build"
+```
+
+What runs, in order:
+
+1. `pnpm typecheck` — `tsc --noEmit` on both the package source and
+   `scripts/`.
+2. `pnpm audit:css` — raw hex guard (respects allowlist).
+3. `pnpm audit:tokens` — non-hex token leak guard (font-size /
+   border-radius / box-shadow / color-keyword).
+4. `pnpm verify:cdn` — HEAD-checks every Sandpack CDN URL.
+5. `pnpm test` — full Vitest run (also re-runs `audit:css` via the
+   `pretest` hook; idempotent).
+6. `pnpm build` — final tsup output bundled into `dist/`, which is what
+   `files: ["dist", "README.md"]` actually ships.
+
+Note: we deliberately spell out `audit:css` + `audit:tokens` instead of
+the package-local `audit` script because `pnpm audit` is a built-in pnpm
+command (vulnerability scan over the lockfile) and pnpm prefers the
+built-in over the local script — so `pnpm audit` in a `prepublishOnly`
+hook would skip our token / hex guards.
+
+If any step fails the publish is aborted before npm sees the tarball.
+Bypass with `pnpm publish --no-git-checks --ignore-scripts` only in
+genuine emergencies — every step exists to catch a real class of bug
+that previously shipped to consumer Dash repos.

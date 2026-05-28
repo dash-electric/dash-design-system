@@ -4,6 +4,7 @@ import { Store } from "./state/store.js"
 import { Broadcaster } from "./ws/broadcaster.js"
 import { handleUpgrade } from "./ws/server.js"
 import { writePidFile, deletePidFile } from "./pid-file.js"
+import { DevWatcher, isWatcherEnabled } from "./dev-watcher.js"
 import {
   Orchestrator,
   defaultClarificationGateway,
@@ -27,6 +28,12 @@ export interface DaemonServerOptions {
   enableWorker?: boolean
   /** Disable the real pipeline (tests that exercise only HTTP shape). */
   enablePipeline?: boolean
+  /**
+   * Enable the dev file watcher (CSS / template HMR). Defaults to the
+   * `DASH_BUILD_WATCH` env var so production daemons stay quiet. Pass
+   * `false` from tests that don't want background fs watches.
+   */
+  enableWatcher?: boolean
 }
 
 export interface RunningDaemon {
@@ -35,6 +42,11 @@ export interface RunningDaemon {
   broadcaster: Broadcaster
   orchestrator: Orchestrator | null
   worker: Worker | null
+  /**
+   * Active dev watcher, or `null` when the watcher is disabled. Exposed so
+   * tests can flush events without timing the debounce window.
+   */
+  devWatcher: DevWatcher | null
   port: number
   host: string
   close: () => Promise<void>
@@ -49,9 +61,17 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
   const host = opts.host ?? "127.0.0.1"
   const enablePipeline = opts.enablePipeline ?? true
   const enableWorker = opts.enableWorker ?? enablePipeline
+  const enableWatcher = opts.enableWatcher ?? isWatcherEnabled()
 
   const store = await Store.load({ path: opts.statePath })
   const broadcaster = new Broadcaster()
+
+  // Tier 4 #16 — dev-only file watcher (off by default). Broadcasts
+  // `static:refresh` to every WS client when a CSS/template file changes so
+  // the dashboard can swap its stylesheet without a full reload. See
+  // `src/daemon/dev-watcher.ts` for scope + env var.
+  const devWatcher = enableWatcher ? new DevWatcher({ broadcaster }) : null
+  devWatcher?.start()
 
   // ── Pipeline wiring ─────────────────────────────────────────────────────
   let orchestrator: Orchestrator | null = null
@@ -170,6 +190,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
       stopAutoReconnect = null
     }
     autoReconnect.stop()
+    devWatcher?.stop()
     worker?.stop()
     orchestrator?.dispose()
     broadcaster.closeAll()
@@ -180,7 +201,17 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
     await store.persist()
   }
 
-  return { server, store, broadcaster, orchestrator, worker, port, host, close }
+  return {
+    server,
+    store,
+    broadcaster,
+    orchestrator,
+    worker,
+    devWatcher,
+    port,
+    host,
+    close,
+  }
 }
 
 /**

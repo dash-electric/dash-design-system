@@ -19,6 +19,7 @@
     "dev": "tsup --watch",
     "copy-dash-ui": "node scripts/copy-dash-ui-to-template.mjs",
     "verify:cdn": "node scripts/probe-sandpack-cdn.mjs",
+    "prepublishOnly": "pnpm typecheck && pnpm audit:css && pnpm audit:tokens && pnpm verify:cdn && pnpm test && pnpm build",
     "pretest": "pnpm audit:css",
     "test": "vitest run",
     "test:watch": "vitest",

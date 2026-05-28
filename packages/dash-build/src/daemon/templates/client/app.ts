@@ -51,6 +51,35 @@ export const DASHBOARD_JS = `
   // Expose for debugging / external triggers.
   window.dashBuildShowToast = showToast;
 
+  // ---------- Tier 4 #16: dev CSS live-reload ----------
+  // Called when the daemon broadcasts a "static:refresh" event. Swaps every
+  // <link rel="stylesheet" href="/static/app.css"> href with a cache-busting
+  // ?t=<now> query string so the browser fetches the freshly-rebuilt CSS
+  // without a full page reload (which would lose component state, scroll
+  // position, draft prompt text, etc).
+  function reloadStaticCss() {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+    var swapped = 0;
+    for (var i = 0; i < links.length; i++) {
+      var link = links[i];
+      var href = link.getAttribute("href") || "";
+      // Only swap our own stylesheet — leave font / CDN sheets alone.
+      if (href.indexOf("/static/app.css") < 0) continue;
+      var base = href.split("?")[0];
+      link.setAttribute("href", base + "?t=" + Date.now());
+      swapped += 1;
+    }
+    if (swapped === 0) return;
+    try {
+      // Surface in console so dev knows the watcher fired even if the
+      // visual diff is subtle.
+      // eslint-disable-next-line no-console
+      console.info("[dash-build] static:refresh — reloaded", swapped, "stylesheet(s)");
+    } catch (e) { /* defensive */ }
+  }
+  // Expose for tests + manual triggers in the dev console.
+  window.dashBuildReloadStaticCss = reloadStaticCss;
+
   // Theme toggle removed — dashboard is light-only per Dash DS (May 2026).
   // Force-clear any persisted preference so users who saw the toggle
   // earlier don't get stuck on a now-undefined "dark" state.
@@ -137,6 +166,14 @@ export const DASHBOARD_JS = `
           var msg = JSON.parse(ev.data);
           if (msg.event === "prompts:changed" || msg.event === "auth:changed") {
             refreshDashboard();
+          }
+          // Tier 4 #16: dev-only HMR signal. The daemon's DevWatcher fires
+          // this when a CSS / template source changes. We swap the
+          // /static/app.css <link> href with a cache-busting query string so
+          // the browser re-fetches without a full reload. Safe in prod —
+          // the daemon only emits this when DASH_BUILD_WATCH=1.
+          if (msg.event === "static:refresh") {
+            reloadStaticCss();
           }
           // Toast-worthy events.
           switch (msg.event) {
