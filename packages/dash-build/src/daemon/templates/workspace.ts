@@ -22,6 +22,10 @@ import { renderSidebar, projectsToRecents } from "./sidebar.js"
 import { renderPromptInput } from "./components/prompt-input.js"
 import { renderChatThread } from "./components/chat-thread.js"
 import { renderPreviewPanel } from "./components/preview-panel.js"
+import {
+  renderInitialPreviewScript,
+  type PreviewInitialBlob,
+} from "../preview-initial.js"
 
 export interface WorkspaceOptions {
   /** Active run id (matches a PromptRecord). Optional — null = empty state. */
@@ -30,6 +34,13 @@ export interface WorkspaceOptions {
   projectId?: string | null
   /** Optional surface badge ("backoffice", "portal-v2", …). */
   surface?: string | null
+  /**
+   * Cold-load Sandpack hydration. When set, the rendered HTML embeds a
+   * `<script>window.__DASH_PREVIEW_INIT = …</script>` tag the client-side
+   * `preview-mount.js` reads before subscribing to SSE. The route handler
+   * fills this in via `loadInitialPreview(runId)`.
+   */
+  initialPreview?: PreviewInitialBlob | null
 }
 
 interface WorkspaceTab {
@@ -112,14 +123,22 @@ export function renderWorkspace(
   // the real preview via this id.
   const componentId = opts.runId ?? ""
 
-  // Component preview chrome — 5 tabs (Component live, Diff/BE/Audit/Files
-  // placeholder), Sandpack mount inside Component tab, context-map footer.
-  // Sandpack auto-bootstraps via /static/preview-mount.js (loaded from layout).
+  // Component preview chrome — 5 tabpanels (Component live, Diff/BE/Audit/Files
+  // placeholder), Sandpack mount inside Component tabpanel, context-map footer.
+  // The tab strip lives on the workspace shell below, not on the panel itself
+  // (see preview-panel.ts header note). Sandpack auto-bootstraps via
+  // /static/preview-mount.js (loaded from layout).
+  const initialBlob =
+    opts.initialPreview && opts.initialPreview.componentId === componentId
+      ? opts.initialPreview
+      : null
   const previewPanel = renderPreviewPanel({
     componentId,
     promptId: opts.runId ?? null,
     activeTab: "component",
+    context: initialBlob ? initialBlob.contextMap : undefined,
   })
+  const initialPreviewScript = renderInitialPreviewScript(initialBlob)
 
   const chatThread = renderChatThread({
     messages: [],
@@ -200,6 +219,7 @@ export function renderWorkspace(
         </main>
       </div>
     </section>
+    ${initialPreviewScript}
   </section>`
 
   return renderLayout({

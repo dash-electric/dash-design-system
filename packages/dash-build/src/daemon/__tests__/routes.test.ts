@@ -78,6 +78,26 @@ describe("HTTP routes", () => {
     expect(html).toContain('data-component-id="run-abc"')
   })
 
+  // Bug A regression (2026-05-28): /workspace/:runId used to render two tab
+  // strips stacked — one from workspace.ts (`db-workspace-tabs`) and one
+  // from preview-panel.ts (`db-preview-tablist`). The panel now owns only
+  // the tabpanels; the strip lives on the workspace shell. Assert exactly
+  // one strip is present.
+  it("GET /workspace/:runId renders exactly one tab strip", async () => {
+    const r = await fetch(`${baseUrl}/workspace/run-abc`)
+    const html = await r.text()
+    const workspaceTabsMatches = html.match(/db-workspace-tabs/g) ?? []
+    const previewTabListMatches = html.match(/db-preview-tablist/g) ?? []
+    // One occurrence per nav element (class attribute). Two would mean the
+    // strip is duplicated. Zero means the workspace tab strip was deleted
+    // entirely (regression in the other direction).
+    expect(workspaceTabsMatches.length).toBe(1)
+    expect(previewTabListMatches.length).toBe(0)
+    // Sandpack mount is still present so preview-mount.js has something to
+    // hydrate.
+    expect(html).toContain('id="db-preview-sandpack"')
+  })
+
   it("GET /dashboard returns HTML", async () => {
     const r = await fetch(`${baseUrl}/dashboard`)
     expect(r.status).toBe(200)

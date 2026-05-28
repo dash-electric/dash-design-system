@@ -2,11 +2,17 @@
  * Preview Panel — workspace-level component preview chrome.
  *
  * Replaces the iframe-full-app preview for component-focused outputs. The
- * panel renders five tabs (Component / Diff / BE Impact / Audit / Files);
- * only the Component tab is functional in MVP. Component tab hosts the
- * Sandpack mount node — client-side `preview-mount.ts` looks for
+ * panel renders five tabpanels (Component / Diff / BE Impact / Audit / Files);
+ * only the Component tabpanel is functional in MVP. Component tabpanel hosts
+ * the Sandpack mount node — client-side `preview-mount.ts` looks for
  * `[data-component-id]` and bootstraps Sandpack against
  * `/api/preview/component`.
+ *
+ * NOTE (2026-05-28): the tab strip lives on the parent workspace shell
+ * (`db-workspace-tabs` in workspace.ts). This panel intentionally omits its
+ * own `<div class="db-preview-tablist">` to avoid the duplicate-tab-strip
+ * bug. Tabpanels still render with `aria-labelledby="db-preview-tab-*"` so
+ * the workspace tabs can hook them up later when tab switching is wired.
  *
  * Agent A's workspace.ts renders this panel via:
  *
@@ -46,39 +52,6 @@ export interface PreviewPanelOptions {
   activeTab?: PreviewPanelTab
   /** Context map footer fields — placeholders for MVP. */
   context?: PreviewPanelContextMap
-}
-
-const TABS: ReadonlyArray<{
-  id: PreviewPanelTab
-  label: string
-  disabled: boolean
-}> = [
-  { id: "component", label: "Component", disabled: false },
-  { id: "diff", label: "Diff", disabled: true },
-  { id: "be-impact", label: "BE Impact", disabled: true },
-  { id: "audit", label: "Audit", disabled: true },
-  { id: "files", label: "Files", disabled: true },
-]
-
-function renderTabs(active: PreviewPanelTab): string {
-  return TABS.map((tab) => {
-    const isActive = tab.id === active
-    const aria = isActive ? ' aria-selected="true"' : ' aria-selected="false"'
-    const tabIndex = isActive ? "" : ' tabindex="-1"'
-    const disabledClass = tab.disabled
-      ? " db-preview-tab--disabled"
-      : ""
-    const disabledAttr = tab.disabled ? ' aria-disabled="true"' : ""
-    const activeClass = isActive ? " db-preview-tab--active" : ""
-    return `<button
-      type="button"
-      role="tab"
-      id="db-preview-tab-${escapeHtml(tab.id)}"
-      class="db-preview-tab${activeClass}${disabledClass}"
-      data-preview-tab="${escapeHtml(tab.id)}"${aria}${tabIndex}${disabledAttr}>
-      ${escapeHtml(tab.label)}
-    </button>`
-  }).join("")
 }
 
 function renderComponentTab(
@@ -168,9 +141,6 @@ export function renderPreviewPanel(opts: PreviewPanelOptions): string {
     id="db-preview-panel"
     data-component-id="${escapeHtml(opts.componentId)}"
     aria-label="Component preview">
-    <div class="db-preview-tablist" role="tablist" aria-label="Preview tabs">
-      ${renderTabs(active)}
-    </div>
     <div class="db-preview-tabpanels">
       ${renderComponentTab(opts.componentId, promptId, active === "component")}
       ${renderPlaceholderTab(
