@@ -71,6 +71,14 @@ Button, Input, Select, Checkbox, Radio, Switch, Badge, Avatar, Tag, Chip, Modal,
 
 A primitive that breaks the contract — e.g. `<Button>` referencing `#5e2aac` directly instead of `--accent-base` — is rejected at CI by `dash audit`.
 
+**Hex carve-outs for Layer 1** (per RULE-REALITY-AUDIT-2026-05-28 C2):
+
+- **External brand hex** in `SocialButton` (Facebook `#1977F3`, Google brand quad, LinkedIn `#0077B5`, GitHub `#24292F`, Dropbox `#3984FF`, etc.) is **allowed and expected** — third-party brand identity is not Dash's to abstract. These are sanctioned external-brand colors.
+- **Brand-logo hex** (`DashLogo`, `DashPurple` constants) should architecturally live in Layer 0 foundation tokens, not Layer 1. The interim `DASH_PURPLE = "#5E2AAC"` constant inside `dash-logo.tsx` is a known migration item — flag but do not block.
+- **Chart override selectors** (e.g. `[stroke='#ccc']` hooks to override Recharts defaults) are tool-bridging selectors, not hard-coded brand colors. Allowed.
+
+All other Layer 1 raw hex remains rejected by `dash audit`.
+
 ### Layer 2 — Product / Tenant Theme (divergent)
 
 This is the layer that **bends**. A theme is a small manifest that overrides:

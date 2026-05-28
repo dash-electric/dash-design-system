@@ -228,6 +228,7 @@ Avoid raw colors. Always reach for semantic tokens:
 ### Brand
 - `bg-primary` / `text-primary` — Dash brand purple (#5e2aac via `--dash-purple-500`)
 - **Canonical Dash Purple primary value: `#5e2aac`** (matches DS token `--dash-purple-500`). Any reference to `#7C4FC4` in older docs is **deprecated** — sync to `#5e2aac`.
+- **Layer 1 hex carve-outs** (per RULE-REALITY-AUDIT-2026-05-28 C2): external brand hex inside `SocialButton` (Facebook `#1977F3`, Google brand quad, LinkedIn `#0077B5`, GitHub `#24292F`, Dropbox `#3984FF`, etc.) is allowed — third-party brand identity is not Dash's to abstract. Chart override selectors (`[stroke='#ccc']`) hooking Recharts defaults are also allowed. Brand-logo constants (`DashLogo`) should migrate to Layer 0 foundation but are not blocked today.
 
 ### Shadows
 - `shadow-custom-xs/sm/md/lg` — card layering presets
