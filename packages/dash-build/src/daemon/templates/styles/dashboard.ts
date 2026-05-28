@@ -669,7 +669,10 @@ button { font-family: inherit; }
 /*  Chat dashboard (Claude.ai-style split-pane)                            */
 /* ─────────────────────────────────────────────────────────────────────── */
 
-/* Override the centered ".db-main" max-width when the chat shell is the body. */
+/* Override the centered ".db-main" max-width when the chat shell is the body.
+   Fixed at 100vh (minus topbar) — internal panes scroll, NOT outer container.
+   Prevents the canvas/baseline-shell min-heights from pushing the page taller
+   than viewport (which made the whole red box scroll-elongate). */
 .db-main:has(.db-chat-shell) {
   max-width: none;
   width: 100%;
@@ -677,6 +680,9 @@ button { font-family: inherit; }
   padding: 14px;
   gap: 0;
   height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
+  max-height: calc(100vh - 64px);
+  overflow: hidden;
 }
 
 .db-chat-scene {
@@ -862,6 +868,12 @@ button { font-family: inherit; }
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  /* Critical: pane fills shell height, child overflow scrolls inside the pane,
+     not the page. Without this, baseline-shell (min 460px) + iframe (480px)
+     elongate the page when stage > viewport. */
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 .db-chat-pane--left {
   background: var(--paper-2);
@@ -870,6 +882,13 @@ button { font-family: inherit; }
   background:
     radial-gradient(circle at top, rgba(94, 42, 172, 0.06), transparent 32%),
     linear-gradient(180deg, rgba(251, 250, 248, 0.98), rgba(255, 255, 255, 0.96));
+}
+/* Canvas stage inside the right pane: vertical scroll when content (baseline
+   shell, code panel, history, owner panel) exceeds available height. */
+.db-chat-pane--right .db-canvas-stage,
+.db-chat-pane--right .db-canvas-panel {
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* ── Chat thread ── */
