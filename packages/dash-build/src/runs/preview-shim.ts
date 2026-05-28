@@ -147,7 +147,7 @@ export const AuthContext = createContext({
   refresh: async () => {},
 })
 
-export function AuthProvider({ children }) {
+export function AuthContextProvider({ children }) {
   const [user] = useState(PREVIEW_USER)
   const value = {
     user,
@@ -164,8 +164,6 @@ export function AuthProvider({ children }) {
 export function UserAuth() {
   return useContext(AuthContext)
 }
-
-export default AuthProvider
 `
 
 /**
@@ -379,15 +377,18 @@ export const BACKOFFICE_SHIM_V1: PreviewShim = {
 }
 
 /**
- * F3 — backoffice shim v2 (active). Same file list as v1; the axios stub
- * now bundles a response interceptor that catches anonymous-401s and
- * returns preview fixture data. Version bumped so the cherry-pick exclude
- * filter still recognises the commit subject pattern
- * (`preview-shim apply v<n> [DO NOT MERGE]`).
+ * F3 — backoffice shim v3 (active). v3 fixes a critical export-shape
+ * mismatch: the auth stub used to export `AuthProvider` (default + named),
+ * but the real backoffice consumer imports `{ AuthContextProvider }`
+ * (named binding from the CookieAuthProvider/LegacyAuthProvider wrapper).
+ * Post-shim, `AuthContextProvider` resolved to `undefined`, every route
+ * 500'd with "Element type is invalid". v3 renames the stub export to
+ * `AuthContextProvider` and drops the default export (the real module
+ * has none). Axios + Firebase stubs unchanged from v2.
  */
-export const BACKOFFICE_SHIM_V2: PreviewShim = {
+export const BACKOFFICE_SHIM_V3: PreviewShim = {
   repoSlug: "dash/backoffice",
-  version: 2,
+  version: 3,
   patchContent: [
     { path: "src/lib/firebase.js", content: BACKOFFICE_FIREBASE_STUB },
     { path: "src/contexts/AuthContext.js", content: BACKOFFICE_AUTH_CONTEXT_STUB },
@@ -592,7 +593,7 @@ export const PORTAL_V2_SHIM_V2: PreviewShim = {
  * mock interceptor. v1 entries remain exported above for callers that
  * pin the older version explicitly (and for the v1 unit test contract).
  */
-const SHIMS: PreviewShim[] = [BACKOFFICE_SHIM_V2, PORTAL_V2_SHIM_V2]
+const SHIMS: PreviewShim[] = [BACKOFFICE_SHIM_V3, PORTAL_V2_SHIM_V2]
 
 export function getShimForRepo(repoSlug: string): PreviewShim | null {
   return SHIMS.find((s) => s.repoSlug === repoSlug) ?? null

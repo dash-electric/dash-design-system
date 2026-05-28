@@ -5,7 +5,7 @@ import { join } from "node:path"
 import { spawn } from "node:child_process"
 import {
   BACKOFFICE_SHIM_V1,
-  BACKOFFICE_SHIM_V2,
+  BACKOFFICE_SHIM_V3,
   PORTAL_V2_SHIM_V1,
   PORTAL_V2_SHIM_V2,
   applyShim,
@@ -62,7 +62,7 @@ async function initRepo(): Promise<void> {
 describe("preview-shim registry", () => {
   it("returns V2 for dash/backoffice (F3 — active shim)", () => {
     const s = getShimForRepo("dash/backoffice")
-    expect(s).toBe(BACKOFFICE_SHIM_V2)
+    expect(s).toBe(BACKOFFICE_SHIM_V3)
     expect(s?.version).toBe(2)
   })
 
@@ -79,7 +79,7 @@ describe("preview-shim registry", () => {
   it("filesAffected matches patchContent paths (all versions)", () => {
     for (const shim of [
       BACKOFFICE_SHIM_V1,
-      BACKOFFICE_SHIM_V2,
+      BACKOFFICE_SHIM_V3,
       PORTAL_V2_SHIM_V1,
       PORTAL_V2_SHIM_V2,
     ]) {
@@ -94,7 +94,7 @@ describe("preview-shim registry", () => {
   })
 
   it("v2 commit message bumps to v2", () => {
-    expect(shimCommitMessage(BACKOFFICE_SHIM_V2)).toBe(
+    expect(shimCommitMessage(BACKOFFICE_SHIM_V3)).toBe(
       "preview-shim apply v2 [DO NOT MERGE]",
     )
     expect(shimCommitMessage(PORTAL_V2_SHIM_V2)).toBe(
@@ -104,7 +104,7 @@ describe("preview-shim registry", () => {
 })
 
 describe("F3 — V2 axios mock interceptor", () => {
-  function getAxiosStubContent(shim: typeof BACKOFFICE_SHIM_V2): string {
+  function getAxiosStubContent(shim: typeof BACKOFFICE_SHIM_V3): string {
     const op = shim.patchContent.find(
       (p) => p.path === "src/utils/axios.js" || p.path === "src/services/apiService.js",
     )
@@ -113,7 +113,7 @@ describe("F3 — V2 axios mock interceptor", () => {
   }
 
   it("V2 backoffice axios stub embeds a 401-catching response interceptor", () => {
-    const src = getAxiosStubContent(BACKOFFICE_SHIM_V2)
+    const src = getAxiosStubContent(BACKOFFICE_SHIM_V3)
     expect(src).toMatch(/interceptors\.response\.use/)
     expect(src).toMatch(/error\.response\.status === 401/)
     expect(src).toMatch(/_previewMock: true/)
@@ -144,7 +144,7 @@ describe("F3 — V2 axios mock interceptor", () => {
    * `axios` + `uuid` that aren't bundled in the test process).
    */
   function evalMockHelper(): (url: string, config?: unknown) => unknown {
-    const src = getAxiosStubContent(BACKOFFICE_SHIM_V2)
+    const src = getAxiosStubContent(BACKOFFICE_SHIM_V3)
     const start = src.indexOf("function generatePreviewMockResponse")
     expect(start).toBeGreaterThan(-1)
     // Walk forward to find the matching closing brace by counting depth.
