@@ -327,6 +327,12 @@
       "description": "Boolean toggle built on Radix Checkbox. 3 sizes (sm/md/lg), primary + destructive tones, indeterminate state, plus CheckboxField composition with label + description."
     },
     {
+      "name": "bulk-action-bar",
+      "type": "registry:ui",
+      "title": "Bulk Action Bar",
+      "description": "Sticky multi-select action toolbar. Appears when ≥1 row is selected in a DataTable. 3 tones (neutral/primary/destructive) × 2 sizes (sm/md). Position top or bottom. Destructive actions gated by confirmation. Mobile-collapses overflow into DropdownMenu."
+    },
+    {
       "name": "button-group",
       "type": "registry:ui",
       "title": "Button Group",

@@ -1323,6 +1323,33 @@
     },
     {
       "$schema": "https://ds.dash.com/schema/registry-item.json",
+      "name": "bulk-action-bar",
+      "type": "registry:ui",
+      "title": "Bulk Action Bar",
+      "description": "Sticky multi-select action toolbar. Appears when ≥1 row is selected in a DataTable. 3 tones (neutral/primary/destructive) × 2 sizes (sm/md). Position top or bottom. Destructive actions gated by confirmation. Mobile-collapses overflow into DropdownMenu.",
+      "categories": [
+        "component",
+        "actions"
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "@remixicon/react",
+        "@radix-ui/react-dropdown-menu"
+      ],
+      "registryDependencies": [
+        "utils",
+        "button",
+        "dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/dash/ui/bulk-action-bar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ds.dash.com/schema/registry-item.json",
       "name": "button-group",
       "type": "registry:ui",
       "title": "Button Group",
