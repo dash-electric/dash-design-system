@@ -61,6 +61,11 @@ The non-negotiable substrate. Touching Layer 0 is a Head of Design decision, not
 - **Motion curves** — `--ease-standard`, `--ease-emphasized`, `--ease-decelerate`
 - **Semantic token tiers** — `bg-*`, `text-*`, `stroke-*`, `icon-*` × strong / sub / soft / disabled / weak / white
 - **State palette** — 8 states × 4 levels (lighter / light / base / dark)
+- **Brand mark + logo colors** — `primaryBrand` (`#5e2aac` Dash Purple) and any
+  logo-specific color constants (`DashLogo` etc.) live in Layer 0 foundation
+  tokens. Per RULE-REALITY-AUDIT-2026-05-28 C2, the interim `DASH_PURPLE`
+  constant inside `apps/docs/registry/dash/ui/dash-logo.tsx` is a known
+  migration item — it belongs in Layer 0, not Layer 1.
 - **Accessibility floor** — WCAG 2.2 AA contrast, 44-pt minimum touch target, focus ring spec, skip-link in every app shell layout (`<a href="#main">Skip to main content</a>` as first focusable child of `<body>`), semantic landmarks (`<header role="banner">`, `<nav aria-label="...">`, `<main>`, `<footer role="contentinfo">`), `prefers-reduced-motion` respected via global `globals.css` block
 
 ### Layer 1 — Common Primitives (shared, atom-level)
