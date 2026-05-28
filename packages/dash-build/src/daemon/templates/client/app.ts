@@ -834,21 +834,35 @@ export const DASHBOARD_JS = `
         if (pendingBuilder && resp && resp.id) {
           pendingBuilder.setAttribute("data-prompt-id", resp.id);
         }
-        // Bug 1 fix (2026-05-28): on workspace pages, iteration submit must
-        // NOT swap the chat thread out from under us (refreshDashboard fetches
-        // /dashboard?legacy=1 and rewrites db-chat-thread, blowing away the
-        // optimistic bubble). Instead, navigate to the newly minted run so the
-        // workspace re-renders with SSE + Sandpack bound to the new artifact.
-        // On legacy /dashboard pages keep the soft refresh path.
+        // Glitch fix (2026-05-28): full-page navigateTo() on iteration
+        // destroyed the just-appended optimistic bubbles (flash white →
+        // fresh DOM → "looks like nothing happened"). Stay on the same
+        // workspace, replaceState the URL so reload/bookmark hits the new
+        // run, and re-bind the Sandpack mount + topbar data-component-id
+        // attrs to the new run id so subsequent WS component:updated
+        // frames target the right mount.
         var onWorkspace =
           (location.pathname || "").indexOf("/workspace") === 0;
-        if (onWorkspace) {
-          if (resp && resp.id) {
-            navigateTo("/workspace/" + encodeURIComponent(resp.id));
-            return;
-          }
+        if (onWorkspace && resp && resp.id) {
+          try {
+            history.replaceState(
+              {},
+              "",
+              "/workspace/" + encodeURIComponent(resp.id)
+            );
+          } catch (e) { /* defensive — back-compat */ }
+          // Re-target every [data-component-id] mount to the new run so the
+          // bridge in the WS handler dispatches preview-refresh on the
+          // right element.
+          try {
+            var rebinds = document.querySelectorAll("[data-component-id]");
+            for (var ri = 0; ri < rebinds.length; ri++) {
+              rebinds[ri].setAttribute("data-component-id", resp.id);
+            }
+          } catch (e) { /* defensive */ }
+          return;
         }
-        // WS push will refresh; do an immediate refresh too as belt-and-braces
+        // Legacy /dashboard path (pre-pivot fallback) — keep soft refresh.
         refreshDashboard();
       })
       .catch(function () {
