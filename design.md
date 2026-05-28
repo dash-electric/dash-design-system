@@ -234,6 +234,12 @@ stop and surface it instead of generating a silent override.
 Reject or rewrite output that includes:
 
 - `react-hook-form`, `zod`, TanStack Query, or SWR in existing Dash repos
+  (carve-out: `packages/registry-schema/**` may import `zod` for runtime
+  registry-JSON validation only)
+- Layer 2 theme files importing Layer 1 source (`registry/dash/themes/**`
+  importing from `registry/dash/ui/**`). Themes are token + manifest overrides
+  only; primitives are consumed via Layer 1 token resolution, not imported.
+  Enforced by `dash audit` rule L-2.
 - hard-coded Dash Purple or custom accent hex values
 - card-inside-card layouts
 - decorative gradient/blob-heavy internal tools
