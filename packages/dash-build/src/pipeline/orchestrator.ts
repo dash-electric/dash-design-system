@@ -43,6 +43,8 @@ import type {
 } from "../clarification/types.js"
 import type { GenerateResult, ParsedFile, ValidationResult } from "../skills/types.js"
 import { enforceAuditLogCall } from "../skills/validator.js"
+import { reviewDesignCoverage } from "../skills/design-review.js"
+import { runDashQa } from "../skills/qa.js"
 import type {
   AnthropicProvider,
   ApprovePRInput,
@@ -966,6 +968,47 @@ export class Orchestrator {
       })
     }
 
+    // 5b. Tier 0 #0N gstack stubs — dash-design-review + dash-qa. Both are
+    //     deterministic post-generation passes; failure here is non-fatal.
+    //     Results live on the artifact for the dashboard but do NOT flip
+    //     validation.passed or block PR creation.
+    try {
+      artifact.designReview = reviewDesignCoverage(result.response)
+    } catch (err) {
+      this.logger.warn("design review pass threw (continuing)", {
+        id: prompt.id,
+        err: (err as Error).message,
+      })
+    }
+    try {
+      artifact.qa = runDashQa({
+        parsed: result.response,
+        repoContext: artifact.contextPack ?? null,
+        intake: intake ?? null,
+      })
+    } catch (err) {
+      this.logger.warn("dash-qa pass threw (continuing)", {
+        id: prompt.id,
+        err: (err as Error).message,
+      })
+    }
+
+    // 5c. Tier 0 #0O — capture provider mode (codex-cli vs byo-key) so the
+    //     run.json metadata can show "powered by Codex" vs "powered by BYO
+    //     OPENAI key". Optional API on the provider — stub providers return
+    //     undefined which we record as null.
+    try {
+      artifact.providerMode = this.anthropic.getMode
+        ? await this.anthropic.getMode()
+        : null
+    } catch (err) {
+      this.logger.warn("provider mode probe threw (continuing)", {
+        id: prompt.id,
+        err: (err as Error).message,
+      })
+      artifact.providerMode = null
+    }
+
     // 4b. Best-effort sandbox bundle for the iframe preview. Failure is
     // explicitly non-fatal — the PR flow doesn't need it and we don't want
     // an esbuild miss / oversized bundle to wedge the user mid-flow.
@@ -1479,6 +1522,8 @@ export class Orchestrator {
         validation: artifact.validation,
         explanation: artifact.explanation,
         contextPack: artifact.contextPack,
+        // Tier 0 #0O — persist auth mode alongside the run summary.
+        providerMode: artifact.providerMode ?? null,
       })
       await this.store.setRunArtifact(prompt.id, {
         artifactDir: written.runDir,
@@ -1906,6 +1951,9 @@ export function defaultOpenAIProvider(
   return {
     async isConnected() {
       return client.isConnected()
+    },
+    async getMode() {
+      return client.getMode()
     },
     async buildSdkClient() {
       return {

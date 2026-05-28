@@ -63,7 +63,7 @@ function isUiContent(file: ParsedFile): boolean {
   return TSX_LIKE.has(file.language) || UI_FILE_RE.test(file.path)
 }
 
-interface DsCoverageMetrics {
+export interface DsCoverageMetrics {
   dsImports: number
   jsxElements: number
   rawUtilityAntipatterns: number
@@ -409,7 +409,7 @@ const AUDIT_BEARING_TOKENS: readonly string[] = [
   "ImageEditorWithAudit",
 ] as const
 
-function outputReferencesAuditBlock(parsed: ParsedResponse): boolean {
+export function outputReferencesAuditBlock(parsed: ParsedResponse): boolean {
   const haystacks: string[] = []
   for (const f of parsed.files) haystacks.push(f.content)
   for (const p of parsed.patches ?? []) haystacks.push(p.patchContent)

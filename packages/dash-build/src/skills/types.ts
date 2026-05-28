@@ -239,6 +239,51 @@ export interface ParsedResponse {
 }
 
 // ---------------------------------------------------------------------------
+// Stage 4b — Design review (post-generation, pre-validation)
+//
+// Tier 0 #0N gstack stub: maps the generated UI files against the Dash DS
+// catalog so the dashboard can show "uses Badge, Card, Table — coverage 0.65"
+// next to the preview. Best-effort + advisory; does NOT flip validation.
+// ---------------------------------------------------------------------------
+
+export interface DesignReviewResult {
+  /** Distinct @dash/<pkg> atom names referenced in generated UI files. */
+  atomsUsed: string[]
+  /** DS imports / raw HTML elements ratio in UI files (0..N). */
+  coverage: number
+  /** Total Dash DS import statements counted across UI files. */
+  dsImports: number
+  /** Total lowercase JSX elements (raw HTML proxy) counted across UI files. */
+  rawHtmlElements: number
+  /** Files containing raw utility-class status patterns (anti-pattern). */
+  rawUtilityAntipatterns: number
+  /** Human-readable suggestions to improve DS coverage. */
+  suggestions: string[]
+}
+
+// ---------------------------------------------------------------------------
+// Stage 7 — QA lint (post-validation, advisory)
+//
+// Tier 0 #0N gstack stub: deterministic syntax + policy lint over the parsed
+// response. NOT a browser QA pass — see docs/gstack-codex-audit-2026-05-28.md
+// for the gap. The dashboard renders this alongside the validation panel.
+// ---------------------------------------------------------------------------
+
+export type QaSeverity = "high" | "medium" | "low"
+
+export interface QaIssue {
+  severity: QaSeverity
+  message: string
+  file: string
+  ruleId: string
+}
+
+export interface QaResult {
+  passed: boolean
+  issues: QaIssue[]
+}
+
+// ---------------------------------------------------------------------------
 // Stage 5 — Validation
 // ---------------------------------------------------------------------------
 

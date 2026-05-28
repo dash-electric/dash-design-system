@@ -21,10 +21,12 @@ import type {
 } from "../clarification/types.js"
 import type {
   AnthropicLike,
+  DesignReviewResult,
   GenerateResult,
   IntakeContext,
   ParsedFile,
   ParsedPatch,
+  QaResult,
   RepoContextPack,
   ValidationResult,
 } from "../skills/types.js"
@@ -87,6 +89,17 @@ export interface GenerationArtifact {
   /** BE-aware intake snapshot used for this generation. Surfaced so the
    *  dashboard can show scenario + audit-trail metadata next to the run. */
   intake?: IntakeContext
+  /** Tier 0 #0N gstack stub — design-review pass result. Advisory only;
+   *  never flips validation.passed. Dashboard renders next to the preview. */
+  designReview?: DesignReviewResult
+  /** Tier 0 #0N gstack stub — deterministic dash-qa lint result. High-sev
+   *  issues set qa.passed=false but do NOT block PR creation; the dashboard
+   *  surfaces them next to the validation panel so the user can review. */
+  qa?: QaResult
+  /** Tier 0 #0O — auth path the run used. `codex-cli` when Codex login was
+   *  active, `byo-key` when the encrypted OpenAI key was used, `none` when
+   *  the stub provider ran (tests). Persisted in `<runDir>/run.json`. */
+  providerMode?: "codex-cli" | "byo-key" | "none" | null
 }
 
 /**
@@ -108,6 +121,12 @@ export interface AnthropicProvider {
    * `messages.create` surface (AnthropicLike) so unit tests can stub it.
    */
   buildSdkClient(): Promise<AnthropicLike>
+  /**
+   * Tier 0 #0O — return the active auth mode so the orchestrator can persist
+   * it on the run artifact. Optional for back-compat with stub providers in
+   * the test suite; when omitted the orchestrator records `null`.
+   */
+  getMode?(): Promise<"codex-cli" | "byo-key" | "none">
 }
 
 export interface GithubProvider {

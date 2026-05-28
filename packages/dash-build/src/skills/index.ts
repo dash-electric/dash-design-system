@@ -23,6 +23,8 @@ export {
 } from "./ds-catalog-loader.js"
 export { parseResponse, extractText, isSafePath, parseFenceHeader } from "./response-parser.js"
 export { validateOutput } from "./validator.js"
+export { reviewDesignCoverage } from "./design-review.js"
+export { runDashQa, type RunDashQaInput } from "./qa.js"
 export { introspectRepo } from "./repo-introspector.js"
 export {
   detectOutputMode,
@@ -59,4 +61,8 @@ export type {
   DSCatalog,
   DSCatalogAtom,
   LoadDSContextOpts,
+  DesignReviewResult,
+  QaIssue,
+  QaResult,
+  QaSeverity,
 } from "./types.js"

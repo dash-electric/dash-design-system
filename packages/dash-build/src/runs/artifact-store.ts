@@ -48,6 +48,13 @@ export interface RunArtifactPayload {
   validation: ValidationResult
   explanation: string
   contextPack?: RepoContextPack
+  /**
+   * Tier 0 #0O — auth path the run used (`codex-cli`, `byo-key`, `none`).
+   * Persisted to `run.json` so a user inspecting the on-disk artifact can
+   * see whether Codex CLI or BYO key powered the generation. Optional for
+   * back-compat with the stub provider used in unit tests.
+   */
+  providerMode?: "codex-cli" | "byo-key" | "none" | null
 }
 
 /**
@@ -163,6 +170,7 @@ export async function writeRunArtifacts(
         explanation: payload.explanation,
         validation: payload.validation,
         fileCount: payload.files.length,
+        providerMode: payload.providerMode ?? null,
       },
       null,
       2,
