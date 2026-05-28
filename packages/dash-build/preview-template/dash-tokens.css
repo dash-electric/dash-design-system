@@ -1,0 +1,81 @@
+/*
+ * Dash Layer 0 token block — minimal subset shipped INTO the Sandpack iframe.
+ *
+ * The full registry token set lives at:
+ *   apps/docs/app/globals.css   (source of truth)
+ *   packages/dash-build/src/daemon/templates/styles/tokens.ts   (daemon inline)
+ *
+ * Here we ship only the variables that generated components most often
+ * reference (colors, radius, spacing, text). If a component uses a token we
+ * forgot, it falls back to the inline default in App.tsx style props.
+ *
+ * DO NOT add raw hex outside this file — every other place in dash-build is
+ * scanned by `audit:tokens` and must use these variables.
+ */
+
+:root {
+  /* Neutral surfaces */
+  --bg-white-0: #ffffff;
+  --bg-weak-50: #f5f7fa;
+  --bg-soft-200: #e1e4ea;
+  --bg-strong-950: #0e121b;
+
+  /* Text */
+  --text-strong-950: #0e121b;
+  --text-sub-600: #525866;
+  --text-soft-400: #99a0ae;
+  --text-disabled-300: #cacfd8;
+  --text-white-0: #ffffff;
+
+  /* Strokes */
+  --stroke-strong-950: #0e121b;
+  --stroke-sub-300: #cacfd8;
+  --stroke-soft-200: #e1e4ea;
+  --stroke-white-0: #ffffff;
+
+  /* Dash Purple — canonical brand */
+  --primary-base: #5e2aac;
+  --primary-darker: #4a1f8a;
+  --primary-alpha-10: rgba(94, 42, 172, 0.10);
+  --primary-alpha-24: rgba(94, 42, 172, 0.24);
+
+  /* State */
+  --success-base: #0f6e56;
+  --warning-base: #b08015;
+  --error-base: #a32d2d;
+  --information-base: #2563eb;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* Spacing ramp — matches Dash 13-step ramp */
+  --spacing-1: 2px;
+  --spacing-2: 4px;
+  --spacing-3: 6px;
+  --spacing-4: 8px;
+  --spacing-5: 10px;
+  --spacing-6: 12px;
+  --spacing-7: 14px;
+  --spacing-8: 16px;
+  --spacing-9: 24px;
+  --spacing-10: 32px;
+  --spacing-11: 40px;
+  --spacing-12: 48px;
+
+  /* Typography */
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--text-strong-950);
+  background: var(--bg-white-0);
+}

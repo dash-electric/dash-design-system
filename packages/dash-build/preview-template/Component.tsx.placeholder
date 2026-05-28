@@ -1,0 +1,27 @@
+/**
+ * Placeholder component — replaced at preview-render time with the LLM-generated
+ * source. Renders a hint when no component has been generated yet so the
+ * Sandpack iframe is never blank.
+ */
+import * as React from "react"
+
+export default function Component(): JSX.Element {
+  return (
+    <div
+      style={{
+        padding: "32px",
+        border: "1px dashed var(--stroke-soft-200, #e1e4ea)",
+        borderRadius: "var(--radius-lg, 14px)",
+        textAlign: "center",
+        color: "var(--text-sub-600, #525866)",
+      }}
+    >
+      <p style={{ margin: 0, fontWeight: 600 }}>
+        Waiting for generated component
+      </p>
+      <p style={{ margin: "8px 0 0", fontSize: "14px" }}>
+        Submit a prompt to populate this preview.
+      </p>
+    </div>
+  )
+}
