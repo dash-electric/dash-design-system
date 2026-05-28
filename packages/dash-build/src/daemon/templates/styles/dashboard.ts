@@ -3091,14 +3091,63 @@ body:has(.db-shell) > .db-footer {
   gap: 6px;
 }
 
-/* Split: dark rail + light canvas */
+/* Split: rail + resizer + canvas. Width controlled via --db-split-left
+   CSS var (saved to localStorage by client/app.ts drag handler).
+   Default 32%, min 240px (rail readable), max 60% (canvas not crushed). */
 .db-split {
   display: grid;
-  grid-template-columns: minmax(280px, 32%) minmax(0, 1fr);
+  grid-template-columns:
+    minmax(240px, var(--db-split-left, 32%))
+    6px
+    minmax(0, 1fr);
   flex: 1;
   min-height: 0;
   background: var(--rule);
-  gap: 1px;
+  gap: 0;
+}
+.db-split.is-resizing,
+.db-split.is-resizing * {
+  cursor: col-resize !important;
+  user-select: none;
+}
+.db-split-resizer {
+  position: relative;
+  background: var(--rule);
+  cursor: col-resize;
+  outline: none;
+  transition: background 120ms ease;
+}
+.db-split-resizer::before {
+  content: "";
+  position: absolute;
+  inset: 0 -3px;
+  border-radius: 3px;
+}
+.db-split-resizer:hover,
+.db-split-resizer:focus-visible,
+.db-split.is-resizing .db-split-resizer {
+  background: var(--primary-soft);
+}
+.db-split-resizer:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+.db-split-resizer::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 28px;
+  border-radius: 2px;
+  background: var(--mute);
+  opacity: 0.4;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.db-split-resizer:hover::after,
+.db-split.is-resizing .db-split-resizer::after {
+  opacity: 1;
+  background: var(--primary);
 }
 
 /* Light rail — consistent with canvas. Uses Dash semantic tokens only

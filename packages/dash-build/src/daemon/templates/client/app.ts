@@ -686,6 +686,81 @@ export const DASHBOARD_JS = `
   }
   bootChatResizer();
 
+  // ---------- Resizable Lovable split (rail + canvas) ----------
+  // Targets the .db-split grid layout (current shell). Drag handle is
+  // .db-split-resizer between rail and canvas-region. Width persisted as
+  // px to localStorage; CSS var --db-split-left controls grid column 1.
+  function bootSplitResizer() {
+    var split = document.getElementById("db-split");
+    var handle = document.getElementById("db-split-resizer");
+    if (!split || !handle) return;
+    var saved = null;
+    try { saved = localStorage.getItem("dash-build-split-left"); } catch (e) {}
+    if (saved) split.style.setProperty("--db-split-left", saved);
+
+    function clampWidth(width) {
+      var total = split.clientWidth || window.innerWidth;
+      var min = 240;
+      var max = Math.max(min, Math.round(total * 0.6));
+      return Math.max(min, Math.min(max, width));
+    }
+    function setWidth(width, persist) {
+      var next = clampWidth(width);
+      split.style.setProperty("--db-split-left", next + "px");
+      handle.setAttribute("aria-valuenow", String(next));
+      if (persist) {
+        try { localStorage.setItem("dash-build-split-left", next + "px"); } catch (e) {}
+      }
+      return next;
+    }
+    function currentWidth() {
+      var rail = split.querySelector(".db-rail");
+      return rail ? rail.getBoundingClientRect().width : 360;
+    }
+    handle.setAttribute("aria-valuemin", "240");
+    handle.setAttribute("aria-valuemax", String(Math.max(240, Math.round(split.clientWidth * 0.6))));
+    handle.setAttribute("aria-valuenow", String(Math.round(currentWidth())));
+
+    handle.addEventListener("pointerdown", function (ev) {
+      if (ev.button !== 0) return;
+      ev.preventDefault();
+      var startX = ev.clientX;
+      var startWidth = currentWidth();
+      split.classList.add("is-resizing");
+      try { handle.setPointerCapture(ev.pointerId); } catch (e) {}
+      function move(moveEv) {
+        setWidth(startWidth + moveEv.clientX - startX, false);
+      }
+      function end(endEv) {
+        try { handle.releasePointerCapture(endEv.pointerId); } catch (e) {}
+        split.classList.remove("is-resizing");
+        setWidth(currentWidth(), true);
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", end);
+        window.removeEventListener("pointercancel", end);
+      }
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", end);
+      window.addEventListener("pointercancel", end);
+    });
+    handle.addEventListener("keydown", function (ev) {
+      var next = null;
+      if (ev.key === "ArrowLeft") next = currentWidth() - 32;
+      if (ev.key === "ArrowRight") next = currentWidth() + 32;
+      if (ev.key === "Home") next = 240;
+      if (ev.key === "End") next = Math.round(split.clientWidth * 0.6);
+      if (next == null) return;
+      ev.preventDefault();
+      setWidth(next, true);
+    });
+    handle.addEventListener("dblclick", function () {
+      // Double-click resets to default 32% of split width.
+      var reset = Math.round(split.clientWidth * 0.32);
+      setWidth(reset, true);
+    });
+  }
+  bootSplitResizer();
+
   // ---------- Live preview viewport controls ----------
   function setPreviewViewport(mode, persist) {
     var pane = document.getElementById("db-preview-pane");

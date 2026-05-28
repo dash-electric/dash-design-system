@@ -833,7 +833,7 @@ export function renderChatDashboard(
 
   const body = `<section class="db-shell">
     ${topbar}
-    <div class="db-split">
+    <div class="db-split" id="db-split">
       <aside class="db-rail" aria-label="Conversation">
         <div class="db-rail-history" id="db-chat-scroll" data-view-mode="chat">
           <div class="db-rail-view db-rail-view--chat" data-rail-view="chat">
@@ -846,6 +846,15 @@ export function renderChatDashboard(
         </div>
         ${railComposer}
       </aside>
+      <div
+        class="db-split-resizer"
+        id="db-split-resizer"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize chat rail. Drag to adjust width, or use left/right arrow keys."
+        aria-controls="db-split"
+        tabindex="0"
+      ></div>
       <main class="db-canvas-region" aria-label="Generate canvas">
         ${canvasArea}
       </main>
