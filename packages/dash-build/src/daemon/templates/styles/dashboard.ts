@@ -966,6 +966,61 @@ button { font-family: inherit; }
   line-height: 1.5;
 }
 
+/* Quick-replay chips below the empty-state body — last 3 prompts for the
+   active project, click fills composer with that prompt text. */
+.db-chat-empty-quick {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.db-chat-empty-quick-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.db-chat-empty-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 100%;
+}
+.db-chat-empty-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--bg-soft, #f4f4f6);
+  border: 1px solid var(--border-soft, rgba(0, 0, 0, 0.06));
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.2;
+  cursor: pointer;
+  max-width: 320px;
+  transition: background 120ms ease, border-color 120ms ease, transform 60ms ease;
+}
+.db-chat-empty-chip:hover {
+  background: var(--bg-hover, #ececf0);
+  border-color: var(--border, rgba(0, 0, 0, 0.1));
+}
+.db-chat-empty-chip:active {
+  transform: translateY(1px);
+}
+.db-chat-empty-chip-icon {
+  font-size: 11px;
+  color: var(--mute);
+}
+.db-chat-empty-chip-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .db-chat-msg {
   display: flex;
   flex-direction: column;
@@ -5261,6 +5316,64 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
 }
 .db-home-empty-body { margin: 0; font-size: var(--text-body-sm); }
 
+/* Tier 2 #9 — example prompt cards under the home hero composer. */
+.db-home-examples {
+  margin: 18px auto 0;
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.db-home-examples-label {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mute);
+  text-align: center;
+}
+.db-home-examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
+}
+.db-home-example-card {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
+  color: var(--ink);
+  font-size: var(--text-body-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.db-home-example-card:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary-soft);
+}
+.db-home-example-card:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+.db-home-example-icon {
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1;
+}
+.db-home-example-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* === Workspace === */
 .db-workspace-shell {
   display: flex;
@@ -5610,6 +5723,126 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+ * Tier 2 #2.12 — Preview viewport toggle (Desktop / Tablet / Mobile).
+ * The frame wraps the Sandpack mount; data-viewport on the frame
+ * constrains max-width so the iframe centers + simulates device sizing.
+ * Toggle UI sits top-right of the Component tabpanel.
+ * ────────────────────────────────────────────────────────────────────── */
+.db-preview-viewport-toggle {
+  display: inline-flex;
+  align-self: flex-end;
+  margin: 0 0 8px;
+  padding: 2px;
+  gap: 2px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.db-preview-viewport-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 4px 12px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--mute);
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.02em;
+}
+.db-preview-viewport-btn:hover { color: var(--ink); }
+.db-preview-viewport-btn--active {
+  background: var(--primary);
+  color: white;
+}
+.db-preview-viewport-frame {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  transition: max-width 160ms ease;
+}
+.db-preview-viewport-frame[data-viewport="desktop"] {
+  max-width: 100%;
+}
+.db-preview-viewport-frame[data-viewport="tablet"] {
+  max-width: 768px;
+  margin: 0 auto;
+}
+.db-preview-viewport-frame[data-viewport="mobile"] {
+  max-width: 375px;
+  margin: 0 auto;
+}
+
+/* Tier 2 #4 — Diff tab. Renders per-file unified diffs with a small
+ * header strip (kind chip + path) above each pre + code language-diff
+ * block. highlight.js picks up .language-diff via the CDN bundle the
+ * layout already loads. */
+.db-preview-diff {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.db-preview-diff-entry {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.db-preview-diff-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--paper-3);
+  border-bottom: 1px solid var(--rule);
+}
+.db-preview-diff-kind {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+.db-preview-diff-kind--patch {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.db-preview-diff-kind--new {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.db-preview-diff-path {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--text-xs);
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.db-preview-diff-pre {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--text-xs);
+  background: var(--paper-2);
+  overflow: auto;
+  max-height: 480px;
+}
+.db-preview-diff-pre > code.db-code-block {
+  display: block;
+  padding: 10px 12px;
+  white-space: pre;
 }
 `
 

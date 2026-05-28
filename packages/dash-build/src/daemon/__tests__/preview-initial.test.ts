@@ -131,6 +131,61 @@ describe("loadInitialPreview", () => {
     expect(blob!.componentId).toBe("prm_20cb094a-ac2")
   })
 
+  // Tier 2 #4 (2026-05-28) — Diff tab cold-load. When the run dir holds a
+  // patches.json alongside generated tsx files, loadInitialPreview must
+  // surface both via blob.diffSnapshot so the workspace template renders a
+  // meaningful diff view without going back through the orchestrator.
+  it("emits diffSnapshot mixing persisted patches + synthetic new-file entry", async () => {
+    await seedArtifact("run-diff-mix", [
+      {
+        path: "Hello.tsx",
+        content: "export default function H() { return <div>hi</div> }",
+      },
+    ])
+    // Patches live at <runDir>/patches.json. Shape matches readRunPatches.
+    const runDir = resolveRunDir("run-diff-mix", join(root, "runs"))
+    await writeFile(
+      join(runDir, "patches.json"),
+      JSON.stringify([
+        {
+          kind: "patch",
+          path: "pages/api/foo.ts",
+          language: "diff",
+          patchContent:
+            "--- a/pages/api/foo.ts\n+++ b/pages/api/foo.ts\n@@ -1,1 +1,2 @@\n hello\n+world\n",
+        },
+      ]),
+      "utf8",
+    )
+    const blob = await loadInitialPreview("run-diff-mix", join(root, "runs"))
+    expect(blob).not.toBeNull()
+    expect(blob!.diffSnapshot).toBeDefined()
+    expect(blob!.diffSnapshot!.length).toBe(2)
+    // Patch first (more interesting), new-file second.
+    expect(blob!.diffSnapshot![0]!.kind).toBe("patch")
+    expect(blob!.diffSnapshot![0]!.path).toBe("pages/api/foo.ts")
+    expect(blob!.diffSnapshot![0]!.body).toContain("+world")
+    expect(blob!.diffSnapshot![1]!.kind).toBe("new-file")
+    expect(blob!.diffSnapshot![1]!.path).toBe("Hello.tsx")
+  })
+
+  it("emits diffSnapshot with only the new-file entry when patches.json is missing", async () => {
+    await seedArtifact("run-diff-newonly", [
+      {
+        path: "Solo.tsx",
+        content: "export default function S() { return null }",
+      },
+    ])
+    const blob = await loadInitialPreview(
+      "run-diff-newonly",
+      join(root, "runs"),
+    )
+    expect(blob).not.toBeNull()
+    expect(blob!.diffSnapshot!.length).toBe(1)
+    expect(blob!.diffSnapshot![0]!.kind).toBe("new-file")
+    expect(blob!.diffSnapshot![0]!.path).toBe("Solo.tsx")
+  })
+
   it("returns null when a runId prefix is ambiguous", async () => {
     await seedArtifact("prm_ambi0001-aaa", [
       {

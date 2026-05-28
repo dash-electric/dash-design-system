@@ -70,6 +70,10 @@ export const PREVIEW_MOUNT_JS = `
 
     function mountSandpack(componentSource) {
       source = componentSource;
+      // Render a skeleton placeholder so the iframe area shows shimmering
+      // rectangles during the 3-5s Sandpack compile instead of staring at
+      // blank white. Replaced wholesale once Sandpack renders the iframe.
+      renderSkeleton();
       setState("loading");
       fetch("/api/preview/component", {
         method: "POST",
@@ -95,6 +99,24 @@ export const PREVIEW_MOUNT_JS = `
           renderError(err && err.message ? err.message : String(err));
           setState("error");
         });
+    }
+
+    function renderSkeleton() {
+      // Lightweight DOM-level skeleton; CSS lives in dashboard.ts under
+      // .db-preview-skeleton-*. Pure aria-hidden visual placeholder.
+      mount.innerHTML =
+        '<div class="db-preview-skeleton" role="status" aria-label="Preview loading">' +
+          '<div class="db-preview-skeleton-bar db-preview-skeleton-bar--header"></div>' +
+          '<div class="db-preview-skeleton-body">' +
+            '<div class="db-preview-skeleton-bar db-preview-skeleton-bar--row" style="width: 78%"></div>' +
+            '<div class="db-preview-skeleton-bar db-preview-skeleton-bar--row" style="width: 60%"></div>' +
+            '<div class="db-preview-skeleton-bar db-preview-skeleton-bar--row" style="width: 86%"></div>' +
+            '<div class="db-preview-skeleton-bar db-preview-skeleton-bar--block"></div>' +
+            '<div class="db-preview-skeleton-bar db-preview-skeleton-bar--row" style="width: 70%"></div>' +
+            '<div class="db-preview-skeleton-bar db-preview-skeleton-bar--row" style="width: 52%"></div>' +
+          '</div>' +
+          '<span class="db-preview-skeleton-sr">Compiling preview…</span>' +
+        '</div>';
     }
 
     function renderError(message) {

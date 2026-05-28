@@ -24,7 +24,7 @@ import {
   handlePreviewApiRoute,
   isPreviewApiPath,
 } from "./routes/api/preview.js"
-import { notFound, sendJson } from "./routes/_helpers.js"
+import { notFound, sendJson, sendRedirect } from "./routes/_helpers.js"
 import { handlePreviewRoute } from "../preview/api-routes.js"
 import { handleBridgeRoute, isBridgePath } from "./routes/api/bridge.js"
 import { handleOwnerBranches } from "./routes/api/owner/branches.js"
@@ -60,7 +60,16 @@ export async function router(
       return await handleWorkspace(res, deps.store, workspaceRunId(pathname))
     }
     if (pathname === "/dashboard") {
-      return handleDashboard(res, deps.store, deps.orchestrator)
+      // Tier 2 #6 — legacy `/dashboard` redirect. The 2026-05-28 pivot moved
+      // the canonical builder surface to `/` (home) + `/workspace/:runId`.
+      // Legacy callers that still GET `/dashboard` directly land on home.
+      // Internal `?legacy=1` escape hatch keeps the classic prompt-list page
+      // reachable for the owner-page "Build" tab and ad-hoc debugging.
+      const qs = url.indexOf("?") >= 0 ? url.slice(url.indexOf("?") + 1) : ""
+      if (qs.split("&").includes("legacy=1")) {
+        return handleDashboard(res, deps.store, deps.orchestrator)
+      }
+      return sendRedirect(res, "/")
     }
     if (pathname === "/owner") {
       return await handleOwner(res, deps.store)

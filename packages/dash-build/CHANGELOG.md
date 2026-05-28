@@ -2,6 +2,55 @@
 
 All notable changes to `@dash/build` are documented here.
 
+## Unreleased — 2026-05-28
+
+### Pivot — component-focused preview
+
+- **Lovable-style home + workspace shell.** New landing (`/`) with prompt
+  composer, recent projects grid, and template cards. Workspace at
+  `/workspace/:runId` runs a 2-pane split: chat thread + composer on the
+  left, Sandpack canvas + tab strip on the right.
+- **Component preview via Sandpack** (`src/daemon/templates/client/preview-mount.ts`).
+  Replaces the iframe-full-app path as the default. Generated components mount
+  against an esm.sh CDN React runtime, with `@dash/ui` tokens + Tailwind
+  injected so DS atoms render correctly. Loading state shows a shimmering
+  skeleton instead of blank white.
+- **BE-aware intake** (`src/intake/`, `src/runs/artifact-store.ts`). Each run
+  scans the target repo for Express/Next API endpoints, Prisma/SQL schema,
+  FE component patterns, and audit-trail exposure. Snapshot persisted to
+  `runs/<runId>/intake.json` for cold-load context map and skill-chain
+  consumption. CR-3 OUTPUT enforcer rejects artifacts shipping sensitive
+  fields (payment / KYC / signature / image-proof) without an audit-log call.
+
+### Added — UX polish (Tier 3 batch)
+
+- Sidebar icons carry native tooltip + `aria-label` so they stay scannable
+  when the rail is collapsed.
+- Keyboard shortcuts: `Cmd/Ctrl+Enter` submits the composer (existing);
+  `/` focuses the composer from anywhere on the page (skips when typing
+  in another input); `Esc` clears the composer textarea when it has draft
+  content.
+- Empty chat state surfaces up to 3 recent prompts for the active project
+  as clickable chips; clicking fills the composer (does not auto-submit).
+- Sandpack loading skeleton replaces the previously blank iframe area
+  during the 3-5s compile window.
+
+### Added — agent observability
+
+- AOP (Agent Observability Protocol) event emission wired through the
+  pipeline orchestrator. Each pipeline step (`queued`, `started`,
+  `intake.complete`, `prompt.composed`, `llm.requested`, `llm.responded`,
+  `validated`, `completed`, `failed`) emits a structured event over
+  `broadcaster` AND persists to `runs/<runId>/events.jsonl` for replay.
+  Schema lives in `packages/aop-schema` (`@dash/aop-schema`).
+
+### Changed
+
+- README documents the component preview pattern and demotes
+  iframe-full-app to a "Legacy" note (still wired behind the "Activate
+  clone preview" button).
+- Pivot plan tracked in `docs/pivot-plan-2026-05-28.md`.
+
 ## 0.1.2 — 2026-05-21
 
 ### Changed

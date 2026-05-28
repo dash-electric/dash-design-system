@@ -14,8 +14,11 @@
     "README.md"
   ],
   "scripts": {
+    "prebuild": "node scripts/copy-dash-ui-to-template.mjs",
     "build": "tsup",
     "dev": "tsup --watch",
+    "copy-dash-ui": "node scripts/copy-dash-ui-to-template.mjs",
+    "verify:cdn": "node scripts/probe-sandpack-cdn.mjs",
     "pretest": "pnpm audit:css",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -41,7 +44,8 @@
     "chalk": "^5.4.0",
     "open": "^10.1.0",
     "@dash/skill": "workspace:*",
-    "@dash/registry-schema": "workspace:*"
+    "@dash/registry-schema": "workspace:*",
+    "@dash/aop-schema": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

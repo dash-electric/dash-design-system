@@ -141,14 +141,54 @@ export function renderChatMessage(msg: ChatMessage): string {
   </li>`
 }
 
+export interface ChatQuickReplay {
+  /** Run/prompt id this chip will replay. */
+  id: string
+  /** Prompt text to fill the composer with on click. */
+  text: string
+}
+
 export interface ChatThreadOptions {
   messages: ChatMessage[]
   /** Shown when the thread is empty. */
   emptyHint?: string
+  /**
+   * Up to 3 most-recent prompts for the current project. Rendered as
+   * clickable chips below the empty state — click fills the composer with
+   * the chip's text so the user can iterate fast.
+   */
+  quickReplay?: ChatQuickReplay[]
+}
+
+function renderQuickReplayChips(items: ChatQuickReplay[]): string {
+  if (!items || items.length === 0) return ""
+  const chips = items
+    .slice(0, 3)
+    .map((item) => {
+      // Cap chip text so very long prompts don't blow out the column.
+      const raw = item.text.trim()
+      const compact = raw.length > 60 ? raw.slice(0, 57) + "…" : raw
+      return `<button
+        type="button"
+        class="db-chat-empty-chip"
+        data-quick-replay="${escapeHtml(item.id)}"
+        data-quick-replay-text="${escapeHtml(raw)}"
+        title="${escapeHtml(raw)}"
+      >
+        <span class="db-chat-empty-chip-icon" aria-hidden="true">↻</span>
+        <span class="db-chat-empty-chip-label">${escapeHtml(compact)}</span>
+      </button>`
+    })
+    .join("")
+  return `<div class="db-chat-empty-quick" aria-label="Recent prompts">
+    <span class="db-chat-empty-quick-label">Recent prompts</span>
+    <div class="db-chat-empty-chips">${chips}</div>
+  </div>`
 }
 
 export function renderChatThread(opts: ChatThreadOptions): string {
   if (opts.messages.length === 0) {
+    const quickReplay = renderQuickReplayChips(opts.quickReplay ?? [])
     return `<div class="db-chat-thread db-chat-thread--empty" id="db-chat-thread">
       <div class="db-chat-empty">
         <span class="db-chat-empty-mark" aria-hidden="true">✦</span>
@@ -157,6 +197,7 @@ export function renderChatThread(opts: ChatThreadOptions): string {
           opts.emptyHint ??
             "Describe a feature. Dash Build will evaluate scope, ask follow-ups if needed, then open a PR.",
         )}</p>
+        ${quickReplay}
       </div>
     </div>`
   }

@@ -21,6 +21,7 @@ import type {
 } from "./types.js"
 import type { EndpointEntry } from "../intake/be-endpoint-catalog.js"
 import type { TableSchema } from "../intake/db-schema-reader.js"
+import type { FePattern } from "../intake/read-fe-patterns.js"
 import { describeOutputMode, type OutputMode } from "./output-mode-detector.js"
 import { renderDSCatalogBlock } from "./ds-catalog-loader.js"
 
@@ -52,6 +53,14 @@ export interface ComposeInput {
    *    - compressed AI rules + truncated domain glossary.
    *  Absent = legacy callers — composer falls back to today's behaviour. */
   dsContext?: DSContext | null
+  /** Phase C / Tier 0G — reference FE component bodies pulled from the
+   *  target repo via `readFePatterns()`. Each pattern is rendered into a
+   *  `## Existing FE patterns in target repo` section so the LLM matches
+   *  local style + import + state conventions instead of reinventing them.
+   *
+   *  The orchestrator computes these before invoking the skill chain.
+   *  Absent / empty = no section is rendered (no-op for legacy callers). */
+  fePatterns?: FePattern[] | null
 }
 
 /** Top-level banned imports embedded verbatim in the system prompt. */
@@ -740,6 +749,41 @@ export const VOICE_REGISTER_BLOCK = `VOICE REGISTER (Tier 0K — mitra-facing su
   messages, toasts) MUST satisfy the formal register.
 - Internal-only / debug strings may break the rule but must be marked TODO.`
 
+// ---------------------------------------------------------------------------
+// Phase C / Tier 0G — Existing FE pattern transfer.
+//
+// Inject 1-3 truncated bodies of components that live in the target repo so
+// the LLM matches local style + import patterns + state-mgmt primitives
+// instead of guessing. Differs from `## CURRENT FILE STATE` (which is for
+// SURGICAL edits via patch-mode) — this section is purely advisory.
+// ---------------------------------------------------------------------------
+
+function hasAnyFePatterns(patterns: FePattern[] | null | undefined): patterns is FePattern[] {
+  return Array.isArray(patterns) && patterns.length > 0
+}
+
+function renderFePatterns(patterns: FePattern[]): string {
+  const lines: string[] = []
+  lines.push(
+    `Below are ${patterns.length} component(s) from the target repo — treat as STYLE + IMPORT reference, not files to edit.`,
+    "Mirror the import paths, state primitives, file naming, and JSX shape. Do NOT regress to generic React patterns when the local repo has a clear convention.",
+    "",
+  )
+  for (const p of patterns) {
+    const truncatedNote =
+      p.fullLineCount > 0 && p.excerpt.includes("[truncated")
+        ? `head-only — full file ${p.fullLineCount} lines`
+        : `${p.fullLineCount} lines`
+    lines.push(`### ${p.name} (${truncatedNote})`)
+    lines.push(`Path: ${p.path}`)
+    lines.push("```tsx")
+    lines.push(p.excerpt)
+    lines.push("```")
+    lines.push("")
+  }
+  return lines.join("\n").trimEnd()
+}
+
 function renderDSCatalogSection(dsContext: DSContext): string {
   const cat = renderDSCatalogBlock(dsContext.catalog)
   const lines: string[] = []
@@ -857,6 +901,16 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
       `## ${sectionNum()}. CURRENT FILE STATE (do NOT recreate, EDIT)`,
       "",
       renderExistingFiles(ctx.existingFiles as ExistingFilesContext),
+      "",
+    )
+  }
+
+  // ── Phase C / Tier 0G — FE pattern transfer (advisory only) ─────────────
+  if (hasAnyFePatterns(ctx.fePatterns)) {
+    out.push(
+      `## ${sectionNum()}. Existing FE patterns in target repo`,
+      "",
+      renderFePatterns(ctx.fePatterns as FePattern[]),
       "",
     )
   }

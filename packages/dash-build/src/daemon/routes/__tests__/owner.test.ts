@@ -57,9 +57,10 @@ describe("GET /owner", () => {
     expect(html).toContain("db-owner-page")
     expect(html).toContain("db-owner-stack")
     expect(html).toContain("db-owner-panel")
-    // Surface-switch tab anchor pointing back to /dashboard.
+    // Surface-switch tab anchor pointing back to the Build home (/).
+    // /dashboard is a legacy route now redirecting to / per Tier 2 #6.
     expect(html).toContain('data-tab="build"')
-    expect(html).toContain('href="/dashboard"')
+    expect(html).toContain('href="/"')
     // Active Owner tab.
     expect(html).toContain('data-tab="owner"')
   })

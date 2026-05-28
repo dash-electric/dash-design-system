@@ -27,12 +27,14 @@ import { join, relative, sep } from "node:path"
 import {
   DEFAULT_RUNS_ROOT,
   readIntakeSnapshot,
+  readRunPatches,
   resolveRunDir,
 } from "../runs/artifact-store.js"
 import {
   detectBannedImports,
   detectDashDsImports,
 } from "../services/component-preview.js"
+import type { DiffSnapshotEntry } from "./templates/components/preview-panel.js"
 
 export interface PreviewInitialBlob {
   /** Stable id the client script matches against `data-component-id`. */
@@ -46,6 +48,14 @@ export interface PreviewInitialBlob {
     be: string[]
     audit: string | null
   }
+  /**
+   * Tier 2 #4 — Diff tab cold-load payload. Mixes persisted patches with a
+   * synthetic "+++ new file" entry for the picked component file so the
+   * Diff tab is meaningful for both patch-mode and greenfield runs.
+   * Optional so older callers / tests that construct blobs inline still
+   * compile — workspace.ts coerces `undefined` to `null`.
+   */
+  diffSnapshot?: DiffSnapshotEntry[]
 }
 
 interface DiscoveredFile {
@@ -182,6 +192,25 @@ export async function loadInitialPreview(
     ? intake.audit.reasonsCode.join(", ") || "audit required"
     : null
 
+  // Tier 2 #4 — load persisted patches (kind=patch) and synthesise a
+  // new-file entry for the picked component so the Diff tab has a body to
+  // render on cold load. Patches go first so users see the more interesting
+  // surgical edits at the top of the list.
+  const patches = await readRunPatches(resolvedId, root).catch(() => [])
+  const diffSnapshot: DiffSnapshotEntry[] = []
+  for (const patch of patches) {
+    diffSnapshot.push({
+      path: patch.path,
+      kind: "patch",
+      body: patch.patchContent,
+    })
+  }
+  diffSnapshot.push({
+    path: picked.path,
+    kind: "new-file",
+    body: picked.content,
+  })
+
   return {
     componentId: resolvedId,
     componentSource: picked.content,
@@ -191,6 +220,7 @@ export async function loadInitialPreview(
       be,
       audit,
     },
+    diffSnapshot,
   }
 }
 

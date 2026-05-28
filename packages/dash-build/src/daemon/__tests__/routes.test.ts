@@ -98,13 +98,63 @@ describe("HTTP routes", () => {
     expect(html).toContain('id="db-preview-sandpack"')
   })
 
-  it("GET /dashboard returns HTML", async () => {
-    const r = await fetch(`${baseUrl}/dashboard`)
+  // Tier 2 #5 (2026-05-28): the static app.js bundle must ship the
+  // workspace tab + viewport hash-persistence handlers. Routes test asserts
+  // the wiring is reachable from /static/app.js so the workspace shell
+  // doesn't silently drop the click handler.
+  it("static app.js ships workspace tab + viewport handlers", async () => {
+    const r = await fetch(`${baseUrl}/static/app.js`)
+    expect(r.status).toBe(200)
+    const body = await r.text()
+    // Click delegate keyed on data-workspace-tab.
+    expect(body).toContain("data-workspace-tab")
+    expect(body).toContain("hookWorkspaceTabs")
+    // Viewport toggle + hash persistence helpers.
+    expect(body).toContain("data-viewport-size")
+    expect(body).toContain("setWorkspaceViewport")
+    expect(body).toContain("writeWorkspaceHash")
+  })
+
+  // Tier 2 #2.12: workspace must render the viewport toggle UI buttons.
+  it("GET /workspace/:runId renders the viewport toggle (Desktop/Tablet/Mobile)", async () => {
+    const r = await fetch(`${baseUrl}/workspace/run-abc`)
+    const html = await r.text()
+    expect(html).toContain("data-viewport-toggle")
+    expect(html).toContain('data-viewport-size="desktop"')
+    expect(html).toContain('data-viewport-size="tablet"')
+    expect(html).toContain('data-viewport-size="mobile"')
+    // Frame wrapper carries the data-viewport attr the JS handler flips.
+    expect(html).toContain('class="db-preview-viewport-frame"')
+    expect(html).toContain('data-viewport="desktop"')
+  })
+
+  // Tier 2 #4: Diff tab placeholder still ships on cold load when no
+  // artifact is on disk. The richer rendering with real patches is covered
+  // by the preview-initial.test.ts unit suite.
+  it("GET /workspace/:runId renders the Diff tabpanel even without artifact", async () => {
+    const r = await fetch(`${baseUrl}/workspace/run-abc`)
+    const html = await r.text()
+    expect(html).toContain('id="db-preview-panel-diff"')
+    // No artifact ⇒ placeholder body present.
+    expect(html).toContain("No diff captured yet")
+  })
+
+  // Tier 2 #6 (2026-05-28): /dashboard now 302-redirects to the Lovable
+  // home (`/`). The legacy classic dashboard is still reachable behind
+  // ?legacy=1 for the owner-page "Build" tab fallback + the internal
+  // soft-refresh fetcher in client/app.ts.
+  it("GET /dashboard 302-redirects to home", async () => {
+    const r = await fetch(`${baseUrl}/dashboard`, { redirect: "manual" })
+    expect(r.status).toBe(302)
+    expect(r.headers.get("location")).toBe("/")
+  })
+
+  it("GET /dashboard?legacy=1 still returns the classic dashboard HTML", async () => {
+    const r = await fetch(`${baseUrl}/dashboard?legacy=1`)
     expect(r.status).toBe(200)
     expect(r.headers.get("content-type")).toMatch(/text\/html/)
     const html = await r.text()
     expect(html).toContain("Dash Build")
-    // Dashboard chrome always renders, regardless of auth state.
     expect(html).toContain("db-ws-indicator")
     expect(html).toContain("db-prompts-region")
   })
@@ -328,7 +378,9 @@ describe("HTTP routes", () => {
 
   it("dashboard allows local generation with OpenAI only", async () => {
     await daemon.store.setAuth("openai", { connected: true, user: "byo-key" })
-    const r = await fetch(`${baseUrl}/dashboard`)
+    // Tier 2 #6: /dashboard 302s to home — use the legacy escape hatch to
+    // assert the classic prompt-input still renders.
+    const r = await fetch(`${baseUrl}/dashboard?legacy=1`)
     expect(r.status).toBe(200)
     const html = await r.text()
     expect(html).toContain("db-prompt-input")

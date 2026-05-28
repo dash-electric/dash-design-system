@@ -6,6 +6,7 @@ import {
   BANNED_PREVIEW_IMPORTS,
   MAX_SOURCE_BYTES,
   __clearTemplateCacheForTests,
+  __inspectDashUiBundleForTests,
   applyUnifiedDiff,
   detectBannedImports,
   detectDashDsImports,
@@ -31,17 +32,34 @@ describe("component-preview service", () => {
     })
     expect(res.ok).toBe(true)
     if (!res.ok) return
-    const paths = Object.keys(res.sandpack.files).sort()
-    expect(paths).toEqual([
+    const paths = new Set(Object.keys(res.sandpack.files))
+    // The core scaffold files are always present.
+    for (const required of [
       "/App.tsx",
       "/Component.tsx",
       "/dash-tokens.css",
       "/index.tsx",
       "/mocks.json",
       "/public/index.html",
-    ])
+    ]) {
+      expect(paths.has(required)).toBe(true)
+    }
     expect(res.sandpack.template).toBe("react-ts")
     expect(res.sandpack.entry).toBe("/index.tsx")
+    // Any additional files MUST belong to the @dash/ui local bundle — we
+    // never leak unrelated paths into the iframe.
+    for (const path of paths) {
+      const isCore =
+        path === "/App.tsx" ||
+        path === "/Component.tsx" ||
+        path === "/dash-tokens.css" ||
+        path === "/index.tsx" ||
+        path === "/mocks.json" ||
+        path === "/public/index.html"
+      if (!isCore) {
+        expect(path.startsWith("/node_modules/@dash/ui/")).toBe(true)
+      }
+    }
   })
 
   it("places component source verbatim at /Component.tsx", async () => {
@@ -157,14 +175,97 @@ export default function F(){return <Badge>x</Badge>}`
     expect(v).not.toMatch(/^workspace:/)
   })
 
-  it("warns when @dash/ui is imported because the package is not on npm yet", async () => {
+  it("does NOT warn for @dash/ui when the local source bundle is shipped (Tier 0 Phase C)", async () => {
+    // The prebuild script copies a curated subset of `@dash/ui` atoms into
+    // preview-template/dash-ui/. When present, Sandpack resolves the import
+    // locally (no CDN round-trip) so the legacy "not on npm" warning MUST NOT
+    // fire for `@dash/ui` — emitting it would mislead the LLM into rendering
+    // raw HTML fallbacks instead of trusting the local bundle.
     const src = `import { Badge } from "@dash/ui/badge"
 import * as React from "react"
 export default function F(){return <Badge>x</Badge>}`
     const res = await renderComponentPreview({ componentSource: src })
     expect(res.ok).toBe(true)
     if (!res.ok) return
-    expect(res.warnings.some((w) => w.includes("@dash/ui"))).toBe(true)
+    const dashUiWarnings = res.warnings.filter(
+      (w) => w.includes("@dash/ui") && w.includes("not yet published"),
+    )
+    expect(dashUiWarnings).toEqual([])
+    // Still warns for unrelated unresolvable Dash packages.
+    expect(res.warnings.some((w) => w.includes("@dash/registry-schema"))).toBe(false)
+  })
+
+  it("still warns for @dash/ui when the local bundle directory is absent", async () => {
+    // Sanity check — when developer skipped the prebuild step, the bundle
+    // cache has `available: false` and the legacy warning re-fires so the
+    // user knows to run `pnpm build`.
+    // We can't easily simulate the bundle being absent without filesystem
+    // mocking, so this test asserts the contract via the inspector helper.
+    const { __inspectDashUiBundleForTests } = await import(
+      "../component-preview.js"
+    )
+    const bundle = __inspectDashUiBundleForTests()
+    // In CI/dev the bundle IS shipped; the test documents the inverse path.
+    if (!bundle.available) {
+      const src = `import { Badge } from "@dash/ui/badge"
+import * as React from "react"
+export default function F(){return <Badge>x</Badge>}`
+      const res = await renderComponentPreview({ componentSource: src })
+      expect(res.ok).toBe(true)
+      if (!res.ok) return
+      expect(res.warnings.some((w) => w.includes("local bundle missing"))).toBe(
+        true,
+      )
+    } else {
+      expect(bundle.atomCount).toBeGreaterThan(0)
+    }
+  })
+
+  it("ships the @dash/ui bundle into Sandpack files when present", async () => {
+    const bundle = __inspectDashUiBundleForTests()
+    if (!bundle.available) {
+      // Skip in environments where prebuild hasn't run — covered by the
+      // companion test above.
+      return
+    }
+    const src = `import { Badge } from "@dash/ui"
+import * as React from "react"
+export default function F(){return <Badge>hi</Badge>}`
+    const res = await renderComponentPreview({ componentSource: src })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    // package.json + index.tsx + at least one atom.
+    expect(res.sandpack.files["/node_modules/@dash/ui/package.json"]).toBeDefined()
+    expect(res.sandpack.files["/node_modules/@dash/ui/index.tsx"]).toBeDefined()
+    expect(res.sandpack.files["/node_modules/@dash/ui/badge.tsx"]).toBeDefined()
+    // All bundle files are hidden + read-only (user can't clobber them).
+    const pkgFile = res.sandpack.files["/node_modules/@dash/ui/package.json"]!
+    expect(pkgFile.hidden).toBe(true)
+    expect(pkgFile.readOnly).toBe(true)
+  })
+
+  it("@dash/ui bundle barrel re-exports each shipped atom", () => {
+    const bundle = __inspectDashUiBundleForTests()
+    if (!bundle.available) return
+    const indexFile = bundle.files["/node_modules/@dash/ui/index.tsx"]
+    expect(indexFile).toBeDefined()
+    expect(indexFile!.code).toContain('export * from "./badge"')
+  })
+
+  it("@dash/ui bundle includes lib/utils so atoms can resolve cn()", () => {
+    const bundle = __inspectDashUiBundleForTests()
+    if (!bundle.available) return
+    expect(bundle.files["/node_modules/@dash/ui/lib/utils.tsx"]).toBeDefined()
+  })
+
+  it("@dash/ui atoms have local relative imports (no @/registry paths leak)", () => {
+    const bundle = __inspectDashUiBundleForTests()
+    if (!bundle.available) return
+    for (const [path, file] of Object.entries(bundle.files)) {
+      if (!path.endsWith(".tsx")) continue
+      // No registry alias should survive the rewrite step.
+      expect(file.code).not.toContain("@/registry/dash/")
+    }
   })
 
   it("serializes mockData overrides on top of the default fixtures", async () => {

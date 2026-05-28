@@ -17,6 +17,7 @@ import { dirname, join, resolve, sep } from "node:path"
 import type {
   IntakeContext,
   ParsedFile,
+  ParsedPatch,
   RepoContextPack,
   ValidationResult,
 } from "../skills/types.js"
@@ -38,6 +39,12 @@ export interface RunArtifactPayload {
   branch: string | null
   generatedAt: string
   files: ParsedFile[]
+  /**
+   * Sprint 2B / Tier 2 #4 — patches against existing files. Persisted to
+   * `<runDir>/patches.json` so the workspace Diff tab can render them on
+   * cold load without going back through the orchestrator.
+   */
+  patches?: ParsedPatch[]
   validation: ValidationResult
   explanation: string
   contextPack?: RepoContextPack
@@ -181,7 +188,60 @@ export async function writeRunArtifacts(
     writtenCount += 1
   }
 
+  // Tier 2 #4 — persist patches alongside files so the Diff tab can render
+  // them on cold load. Empty / missing patch list intentionally writes
+  // nothing so existing run dirs stay byte-stable.
+  if (payload.patches && payload.patches.length > 0) {
+    await writeFile(
+      join(runDir, "patches.json"),
+      JSON.stringify(
+        payload.patches.map((p) => ({
+          kind: "patch",
+          path: p.path,
+          language: p.language,
+          patchContent: p.patchContent,
+        })),
+        null,
+        2,
+      ),
+      "utf8",
+    )
+  }
+
   return { runDir, contextPackRef, fileCount: writtenCount }
+}
+
+/**
+ * Read patches persisted by `writeRunArtifacts`. Returns an empty array when
+ * the file is missing or malformed — callers should treat that as "no diff
+ * available" rather than an error.
+ */
+export async function readRunPatches(
+  runId: string,
+  root: string = DEFAULT_RUNS_ROOT,
+): Promise<ParsedPatch[]> {
+  const file = join(resolveRunDir(runId, root), "patches.json")
+  if (!existsSync(file)) return []
+  try {
+    const raw = JSON.parse(await readFile(file, "utf8")) as unknown
+    if (!Array.isArray(raw)) return []
+    return raw
+      .filter(
+        (e): e is ParsedPatch =>
+          typeof e === "object" &&
+          e !== null &&
+          typeof (e as ParsedPatch).path === "string" &&
+          typeof (e as ParsedPatch).patchContent === "string",
+      )
+      .map((e) => ({
+        kind: "patch" as const,
+        path: e.path,
+        language: typeof e.language === "string" ? e.language : "diff",
+        patchContent: e.patchContent,
+      }))
+  } catch {
+    return []
+  }
 }
 
 export async function readRunSummary(

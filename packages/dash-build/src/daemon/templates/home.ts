@@ -30,6 +30,54 @@ interface TemplateCard {
   tag: string
 }
 
+/**
+ * Tier 2 #9 — Lovable-style example prompt cards rendered directly below the
+ * home hero composer. Click → fill `#db-prompt-input` with the prompt text +
+ * focus. Voice is formal "Anda" per Dash voice rule (CLAUDE.md §Cardinal
+ * rules) — these are mitra-facing surfaces the user is building toward.
+ *
+ * Six cards keeps the grid balanced on most viewports (2-3 wide depending on
+ * width) without spilling below the fold on a 13-inch laptop.
+ */
+interface ExamplePrompt {
+  id: string
+  icon: string
+  text: string
+}
+
+const EXAMPLE_PROMPTS: ExamplePrompt[] = [
+  {
+    id: "ex-dashboard",
+    icon: "📊",
+    text: "Dashboard mitra performance dengan SLA tracking",
+  },
+  {
+    id: "ex-form-kyc",
+    icon: "📝",
+    text: "Form pendaftaran mitra baru dengan KYC + audit log",
+  },
+  {
+    id: "ex-banner-suspend",
+    icon: "🚨",
+    text: "Banner notifikasi suspension dengan reason + reactivate CTA",
+  },
+  {
+    id: "ex-table-orders",
+    icon: "📋",
+    text: "Tabel order list dengan filter status + pagination",
+  },
+  {
+    id: "ex-modal-delete",
+    icon: "🔔",
+    text: "Modal konfirmasi delete dengan undo grace period",
+  },
+  {
+    id: "ex-settings",
+    icon: "⚙️",
+    text: "Settings page mitra dengan tabs Profile/Payment/Notification",
+  },
+]
+
 const TEMPLATE_CARDS: TemplateCard[] = [
   {
     id: "tpl-payroll",
@@ -100,6 +148,28 @@ function renderTemplateCard(t: TemplateCard): string {
   </button>`
 }
 
+function renderExamplePromptCard(ex: ExamplePrompt): string {
+  return `<button
+    type="button"
+    class="db-home-example-card"
+    data-example-prompt="${escapeHtml(ex.text)}"
+    data-example-id="${escapeHtml(ex.id)}"
+    aria-label="Use example prompt: ${escapeHtml(ex.text)}"
+  >
+    <span class="db-home-example-icon" aria-hidden="true">${escapeHtml(ex.icon)}</span>
+    <span class="db-home-example-text">${escapeHtml(ex.text)}</span>
+  </button>`
+}
+
+function renderExamplePrompts(): string {
+  return `<section class="db-home-examples" aria-label="Example prompts">
+    <p class="db-home-examples-label">Coba contoh berikut</p>
+    <div class="db-home-examples-grid">
+      ${EXAMPLE_PROMPTS.map(renderExamplePromptCard).join("")}
+    </div>
+  </section>`
+}
+
 function renderEmptyProjects(): string {
   return `<div class="db-home-empty">
     <p class="db-home-empty-title">No projects yet</p>
@@ -164,6 +234,7 @@ export function renderHome(store: Store, opts: HomeOptions = {}): string {
             </button>
           </div>
         </form>
+        ${renderExamplePrompts()}
       </div>
 
       <section class="db-home-projects" aria-label="Your projects">

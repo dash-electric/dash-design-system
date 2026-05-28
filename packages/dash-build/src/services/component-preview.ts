@@ -16,7 +16,7 @@
  * Spec: docs/specs/component-preview-architecture-2026-05-28.md
  */
 
-import { promises as fs, readFileSync } from "node:fs"
+import { promises as fs, readFileSync, readdirSync, statSync } from "node:fs"
 import { createHash } from "node:crypto"
 import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -161,6 +161,20 @@ const TEMPLATE_DIR = (() => {
   return TEMPLATE_CANDIDATES[0]!
 })()
 
+/**
+ * `@dash/ui` source bundle directory — populated at build time by
+ * `scripts/copy-dash-ui-to-template.mjs`. Each `.tsx` here is shipped into
+ * the Sandpack files map under `/node_modules/@dash/ui/<file>` so that bare
+ * `import { Badge } from "@dash/ui"` specifiers resolve to local source code
+ * INSIDE the iframe — no CDN round-trip required (`@dash/ui` is not on npm).
+ *
+ * Probed lazily — if the directory is missing (developer skipped `pnpm build`)
+ * we degrade gracefully: the bundle is omitted from `files`, the dependency
+ * map still includes `@dash/ui` as a warning trigger, and the iframe surfaces
+ * a "module not found" error for the user to act on.
+ */
+const DASH_UI_BUNDLE_DIR = resolve(TEMPLATE_DIR, "dash-ui")
+
 // ---------------------------------------------------------------------------
 // Template cache
 // ---------------------------------------------------------------------------
@@ -208,6 +222,111 @@ async function loadTemplate(): Promise<TemplateBlob> {
 /** Test-only — clears cached template so fixtures can hot-swap. */
 export function __clearTemplateCacheForTests(): void {
   templateCache = null
+  dashUiBundleCache = null
+}
+
+// ---------------------------------------------------------------------------
+// @dash/ui local bundle — built by `scripts/copy-dash-ui-to-template.mjs`.
+// ---------------------------------------------------------------------------
+
+interface DashUiBundle {
+  /** Sandpack files map keyed by absolute virtual path
+   *  (`/node_modules/@dash/ui/badge.tsx`, …). Empty when the directory is
+   *  missing on disk (script not run yet). */
+  files: Record<string, SandpackFile>
+  /** Bundle present + non-empty → safe to mark `@dash/ui` as resolvable. */
+  available: boolean
+  /** Diagnostic — atom count shipped. */
+  atomCount: number
+}
+
+let dashUiBundleCache: DashUiBundle | null = null
+
+function loadDashUiBundle(): DashUiBundle {
+  if (dashUiBundleCache) return dashUiBundleCache
+
+  const files: Record<string, SandpackFile> = {}
+  let atomCount = 0
+
+  const dirExists = (() => {
+    try {
+      const s = statSync(DASH_UI_BUNDLE_DIR)
+      return s.isDirectory()
+    } catch {
+      return false
+    }
+  })()
+
+  if (!dirExists) {
+    dashUiBundleCache = { files, available: false, atomCount: 0 }
+    return dashUiBundleCache
+  }
+
+  // 1. Synthetic `package.json` so Sandpack resolves `@dash/ui` → index.tsx.
+  files["/node_modules/@dash/ui/package.json"] = {
+    code: JSON.stringify(
+      {
+        name: "@dash/ui",
+        version: "0.0.0-preview",
+        main: "./index.tsx",
+        module: "./index.tsx",
+        types: "./index.tsx",
+      },
+      null,
+      2,
+    ),
+    hidden: true,
+    readOnly: true,
+  }
+
+  // 2. Recurse the bundle dir + emit every `.tsx` / `.ts` / `.json` as a
+  //    hidden, read-only Sandpack file.
+  const walk = (dir: string, virtualPrefix: string): void => {
+    let entries: string[]
+    try {
+      entries = readdirSync(dir)
+    } catch {
+      return
+    }
+    for (const entry of entries) {
+      const abs = join(dir, entry)
+      let s
+      try {
+        s = statSync(abs)
+      } catch {
+        continue
+      }
+      if (s.isDirectory()) {
+        walk(abs, `${virtualPrefix}/${entry}`)
+        continue
+      }
+      if (!/\.(tsx|ts|json)$/.test(entry)) continue
+      try {
+        const code = readFileSync(abs, "utf8")
+        files[`${virtualPrefix}/${entry}`] = {
+          code,
+          hidden: true,
+          readOnly: true,
+        }
+        if (entry.endsWith(".tsx")) atomCount += 1
+      } catch {
+        // skip
+      }
+    }
+  }
+  walk(DASH_UI_BUNDLE_DIR, "/node_modules/@dash/ui")
+
+  dashUiBundleCache = {
+    files,
+    available: atomCount > 0,
+    atomCount,
+  }
+  return dashUiBundleCache
+}
+
+/** Test-only inspector for the bundle metadata. */
+export function __inspectDashUiBundleForTests(): DashUiBundle {
+  return loadDashUiBundle()
 }
 
 // Eager sync-load probe at module import to fail fast in dev. Best-effort.
@@ -341,10 +460,15 @@ export async function renderComponentPreview(
     ...(req.mockData ?? {}),
   }
 
-  // 5. Resolve dependencies — merge declared deps with auto-detected Dash DS
+  // 5. Resolve dependencies — merge declared deps with auto-detected Dash DS.
+  //    `@dash/ui` is intentionally kept in the dependency map even when the
+  //    local bundle resolves it — Sandpack still surfaces it under "deps"
+  //    diagnostics and downstream callers (tests, dashboard) rely on the
+  //    package name appearing there.
   const dashDsImports = detectDashDsImports(req.componentSource)
   const declaredDeps = new Set([...(req.dependencies ?? []), ...dashDsImports])
   const dependencies = resolveDependencyVersions(declaredDeps)
+  const dashUiBundle = loadDashUiBundle()
 
   // 6. Build Sandpack files map. `/index.tsx` and `/App.tsx` are template-
   //    owned and read-only to prevent the user clobbering them. `/Component.tsx`
@@ -375,6 +499,13 @@ export async function renderComponentPreview(
       hidden: true,
       readOnly: true,
     },
+    // 6a. Ship the local `@dash/ui` source bundle. Sandpack's in-iframe
+    //     resolver walks `node_modules/<pkg>/package.json` first, so a bare
+    //     specifier like `import { Badge } from "@dash/ui"` is satisfied by
+    //     the synthetic package.json + `index.tsx` barrel below. When the
+    //     bundle directory is missing (prebuild script not run yet) this is
+    //     a no-op and the legacy "not on npm" warning still fires.
+    ...dashUiBundle.files,
   }
 
   const warnings: string[] = []
@@ -384,16 +515,26 @@ export async function renderComponentPreview(
     )
   }
   // Dash DS imports won't resolve via Sandpack's npm CDN until @dash/ui ships
-  // to npm or a self-hosted ESM proxy. The iframe still styles the component
-  // via the Tailwind CDN + Layer 0 tokens, but JSX referencing <Badge /> etc.
-  // will fail to mount until the import resolves.
-  const unresolvableDashImports = Array.from(declaredDeps).filter((d) =>
-    DASH_DS_UNRESOLVABLE.includes(d),
-  )
+  // to npm or a self-hosted ESM proxy. Sub-task 1 of Tier 0 Phase C ships a
+  // local source bundle at `/node_modules/@dash/ui/*` — when that bundle is
+  // present we DON'T emit the legacy "not on npm" warning for `@dash/ui`
+  // (the import resolves locally). We still warn for any other unresolvable
+  // `@dash/*` package (e.g. `@dash/registry-schema`).
+  const unresolvableDashImports = Array.from(declaredDeps).filter((d) => {
+    if (!DASH_DS_UNRESOLVABLE.includes(d)) return false
+    if (d === "@dash/ui" && dashUiBundle.available) return false
+    return true
+  })
   if (unresolvableDashImports.length > 0) {
     warnings.push(
       `Dash DS package(s) not yet published to npm: ${unresolvableDashImports.join(", ")}. ` +
         "Component will render with Tailwind utilities + Layer 0 tokens only.",
+    )
+  }
+  if (declaredDeps.has("@dash/ui") && !dashUiBundle.available) {
+    warnings.push(
+      "@dash/ui local bundle missing from preview-template/dash-ui/. " +
+        "Run `pnpm --filter @dash/build copy-dash-ui` (or `pnpm build`) to ship the atoms.",
     )
   }
 

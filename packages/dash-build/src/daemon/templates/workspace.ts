@@ -81,6 +81,40 @@ function pickThread(store: Store, project: Project | null): Thread | null {
   return store.getThreads(project.id)[0] ?? null
 }
 
+/**
+ * Collect up to 3 most-recent prompts for the project's threads, sorted by
+ * `updatedAt` desc. Used to seed the chat empty-state quick-replay chips so
+ * the user can re-run a previous prompt with one click instead of retyping.
+ */
+function pickQuickReplay(
+  store: Store,
+  project: Project | null,
+  limit = 3,
+): Array<{ id: string; text: string }> {
+  if (!project) return []
+  const threads = store.getThreads(project.id)
+  if (threads.length === 0) return []
+  const runs = threads.flatMap((t) => store.getRuns(t.id))
+  if (runs.length === 0) return []
+  // Sort by updatedAt desc — newest prompt first. Filter out blanks/dedupe
+  // exact-string repeats so the chip strip stays useful (instead of 3 chips
+  // of the same prompt).
+  const sorted = runs
+    .slice()
+    .sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""))
+  const seen = new Set<string>()
+  const picked: Array<{ id: string; text: string }> = []
+  for (const run of sorted) {
+    const text = (run.prompt ?? "").trim()
+    if (!text) continue
+    if (seen.has(text)) continue
+    seen.add(text)
+    picked.push({ id: run.id, text })
+    if (picked.length >= limit) break
+  }
+  return picked
+}
+
 function renderTabs(active: string): string {
   return WORKSPACE_TABS.map((tab) => {
     const isActive = tab.id === active
@@ -137,6 +171,7 @@ export function renderWorkspace(
     promptId: opts.runId ?? null,
     activeTab: "component",
     context: initialBlob ? initialBlob.contextMap : undefined,
+    diffSnapshot: initialBlob ? initialBlob.diffSnapshot ?? null : null,
   })
   const initialPreviewScript = renderInitialPreviewScript(initialBlob)
 
@@ -144,12 +179,13 @@ export function renderWorkspace(
     messages: [],
     emptyHint:
       "Describe the change you want to make. Dash Build keeps the thread anchored to this workspace.",
+    quickReplay: pickQuickReplay(store, project, 3),
   })
 
   const composer = `<div class="db-workspace-composer">
     <div class="db-workspace-composer-input">${renderPromptInput({
       hideFooter: true,
-      placeholder: "Iterate on this workspace…",
+      placeholder: "Iterate on this workspace… (⌘↵ to send, / to focus)",
     })}</div>
     <div class="db-workspace-composer-actions">
       <button

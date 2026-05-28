@@ -31,6 +31,7 @@ import { loadDSContext } from "./ds-catalog-loader.js"
 import { extractText, parseResponse } from "./response-parser.js"
 import { validateOutput } from "./validator.js"
 import { detectOutputMode } from "./output-mode-detector.js"
+import { readFePatterns, type FePattern } from "../intake/read-fe-patterns.js"
 import type {
   ChainDeps,
   DSContext,
@@ -129,7 +130,7 @@ export async function generateWithSkillChain(
   const loadDSCtxFn =
     deps.loadDSContext ?? (({ repoPath }) => loadDSContext({ cwd: repoPath }))
 
-  const [design, skill, introspection, existingFiles, dsContext] = await Promise.all([
+  const [design, skill, introspection, existingFiles, dsContext, fePatterns] = await Promise.all([
     loadDesign().catch(() => ({
       cardinalRules: "",
       designContract: "",
@@ -155,6 +156,14 @@ export async function generateWithSkillChain(
     }).catch<ExistingFilesContext>(() => ({ resolutions: [], files: [] })),
     // Phase B Tier 0A/0B/0L — Dash DS catalog + compressed rules + glossary.
     loadDSCtxFn({ repoPath: input.repoPath }).catch<DSContext | null>(() => null),
+    // Phase C / Tier 0G — surface 1-3 reference FE components from the
+    // target repo so the LLM mirrors local style + imports. Best-effort:
+    // never throws, returns [] when the repo can't be walked.
+    readFePatterns({
+      prompt: input.prompt,
+      repoRoot: input.repoPath,
+      scenario: input.intake?.classification.scenario ?? null,
+    }).catch<FePattern[]>(() => []),
   ])
 
   // ── Stage 4: compose system prompt ───────────────────────────────────────

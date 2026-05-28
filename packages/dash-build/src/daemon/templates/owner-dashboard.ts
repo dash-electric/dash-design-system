@@ -133,7 +133,7 @@ export function renderOwnerDashboard(
       </div>
     </div>
     <nav class="db-topbar-tabs" role="tablist" aria-label="Workspace surface">
-      <a class="db-topbar-tab" role="tab" data-tab="build" href="/dashboard" aria-selected="false" title="Build">
+      <a class="db-topbar-tab" role="tab" data-tab="build" href="/" aria-selected="false" title="Build">
         <span class="db-topbar-tab-icon" aria-hidden="true">◆</span>
         <span class="db-topbar-tab-label">Build</span>
       </a>

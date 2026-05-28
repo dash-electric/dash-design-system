@@ -30,6 +30,11 @@ interface ApproveBody {
  * POST /api/prompt — create prompt, kick off pipeline
  * GET  /api/prompts/:id — fetch by id (includes artifact when generated)
  * POST /api/prompts/:id/approve — user approves PR creation
+ * POST /api/prompts/:id/rerun — clone an existing prompt + kick the pipeline
+ *
+ * `rerun` resolves the original prompt text + repo/branch by id, then submits
+ * a brand-new PromptRecord through `orchestrator.submitPrompt`. The response
+ * carries the new prompt id so the client can navigate to the fresh workspace.
  *
  * When `orchestrator` is provided, real pipeline runs. When omitted, falls
  * back to the legacy stub for tests that haven't migrated.
@@ -104,12 +109,43 @@ export async function handlePromptsRoute(
     })
   }
 
-  // /api/prompts/:id[/approve]
-  const match = pathname.match(/^\/api\/prompts\/([A-Za-z0-9_-]+)(\/approve)?$/)
+  // /api/prompts/:id[/approve|/rerun]
+  const match = pathname.match(
+    /^\/api\/prompts\/([A-Za-z0-9_-]+)(\/approve|\/rerun)?$/,
+  )
   if (!match) return notFound(res)
 
   const id = match[1]!
   const approveRoute = match[2] === "/approve"
+  const rerunRoute = match[2] === "/rerun"
+
+  if (rerunRoute) {
+    if (req.method !== "POST") return methodNotAllowed(res)
+    const prompt = store.getPrompt(id)
+    if (!prompt) return notFound(res)
+    if (!orchestrator) {
+      return sendJson(res, 503, {
+        ok: false,
+        error: "orchestrator_unavailable",
+        message: "Pipeline disabled — rerun requires the orchestrator.",
+      })
+    }
+    try {
+      const result = await orchestrator.submitPrompt({
+        text: prompt.text,
+        repo: prompt.repo,
+        branch: prompt.branch,
+      })
+      return sendJson(res, 202, {
+        ok: true,
+        id: result.promptId,
+        status: result.status,
+        sourceId: id,
+      })
+    } catch (err) {
+      return badRequest(res, (err as Error).message)
+    }
+  }
 
   if (approveRoute) {
     if (req.method !== "POST") return methodNotAllowed(res)

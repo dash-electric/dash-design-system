@@ -268,8 +268,11 @@ export const DASHBOARD_JS = `
   }
 
   // ---------- Refresh ----------
-  // Soft refresh: re-fetches /dashboard and swaps the prompt list region.
-  // Falls back to full reload if anything goes sideways.
+  // Soft refresh: re-fetches the legacy dashboard payload and swaps the
+  // prompt list region. Falls back to full reload if anything goes sideways.
+  // Tier 2 #6 (2026-05-28): /dashboard now 302s to / for new shell users —
+  // pass ?legacy=1 to opt back into the classic prompt-list HTML the swap
+  // logic depends on.
   var refreshInFlight = false;
   function promptListSkeleton(count) {
     var n = Math.max(1, count || 3);
@@ -291,7 +294,7 @@ export const DASHBOARD_JS = `
   function refreshDashboard() {
     if (refreshInFlight) return;
     refreshInFlight = true;
-    fetch("/dashboard", { headers: { "Accept": "text/html" } })
+    fetch("/dashboard?legacy=1", { headers: { "Accept": "text/html" } })
       .then(function (r) { return r.ok ? r.text() : null; })
       .then(function (html) {
         if (!html) return;
@@ -590,9 +593,49 @@ export const DASHBOARD_JS = `
       if ((ev.metaKey || ev.ctrlKey) && ev.key === "Enter") {
         ev.preventDefault();
         submitPrompt();
+        return;
+      }
+      // Esc inside composer: clear textarea content. Lets the user abort an
+      // in-progress draft without reaching for the mouse. We only swallow Esc
+      // when the textarea actually has content — otherwise let it bubble so
+      // surrounding overlays (clarification cards, modals) can react.
+      if (ev.key === "Escape" && input.value) {
+        ev.preventDefault();
+        input.value = "";
+        try {
+          var clearEv = new Event("input", { bubbles: true });
+          input.dispatchEvent(clearEv);
+        } catch (e) { /* legacy browser no-op */ }
       }
     });
   }
+
+  // ---------- Global keyboard shortcuts ----------
+  // "/" focuses the composer textarea from anywhere on the page, skipping
+  // when the user is already typing in an input/textarea/contenteditable so
+  // we don't hijack the literal "/" character. Mirrors Linear/Slack pattern.
+  function isEditableTarget(el) {
+    if (!el) return false;
+    var tag = el.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+    if (el.isContentEditable) return true;
+    return false;
+  }
+  document.addEventListener("keydown", function (ev) {
+    // Only react to bare "/" — let Cmd/Ctrl/Alt/Shift+"/" through.
+    if (ev.key !== "/" || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    if (isEditableTarget(ev.target)) return;
+    var composer = document.getElementById("db-prompt-input");
+    if (!composer) return;
+    ev.preventDefault();
+    try {
+      composer.focus();
+      // Scroll into view in case the composer is below the fold.
+      if (typeof composer.scrollIntoView === "function") {
+        composer.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    } catch (e) { /* defensive */ }
+  });
 
   var resetBtn = document.getElementById("db-local-run-reset");
   if (resetBtn) {
@@ -1092,7 +1135,9 @@ export const DASHBOARD_JS = `
         var href = tab.getAttribute("href");
         if (!href) {
           ev.preventDefault();
-          window.location.href = which === "owner" ? "/owner" : "/dashboard";
+          // Tier 2 #6 — "build" now lands on the Lovable home; "owner" stays
+          // at /owner. Legacy classic dashboard is reachable via ?legacy=1.
+          window.location.href = which === "owner" ? "/owner" : "/";
         }
         return;
       }
@@ -1153,6 +1198,32 @@ export const DASHBOARD_JS = `
         if (firstInput) firstInput.focus();
       }
     }, 120);
+  });
+
+  // ---------- Quick replay chips (empty chat state) ----------
+  // Chips rendered in chat-thread.ts empty state with [data-quick-replay].
+  // Click fills the composer textarea with the chip's saved prompt text so
+  // the user can iterate fast — does NOT auto-submit so they can tweak first.
+  document.addEventListener("click", function (ev) {
+    var target = ev.target;
+    if (!target || !target.closest) return;
+    var chip = target.closest("[data-quick-replay]");
+    if (!chip) return;
+    ev.preventDefault();
+    var text = chip.getAttribute("data-quick-replay-text") || "";
+    var composer = document.getElementById("db-prompt-input");
+    if (!composer) return;
+    try {
+      composer.value = text;
+      composer.focus();
+      // Move caret to end so the user can append/edit immediately.
+      var len = text.length;
+      if (typeof composer.setSelectionRange === "function") {
+        composer.setSelectionRange(len, len);
+      }
+      var inputEv = new Event("input", { bubbles: true });
+      composer.dispatchEvent(inputEv);
+    } catch (e) { /* defensive */ }
   });
 
   // ---------- Delegated: approve action ----------
@@ -1236,6 +1307,96 @@ export const DASHBOARD_JS = `
         showToast({ message: command, kind: "info", duration: 7000 });
       }
     }
+  });
+
+  // ---------- Tier 2 #8: Workspace top bar Share + Run buttons ----------
+  // The workspace shell (src/daemon/templates/workspace.ts) renders two
+  // top-bar pills: Share (copy current URL → toast) and Run (re-execute the
+  // current prompt by POSTing /api/prompts/<runId>/rerun; on success, navigate
+  // to the new workspace). The Run action infers the active runId from the
+  // /workspace/:id URL — Sandpack mount uses the same id, so URL is canonical.
+  function currentWorkspaceRunId() {
+    var path = location.pathname || "";
+    if (path.indexOf("/workspace/") !== 0) return null;
+    var rest = path.slice("/workspace/".length);
+    var slash = rest.indexOf("/");
+    var id = slash >= 0 ? rest.slice(0, slash) : rest;
+    if (!id) return null;
+    // Strict id charset matches the server-side route regex.
+    if (!/^[A-Za-z0-9_-]+$/.test(id)) return null;
+    return id;
+  }
+  document.addEventListener("click", function (ev) {
+    var target = ev.target;
+    if (!target || !target.closest) return;
+    var actionBtn = target.closest("[data-workspace-action]");
+    if (!actionBtn) return;
+    var action = actionBtn.getAttribute("data-workspace-action");
+    if (action === "share") {
+      ev.preventDefault();
+      var url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () {
+          showToast({ message: "Share link copied", kind: "success" });
+        }).catch(function () {
+          showToast({ message: url, kind: "info", duration: 7000 });
+        });
+      } else {
+        showToast({ message: url, kind: "info", duration: 7000 });
+      }
+      return;
+    }
+    if (action === "run") {
+      ev.preventDefault();
+      var runId = currentWorkspaceRunId();
+      if (!runId) {
+        showToast({
+          message: "No active run to re-execute",
+          kind: "warn",
+        });
+        return;
+      }
+      if (actionBtn.getAttribute("data-busy") === "true") return;
+      actionBtn.setAttribute("data-busy", "true");
+      actionBtn.setAttribute("disabled", "true");
+      var runLabel = actionBtn.querySelector(".db-button-label");
+      var prevRunLabel = runLabel ? runLabel.textContent : null;
+      if (runLabel) runLabel.textContent = "Running…";
+      fetch("/api/prompts/" + encodeURIComponent(runId) + "/rerun", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then(function (r) {
+          if (!r.ok && r.status !== 202) throw new Error("rerun_failed_" + r.status);
+          return r.json();
+        })
+        .then(function (body) {
+          if (body && body.id) {
+            showToast({
+              message: "Re-running prompt — opening new workspace…",
+              kind: "info",
+            });
+            // Navigate to the freshly minted workspace so SSE + Sandpack
+            // mount against the new run.
+            navigateTo("/workspace/" + encodeURIComponent(body.id));
+            return;
+          }
+          // No id — soft refresh as a fallback so the user sees state move.
+          refreshDashboard();
+        })
+        .catch(function () {
+          showToast({
+            message: "Could not re-run this prompt",
+            kind: "error",
+          });
+          actionBtn.removeAttribute("data-busy");
+          actionBtn.removeAttribute("disabled");
+          if (runLabel && prevRunLabel != null) runLabel.textContent = prevRunLabel;
+        });
+      return;
+    }
+    // "reset" + other actions are still handled by their own dedicated
+    // listeners (see composer / dashboard wiring above).
   });
 
   // ---------- Sprint 1A: sandbox bootstrap button ----------
@@ -1492,6 +1653,35 @@ export const DASHBOARD_JS = `
     });
   }
 
+  // Tier 2 #9: example prompt cards below the home hero composer. Click →
+  // fill the textarea with the example text, fire input event so any
+  // autosize hook re-measures, then focus the input. We do NOT auto-submit
+  // — the user keeps full control over when to launch.
+  function hookExamplePromptCards() {
+    var cards = document.querySelectorAll("[data-example-prompt]");
+    if (!cards || cards.length === 0) return;
+    cards.forEach(function (card) {
+      card.addEventListener("click", function (ev) {
+        if (ev && ev.preventDefault) ev.preventDefault();
+        var text = card.getAttribute("data-example-prompt") || "";
+        if (!text) return;
+        var textarea = document.getElementById("db-prompt-input");
+        if (!textarea) return;
+        try {
+          textarea.value = text;
+          var inputEvt = new Event("input", { bubbles: true });
+          textarea.dispatchEvent(inputEvt);
+          textarea.focus();
+          // Move caret to the end so user can immediately keep typing.
+          if (typeof textarea.setSelectionRange === "function") {
+            var len = text.length;
+            textarea.setSelectionRange(len, len);
+          }
+        } catch (e) { /* defensive */ }
+      });
+    });
+  }
+
   // Workspace boot: read seed prompt from URL hash (passed by home page)
   // and pre-fill the composer textarea. Fixes Agent A handoff TODO #1.
   function hookWorkspaceHashHandoff() {
@@ -1517,13 +1707,144 @@ export const DASHBOARD_JS = `
     }
   }
 
+  // ---------- Tier 2 #5 + #2.12 — Workspace tabs + viewport persistence ----
+  // Parse the workspace location hash (e.g. "#tab=diff&viewport=mobile") so
+  // refresh keeps the user's last-active tab + viewport. We also write back
+  // to the hash on every change so deep-links stay shareable.
+  var WORKSPACE_TABS = ["component", "diff", "be-impact", "audit", "files"];
+  var WORKSPACE_VIEWPORTS = ["desktop", "tablet", "mobile"];
+
+  function parseWorkspaceHash() {
+    var raw = (location.hash || "").replace(/^#/, "");
+    var out = { tab: null, viewport: null };
+    if (!raw) return out;
+    try {
+      var params = new URLSearchParams(raw);
+      var tab = params.get("tab");
+      var viewport = params.get("viewport");
+      if (tab && WORKSPACE_TABS.indexOf(tab) >= 0) out.tab = tab;
+      if (viewport && WORKSPACE_VIEWPORTS.indexOf(viewport) >= 0) out.viewport = viewport;
+    } catch (e) { /* malformed hash → ignore */ }
+    return out;
+  }
+
+  function writeWorkspaceHash(updates) {
+    var current = parseWorkspaceHash();
+    var next = {
+      tab: updates && updates.tab !== undefined ? updates.tab : current.tab,
+      viewport:
+        updates && updates.viewport !== undefined
+          ? updates.viewport
+          : current.viewport,
+    };
+    var parts = [];
+    if (next.tab && next.tab !== "component") parts.push("tab=" + encodeURIComponent(next.tab));
+    if (next.viewport && next.viewport !== "desktop") {
+      parts.push("viewport=" + encodeURIComponent(next.viewport));
+    }
+    var hash = parts.length ? "#" + parts.join("&") : "";
+    try {
+      // replaceState avoids polluting history with every tab click.
+      history.replaceState(null, "", location.pathname + location.search + hash);
+    } catch (e) { /* private mode → no-op */ }
+  }
+
+  function setWorkspaceTab(next) {
+    var tabId = WORKSPACE_TABS.indexOf(next) >= 0 ? next : "component";
+    var buttons = document.querySelectorAll("[data-workspace-tab]");
+    if (!buttons || buttons.length === 0) return;
+    for (var i = 0; i < buttons.length; i++) {
+      var btn = buttons[i];
+      var matches = btn.getAttribute("data-workspace-tab") === tabId;
+      btn.classList.toggle("db-workspace-tab--active", matches);
+      btn.setAttribute("aria-selected", matches ? "true" : "false");
+    }
+    // Toggle the tabpanels rendered by preview-panel.ts.
+    for (var j = 0; j < WORKSPACE_TABS.length; j++) {
+      var id = WORKSPACE_TABS[j];
+      var panel = document.getElementById("db-preview-panel-" + id);
+      if (!panel) continue;
+      if (id === tabId) panel.removeAttribute("hidden");
+      else panel.setAttribute("hidden", "");
+    }
+    // Mirror onto the canvas body so CSS hooks (e.g. tab-specific padding)
+    // can match against the active id.
+    var canvasBody = document.querySelector("[data-workspace-active-tab]");
+    if (canvasBody) canvasBody.setAttribute("data-workspace-active-tab", tabId);
+    writeWorkspaceHash({ tab: tabId });
+  }
+
+  function setWorkspaceViewport(next) {
+    var size = WORKSPACE_VIEWPORTS.indexOf(next) >= 0 ? next : "desktop";
+    var frame = document.querySelector(".db-preview-viewport-frame");
+    if (frame) frame.setAttribute("data-viewport", size);
+    var btns = document.querySelectorAll("[data-viewport-size]");
+    for (var i = 0; i < btns.length; i++) {
+      var btn = btns[i];
+      var matches = btn.getAttribute("data-viewport-size") === size;
+      btn.classList.toggle("db-preview-viewport-btn--active", matches);
+      btn.setAttribute("aria-pressed", matches ? "true" : "false");
+    }
+    writeWorkspaceHash({ viewport: size });
+  }
+
+  function hookWorkspaceTabs() {
+    var tabs = document.querySelectorAll("[data-workspace-tab]");
+    if (!tabs || tabs.length === 0) return;
+    for (var i = 0; i < tabs.length; i++) {
+      var tab = tabs[i];
+      if (tab.getAttribute("data-workspace-tab-wired") === "true") continue;
+      tab.setAttribute("data-workspace-tab-wired", "true");
+      tab.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        var current = ev.currentTarget;
+        var id = current.getAttribute("data-workspace-tab");
+        setWorkspaceTab(id);
+        // Re-run highlight.js on freshly visible code blocks (Diff tab uses
+        // language-diff). The helper is idempotent so re-runs are safe.
+        if (typeof highlightCodePanel === "function") highlightCodePanel();
+      });
+    }
+  }
+
+  function hookViewportToggle() {
+    var btns = document.querySelectorAll("[data-viewport-size]");
+    if (!btns || btns.length === 0) return;
+    for (var i = 0; i < btns.length; i++) {
+      var btn = btns[i];
+      if (btn.getAttribute("data-viewport-wired") === "true") continue;
+      btn.setAttribute("data-viewport-wired", "true");
+      btn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        var current = ev.currentTarget;
+        var size = current.getAttribute("data-viewport-size");
+        setWorkspaceViewport(size);
+      });
+    }
+  }
+
+  function hookWorkspaceState() {
+    var path = location.pathname || "";
+    if (path.indexOf("/workspace") !== 0) return;
+    hookWorkspaceTabs();
+    hookViewportToggle();
+    var state = parseWorkspaceHash();
+    if (state.tab) setWorkspaceTab(state.tab);
+    if (state.viewport) setWorkspaceViewport(state.viewport);
+    // Diff tab uses language-diff blocks server-rendered into the panel; run
+    // highlight.js once on boot so colors paint immediately.
+    if (typeof highlightCodePanel === "function") highlightCodePanel();
+  }
+
   function bootLovableShell() {
     hookHomePrompt();
     hookHomeTabs();
     hookSidebarToggle();
     hookNewProjectButton();
     hookTemplateCards();
+    hookExamplePromptCards();
     hookWorkspaceHashHandoff();
+    hookWorkspaceState();
   }
   bootLovableShell();
 

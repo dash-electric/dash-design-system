@@ -133,6 +133,34 @@ See:
 - [`HANDOFF-2026-05-25.md`](./HANDOFF-2026-05-25.md) — current P0 status,
   known gaps, and next-chat continuation prompt.
 
+## Component Preview Pattern
+
+Live preview uses **Sandpack** to compile a single generated component in the
+browser, not a full Next.js app boot. This is the post-pivot pattern that
+landed 2026-05-28 (see `docs/pivot-plan-2026-05-28.md`).
+
+**Why component-focused, not iframe-full-app:**
+
+- Cold compile is ~3-5s vs 5-7 minutes for a full Next.js dev server clone.
+- No silent scheduler failures pinning the canvas to a stale build.
+- Generated components render against a sandboxed React 18 runtime fed by
+  esm.sh CDN, with `@dash/ui` tokens + Tailwind injected so DS atoms render
+  correctly without bundling the consumer repo.
+- BE-aware moat still ships: intake persists `runs/<runId>/intake.json` with
+  endpoint catalog, DB schema, FE patterns, and audit-trail enforcement so
+  generated output sits inside real product context.
+
+Mount lifecycle lives in `src/daemon/templates/client/preview-mount.ts`. The
+workspace renders a Sandpack mount point with `data-component-id`; the script
+fetches `/api/preview/component`, lazy-imports Sandpack from CDN, and replaces
+the mount with a `<SandpackPreview>` root. Loading state shows a shimmering
+skeleton instead of a blank iframe.
+
+> **Legacy:** The earlier iframe-full-app path (Workspace clone +
+> `startDevServer` cascade) still lives in `src/runs/workspace.ts` and the
+> sandbox state machine, gated behind the "Activate clone preview" topbar
+> button. It is no longer the default; component preview is.
+
 ## Architecture
 
 ```
@@ -144,7 +172,8 @@ See:
 │   ├ GitHub App (Bearer token + Octokit)      │
 │   ├ Skill chain (PRD + design.md + Skill v4) │
 │   ├ Clarification (multi-turn questions)     │
-│   ├ Preview (sandboxed iframe + esbuild)     │
+│   ├ Preview (Sandpack component + esbuild)   │
+│   ├ Intake (BE catalog + DB schema + audit)  │
 │   └ Pipeline (queued → PR created)           │
 │ OpenAI / Codex ─ via CLI or API              │
 │ GitHub API ── via App installation           │

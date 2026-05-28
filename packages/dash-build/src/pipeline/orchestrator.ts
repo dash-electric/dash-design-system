@@ -71,6 +71,7 @@ import {
   writeIntakeSnapshot,
   writeRunArtifacts,
 } from "../runs/artifact-store.js"
+import { estimateUsage, writeCost } from "../runs/cost-ledger.js"
 import type { BranchManager, Workspace } from "../runs/branch-manager.js"
 import type { Publisher } from "../runs/publish.js"
 import {
@@ -103,6 +104,12 @@ import {
   applyUnifiedDiff,
   detectDashDsImports,
 } from "../services/component-preview.js"
+import {
+  AOPEmitter,
+  NullAOPEmitter,
+  normaliseProvider,
+  type RunEmitter,
+} from "../observability/aop-emitter.js"
 
 export interface OrchestratorOptions {
   store: Store
@@ -185,6 +192,14 @@ export interface OrchestratorOptions {
    * would otherwise trip the intake classifier's ambiguous gate.
    */
   intakeEnabled?: boolean
+  /**
+   * Optional AOP emitter. When provided, the orchestrator emits one AOP
+   * envelope per pipeline step (`run.start`, `scan`, `thinking`, `cost`,
+   * `validate`, `artifact`, `run.end`, `error`) over the broadcaster + the
+   * per-run `events.jsonl`. Defaults to a `NullAOPEmitter` so older test
+   * fixtures keep working without any wiring.
+   */
+  aopEmitter?: AOPEmitter
 }
 
 const NOOP_LOGGER: Logger = {
@@ -220,10 +235,13 @@ export class Orchestrator {
     }>
   }
   private readonly intakeEnabled: boolean
+  private readonly aopEmitter: AOPEmitter
 
   /** In-memory artifact cache, keyed by promptId. Survives process lifetime
    *  only — by-design, since regenerating is cheaper than reloading from disk. */
   private readonly artifacts: Map<string, GenerationArtifact> = new Map()
+  /** Per-run AOP emitters — created on first emit, dropped on terminal step. */
+  private readonly runEmitters: Map<string, RunEmitter> = new Map()
   /** Sandbox branch state per run — only populated when the D2 sandbox path
    *  is active. Lets approvePR find the branch the publisher needs without
    *  re-deriving it from the prompt id. */
@@ -268,6 +286,7 @@ export class Orchestrator {
           gitOps: new GitOps(workspaceDir),
         }))
     this.intakeEnabled = opts.intakeEnabled ?? false
+    this.aopEmitter = opts.aopEmitter ?? new NullAOPEmitter()
 
     // Sprint 1C: wire sandbox state-machine transitions through Store +
     // Broadcaster for any Workspace passed in via DI (e.g. integration tests
@@ -309,6 +328,25 @@ export class Orchestrator {
   /** Shut down background timers — called by daemon.close(). */
   dispose(): void {
     this.ttlCancel?.()
+  }
+
+  /**
+   * Lazily resolve the per-run AOP emitter so each pipeline step can append
+   * an event without remembering whether the emitter has been seeded. Stable
+   * per promptId; cleared by `forgetRunEmitter` on terminal transitions.
+   */
+  private aop(promptId: string): RunEmitter {
+    let runEmitter = this.runEmitters.get(promptId)
+    if (!runEmitter) {
+      runEmitter = this.aopEmitter.forRun(promptId)
+      this.runEmitters.set(promptId, runEmitter)
+    }
+    return runEmitter
+  }
+
+  private forgetRunEmitter(promptId: string): void {
+    this.runEmitters.delete(promptId)
+    this.aopEmitter.forget(promptId)
   }
 
   // ── Public surface ───────────────────────────────────────────────────────
@@ -1436,6 +1474,8 @@ export class Orchestrator {
         branch: prompt.branch,
         generatedAt: artifact.generatedAt,
         files: artifact.files,
+        // Tier 2 #4 — persist patches so the Diff tab can render on cold load.
+        patches: artifact.patches ?? [],
         validation: artifact.validation,
         explanation: artifact.explanation,
         contextPack: artifact.contextPack,

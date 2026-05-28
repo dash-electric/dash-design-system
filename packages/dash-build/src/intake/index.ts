@@ -39,3 +39,12 @@ export {
   type AuditTrailRequirement,
   type AuditTrailPattern,
 } from "./audit-trail-enforcer.js"
+
+export {
+  readFePatterns,
+  extractKeywords,
+  scoreFilename,
+  type FePattern,
+  type ReadFePatternsInput,
+  type ReadFePatternsOptions,
+} from "./read-fe-patterns.js"

@@ -86,9 +86,14 @@ function renderNavList(
         ? "db-sidebar-nav-item db-sidebar-nav-item--active"
         : "db-sidebar-nav-item"
       const aria = isActive ? ' aria-current="page"' : ""
-      return `<a class="${cls}" href="${escapeHtml(item.href)}"${aria}>
+      // Native tooltip + explicit aria-label so the icon stays understandable
+      // even when the sidebar is collapsed (label span hidden via CSS). The
+      // tooltip fires on hover for both expanded + collapsed states; the
+      // aria-label gives assistive tech a stable name when collapsed.
+      const label = escapeHtml(item.label)
+      return `<a class="${cls}" href="${escapeHtml(item.href)}"${aria} title="${label}" aria-label="${label}">
         <span class="db-sidebar-nav-icon" aria-hidden="true">${escapeHtml(item.icon)}</span>
-        <span class="db-sidebar-nav-label">${escapeHtml(item.label)}</span>
+        <span class="db-sidebar-nav-label">${label}</span>
       </a>`
     })
     .join("")
