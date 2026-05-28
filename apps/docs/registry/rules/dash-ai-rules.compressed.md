@@ -29,6 +29,10 @@
 
 `@dash/templates/{list,detail,form,empty-state,login,error}-page`. Always wrap content in `@dash/page-layout`.
 
+## Shell / sidebar scope
+
+"No new sidebar/shell/route pattern without explicit request" applies to **consumer repos** (portal-v2, backoffice, basecamp, react-fleet, halo-dash, tribes). Dash DS itself ships preview shells (auth-shell, dashboard-shell, hr-app-shell, finance-app-shell, marketing-*-shell) as DS-internal infrastructure for realistic previews — NOT consumer drift.
+
 ## Pre-composed blocks
 
 `@dash/blocks/{transactions-table,orders-table,user-profile-card,notification-center,settings-form,kpi-grid}`.

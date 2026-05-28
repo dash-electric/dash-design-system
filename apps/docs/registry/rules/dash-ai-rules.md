@@ -106,6 +106,16 @@
 
 - **Bar / Line / Area / Pie** → `@dash/chart` (Recharts wrapper, ChartConfig token wiring)
 
+## Shell / sidebar scope rule
+
+"Do not introduce a new sidebar, shell, or route pattern unless explicitly
+requested" applies to **consumer repos only** (`portal-v2`, `backoffice`,
+`basecamp`, `react-fleet`, `halo-dash`, tribe apps). Dash DS itself ships
+multiple preview shells (`auth-shell`, `dashboard-shell`, `hr-app-shell`,
+`finance-app-shell`, `marketing-settings-shell`, `marketing-add-product-shell`)
+so generated UI can render inside a realistic product chrome. These are
+DS-internal infrastructure, not consumer drift.
+
 ## Page templates (decision tree)
 
 - Backoffice with sidebar + topbar → `@dash/templates/dashboard-shell`

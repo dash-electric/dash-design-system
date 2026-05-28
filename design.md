@@ -133,7 +133,12 @@ Generated UI should preserve expected behavior across repos:
 - Evidence: proof images, payment data, signatures, KYC, and approvals must
   surface provenance and audit status.
 - Navigation: preserve the target repo navigation model. Do not introduce a
-  new sidebar, shell, or route pattern unless explicitly requested.
+  new sidebar, shell, or route pattern unless explicitly requested. **Scope:**
+  this rule applies to **consumer repos** (`portal-v2`, `backoffice`, `basecamp`,
+  `react-fleet`, `halo-dash`, tribe apps). Dash DS itself MAY ship multiple
+  preview shells (per-product mirror shells like `hr-app-shell`, `finance-app-shell`,
+  `dashboard-shell`, `auth-shell`) — these are DS-internal infrastructure for
+  previewing generated UI inside a realistic product chrome, not consumer drift.
 - Repo-aware preview: when a target repo is selected, Dash Build must wrap the
   generated preview in a deterministic repo shell/navigation context and active
   route. `preview.tsx` should render the feature/page content inside that route
