@@ -58,7 +58,18 @@
 
 ## What is fragile, theatrical, or likely to fail
 
-### Pattern blocks are conceptually broken
+### Pattern blocks — earlier critique now stale
+
+> **Update 2026-05-28 (per RULE-REALITY-AUDIT):** the original concern below
+> was about a *planned* approach to pattern blocks. The actual shipped pattern
+> source does NOT import `react-hook-form` or `zod` — only doc-explainer pages
+> reference the bans by name. Verified via `dash audit`: zero RHF imports in
+> `apps/docs/registry/dash/patterns/`. One stray `react-hook-form` import
+> survives in `packages/worker/src/__tests__/validator.test.ts:42` (test
+> fixture, banned everywhere else, scheduled for removal). The "patterns
+> are conceptually broken" framing below is historical.
+
+Original critique (preserved for context — premise no longer holds):
 
 The 3 canonical pattern blocks (`multi-item-form`, `bulk-submit`, `use-code-field`) ship using `react-hook-form` + `zod`. These libs are **banned in every Dash FE repo we scanned** (5 of 5). Our defense: "Adaptation Layer translates per-repo".
 
