@@ -61,7 +61,7 @@ The non-negotiable substrate. Touching Layer 0 is a Head of Design decision, not
 - **Motion curves** — `--ease-standard`, `--ease-emphasized`, `--ease-decelerate`
 - **Semantic token tiers** — `bg-*`, `text-*`, `stroke-*`, `icon-*` × strong / sub / soft / disabled / weak / white
 - **State palette** — 8 states × 4 levels (lighter / light / base / dark)
-- **Accessibility floor** — WCAG 2.2 AA contrast, 44-pt minimum touch target, focus ring spec
+- **Accessibility floor** — WCAG 2.2 AA contrast, 44-pt minimum touch target, focus ring spec, skip-link in every app shell layout (`<a href="#main">Skip to main content</a>` as first focusable child of `<body>`), semantic landmarks (`<header role="banner">`, `<nav aria-label="...">`, `<main>`, `<footer role="contentinfo">`), `prefers-reduced-motion` respected via global `globals.css` block
 
 ### Layer 1 — Common Primitives (shared, atom-level)
 
