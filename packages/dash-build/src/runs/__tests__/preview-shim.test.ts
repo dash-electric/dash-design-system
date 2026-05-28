@@ -60,10 +60,13 @@ async function initRepo(): Promise<void> {
 }
 
 describe("preview-shim registry", () => {
-  it("returns V2 for dash/backoffice (F3 — active shim)", () => {
+  it("returns V3 for dash/backoffice (F3 — active shim post-2026-05-28 bump)", () => {
+    // Tier 4 #17 fix — backoffice shim bumped V2→V3 (AuthContextProvider
+    // rename + default-export drop). Test pinned to the version field so
+    // future bumps surface explicitly.
     const s = getShimForRepo("dash/backoffice")
     expect(s).toBe(BACKOFFICE_SHIM_V3)
-    expect(s?.version).toBe(2)
+    expect(s?.version).toBe(3)
   })
 
   it("returns V2 for dash/portal-v2 (F3 — active shim)", () => {
@@ -93,9 +96,12 @@ describe("preview-shim registry", () => {
     )
   })
 
-  it("v2 commit message bumps to v2", () => {
+  it("commit message tracks the shim's version field", () => {
+    // Tier 4 #17 — version digit comes straight from the shim object so the
+    // assertion stays stable across future bumps. The verifyShimNotInBranch
+    // signal is the version-agnostic substring "preview-shim apply v".
     expect(shimCommitMessage(BACKOFFICE_SHIM_V3)).toBe(
-      "preview-shim apply v2 [DO NOT MERGE]",
+      "preview-shim apply v3 [DO NOT MERGE]",
     )
     expect(shimCommitMessage(PORTAL_V2_SHIM_V2)).toBe(
       "preview-shim apply v2 [DO NOT MERGE]",

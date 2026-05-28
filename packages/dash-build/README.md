@@ -196,6 +196,22 @@ Env vars (optional overrides):
 | `DASH_BUILD_GITHUB_CLIENT_SECRET`| _(required)_                  | OAuth client secret          |
 | `DASH_BUILD_GITHUB_APP_SLUG`     | `dash-build`                  | App slug (for install URL)   |
 | `DASH_BUILD_GITHUB_WEBHOOK_SECRET`| _(optional)_                 | Only if webhooks enabled     |
+| `DASH_BUILD_OWNER_ROOT_URL`      | _(unset)_                     | Tier 6 — fully qualified URL when the Owner Dashboard is deployed standalone (e.g. `https://owner.dash.com`). Surfaced by `/owner/health`. |
+| `DASH_BUILD_OWNER_HEALTH_PATH`   | `/owner/health`               | Tier 6 — override the Owner liveness endpoint path when fronted by a reverse proxy. |
+
+## Owner Dashboard Standalone (Tier 6)
+
+The Owner surface (`/owner`) is deploy-portable for ops who want a separate
+read-mostly review console.
+
+- **Health probe:** `GET /owner/health` returns liveness + branch/activity
+  counts without invoking pipeline work. Suitable for uptime monitors.
+- **Scoped CSS:** `extractOwnerScopedCss()` (in
+  `dist/daemon/templates/styles/owner-scoped.js`) returns a CSS slice that
+  styles only the Owner page. Pair with `extractTokenRootCss()` for a
+  drop-in `<style>` block when the full Dashboard bundle is undesirable.
+- **Base URL:** set `DASH_BUILD_OWNER_ROOT_URL` so the `/owner/health`
+  response advertises the canonical URL clients should bookmark.
 
 ## GitHub App Setup
 
@@ -307,6 +323,29 @@ Dash Build supports two auth paths:
 (`byo-key` | `codex-cli` | `none`). The pipeline orchestrator transparently
 routes through either path via `AuthenticatedOpenAIClient.complete()`.
 
+## Publishing to npm
+
+`@dash/build` is published from the `packages/dash-build` workspace.
+
+```bash
+# 1. Make sure the working tree is clean.
+git status
+
+# 2. Bump the version in package.json (semver — beta tags use `0.x.y-beta.N`).
+#    pnpm refuses to publish if the version already exists on the registry.
+
+# 3. Dry-run to inspect what would ship. Verify only dist/, preview-template/,
+#    scripts/probe-sandpack-cdn.mjs, README.md, CHANGELOG.md, LICENSE land.
+pnpm --filter @dash/build publish --dry-run --no-git-checks
+
+# 4. Publish for real (the `prepublishOnly` hook runs typecheck + audits +
+#    CDN probe + tests + build before the upload).
+pnpm --filter @dash/build publish --no-git-checks
+```
+
+The `.npmignore` file is a belt-and-braces guard — the `files` whitelist in
+`package.json` is the primary control.
+
 ## License
 
-Internal — Dash Electric Indonesia.
+MIT. Copyright (c) 2026 Dash Tech (PT Dash Elektrik Indonesia). See `LICENSE`.

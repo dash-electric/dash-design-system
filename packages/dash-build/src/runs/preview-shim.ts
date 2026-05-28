@@ -608,7 +608,16 @@ export function shimCommitMessage(shim: Pick<PreviewShim, "version">): string {
  * `verifyShimNotInBranch` below. The version digit is intentionally dropped so
  * we still catch shims tagged with future versions.
  */
-const SHIM_COMMIT_SIGNAL = "preview-shim apply v"
+/**
+ * Substring used by the cherry-pick exclude filter (Agent D2),
+ * `verifyShimNotInBranch`, and (Tier 4 #17) by `extractGeneratedOnly`.
+ *
+ * Exported so the branch-manager can match commit subjects defensively —
+ * cherry-picking a shim onto a different parent produces a NEW SHA even
+ * when the tree is identical, so SHA-only exclusion is racy. Subject
+ * matching catches both the original commit and any re-picked copies.
+ */
+export const SHIM_COMMIT_SIGNAL = "preview-shim apply v"
 
 export interface ApplyShimResult {
   ok: boolean

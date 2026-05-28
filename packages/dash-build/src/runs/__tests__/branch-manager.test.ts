@@ -8,7 +8,11 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { BranchManager, type Workspace } from "../branch-manager.js"
+import {
+  BranchManager,
+  looksLikeShimSubject,
+  type Workspace,
+} from "../branch-manager.js"
 import { GitOps } from "../git-ops.js"
 import { SandboxStateMachine } from "../sandbox-state.js"
 import type { ParsedFile } from "../../skills/types.js"
@@ -196,5 +200,24 @@ describe("BranchManager", () => {
     // Working tree should be back on a usable branch (trunk).
     const branch = await h.git.currentBranch()
     expect(branch).toBe("main")
+  })
+})
+
+describe("looksLikeShimSubject (Tier 4 #17)", () => {
+  it("matches production shim subjects across versions", () => {
+    expect(looksLikeShimSubject("preview-shim apply v1 [DO NOT MERGE]")).toBe(true)
+    expect(looksLikeShimSubject("preview-shim apply v2 [DO NOT MERGE]")).toBe(true)
+    expect(looksLikeShimSubject("preview-shim apply v9 [DO NOT MERGE]")).toBe(true)
+  })
+
+  it("matches the test-harness fixture phrasing", () => {
+    expect(looksLikeShimSubject("chore: preview shim")).toBe(true)
+    expect(looksLikeShimSubject("chore: preview shim [dash-build local-only]")).toBe(true)
+  })
+
+  it("ignores generated commits", () => {
+    expect(looksLikeShimSubject("feat: add foo")).toBe(false)
+    expect(looksLikeShimSubject("init")).toBe(false)
+    expect(looksLikeShimSubject("dash-build run run-100")).toBe(false)
   })
 })

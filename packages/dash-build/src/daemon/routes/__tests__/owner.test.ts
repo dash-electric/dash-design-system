@@ -77,3 +77,34 @@ describe("GET /owner", () => {
     expect(html).toContain("No DS candidates flagged yet")
   })
 })
+
+describe("GET /owner/health (Tier 6 standalone probe)", () => {
+  it("returns ok=true with surface=owner", async () => {
+    const r = await fetch(`${baseUrl}/owner/health`)
+    expect(r.status).toBe(200)
+    const body = (await r.json()) as {
+      ok: boolean
+      surface: string
+      uptime: number
+      version: string
+      ownerRootUrl: string | null
+      branches: number
+      activity: number
+    }
+    expect(body.ok).toBe(true)
+    expect(body.surface).toBe("owner")
+    expect(typeof body.uptime).toBe("number")
+    expect(typeof body.version).toBe("string")
+    expect(typeof body.branches).toBe("number")
+    expect(typeof body.activity).toBe("number")
+  })
+
+  it("ownerRootUrl reflects DASH_BUILD_OWNER_ROOT_URL when set", async () => {
+    // We can not mutate the env after daemon boot reliably for this
+    // assertion shape, so just verify the field exists. The constants unit
+    // test covers the env-loading branch.
+    const r = await fetch(`${baseUrl}/owner/health`)
+    const body = (await r.json()) as { ownerRootUrl: string | null }
+    expect("ownerRootUrl" in body).toBe(true)
+  })
+})

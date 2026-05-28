@@ -245,9 +245,23 @@ export class BranchManager {
     const id = runId ?? runIdFromBranch(branchName)
     const base = `${this.remote}/${this.trunk}`
 
-    const generatedShas = await this.gitOps.revListExclude(base, branchName, [
-      shimCommitSha,
-    ])
+    // Tier 4 #17 — the stored shimCommitSha is the ORIGINAL shim commit on
+    // the workspace's clone, but startRun cherry-picks it onto each new
+    // branch which produces a NEW sha when committer-time crosses a second
+    // boundary. Pull every commit on `base..branch` that looks like a shim
+    // (by subject) so the exclusion list catches all copies, not just the
+    // one with the stored sha.
+    const branchLog = await this.gitOps.log(`${base}..${branchName}`)
+    const shimAliases = new Set<string>([shimCommitSha])
+    for (const entry of branchLog) {
+      if (looksLikeShimSubject(entry.message)) shimAliases.add(entry.sha)
+    }
+
+    const generatedShas = await this.gitOps.revListExclude(
+      base,
+      branchName,
+      Array.from(shimAliases),
+    )
     if (generatedShas.length === 0) {
       throw new Error(
         `BranchManager.extractGeneratedOnly: no generated commits on ${branchName} after excluding shim ${shimCommitSha}`,
@@ -280,4 +294,23 @@ function runIdFromBranch(branchName: string): string {
   return dash >= 0 ? tail.slice(dash + 1) : tail
 }
 
-export { branchNameFor, extractionBranchFor }
+/**
+ * Heuristic — does this commit subject look like a preview-shim commit?
+ *
+ * Matches both production shim subjects ("preview-shim apply v3 [DO NOT
+ * MERGE]") and the test-harness fixture style ("chore: preview shim").
+ * Used by `extractGeneratedOnly` so SHA drift from cherry-pick re-commits
+ * does not let the shim leak into the published branch.
+ *
+ * Intentionally permissive — false positives on user content with
+ * "preview shim" in the subject are vanishingly rare and the cost of
+ * accidentally excluding a generated commit is far lower than the cost
+ * of shipping a shim into a PR.
+ */
+function looksLikeShimSubject(subject: string): boolean {
+  const trimmed = subject.trim().toLowerCase()
+  return trimmed.startsWith("preview-shim apply v") ||
+    trimmed.includes("preview shim")
+}
+
+export { branchNameFor, extractionBranchFor, looksLikeShimSubject }

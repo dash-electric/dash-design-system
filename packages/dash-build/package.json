@@ -1,17 +1,30 @@
 {
   "name": "@dash/build",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.0",
   "description": "Dash Build — Lovable-for-Dash internal builder. Browser-based AI workflow for any Dash team member.",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "author": "Dash Tech (PT Dash Elektrik Indonesia)",
   "private": true,
   "type": "module",
   "bin": {
     "dash-build": "./dist/bin.js"
   },
   "main": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dash-tech/dash-build.git"
+  },
+  "homepage": "https://github.com/dash-tech/dash-build#readme",
+  "bugs": {
+    "url": "https://github.com/dash-tech/dash-build/issues"
+  },
   "files": [
     "dist",
-    "README.md"
+    "preview-template",
+    "scripts/probe-sandpack-cdn.mjs",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "prebuild": "node scripts/copy-dash-ui-to-template.mjs",

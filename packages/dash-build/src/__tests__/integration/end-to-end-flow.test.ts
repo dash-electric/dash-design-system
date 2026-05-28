@@ -151,7 +151,10 @@ async function openWsAndCollect(timeoutMs = 600): Promise<string[]> {
 
 describe("Dash Build E2E", () => {
   it("dashboard renders with disconnected state by default", async () => {
-    const r = await fetch(`${baseUrl}/dashboard`)
+    // Tier 4 #17 fix — Tier 2 #6 redirected `/dashboard` → `/`. The legacy
+    // dashboard is still reachable via `?legacy=1`, which this assertion
+    // exercises to keep the old brand-chrome contract pinned.
+    const r = await fetch(`${baseUrl}/dashboard?legacy=1`)
     expect(r.status).toBe(200)
     const html = await r.text()
     // Brand chrome
