@@ -1120,6 +1120,7 @@ ul.dash-list .li-marker.todo { color: var(--text-soft-400); }
     <a href="#dash-dashboard">Dashboard</a>
     <a href="#ai-agent">AI Agent</a>
     <a href="#playbook">Playbook</a>
+    <a href="#architecture-pivot">Architecture v2</a>
     <a href="#prd-trd">PRD &amp; TRD</a>
   </nav>
   <div class="topbar-spacer"></div>
@@ -2228,6 +2229,294 @@ gh pr close &lt;pr-number&gt; --delete-branch</code></pre>
   <div class="alert alert-info">
     <span class="alert-icon">i</span>
     <div>Full playbook MD: <code>packages/dash-build/docs/E2E-TEST-PLAYBOOK-2026-05-28.md</code> · Designer brief: <code>packages/dash-build/docs/Q12-DESIGNER-SESSION-BRIEF-2026-05-28.md</code></div>
+  </div>
+</section>
+
+<!-- ============================ ARCHITECTURE PIVOT ============================ -->
+<section class="section" id="architecture-pivot">
+  <span class="anchor"></span>
+  <div class="section-header">
+    <span class="section-tag">09 / ARCHITECTURE v2</span>
+    <h2>Central clone pool — pivot proposal</h2>
+    <span class="meta">2026-05-28 proposal · NOT yet implemented</span>
+  </div>
+
+  <div class="alert alert-warning">
+    <span class="alert-icon">!</span>
+    <div>
+      <strong>Status: PROPOSAL.</strong> Current v1 architecture (per-user clone, 2-7 min cold bootstrap) doesn't scale for multi-user designer/PM access. This section sketches v2 — shared central clone + per-prompt branch preview. Per Lovable/v0/Bolt pattern. Effort estimate: 3-4 minggu.
+    </div>
+  </div>
+
+  <!-- The problem -->
+  <div class="card">
+    <div class="card-head">
+      <h3>Why pivot — the problem with v1</h3>
+      <span class="badge badge-lighter s-error">UX blocker</span>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Aspect</th><th>v1 per-user clone (current)</th><th>v2 central clone pool (proposed)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Wait time per user</td>
+          <td><span class="badge badge-lighter s-error">2-7 menit cold</span></td>
+          <td><span class="badge badge-lighter s-success">0s instant</span></td>
+        </tr>
+        <tr>
+          <td>Storage</td>
+          <td>1.5GB × N user (10 user = 15GB)</td>
+          <td>1.5GB total per repo</td>
+        </tr>
+        <tr>
+          <td>Dev server memory</td>
+          <td>~200MB × N active session</td>
+          <td>~200MB base + per active prompt only</td>
+        </tr>
+        <tr>
+          <td>Sync with upstream</td>
+          <td>Manual re-clone</td>
+          <td>Agent auto-sync + GitHub webhook</td>
+        </tr>
+        <tr>
+          <td>Multi-user collision</td>
+          <td>None (each isolated)</td>
+          <td>Branch worktree per prompt (still isolated)</td>
+        </tr>
+        <tr>
+          <td>Designer onboarding</td>
+          <td>Abandon at 3-min wait</td>
+          <td>Open page → preview live</td>
+        </tr>
+        <tr>
+          <td>Bootstrap button required</td>
+          <td>Yes — user clicks + waits</td>
+          <td>NO — repo always pre-warmed</td>
+        </tr>
+        <tr>
+          <td>Pattern industry standard</td>
+          <td>❌ Anti-pattern</td>
+          <td>✅ Lovable, v0, Bolt all use this</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- v1 vs v2 user journey wait bar chart -->
+  <div class="card">
+    <div class="card-head"><h3>User journey wait time — v1 vs v2</h3></div>
+    <div class="stat-chart">
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">v1 — first prompt</span>
+        <div class="stat-chart-bar-wrap" aria-label="v1 first prompt 5-7 min">
+          <div class="stat-chart-bar fail" style="width: 95%;" title="5-7 min"></div>
+        </div>
+        <span class="stat-chart-value">5-7 min</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">v1 — repeat (cached)</span>
+        <div class="stat-chart-bar-wrap" aria-label="v1 cached repeat 1-3 min">
+          <div class="stat-chart-bar worst" style="width: 30%;" title="1-3 min"></div>
+        </div>
+        <span class="stat-chart-value">1-3 min</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">v2 — first prompt</span>
+        <div class="stat-chart-bar-wrap" aria-label="v2 first prompt 0-2s">
+          <div class="stat-chart-bar best" style="width: 2%;" title="0-2s instant"></div>
+        </div>
+        <span class="stat-chart-value">&lt; 2s</span>
+      </div>
+      <div class="stat-chart-row">
+        <span class="stat-chart-label">v2 — generate preview (per branch spawn)</span>
+        <div class="stat-chart-bar-wrap" aria-label="v2 generate 5-15s">
+          <div class="stat-chart-bar" style="width: 8%;" title="5-15s warm dev"></div>
+        </div>
+        <span class="stat-chart-value">5-15s</span>
+      </div>
+      <div class="stat-chart-legend">
+        <span style="--legend-color: var(--state-success-base);">v2 instant</span>
+        <span style="--legend-color: var(--state-warning-base);">v1 cached</span>
+        <span style="--legend-color: var(--state-error-base);">v1 cold (abandon zone)</span>
+        <span style="--legend-color: var(--text-soft-400);">Scale: 0-7 min</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- v2 architecture diagram -->
+  <div class="card">
+    <div class="card-head"><h3>v2 architecture — sequence</h3></div>
+    <div class="mermaid-wrap">
+<div class="mermaid">
+flowchart TB
+  classDef ext fill:#f5f7fa,stroke:#717784,color:#0e121b;
+  classDef sync fill:#ebf1ff,stroke:#335cff,color:#0e121b;
+  classDef central fill:#efeaf7,stroke:#5e2aac,color:#0e121b;
+  classDef branch fill:#e0faec,stroke:#178c4e,color:#0e121b;
+  classDef user fill:#fff3eb,stroke:#fa7319,color:#0e121b;
+
+  GH[GitHub repo<br/>dash-electric/backoffice]:::ext
+
+  subgraph SYNC[Sync layer]
+    SyncAgent[Agent: git pull every 5 min<br/>+ webhook on push]:::sync
+  end
+
+  subgraph CENTRAL[Central clone pool — server]
+    Clone[Clone: ~/clones/backoffice<br/>1.5 GB total]:::central
+    Shim[preview-shim applied once<br/>auth bypass]:::central
+    BaseDev[Base dev server :3101<br/>always warm]:::central
+  end
+
+  subgraph BRANCH[Per-prompt branch preview]
+    WT1[git worktree branch user-A]:::branch
+    Dev1[next dev :3102]:::branch
+    WT2[git worktree branch user-B]:::branch
+    Dev2[next dev :3103]:::branch
+  end
+
+  subgraph USERS[Users]
+    U1[User A browser]:::user
+    U2[User B browser]:::user
+    UN[User N browser]:::user
+  end
+
+  GH -- pull / webhook --> SyncAgent
+  SyncAgent --> Clone
+  Clone --> Shim
+  Shim --> BaseDev
+
+  BaseDev -- read-only preview --> U1
+  BaseDev -- read-only preview --> U2
+  BaseDev -- read-only preview --> UN
+
+  U1 -- prompt --> WT1
+  WT1 --> Dev1
+  Dev1 -- per-user preview --> U1
+
+  U2 -- prompt --> WT2
+  WT2 --> Dev2
+  Dev2 -- per-user preview --> U2
+
+  WT1 -- approve --> GH
+  WT2 -- approve --> GH
+</div>
+    </div>
+  </div>
+
+  <!-- 4-phase roadmap -->
+  <div class="card">
+    <div class="card-head"><h3>Implementation roadmap — 4 phase</h3></div>
+    <div class="stage-grid">
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Central clone pool</h4><span class="time">1 minggu</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Replace per-user clone dengan 1 central pool per repo.</p>
+        <ul class="dash-list">
+          <li><span class="li-marker ok">●</span> New: <code>daemon/services/central-clone-pool.ts</code></li>
+          <li><span class="li-marker ok">●</span> Cron <code>git pull</code> every 5 min per repo</li>
+          <li><span class="li-marker ok">●</span> 1 next dev :3101 always warm per repo</li>
+          <li><span class="li-marker ok">●</span> Dashboard "Bootstrap" button HILANG</li>
+          <li><span class="li-marker warn">!</span> BREAKING: existing per-user state migration</li>
+        </ul>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Branch preview spawner</h4><span class="time">1 minggu</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Per-prompt isolated preview via git worktree.</p>
+        <ul class="dash-list">
+          <li><span class="li-marker ok">●</span> New: <code>daemon/services/branch-preview-pool.ts</code></li>
+          <li><span class="li-marker ok">●</span> git worktree per active prompt</li>
+          <li><span class="li-marker ok">●</span> Port allocator (3102-3199 pool)</li>
+          <li><span class="li-marker ok">●</span> Cleanup idle preview &gt;15 min</li>
+          <li><span class="li-marker ok">●</span> Iframe URL dynamic per user/prompt</li>
+        </ul>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Webhook sync</h4><span class="time">3-5 hari</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">GitHub push event → instant sync (vs 5-min poll).</p>
+        <ul class="dash-list">
+          <li><span class="li-marker ok">●</span> Endpoint: <code>/api/github/webhook</code></li>
+          <li><span class="li-marker ok">●</span> Verify HMAC signature</li>
+          <li><span class="li-marker ok">●</span> Push event → trigger sync for affected repo</li>
+          <li><span class="li-marker ok">●</span> Polling fallback kalau webhook lost</li>
+        </ul>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-card-head"><h4>Multi-tenant isolation</h4><span class="time">3-5 hari</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Per-user session + namespaced branch.</p>
+        <ul class="dash-list">
+          <li><span class="li-marker ok">●</span> Session token per browser</li>
+          <li><span class="li-marker ok">●</span> Branch naming: <code>dash-build/&lt;userId&gt;/&lt;runId&gt;</code></li>
+          <li><span class="li-marker ok">●</span> State machine per user (separate from central)</li>
+          <li><span class="li-marker ok">●</span> Cleanup on user logout</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- What user sees -->
+  <div class="card">
+    <div class="card-head"><h3>User journey — sebelum vs sesudah</h3></div>
+    <div class="grid-2">
+      <div>
+        <div class="card-section-label">v1 (sekarang) — designer first session</div>
+        <ul class="dash-list">
+          <li><span class="li-marker">①</span> Buka <code>:7777/dashboard</code></li>
+          <li><span class="li-marker">②</span> Auth OpenAI + GitHub (1 menit)</li>
+          <li><span class="li-marker">③</span> Pilih repo dari dropdown</li>
+          <li><span class="li-marker">④</span> Klik "Bootstrap" button</li>
+          <li><span class="li-marker warn">⏳</span> Tunggu clone 30s</li>
+          <li><span class="li-marker warn">⏳</span> Tunggu install 3 menit</li>
+          <li><span class="li-marker warn">⏳</span> Tunggu next dev cold 2 menit</li>
+          <li><span class="li-marker err">!</span> Bug: state stuck silent fail (kemungkinan)</li>
+          <li><span class="li-marker">⑤</span> ABANDON di menit ke-5 atau iframe live</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card-section-label">v2 (proposed) — designer first session</div>
+        <ul class="dash-list">
+          <li><span class="li-marker">①</span> Buka <code>dashbuild.dash.com</code></li>
+          <li><span class="li-marker">②</span> Google SSO klik (5 detik)</li>
+          <li><span class="li-marker">③</span> Pilih repo dari sidebar (or auto-detect)</li>
+          <li><span class="li-marker ok">✓</span> Iframe LANGSUNG live (central pool warm)</li>
+          <li><span class="li-marker">④</span> Type prompt</li>
+          <li><span class="li-marker">⑤</span> AI generate (~5-15s spawn branch preview)</li>
+          <li><span class="li-marker">⑥</span> Lihat preview branch dia sendiri</li>
+          <li><span class="li-marker">⑦</span> Approve → PR</li>
+          <li><span class="li-marker ok">✓</span> Selesai di menit ke-3</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk register -->
+  <div class="card">
+    <div class="card-head">
+      <h3>Risk register</h3>
+      <span class="badge badge-lighter s-warning">honest tradeoff</span>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Central dev server crash = all users lose preview</td><td>MED</td><td>HIGH</td><td>Auto-restart + health probe + status page</td></tr>
+        <tr><td>Branch worktree disk bloat</td><td>HIGH</td><td>MED</td><td>Cleanup idle &gt;15 min + LRU eviction</td></tr>
+        <tr><td>Port pool exhaustion (>100 concurrent prompt)</td><td>LOW</td><td>MED</td><td>Queue + serve "wait your turn" message</td></tr>
+        <tr><td>Webhook miss → stale preview</td><td>MED</td><td>LOW</td><td>5-min polling fallback always-on</td></tr>
+        <tr><td>Refactor breaks current users</td><td>HIGH</td><td>HIGH</td><td>Feature flag v1/v2, parallel run 2 weeks, dogfood Irfan first</td></tr>
+        <tr><td>Shim drift saat upstream backoffice change auth file</td><td>MED</td><td>HIGH</td><td>Shim regen test in CI, fail loud kalau import shape change</td></tr>
+        <tr><td>Multi-user prompt write race on worktree</td><td>LOW</td><td>MED</td><td>Worktree isolation guarantee (git built-in)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Decision needed -->
+  <div class="alert alert-info">
+    <span class="alert-icon">i</span>
+    <div>
+      <strong>Decision needed.</strong> v2 = 3-4 minggu rewrite, but solves the #1 UX blocker (waiting + per-user clone friction). Without it: Q12 designer test session bakal fail di menit ke-3.
+      Alternatives: (A) approve v2 pivot full, (B) hybrid — v2 central preview + keep v1 per-user untuk generation, (C) defer + patch v1 bug + add pre-warm last-used (less elegant but faster ship).
+    </div>
   </div>
 </section>
 
