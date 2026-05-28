@@ -14,6 +14,10 @@
  *      semantic shadow vars (--shadow-sm, --shadow-md, --shadow-focus).
  *   4. Hard-coded color keywords (white / black) outside CSS variable defs —
  *      hex is covered by audit-css, but bare keywords slip through.
+ *   5. Off-grid spacing in padding/margin/gap — the Dash spacing ramp is
+ *      {0,2,4,6,8,10,12,14,16,24,32,40,48}px. Values like 7, 9, 11, 13, 15,
+ *      18, 20, 22, 26, 28, 30 break vertical rhythm and should be rounded to
+ *      the nearest token.
  *
  * The script scans ALL *.ts files under src/, but only LINES that look like
  * CSS rules (semicolon-terminated property: value pairs) are inspected. This
@@ -55,6 +59,15 @@ const BORDER_RADIUS_RE = /\bborder-radius\s*:\s*(\d+(?:\.\d+)?)px\b/
 const BOX_SHADOW_RE = /\bbox-shadow\s*:\s*(.+?);/
 // Color keywords (word boundary) — only on lines that look like CSS props.
 const COLOR_KEYWORD_RE = /\b(?:color|background|background-color|border|border-color|outline|outline-color|fill|stroke)\s*:\s*[^;]*\b(white|black)\b/i
+
+// Spacing — Dash spacing ramp (must match tokens.ts lines 227-239).
+const SPACING_RAMP = [0, 2, 4, 6, 8, 10, 12, 14, 16, 24, 32, 40, 48]
+const SPACING_RAMP_SET = new Set(SPACING_RAMP)
+// Match any padding/margin/gap longhand or shorthand. Global so we catch
+// multiple spacing declarations on a single line (common in compact inline CSS).
+const SPACING_PROP_RE = /\b(padding|padding-top|padding-right|padding-bottom|padding-left|margin|margin-top|margin-right|margin-bottom|margin-left|gap|row-gap|column-gap)\s*:\s*([^;}]+)[;}]/g
+// Match individual px values inside a CSS value list.
+const PX_VALUE_RE = /(-?\d+(?:\.\d+)?)px\b/g
 
 function collectTsFiles(dir) {
   const out = []
@@ -108,6 +121,23 @@ function isAllowed(allowedSet, file, line, category) {
     allowedSet.has(buildAllowKey(file, line, category)) ||
     allowedSet.has(`${file}::*::${category}`)
   )
+}
+
+/**
+ * Find the nearest allowed spacing-ramp token for an off-grid px value.
+ * Returns the nearest ramp value (number).
+ */
+function nearestSpacingToken(px) {
+  let best = SPACING_RAMP[0]
+  let bestDist = Math.abs(px - best)
+  for (const candidate of SPACING_RAMP) {
+    const dist = Math.abs(px - candidate)
+    if (dist < bestDist) {
+      best = candidate
+      bestDist = dist
+    }
+  }
+  return best
 }
 
 /**
@@ -192,8 +222,10 @@ function scanFile(absPath, allowedSet) {
       }
     }
 
-    // color keyword detection (white/black)
-    const kw = line.match(COLOR_KEYWORD_RE)
+    // color keyword detection (white/black) — strip out var(...) refs first so
+    // tokens like var(--bg-white-0) don't false-positive on the word "white".
+    const lineSansVars = line.replace(/var\(\s*--[a-z0-9-]+(?:\s*,\s*[^)]+)?\s*\)/gi, "var()")
+    const kw = lineSansVars.match(COLOR_KEYWORD_RE)
     if (kw) {
       if (!isAllowed(allowedSet, relPath, lineNum, "color-keyword")) {
         findings.push({
@@ -202,6 +234,36 @@ function scanFile(absPath, allowedSet) {
           category: "color-keyword",
           value: kw[1],
           hint: "use var(--bg-white) / var(--text-strong) / semantic token",
+          lineText: line.trim(),
+        })
+      }
+    }
+
+    // spacing off-grid detection (padding/margin/gap). Use a fresh regex per
+    // line so the `lastIndex` state from the module-level global one stays clean.
+    const spacingScanner = new RegExp(SPACING_PROP_RE.source, "g")
+    let sp
+    const offGridSeenForLine = new Set()
+    while ((sp = spacingScanner.exec(line)) !== null) {
+      const property = sp[1]
+      const value = sp[2]
+      const valueScanner = new RegExp(PX_VALUE_RE.source, "g")
+      let pxMatch
+      while ((pxMatch = valueScanner.exec(value)) !== null) {
+        const px = Number(pxMatch[1])
+        // 0 is allowed (treated as legit grid zero).
+        if (SPACING_RAMP_SET.has(px)) continue
+        const dedupeKey = `${property}:${px}`
+        if (offGridSeenForLine.has(dedupeKey)) continue
+        offGridSeenForLine.add(dedupeKey)
+        if (isAllowed(allowedSet, relPath, lineNum, "spacing-off-grid")) continue
+        const nearest = nearestSpacingToken(px)
+        findings.push({
+          relPath,
+          line: lineNum,
+          category: "spacing-off-grid",
+          value: `${px}px`,
+          hint: `${property} off-grid → nearest token var(--spacing-${nearest})`,
           lineText: line.trim(),
         })
       }

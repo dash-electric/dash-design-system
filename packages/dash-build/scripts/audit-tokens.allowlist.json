@@ -1,3 +1,10 @@
 {
-  "allowed": []
+  "allowed": [
+    {
+      "file": "src/daemon/templates/styles/dashboard.ts",
+      "line": 562,
+      "category": "spacing-off-grid",
+      "reason": ".sr-only canonical screen-reader-only pattern uses margin:-1px to clip the element off-canvas while keeping it focusable. Standard a11y idiom; tokenising would break the technique."
+    }
+  ]
 }

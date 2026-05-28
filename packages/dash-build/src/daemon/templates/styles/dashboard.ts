@@ -83,7 +83,7 @@ html:has(.db-shell), body:has(.db-shell) {
 }
 body {
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: var(--text-body);
   line-height: 1.55;
   color: var(--ink);
   background:
@@ -106,7 +106,7 @@ button { font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 28px;
+  padding: 14px 24px;
   background: rgba(255, 255, 255, 0.78);
   border-bottom: 1px solid rgba(228, 227, 222, 0.8);
   backdrop-filter: blur(14px);
@@ -120,7 +120,7 @@ button { font-family: inherit; }
   gap: 10px;
   font-weight: 700;
   letter-spacing: -0.012em;
-  font-size: 16px;
+  font-size: var(--text-lg);
 }
 .db-brand-mark {
   width: 22px;
@@ -206,14 +206,14 @@ button { font-family: inherit; }
   max-width: 880px;
   width: 100%;
   margin: 0 auto;
-  padding: 28px 24px 64px;
+  padding: 24px 24px 48px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .db-footer {
-  padding: 14px 28px;
+  padding: 14px 24px;
   color: var(--mute);
   font-size: 12px;
   border-top: 1px solid var(--rule);
@@ -227,7 +227,7 @@ button { font-family: inherit; }
   background: var(--paper-2);
   border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
-  padding: 20px 22px;
+  padding: 16px 24px;
   box-shadow: var(--shadow-sm);
 }
 .db-card-header {
@@ -250,12 +250,12 @@ button { font-family: inherit; }
 }
 
 /* ----- Typography helpers ----- */
-.db-title-lg { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin: 0; }
-.db-title-md { font-size: 24px; font-weight: 700; letter-spacing: -0.015em; margin: 0; }
-.db-title-sm { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
-.db-body { font-size: 15px; }
-.db-body-sm { font-size: 13px; }
-.db-mono { font-family: var(--font-mono); font-size: 14px; }
+.db-title-lg { font-size: var(--text-display-lg); font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+.db-title-md { font-size: var(--text-display-sm); font-weight: 700; letter-spacing: -0.015em; margin: 0; }
+.db-title-sm { font-size: var(--text-title-sm); font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+.db-body { font-size: var(--text-body); }
+.db-body-sm { font-size: var(--text-body-sm); }
+.db-mono { font-family: var(--font-mono); font-size: var(--text-md); }
 .db-muted { color: var(--mute); }
 .db-label {
   display: block;
@@ -373,7 +373,7 @@ button { font-family: inherit; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
+  padding: 10px 16px;
   border-radius: 8px;
   border: 1px solid transparent;
   font-weight: 600;
@@ -402,8 +402,8 @@ button { font-family: inherit; }
 .db-status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
+  gap: 4px;
+  padding: 2px 10px;
   border-radius: var(--radius-pill);
   font-size: 11px;
   font-weight: 600;
@@ -497,7 +497,7 @@ button { font-family: inherit; }
 /* ----- Empty states ----- */
 .db-empty-state {
   text-align: center;
-  padding: 28px 20px;
+  padding: 24px 16px;
   border: 1px dashed var(--rule);
   border-radius: var(--radius-md);
   background: var(--paper-3);
@@ -505,11 +505,11 @@ button { font-family: inherit; }
 .db-empty-primary { background: var(--primary-card); border-color: var(--primary-soft); }
 .db-empty-icon {
   display: inline-block;
-  font-size: 22px;
+  font-size: var(--text-title-md);
   color: var(--primary);
   margin-bottom: 8px;
 }
-.db-empty-title { margin: 0 0 6px; font-size: 16px; font-weight: 600; color: var(--ink); }
+.db-empty-title { margin: 0 0 6px; font-size: var(--text-lg); font-weight: 600; color: var(--ink); }
 .db-empty-body { margin: 0 0 12px; font-size: 13px; color: var(--mute); }
 .db-empty-examples {
   list-style: none;
@@ -668,7 +668,7 @@ button { font-family: inherit; }
   .db-header { padding: 10px 16px; }
   .db-card { padding: 16px; }
   .db-main:has(.db-chat-shell) { padding: 12px; }
-  .db-chat-scene { border-radius: 14px; }
+  .db-chat-scene { border-radius: var(--radius-16); }
   .db-prompt-input-footer { flex-direction: column; align-items: stretch; }
   .db-button { justify-content: center; }
   .db-prompt-actions { width: 100%; }
@@ -701,12 +701,10 @@ button { font-family: inherit; }
   gap: 0;
   min-height: 0;
   height: 100%;
-  border-radius: 14px;
+  border-radius: var(--radius-16);
   overflow: hidden;
   border: 1px solid var(--rule);
-  box-shadow:
-    0 10px 28px rgba(26, 26, 26, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-scene-lift), var(--shadow-inset-hi);
   background: var(--paper-2);
 }
 
@@ -774,7 +772,7 @@ button { font-family: inherit; }
 .db-project-pill-dot {
   width: 8px;
   height: 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--primary);
   flex-shrink: 0;
 }
@@ -804,7 +802,7 @@ button { font-family: inherit; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
+  padding: 2px 10px;
   border-radius: var(--radius-pill);
   background: var(--paper);
   border: 1px solid var(--rule);
@@ -905,7 +903,7 @@ button { font-family: inherit; }
 .db-chat-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 18px 10px;
+  padding: 16px 16px 10px;
   scroll-behavior: smooth;
 }
 .db-chat-thread {
@@ -925,17 +923,17 @@ button { font-family: inherit; }
 .db-chat-empty {
   text-align: center;
   max-width: 360px;
-  padding: 32px 20px;
+  padding: 32px 16px;
 }
 .db-chat-empty-mark {
   display: inline-block;
-  font-size: 28px;
+  font-size: var(--text-display-md);
   color: var(--primary);
   margin-bottom: 12px;
 }
 .db-chat-empty-title {
   margin: 0 0 8px;
-  font-size: 20px;
+  font-size: var(--text-subtitle);
   font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--ink);
@@ -1087,7 +1085,7 @@ button { font-family: inherit; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 8px;
+  padding: 4px 8px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--rule);
   background: var(--paper);
@@ -1115,7 +1113,7 @@ button { font-family: inherit; }
   background: var(--paper-2);
   border-radius: 12px;
   border-color: var(--rule);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-inset-hi);
 }
 .db-chat-composer-alert {
   display: flex;
@@ -1155,11 +1153,11 @@ button { font-family: inherit; }
   flex-shrink: 0;
   border-top: 1px solid var(--rule);
   background: var(--paper-2);
-  padding: 12px 18px 14px;
+  padding: 12px 16px 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 -8px 24px rgba(20, 14, 36, 0.06);
+  box-shadow: var(--shadow-dock-up);
 }
 .db-composer-dock .db-prompt-input-wrap { gap: 8px; }
 .db-composer-dock .db-textarea {
@@ -1167,7 +1165,7 @@ button { font-family: inherit; }
   background: var(--paper-2);
   border-radius: 12px;
   border-color: var(--rule);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-inset-hi);
 }
 .db-composer-dock-input { width: 100%; }
 .db-composer-dock-alert {
@@ -1193,9 +1191,9 @@ button { font-family: inherit; }
   margin: 14px 14px 0;
   padding: 14px 16px 16px;
   border: 1px solid rgba(100, 54, 183, 0.28);
-  border-radius: 14px;
+  border-radius: var(--radius-16);
   background: linear-gradient(180deg, rgba(245, 239, 255, 0.96), rgba(255, 255, 255, 0.96));
-  box-shadow: 0 6px 18px rgba(94, 42, 172, 0.10);
+  box-shadow: var(--shadow-primary-lift);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1215,7 +1213,7 @@ button { font-family: inherit; }
 }
 .db-clarify-card-title {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--text-body);
   font-weight: 700;
   color: var(--ink);
 }
@@ -1423,7 +1421,7 @@ button { font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 20px;
+  padding: 32px 16px;
 }
 .db-code-empty {
   max-width: 360px;
@@ -1431,7 +1429,7 @@ button { font-family: inherit; }
 }
 .db-code-empty-title {
   margin: 0 0 6px;
-  font-size: 15px;
+  font-size: var(--text-body);
   font-weight: 700;
   color: var(--ink);
 }
@@ -1455,7 +1453,7 @@ button { font-family: inherit; }
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 18px;
+  padding: 16px;
   border-bottom: 1px solid rgba(228, 227, 222, 0.9);
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(12px);
@@ -1480,7 +1478,7 @@ button { font-family: inherit; }
   align-self: flex-start;
   margin: 4px 0 14px;
   padding: 10px 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--primary);
   color: var(--paper-2);
   border: 0;
@@ -1497,7 +1495,7 @@ button { font-family: inherit; }
 }
 .db-live-preview-title {
   margin: 0;
-  font-size: 18px;
+  font-size: var(--text-title-sm);
   line-height: 1.2;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -1527,8 +1525,8 @@ button { font-family: inherit; }
   align-items: center;
   justify-content: center;
   min-width: 72px;
-  padding: 7px 10px;
-  border-radius: 999px;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid var(--rule);
   color: var(--mute);
@@ -1564,15 +1562,15 @@ button { font-family: inherit; }
   position: relative;
   width: 96px;
   height: 96px;
-  margin: 0 auto 18px;
-  border-radius: 16px;
+  margin: 0 auto 16px;
+  border-radius: var(--radius-16);
   background: var(--paper-2);
   border: 1px dashed var(--rule);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--mute);
-  font-size: 28px;
+  font-size: var(--text-display-md);
 }
 .db-live-preview-empty-art--error {
   background: var(--danger-soft);
@@ -1593,11 +1591,11 @@ button { font-family: inherit; }
 .db-live-preview-empty-cursor {
   position: relative;
   color: var(--primary);
-  font-size: 22px;
+  font-size: var(--text-title-md);
 }
 .db-live-preview-empty-title {
   margin: 0 0 6px;
-  font-size: 16px;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--ink);
 }
@@ -1615,12 +1613,12 @@ button { font-family: inherit; }
 }
 .db-live-preview-heading {
   margin: 0 0 4px;
-  font-size: 18px;
+  font-size: var(--text-title-sm);
   font-weight: 600;
   color: var(--ink);
 }
 .db-live-preview-sub {
-  margin: 0 0 20px;
+  margin: 0 0 16px;
   font-size: 13px;
   color: var(--mute);
 }
@@ -1780,7 +1778,7 @@ button { font-family: inherit; }
 .db-preview-harness {
   width: min(980px, calc(100% - 48px));
   min-height: min(620px, calc(100% - 96px));
-  margin: 72px auto 24px;
+  margin: 48px auto 24px;
   display: grid;
   grid-template-columns: 208px minmax(0, 1fr);
   overflow: hidden;
@@ -1791,7 +1789,7 @@ button { font-family: inherit; }
   text-align: left;
 }
 .db-preview-harness-rail {
-  padding: 18px;
+  padding: 16px;
   border-right: 1px solid var(--rule);
   background: var(--paper);
 }
@@ -1809,13 +1807,13 @@ button { font-family: inherit; }
 .db-preview-harness-rail nav {
   display: grid;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 .db-preview-harness-nav-item {
   min-height: 36px;
   display: flex;
   align-items: center;
-  padding: 0 11px;
+  padding: 0 10px;
   border-radius: 8px;
   color: var(--mute);
   font-size: 13px;
@@ -1834,7 +1832,7 @@ button { font-family: inherit; }
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
+  gap: 16px;
 }
 .db-preview-harness-kicker {
   color: var(--primary);
@@ -1846,7 +1844,7 @@ button { font-family: inherit; }
 .db-preview-harness h3 {
   margin: 6px 0 0;
   color: var(--ink);
-  font-size: 24px;
+  font-size: var(--text-display-sm);
   line-height: 1.2;
   font-weight: 900;
 }
@@ -1874,7 +1872,7 @@ button { font-family: inherit; }
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 24px;
 }
 .db-preview-harness-card {
   min-height: 94px;
@@ -1893,7 +1891,7 @@ button { font-family: inherit; }
   display: block;
   margin-top: 14px;
   color: var(--ink);
-  font-size: 24px;
+  font-size: var(--text-display-sm);
   line-height: 1;
   font-weight: 900;
 }
@@ -1928,7 +1926,7 @@ button { font-family: inherit; }
   border-collapse: collapse;
 }
 .db-preview-harness td {
-  padding: 13px 14px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--rule-2);
   color: var(--ink);
   font-size: 13px;
@@ -1945,7 +1943,7 @@ button { font-family: inherit; }
   align-items: center;
   gap: 8px;
   max-width: calc(100% - 28px);
-  padding: 7px 10px;
+  padding: 6px 10px;
   border-radius: 10px;
   background: color-mix(in srgb, var(--paper-2) 92%, transparent);
   border: 1px solid var(--rule);
@@ -2017,7 +2015,7 @@ button { font-family: inherit; }
 }
 .db-auth-preview-meta code,
 .db-auth-preview-callout code {
-  padding: 2px 5px;
+  padding: 2px 4px;
   border-radius: 6px;
   background: var(--paper);
   color: var(--ink);
@@ -2025,7 +2023,7 @@ button { font-family: inherit; }
   font-size: 11px;
 }
 .db-auth-preview-callout ol {
-  margin: 10px 0 0 18px;
+  margin: 10px 0 0 16px;
   padding: 0;
   color: var(--ink);
   font-size: 12px;
@@ -2072,7 +2070,7 @@ button { font-family: inherit; }
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 18px;
+  margin-top: 16px;
 }
 .db-baseline-shell-nav-item {
   display: block;
@@ -2089,7 +2087,7 @@ button { font-family: inherit; }
 }
 .db-baseline-shell-main {
   min-width: 0;
-  padding: 18px;
+  padding: 16px;
 }
 .db-baseline-shell-head {
   display: flex;
@@ -2099,7 +2097,7 @@ button { font-family: inherit; }
 }
 .db-baseline-shell-title {
   margin: 0;
-  font-size: 18px;
+  font-size: var(--text-title-sm);
   line-height: 1.25;
   font-weight: 800;
   color: var(--ink);
@@ -2112,8 +2110,8 @@ button { font-family: inherit; }
 }
 .db-baseline-shell-status {
   flex-shrink: 0;
-  padding: 5px 8px;
-  border-radius: 999px;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
   background: var(--warn-soft);
   color: var(--warn);
   font-size: 11px;
@@ -2128,7 +2126,7 @@ button { font-family: inherit; }
 }
 .db-baseline-shell-reason {
   margin: 8px 0 0;
-  padding: 9px 10px;
+  padding: 8px 10px;
   border-radius: 8px;
   background: var(--info-soft);
   color: var(--ink);
@@ -2151,7 +2149,7 @@ button { font-family: inherit; }
   text-transform: uppercase;
 }
 .db-baseline-auth-summary p {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
   color: var(--ink);
   font-size: 12px;
   line-height: 1.45;
@@ -2177,7 +2175,7 @@ button { font-family: inherit; }
   display: block;
   height: 10px;
   margin-bottom: 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--rule);
 }
 .db-baseline-shell-panel span:nth-child(1) { width: 56%; }
@@ -2193,7 +2191,7 @@ button { font-family: inherit; }
 }
 .db-baseline-shell-hints li {
   min-height: 54px;
-  padding: 9px 10px;
+  padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid var(--rule-2);
   background: var(--paper-2);
@@ -2241,7 +2239,7 @@ button { font-family: inherit; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
   background: var(--paper-2);
   border: 1px solid var(--rule);
@@ -2275,7 +2273,7 @@ button { font-family: inherit; }
   .db-preview-harness {
     width: min(100% - 24px, 620px);
     grid-template-columns: 1fr;
-    margin-top: 64px;
+    margin-top: 48px;
   }
   .db-preview-harness-rail {
     border-right: 0;
@@ -2326,7 +2324,7 @@ button { font-family: inherit; }
 .db-inline-question-pill {
   display: inline-flex;
   align-items: center;
-  padding: 3px 7px;
+  padding: 2px 6px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--primary-ring);
   background: var(--primary-soft);
@@ -2338,7 +2336,7 @@ button { font-family: inherit; }
 .db-inline-q {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
   padding: 10px 0;
   border-top: 1px solid var(--rule-2);
 }
@@ -2350,7 +2348,7 @@ button { font-family: inherit; }
   color: var(--ink);
 }
 .db-inline-q-help {
-  margin: -3px 0 0;
+  margin: 0;
   font-size: 12px;
   line-height: 1.4;
   color: var(--mute);
@@ -2365,7 +2363,7 @@ button { font-family: inherit; }
   align-items: center;
   gap: 6px;
   min-height: 32px;
-  padding: 6px 9px;
+  padding: 6px 8px;
   border: 1px solid var(--rule);
   border-radius: 8px;
   background: var(--paper-2);
@@ -2412,7 +2410,7 @@ button { font-family: inherit; }
   border-radius: 10px;
   background: var(--primary);
   color: var(--paper-2);
-  padding: 8px 11px;
+  padding: 8px 10px;
   font: inherit;
   font-size: 13px;
   font-weight: 800;
@@ -2425,7 +2423,7 @@ button { font-family: inherit; }
 
 /* ── OpenAI connect form ──────────────────────────────────────────────── */
 .db-connect-shell {
-  padding: 28px;
+  padding: 24px;
   max-width: 880px;
   margin: 0 auto;
   display: flex;
@@ -2434,14 +2432,14 @@ button { font-family: inherit; }
 }
 .db-connect-head { display: flex; flex-direction: column; gap: 8px; }
 .db-connect-title {
-  font-size: 28px;
+  font-size: var(--text-display-md);
   font-weight: 800;
   color: var(--ink);
   letter-spacing: -0.025em;
   margin: 0;
 }
 .db-connect-lede {
-  font-size: 15px;
+  font-size: var(--text-body);
   color: var(--mute);
   line-height: 1.5;
   margin: 0;
@@ -2460,12 +2458,12 @@ button { font-family: inherit; }
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 247, 245, 0.92));
   border: 1px solid rgba(228, 227, 222, 0.92);
-  border-radius: 18px;
+  border-radius: var(--radius-16);
   display: flex;
   flex-direction: column;
   gap: 14px;
   transition: border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
-  box-shadow: 0 16px 36px rgba(26, 26, 26, 0.05);
+  box-shadow: var(--shadow-overlay-soft);
 }
 .db-connect-card:hover {
   border-color: rgba(94, 42, 172, 0.26);
@@ -2486,7 +2484,7 @@ button { font-family: inherit; }
   font-weight: 600;
 }
 .db-connect-card-title {
-  font-size: 17px;
+  font-size: var(--text-title-sm);
   font-weight: 600;
   color: var(--ink);
   margin: 0;
@@ -2581,7 +2579,7 @@ button { font-family: inherit; }
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid var(--warn-soft);
-  background: color-mix(in srgb, var(--warn-soft) 48%, white);
+  background: color-mix(in srgb, var(--warn-soft) 48%, var(--static-white));
 }
 .db-connect-fallback-title {
   margin: 0;
@@ -2591,7 +2589,7 @@ button { font-family: inherit; }
 }
 .db-connect-steps {
   margin: 0;
-  padding-left: 18px;
+  padding-left: 16px;
   color: var(--mute);
   font-size: 13px;
   line-height: 1.6;
@@ -2632,7 +2630,7 @@ button { font-family: inherit; }
   gap: 0;
   min-height: 0;
   height: 100%;
-  border-radius: 14px;
+  border-radius: var(--radius-16);
   overflow: hidden;
   border: 1px solid var(--rule);
   box-shadow:
@@ -2712,7 +2710,7 @@ button { font-family: inherit; }
 .db-anchor-meta-chip {
   display: inline-flex;
   align-items: center;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 6px;
   background: var(--paper);
   border: 1px solid var(--rule);
@@ -2743,7 +2741,7 @@ button { font-family: inherit; }
 }
 .db-workspace-auth-strip-group .db-select,
 .db-workspace-auth-strip-group .db-text-input {
-  padding: 5px 10px;
+  padding: 4px 10px;
   font-size: 12px;
   width: auto;
   min-width: 160px;
@@ -2809,7 +2807,7 @@ button { font-family: inherit; }
   justify-content: center;
   font-size: 11px;
   font-weight: 800;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 }
 .db-progress-step[data-state="pending"] .db-progress-step-glyph {
   color: var(--mute);
@@ -2820,7 +2818,7 @@ button { font-family: inherit; }
   color: var(--ink);
   background: var(--paper);
   border-color: var(--rule);
-  box-shadow: 0 1px 3px rgba(94, 42, 172, 0.08);
+  box-shadow: var(--shadow-chip-tint);
 }
 .db-progress-step[data-state="active"] .db-progress-step-glyph {
   color: var(--text-white-0, #fff);
@@ -2883,7 +2881,7 @@ button { font-family: inherit; }
   overflow: hidden;
 }
 .db-workspace-hero {
-  padding: 24px 22px;
+  padding: 24px;
   display: flex;
   justify-content: center;
 }
@@ -2894,7 +2892,7 @@ button { font-family: inherit; }
 
 .db-prompt-strip {
   flex-shrink: 0;
-  padding: 12px 18px 14px;
+  padding: 12px 16px 14px;
   background: var(--paper-2);
   border-top: 1px solid var(--rule);
   display: flex;
@@ -2922,7 +2920,7 @@ button { font-family: inherit; }
   background: var(--paper-2);
   border-radius: 12px;
   border-color: var(--rule);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-inset-hi);
 }
 .db-prompt-strip--disabled {
   flex-shrink: 0;
@@ -3009,7 +3007,7 @@ body:has(.db-shell) > .db-footer {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 1px 5px;
+  padding: 0 4px;
   border-radius: 4px;
   background: var(--primary-soft);
   color: var(--primary);
@@ -3038,7 +3036,7 @@ body:has(.db-shell) > .db-footer {
   font-weight: 700;
   color: var(--mute);
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
@@ -3218,11 +3216,11 @@ body:has(.db-shell) > .db-footer {
 .db-rail-history .db-chat-empty {
   text-align: center;
   max-width: 280px;
-  padding: 18px 14px;
+  padding: 16px 14px;
 }
 .db-rail-history .db-chat-empty-mark {
   color: var(--primary);
-  font-size: 22px;
+  font-size: var(--text-title-md);
   display: inline-block;
   margin-bottom: 8px;
 }
@@ -3273,7 +3271,7 @@ body:has(.db-shell) > .db-footer {
   border: 1px solid var(--rule);
   color: var(--ink);
   font-size: 10px;
-  padding: 3px 6px;
+  padding: 2px 6px;
   border-radius: 6px;
 }
 
@@ -3293,7 +3291,7 @@ body:has(.db-shell) > .db-footer {
 .db-rail-thinking-dot {
   width: 6px;
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--primary);
   animation: db-rail-thinking-pulse 1.6s ease-in-out infinite;
 }
@@ -3336,7 +3334,7 @@ body:has(.db-shell) > .db-footer {
   text-align: center;
 }
 .db-rail-empty {
-  padding: 18px 14px;
+  padding: 16px 14px;
   color: var(--ink);
 }
 
@@ -3417,7 +3415,7 @@ body:has(.db-shell) > .db-footer {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 8px 3px 10px;
+  padding: 2px 8px 2px 10px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--rule);
   background: var(--paper);
@@ -3445,7 +3443,7 @@ body:has(.db-shell) > .db-footer {
   appearance: none;
   border: 0;
   background: transparent;
-  padding: 4px 18px 4px 2px;
+  padding: 4px 16px 4px 2px;
   width: auto;
   min-width: 110px;
   max-width: 200px;
@@ -3473,7 +3471,7 @@ body:has(.db-shell) > .db-footer {
 .db-topbar-branch-chip {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   padding: 2px 8px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--rule);
@@ -3685,7 +3683,7 @@ body:has(.db-shell) > .db-footer {
   font: inherit;
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
   cursor: not-allowed;
   opacity: 0.65;
@@ -3818,7 +3816,7 @@ body:has(.db-shell) > .db-footer {
 }
 .db-rail-history-list-empty {
   text-align: center;
-  padding: 24px 18px;
+  padding: 24px 16px;
   border: 1px dashed var(--rule);
   border-radius: var(--radius-md);
   background: var(--paper);
@@ -3829,7 +3827,7 @@ body:has(.db-shell) > .db-footer {
   gap: 6px;
 }
 .db-rail-history-list-empty-mark {
-  font-size: 20px;
+  font-size: var(--text-subtitle);
   color: var(--primary);
 }
 .db-rail-history-list-empty-body {
@@ -3868,16 +3866,16 @@ body:has(.db-shell) > .db-footer {
 }
 .db-history-card[data-status="failed"] {
   border-left: 3px solid var(--danger);
-  padding-left: 9px;
+  padding-left: 8px;
 }
 .db-history-card[data-status="generating"],
 .db-history-card[data-status="queued"] {
   border-left: 3px solid var(--primary);
-  padding-left: 9px;
+  padding-left: 8px;
 }
 .db-history-card[data-status="pr_created"] {
   border-left: 3px solid var(--success);
-  padding-left: 9px;
+  padding-left: 8px;
 }
 .db-history-card-head {
   display: flex;
@@ -3952,8 +3950,8 @@ body:has(.db-shell) > .db-footer {
   font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 9px;
+  gap: 4px;
+  padding: 4px 8px;
   border-radius: 8px;
   cursor: pointer;
   transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
@@ -3980,7 +3978,7 @@ body:has(.db-shell) > .db-footer {
   font-weight: 700;
 }
 .db-composer-tool-btn--mode {
-  padding: 5px 8px 5px 10px;
+  padding: 4px 8px 4px 10px;
 }
 .db-composer-tool-btn-caret {
   font-size: 9px;
@@ -4000,7 +3998,7 @@ body:has(.db-shell) > .db-footer {
   justify-content: center;
 }
 .db-composer-send-arrow {
-  font-size: 16px;
+  font-size: var(--text-lg);
   line-height: 1;
   font-weight: 800;
   color: var(--text-white-0, var(--paper-2));
@@ -4113,7 +4111,7 @@ body:has(.db-shell) > .db-footer {
 }
 @media (max-width: 640px) {
   .db-sandbox-badge-label { display: none; }
-  .db-sandbox-badge { padding: 2px 5px; }
+  .db-sandbox-badge { padding: 2px 4px; }
 }
 
 /* === F3 sandbox badge state expansion ===
@@ -4177,7 +4175,7 @@ button.db-sandbox-badge:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
+  padding: 2px 10px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--primary-soft);
   background: var(--primary-ring);
@@ -4206,7 +4204,7 @@ button.db-sandbox-badge:focus-visible {
 }
 @media (max-width: 640px) {
   .db-topbar-bootstrap-btn-label { display: none; }
-  .db-topbar-bootstrap-btn { padding: 3px 7px; }
+  .db-topbar-bootstrap-btn { padding: 2px 6px; }
 }
 
 /* === Sprint 1B OpenAI reconnect card ===
@@ -4229,7 +4227,7 @@ button.db-sandbox-badge:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--surface-mute, var(--surface));
   color: var(--text-warn, var(--ink));
   font-weight: 600;
@@ -4328,8 +4326,8 @@ button.db-sandbox-badge:focus-visible {
 .db-owner-stack {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 24px 28px 48px;
+  gap: 16px;
+  padding: 24px 24px 48px;
   width: min(1180px, 100%);
   margin: 0 auto;
 }
@@ -4347,7 +4345,7 @@ button.db-sandbox-badge:focus-visible {
 
 /* Owner panel card — inherits .db-card geometry but gives the heading a
  * tighter rhythm and reserves a toolbar slot to the right. */
-.db-owner-panel { padding: 18px 20px; }
+.db-owner-panel { padding: 16px; }
 .db-owner-panel-header {
   display: flex;
   align-items: flex-start;
@@ -4424,7 +4422,7 @@ button.db-sandbox-badge:focus-visible {
   align-items: center;
   font-size: 11px;
   font-family: var(--font-mono);
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
   background: var(--rule-2);
   color: var(--mute);
@@ -4435,7 +4433,7 @@ button.db-sandbox-badge:focus-visible {
 .db-branch-queue-ci-chip {
   font-size: 11px;
   font-family: var(--font-mono);
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
   background: var(--rule-2);
   color: var(--mute);
@@ -4445,7 +4443,7 @@ button.db-sandbox-badge:focus-visible {
 .db-branch-queue-ci-chip[data-tone="primary"] { background: var(--primary-soft); color: var(--primary); }
 .db-branch-queue-cell--actions { display: flex; gap: 4px; justify-content: flex-end; }
 .db-branch-queue-empty {
-  padding: 20px;
+  padding: 16px;
   text-align: center;
   border: 1px dashed var(--rule);
   border-radius: var(--radius-md);
@@ -4551,7 +4549,7 @@ button.db-sandbox-badge:focus-visible {
   font-weight: 700;
 }
 .db-activity-feed-empty {
-  padding: 20px;
+  padding: 16px;
   text-align: center;
   border: 1px dashed var(--rule);
   border-radius: var(--radius-md);
@@ -4559,12 +4557,12 @@ button.db-sandbox-badge:focus-visible {
 }
 
 /* === Cost Card === */
-.db-cost-card { display: flex; flex-direction: column; gap: 18px; }
+.db-cost-card { display: flex; flex-direction: column; gap: 16px; }
 .db-cost-card-headline {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 18px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 .db-cost-card-total { display: flex; flex-direction: column; gap: 4px; }
@@ -4575,7 +4573,7 @@ button.db-sandbox-badge:focus-visible {
   color: var(--mute);
 }
 .db-cost-card-total-amount {
-  font-size: 32px;
+  font-size: var(--text-display-lg);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -4675,7 +4673,7 @@ button.db-sandbox-badge:focus-visible {
 
 /* === DS Candidate Queue === */
 .db-owner-ds-empty {
-  padding: 20px;
+  padding: 16px;
   text-align: center;
   border: 1px dashed var(--rule);
   border-radius: var(--radius-md);
@@ -4703,7 +4701,7 @@ button.db-sandbox-badge:focus-visible {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
   background: var(--primary-soft);
   color: var(--primary);

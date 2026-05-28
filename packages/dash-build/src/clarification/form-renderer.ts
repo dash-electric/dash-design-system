@@ -107,11 +107,11 @@ export function renderClarificationForm(session: ClarificationSession): string {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 28px;
+      padding: 24px;
     }
     header h2 {
       margin: 0 0 4px;
-      font-size: 20px;
+      font-size: var(--text-subtitle);
       font-weight: 600;
     }
     header .mute {
@@ -120,7 +120,7 @@ export function renderClarificationForm(session: ClarificationSession): string {
       font-size: 13px;
     }
     .original-prompt {
-      margin: 20px 0;
+      margin: 16px 0;
       padding: 12px 14px;
       background: var(--primary-alpha-10, var(--bg-weak-50));
       border-left: 3px solid var(--purple);
@@ -131,14 +131,14 @@ export function renderClarificationForm(session: ClarificationSession): string {
     }
     .question {
       margin-top: 24px;
-      padding-top: 20px;
+      padding-top: 16px;
       border-top: 1px solid var(--border);
     }
     .question:first-of-type { border-top: none; padding-top: 0; }
     .q-label {
       display: block;
       font-weight: 600;
-      font-size: 15px;
+      font-size: var(--text-body);
       margin-bottom: 4px;
     }
     .required { color: var(--required); margin-left: 4px; }
@@ -184,15 +184,15 @@ export function renderClarificationForm(session: ClarificationSession): string {
     footer {
       display: flex;
       gap: 12px;
-      margin-top: 28px;
-      padding-top: 20px;
+      margin-top: 24px;
+      padding-top: 16px;
       border-top: 1px solid var(--border);
     }
     button {
       font-family: inherit;
       font-size: 14px;
       font-weight: 600;
-      padding: 10px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: var(--bg-white-0);

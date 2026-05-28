@@ -238,6 +238,20 @@ export const REGISTRY_TOKENS_CSS = `
   --spacing-32: 32px;
   --spacing-40: 40px;
 
+  /* ------ Text-size ramp (Dash extension; matches dashboard.ts utility classes) ------ */
+  --text-xs:         11px;
+  --text-sm:         12px;
+  --text-body-sm:    13px;
+  --text-md:         14px;
+  --text-body:       15px;
+  --text-lg:         16px;
+  --text-title-sm:   18px;
+  --text-subtitle:   20px;
+  --text-title-md:   22px;
+  --text-display-sm: 24px;
+  --text-display-md: 28px;
+  --text-display-lg: 32px;
+
   /* ------ Primary theme (Dash extension: purple) ------ */
   --primary-base:     var(--dash-purple-500);
   --primary-dark:     var(--dash-purple-700);
@@ -426,6 +440,24 @@ export const REGISTRY_TOKENS_CSS = `
   --shadow-custom-shadows-small: 0px 1px 3px -1.5px #33333329, 0px 5px 5px -2.5px #33333314, 0px 12px 6px -6px #33333305, 0px 16px 8px -8px #33333303, 0px 0px 0px 1px #3333330a, inset 0px -0.5px 0.5px 0px #33333314;
   --shadow-custom-shadows-x-small: 0px 1px 2px 0px #3333330a, 0px 2px 4px 0px #3333330a, 0px 4px 8px -2px #3333330f, 0px 0px 0px 1px #3333330a, inset 0px -1px 1px -0.5px #3333330f;
   --shadow-tooltip: inset 0px -1px 1px -0.5px #1717170f, 0px 0px 0px 1px #ebebebff, 0px 48px 48px -24px #1717170a, 0px 24px 24px -12px #1717170a, 0px 12px 12px -6px #1717170a, 0px 6px 6px -3px #1717170a, 0px 3px 3px -1.5px #17171705, 0px 1px 1px 0.5px #1717170a;
+  /* Semantic aliases for daemon UI consumption */
+  --shadow-xs: var(--shadow-custom-shadows-x-small);
+  --shadow-sm: var(--shadow-custom-shadows-small);
+  --shadow-md: var(--shadow-custom-shadows-medium);
+  --shadow-lg: var(--shadow-custom-shadows-large);
+  /* Inset glass highlight (90% white) — used on glass / floating chrome */
+  --shadow-inset-hi: inset 0 1px 0 #ffffffe6;
+  --shadow-focus: 0 0 0 3px var(--primary-alpha-24);
+  /* Composer dock — upward soft drop for elements pinned to bottom */
+  --shadow-dock-up: 0 -8px 24px rgba(20, 14, 36, 0.06);
+  /* Purple-tinted card lift — clarify / primary-themed surfaces */
+  --shadow-primary-lift: 0 6px 18px rgba(94, 42, 172, 0.10);
+  /* Light hairline lift used on chat scenes */
+  --shadow-scene-lift: 0 10px 28px rgba(26, 26, 26, 0.06);
+  /* Soft floating overlay for modal popups */
+  --shadow-overlay-soft: 0 16px 36px rgba(26, 26, 26, 0.05);
+  /* Primary-tinted micro-shadow used on chip ribbons */
+  --shadow-chip-tint: 0 1px 3px rgba(94, 42, 172, 0.08);
 }
 
 /* ------ Motion (Dash extension, NOT in Figma export) ------ */
@@ -451,7 +483,7 @@ export const REGISTRY_TOKENS_CSS = `
   border-radius: var(--radius-8);
   background: var(--bg-white-0);
   color: var(--icon-sub-600);
-  font-size: 16px;
+  font-size: var(--text-lg);
   line-height: 1;
   cursor: pointer;
   transition: background var(--duration-fast) var(--ease-out),

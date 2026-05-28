@@ -1333,12 +1333,12 @@ async function writeFallbackPreviewBundle(
     </li>\`).join("");
   root.innerHTML = \`
     <style>
-      .dash-preview-fallback { max-width: 980px; margin: 0 auto; display: grid; gap: 18px; }
-      .dash-preview-hero { padding: 28px; border: 1px solid var(--stroke-soft-200); border-radius: 14px; background: var(--bg-white-0); box-shadow: 0 18px 50px rgba(26,20,36,.08); }
+      .dash-preview-fallback { max-width: 980px; margin: 0 auto; display: grid; gap: 16px; }
+      .dash-preview-hero { padding: 24px; border: 1px solid var(--stroke-soft-200); border-radius: var(--radius-16); background: var(--bg-white-0); box-shadow: var(--shadow-custom-shadows-medium); }
       .dash-preview-kicker { margin: 0 0 8px; color: var(--primary-base); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
-      .dash-preview-title { margin: 0; font-size: 28px; line-height: 1.15; color: var(--text-strong-950); }
+      .dash-preview-title { margin: 0; font-size: var(--text-display-md, 28px); line-height: 1.15; color: var(--text-strong-950); }
       .dash-preview-sub { margin: 12px 0 0; color: var(--text-sub-600); line-height: 1.6; max-width: 760px; }
-      .dash-preview-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+      .dash-preview-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
       .dash-preview-stat { padding: 10px 12px; border-radius: 10px; background: var(--bg-weak-50); color: var(--text-strong-950); font-weight: 700; }
       .dash-preview-files { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
       .dash-preview-file { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid var(--stroke-soft-200); border-radius: 10px; background: var(--bg-white-0); }

@@ -230,10 +230,10 @@ export function renderShell(opts: ShellRenderInput): string {
       background: var(--bg-white-0);
       border: 1px solid var(--stroke-soft-200);
       border-radius: 10px;
-      box-shadow: 0 18px 50px rgba(24, 16, 44, 0.08);
+      box-shadow: var(--shadow-md);
     }
     .dash-preview-harness-rail {
-      padding: 18px 14px;
+      padding: 16px 14px;
       background: var(--bg-paper-0);
       border-right: 1px solid var(--stroke-soft-200);
     }
@@ -243,7 +243,7 @@ export function renderShell(opts: ShellRenderInput): string {
       min-height: 36px;
       padding: 0 10px 14px;
       color: var(--text-strong-950);
-      font-size: 15px;
+      font-size: var(--text-body);
       font-weight: 800;
       letter-spacing: 0;
     }
@@ -286,7 +286,7 @@ export function renderShell(opts: ShellRenderInput): string {
       justify-content: space-between;
       gap: 16px;
       min-height: 64px;
-      padding: 0 22px;
+      padding: 0 24px;
       border-bottom: 1px solid var(--stroke-soft-200);
       background: var(--bg-white-0);
     }
@@ -310,7 +310,7 @@ export function renderShell(opts: ShellRenderInput): string {
       min-height: 32px;
       padding: 0 10px;
       border: 1px solid var(--stroke-soft-200);
-      border-radius: 999px;
+      border-radius: var(--radius-full);
       color: var(--text-sub-600);
       background: var(--bg-white-0);
       font-size: 12px;
@@ -338,7 +338,7 @@ export function renderShell(opts: ShellRenderInput): string {
       .dash-preview-harness-slot { padding: 16px; }
     }
     .dash-preview-error {
-      padding: 16px 20px;
+      padding: 16px 24px;
       background: var(--state-error-lighter);
       border: 1px solid var(--state-error-light);
       border-radius: 8px;
