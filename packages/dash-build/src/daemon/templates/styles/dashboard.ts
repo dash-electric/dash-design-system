@@ -1682,7 +1682,26 @@ button { font-family: inherit; }
 .db-live-preview-state--ready { padding: 0; }
 .db-live-preview-state--baseline {
   position: relative;
+  /* Force vertical stack: ribbon (top, natural) + iframe (fills rest).
+     Without explicit column direction, parent flex (row) tiled children
+     and broke iframe sizing. */
+  flex-direction: column;
+  overflow: hidden;
 }
+.db-live-preview-state--baseline > .db-baseline-ribbon,
+.db-live-preview-state--baseline > .db-baseline-auth-note {
+  flex-shrink: 0;
+}
+.db-live-preview-state--baseline > iframe.db-live-preview-frame {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+/* Q: yellow auth-note di iframe = visual noise, ambil banyak space.
+   Hidden by default per user request (post 2026-05-28). Restore via
+   removing this rule kalau perlu for compliance/UX signal back. */
+.db-baseline-auth-note { display: none !important; }
 .db-live-preview-frame-shell {
   width: 100%;
   height: 100%;
@@ -2824,21 +2843,30 @@ button { font-family: inherit; }
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: linear-gradient(180deg, rgba(251, 250, 248, 0.98), rgba(255, 255, 255, 0.96));
 }
 .db-canvas-region .db-canvas {
   flex: 1;
   min-height: 0;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .db-canvas-region .db-canvas-panel,
 .db-canvas-region .db-canvas-stage {
   width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 .db-canvas-region .db-live-preview-pane {
   width: 100%;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 .db-workspace-hero {
   padding: 24px 22px;
@@ -2901,6 +2929,9 @@ button { font-family: inherit; }
   padding: 0;
   gap: 0;
   height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
+  max-height: calc(100vh - 64px);
+  overflow: hidden;
 }
 
 .db-shell {
