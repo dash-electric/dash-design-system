@@ -52,6 +52,10 @@
 
 DON'T: raw `@radix-ui/*` imports, raw hex, shadcn `variant="default"`, copy entire shadcn file, hardcode `text-white` on light surfaces.
 
+## Decorative gradient policy
+
+No decorative gradients on in-app workflow surfaces. Carve-outs (allowed): auth shells (login/register/reset/verify), chart fills (SVG `<linearGradient>` / `conic-gradient` inside Chart), brand showcase pages (Foundation/Theme Studio/Brand Assets), Dash Build's own dashboard meta-surface, `FancyButton` sheen.
+
 ## Refactor / Auto-inference protocols
 
 Refactor: READ first → STATE plan (current/target/files/risk) → WAIT or proceed if scope-bounded → SHOW diff → `tsc --noEmit`.

@@ -48,7 +48,17 @@ The design system must keep the same product character across:
 - Text must fit its container on desktop and mobile. Do not use viewport-scaled
   font sizes.
 - Do not rely on decorative gradients, blobs, bokeh, or generic illustration to
-  make an internal tool feel designed.
+  make an internal tool feel designed. Scope: in-app workflow surfaces (lists,
+  tables, forms, detail screens, dashboards). Explicit carve-outs where
+  gradients are intentional and allowed:
+  - Auth shells (login / register / reset / verify) — auth is its own visual register.
+  - Chart fills — SVG `<linearGradient>` / `<radialGradient>` / `conic-gradient`
+    used as data-viz fill (donut, area, bar) is not "decoration".
+  - Brand showcase pages — Foundation, Theme Studio, Brand Assets, color/typography
+    demo pages — expressing the brand is the point.
+  - Dash Build's own dashboard chrome — Dash Build is a meta-application surface
+    (control tower for AI workflows), not a consumer ops surface.
+  - Premium CTA polish — top-down sheen on `FancyButton` (sanctioned motion polish).
 - Treat this file as the active design system whenever it is available. Do not
   ask the user to choose a visual direction unless the target repo has no Dash
   design contract or the user explicitly wants an exploration.
@@ -159,13 +169,17 @@ Use:
 
 Avoid:
 
-- oversized hero compositions inside apps
-- purple-only screens
+- oversized hero compositions inside ops apps (post-login workflow surfaces).
+  Auth shells, marketing, brand showcase, and Foundation docs are exempt.
+- purple-only screens (aspirational — visual-review check; landing/brand
+  surfaces may legitimately lean heavily into purple)
 - nested card stacks
 - generic glassmorphism as the primary system
-- frosted-glass app shells for operational tools
+- frosted-glass app shells for operational tools (backdrop-blur on overlays —
+  Modal / Drawer / Sheet / sticky headers — is the standard pattern and allowed)
 - random shadows or radii
-- raw hex color values
+- raw hex color values (carve-outs: external brand colors in SocialButton, and
+  the canonical Dash Purple constant when used inside Layer 0 foundation tokens)
 - ornamental SVGs that do not reveal product state
 
 ## Generation Critique

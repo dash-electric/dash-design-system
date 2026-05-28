@@ -260,6 +260,21 @@ Avoid raw colors. Always reach for semantic tokens:
    - External signals: BMKG (weather), Lebaran rate freeze (holiday pricing)
    - Patterns: 3-miss auto-suspend, surge factor X.Y×, dispatch radius
 
+## Decorative gradient policy
+
+No decorative `linear-gradient` / `radial-gradient` / `conic-gradient` /
+ornamental bokeh on in-app workflow surfaces (lists, tables, forms, detail
+screens, dashboards). Allowed carve-outs:
+
+- **Auth shells** (login / register / reset / verify) — gradients allowed per Figma.
+- **Chart fills** — SVG `<linearGradient>` / `<radialGradient>` / `conic-gradient`
+  inside Chart components is data-viz, not decoration.
+- **Brand showcase pages** — Foundation, Theme Studio, Brand Assets, color and
+  typography demo pages may use gradient backgrounds and gradient text.
+- **Dash Build's own dashboard** — control-tower meta-surface (not a consumer
+  ops product) may use radial-gradient body backgrounds.
+- **`FancyButton` sheen** — top-down white sheen on premium CTA is sanctioned.
+
 ## Anti-patterns
 
 ❌ **DO**:
