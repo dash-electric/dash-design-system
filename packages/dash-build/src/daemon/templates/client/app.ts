@@ -2194,6 +2194,18 @@ export const DASHBOARD_JS = `
         });
     }
     form.addEventListener("submit", submit);
+    // Bug fix (2026-05-28): plain Enter in <textarea> inserts newline (HTML
+    // default). Form submit on Enter only fires for <input>-class controls.
+    // Bind Cmd/Ctrl+Enter to trigger submit so the keyboard hint shown in the
+    // composer placeholder ("⌘↵ to send") actually works on the home page.
+    if (textarea) {
+      textarea.addEventListener("keydown", function (ev) {
+        if ((ev.metaKey || ev.ctrlKey) && ev.key === "Enter") {
+          ev.preventDefault();
+          submit(ev);
+        }
+      });
+    }
   }
 
   function hookHomeTabs() {
