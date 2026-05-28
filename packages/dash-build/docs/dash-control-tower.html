@@ -2236,66 +2236,145 @@ gh pr close &lt;pr-number&gt; --delete-branch</code></pre>
 <section class="section" id="architecture-pivot">
   <span class="anchor"></span>
   <div class="section-header">
-    <span class="section-tag">09 / ARCHITECTURE v2</span>
-    <h2>Central clone pool — pivot proposal</h2>
-    <span class="meta">2026-05-28 proposal · NOT yet implemented</span>
+    <span class="section-tag">09 / ARCHITECTURE v2 (revised)</span>
+    <h2>Component preview + Lovable home — pivot</h2>
+    <span class="meta">2026-05-28 end-of-session decision</span>
   </div>
 
   <div class="alert alert-warning">
     <span class="alert-icon">!</span>
     <div>
-      <strong>Status: PROPOSAL.</strong> Current v1 architecture (per-user clone, 2-7 min cold bootstrap) doesn't scale for multi-user designer/PM access. This section sketches v2 — shared central clone + per-prompt branch preview. Per Lovable/v0/Bolt pattern. Effort estimate: 3-4 minggu.
+      <strong>Revised pivot.</strong> Earlier proposal (central clone pool) was the WRONG direction — clone+iframe full-app pattern itself broke designer UX (5-7 min cold, daemon scheduler silent fail, iframe ga relevan post-prompt). New pivot: component-focused preview (Storybook/Sandpack pattern) + Lovable-style home redesign. Clone code = HOLD (foundation, not removed — revisit if pivot wrong).
     </div>
   </div>
 
-  <!-- The problem -->
+  <!-- New direction summary -->
   <div class="card">
     <div class="card-head">
-      <h3>Why pivot — the problem with v1</h3>
-      <span class="badge badge-lighter s-error">UX blocker</span>
+      <h3>New direction — 3 pivot decision</h3>
+      <span class="badge badge-lighter s-feature">2026-05-28</span>
+    </div>
+    <div class="grid-3">
+      <div>
+        <div class="card-section-label">① Lovable-style home</div>
+        <ul class="dash-list">
+          <li><span class="li-marker">→</span> Sidebar: Home / Search / Resources / Connectors</li>
+          <li><span class="li-marker">→</span> Sections: Projects / Starred / Created by me / Shared</li>
+          <li><span class="li-marker">→</span> Recents list</li>
+          <li><span class="li-marker">→</span> Center: prompt box "Let's build something, irfan"</li>
+          <li><span class="li-marker">→</span> Bottom: My projects / Recently viewed / Templates</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card-section-label">② Component preview workspace</div>
+        <ul class="dash-list">
+          <li><span class="li-marker">→</span> Chat thread (left) + Component preview (right)</li>
+          <li><span class="li-marker">→</span> Preview = focused render (Sandpack/Storybook)</li>
+          <li><span class="li-marker">→</span> Tabs: Component / Diff / BE Impact / Audit / Files</li>
+          <li><span class="li-marker">→</span> Context map: "Lands at src/pages/..."</li>
+          <li><span class="li-marker">→</span> No more iframe full-app</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card-section-label">③ BE-aware capability</div>
+        <ul class="dash-list">
+          <li><span class="li-marker">→</span> Read DB schema (Prisma/migrations)</li>
+          <li><span class="li-marker">→</span> Verify endpoint exists before FE generate</li>
+          <li><span class="li-marker">→</span> 3-scenario classifier (Update / New / Extend)</li>
+          <li><span class="li-marker">→</span> Audit-trail CR-3 enforcer</li>
+          <li><span class="li-marker">→</span> Generate BE handler + migration</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clone code = HOLD, not removed -->
+  <div class="alert alert-info">
+    <span class="alert-icon">i</span>
+    <div>
+      <strong>Clone code = HOLD, NOT removed.</strong> Per user direction: existing clone/sandbox/dev-server code stays as fallback foundation. Revisit when component preview pivot proven firm. Files masih ada: <code>src/runs/workspace.ts</code>, <code>src/runs/sandbox-state.ts</code>, <code>src/runs/preview-shim.ts</code>, etc. Marked "on hold" not "deprecated".
+    </div>
+  </div>
+
+  <!-- Why pivot bigger context -->
+  <div class="card">
+    <div class="card-head">
+      <h3>Why iframe full-app failed</h3>
+      <span class="badge badge-lighter s-error">honest debrief</span>
+    </div>
+    <ul class="dash-list">
+      <li><span class="li-marker err">✗</span> <strong>5-7 menit cold</strong> — designer abandon zone</li>
+      <li><span class="li-marker err">✗</span> <strong>1.5GB clone per repo per user</strong> — doesn't scale (10 user = 15GB)</li>
+      <li><span class="li-marker err">✗</span> <strong>Iframe show whole app</strong> — sidebar, topbar, irrelevant pages — for designer who care about 1 component</li>
+      <li><span class="li-marker err">✗</span> <strong>Post-approve = iframe useless</strong> — job done, iframe show what?</li>
+      <li><span class="li-marker err">✗</span> <strong>Daemon scheduler silent fail</strong> bug surfaced — API returns ok but background job skipped</li>
+      <li><span class="li-marker err">✗</span> <strong>Auth bypass via shim</strong> — preview different from production, misleading</li>
+      <li><span class="li-marker err">✗</span> <strong>User feedback</strong>: "gua designer cok bukan developer ga ngerti gua" — proof UX broken</li>
+    </ul>
+  </div>
+
+  <!-- v1 vs new comparison -->
+  <div class="card">
+    <div class="card-head">
+      <h3>v1 iframe full-app vs new component preview — comparison</h3>
     </div>
     <table class="data-table">
-      <thead><tr><th>Aspect</th><th>v1 per-user clone (current)</th><th>v2 central clone pool (proposed)</th></tr></thead>
+      <thead><tr><th>Aspect</th><th>v1 iframe full-app</th><th>NEW component preview</th></tr></thead>
       <tbody>
         <tr>
-          <td>Wait time per user</td>
-          <td><span class="badge badge-lighter s-error">2-7 menit cold</span></td>
-          <td><span class="badge badge-lighter s-success">0s instant</span></td>
+          <td>Preview latency</td>
+          <td><span class="badge badge-lighter s-error">2-7 menit cold (clone+install+dev)</span></td>
+          <td><span class="badge badge-lighter s-success">&lt;2s instant (Sandpack/Storybook)</span></td>
+        </tr>
+        <tr>
+          <td>Infra needed</td>
+          <td>Full git clone + node_modules + next dev process</td>
+          <td>Code intelligence only (no runtime app)</td>
+        </tr>
+        <tr>
+          <td>What user sees</td>
+          <td>Whole backoffice (sidebar + topbar + all routes)</td>
+          <td>ONLY the component being changed (focused)</td>
+        </tr>
+        <tr>
+          <td>Post-prompt state</td>
+          <td>Iframe useless (user navigate manually)</td>
+          <td>Preview pinpoints generated component + diff</td>
         </tr>
         <tr>
           <td>Storage</td>
           <td>1.5GB × N user (10 user = 15GB)</td>
-          <td>1.5GB total per repo</td>
+          <td>Few MB (code intel cache)</td>
         </tr>
         <tr>
-          <td>Dev server memory</td>
-          <td>~200MB × N active session</td>
-          <td>~200MB base + per active prompt only</td>
+          <td>Resource (memory)</td>
+          <td>~200MB × N active session (next dev)</td>
+          <td>&lt;50MB total (sandboxed render)</td>
         </tr>
         <tr>
-          <td>Sync with upstream</td>
-          <td>Manual re-clone</td>
-          <td>Agent auto-sync + GitHub webhook</td>
+          <td>Multi-user concurrency</td>
+          <td>1 dev server per user, port pool, complex</td>
+          <td>Stateless render, scales naturally</td>
         </tr>
         <tr>
-          <td>Multi-user collision</td>
-          <td>None (each isolated)</td>
-          <td>Branch worktree per prompt (still isolated)</td>
-        </tr>
-        <tr>
-          <td>Designer onboarding</td>
-          <td>Abandon at 3-min wait</td>
-          <td>Open page → preview live</td>
+          <td>Designer first-session</td>
+          <td>Abandon at 3-min wait + bug silent fail</td>
+          <td>Open page → see Lovable home → type prompt → preview live</td>
         </tr>
         <tr>
           <td>Bootstrap button required</td>
           <td>Yes — user clicks + waits</td>
-          <td>NO — repo always pre-warmed</td>
+          <td>NO — repo intelligence pre-loaded</td>
         </tr>
         <tr>
           <td>Pattern industry standard</td>
-          <td>❌ Anti-pattern</td>
-          <td>✅ Lovable, v0, Bolt all use this</td>
+          <td>❌ Lovable-style — works for greenfield, not existing-repo extension</td>
+          <td>✅ Storybook / Sandpack / Vite playground</td>
+        </tr>
+        <tr>
+          <td>BE-aware</td>
+          <td>Mock via shim (misleading preview)</td>
+          <td>✅ Reads BE catalog + DB schema, verifies endpoint exist, generates BE</td>
         </tr>
       </tbody>
     </table>
@@ -2342,117 +2421,200 @@ gh pr close &lt;pr-number&gt; --delete-branch</code></pre>
     </div>
   </div>
 
-  <!-- v2 architecture diagram -->
+  <!-- New architecture diagram -->
   <div class="card">
-    <div class="card-head"><h3>v2 architecture — sequence</h3></div>
+    <div class="card-head"><h3>New architecture — sequence</h3></div>
     <div class="mermaid-wrap">
 <div class="mermaid">
 flowchart TB
   classDef ext fill:#f5f7fa,stroke:#717784,color:#0e121b;
-  classDef sync fill:#ebf1ff,stroke:#335cff,color:#0e121b;
-  classDef central fill:#efeaf7,stroke:#5e2aac,color:#0e121b;
-  classDef branch fill:#e0faec,stroke:#178c4e,color:#0e121b;
+  classDef intel fill:#ebf1ff,stroke:#335cff,color:#0e121b;
+  classDef ai fill:#efeaf7,stroke:#5e2aac,color:#0e121b;
+  classDef preview fill:#e0faec,stroke:#178c4e,color:#0e121b;
   classDef user fill:#fff3eb,stroke:#fa7319,color:#0e121b;
 
   GH[GitHub repo<br/>dash-electric/backoffice]:::ext
 
-  subgraph SYNC[Sync layer]
-    SyncAgent[Agent: git pull every 5 min<br/>+ webhook on push]:::sync
+  subgraph INTEL[Code intelligence cache]
+    RepoScan[Repo source scanner<br/>file index, no full clone]:::intel
+    BECat[BE endpoint catalog]:::intel
+    DBSchema[DB schema reader]:::intel
+    DSReg[Dash DS registry awareness]:::intel
   end
 
-  subgraph CENTRAL[Central clone pool — server]
-    Clone[Clone: ~/clones/backoffice<br/>1.5 GB total]:::central
-    Shim[preview-shim applied once<br/>auth bypass]:::central
-    BaseDev[Base dev server :3101<br/>always warm]:::central
+  subgraph HOME[Lovable-style home]
+    Sidebar[Sidebar nav<br/>Home/Search/Resources/Connectors]:::user
+    PromptBox["Let's build something, irfan"<br/>prompt input]:::user
+    Recent[Recents + Templates]:::user
   end
 
-  subgraph BRANCH[Per-prompt branch preview]
-    WT1[git worktree branch user-A]:::branch
-    Dev1[next dev :3102]:::branch
-    WT2[git worktree branch user-B]:::branch
-    Dev2[next dev :3103]:::branch
+  subgraph WORKSPACE[Chat workspace]
+    ChatThread[Chat thread<br/>prompts + clarifications]:::user
+    AIAgent[AI agent<br/>3-scenario classifier]:::ai
   end
 
-  subgraph USERS[Users]
-    U1[User A browser]:::user
-    U2[User B browser]:::user
-    UN[User N browser]:::user
+  subgraph PREVIEW[Component preview — focused]
+    Sandbox[Sandpack / Storybook<br/>isolated render]:::preview
+    DiffTab[Diff tab]:::preview
+    BEImpact[BE impact panel]:::preview
+    AuditFlag[Audit trail CR-3 flag]:::preview
+    ContextMap[Context map<br/>lands at src/pages/...]:::preview
   end
 
-  GH -- pull / webhook --> SyncAgent
-  SyncAgent --> Clone
-  Clone --> Shim
-  Shim --> BaseDev
+  GH -- index --> RepoScan
+  RepoScan --> BECat
+  RepoScan --> DBSchema
 
-  BaseDev -- read-only preview --> U1
-  BaseDev -- read-only preview --> U2
-  BaseDev -- read-only preview --> UN
+  Sidebar --> Recent
+  Recent --> PromptBox
+  PromptBox -- new project --> ChatThread
 
-  U1 -- prompt --> WT1
-  WT1 --> Dev1
-  Dev1 -- per-user preview --> U1
+  ChatThread --> AIAgent
+  AIAgent -- read --> BECat
+  AIAgent -- read --> DBSchema
+  AIAgent -- read --> DSReg
 
-  U2 -- prompt --> WT2
-  WT2 --> Dev2
-  Dev2 -- per-user preview --> U2
+  AIAgent -- generate --> Sandbox
+  AIAgent -- diff --> DiffTab
+  AIAgent -- BE call/migration --> BEImpact
+  AIAgent -- flag legal/financial --> AuditFlag
+  AIAgent -- map --> ContextMap
 
-  WT1 -- approve --> GH
-  WT2 -- approve --> GH
+  Sandbox -- approve --> GH
 </div>
     </div>
   </div>
 
-  <!-- 4-phase roadmap -->
+  <!-- Lovable home UI mockup ASCII -->
   <div class="card">
-    <div class="card-head"><h3>Implementation roadmap — 4 phase</h3></div>
+    <div class="card-head"><h3>Lovable-style home — ASCII mockup</h3></div>
+<pre><code>┌──────────────────────────────────────────────────────────────────────────┐
+│ ▦ irfan's Dash Build                                              [⌘]   │
+│ ┌──────────────┬──────────────────────────────────────────────────────┐  │
+│ │ ⌂ Home       │                                                       │  │
+│ │ 🔍 Search    │                                                       │  │
+│ │ ◇ Resources  │              Let's build something, irfan             │  │
+│ │ 🔗 Connectors│                                                       │  │
+│ │              │     ┌─────────────────────────────────────────────┐   │  │
+│ │ PROJECTS     │     │ Ask Dash to create a page about...           │   │  │
+│ │ ▦ All        │     │                                              │   │  │
+│ │ ★ Starred    │     │                            [Build]  [↑]      │   │  │
+│ │ ◇ Created    │     └─────────────────────────────────────────────┘   │  │
+│ │ ◇ Shared     │                                                       │  │
+│ │              │                                                       │  │
+│ │ RECENTS      │  ┌─ My projects | Recently viewed | Templates ───────┐ │  │
+│ │ ◇ Auto Susp..│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐           │ │  │
+│ │ ◇ Refund Apr.│  │  │ Capacity│  │ Refund  │  │ Driver  │           │ │  │
+│ │ ◇ Mitra List │  │  │ Compass │  │ Approve │  │ Watch   │           │ │  │
+│ │              │  │  └─────────┘  └─────────┘  └─────────┘           │ │  │
+│ │ + New Project│  └────────────────────────────────────────────────────┘ │  │
+│ └──────────────┴──────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────────────┘</code></pre>
+    <p class="text-paragraph-sm text-sub-600" style="margin-top: var(--spacing-8);">Inspired by Lovable.dev home pattern — sidebar nav, big center prompt, project cards bottom. Replace current dashboard's "Backoffice RIDE / dash/backoffice / Preview/Code/History/Owner / Connect" header chrome.</p>
+  </div>
+
+  <!-- Chat workspace mockup ASCII -->
+  <div class="card">
+    <div class="card-head"><h3>Chat workspace — component preview mockup</h3></div>
+<pre><code>┌──────────────────────────────────────────────────────────────────────────┐
+│ ▦ Refund Approve · Backoffice    [Preview ▾] [Code] [History] [Share ▾] │
+├──────────────────────────────────────────────────────────────────────────┤
+│ Chat thread          │ Component | Diff | BE Impact | Audit | Files     │
+│ ┌─────────────────┐  │                                                   │
+│ │ User: tambahin  │  │  ┌─────────────────────────────────────────────┐ │
+│ │ approve refund  │  │  │                                              │ │
+│ │ per outlet      │  │  │    [RefundApprovalTable component]           │ │
+│ └─────────────────┘  │  │    ┌──────────────────────────────────┐      │ │
+│ ┌─────────────────┐  │  │    │ ☐ │ Outlet │ Amount │ Status     │      │ │
+│ │ AI: I'll use    │  │  │    │ ☐ │ Fore   │ 50k    │ Pending    │      │ │
+│ │ DataTable +     │  │  │    │ ☐ │ Zalora │ 120k   │ Pending    │      │ │
+│ │ BulkActionBar   │  │  │    └──────────────────────────────────┘      │ │
+│ │ from @dash/ui   │  │  │                                              │ │
+│ │ ...             │  │  │    [Bulk Approve] [Bulk Reject]              │ │
+│ └─────────────────┘  │  │                                              │ │
+│                      │  └─────────────────────────────────────────────┘ │
+│ Type your prompt...  │  Lands at: src/pages/refunds/approve.tsx          │
+│ [______________]     │  Uses: @dash/ui DataTable, BulkActionBar, Badge   │
+│ [Build]              │  BE: existing GET /api/refunds + NEW PUT /:id/approve │
+│                      │  Audit: ⚠️ CR-3 required (financial — log editor) │
+└──────────────────────────────────────────────────────────────────────────┘</code></pre>
+    <p class="text-paragraph-sm text-sub-600" style="margin-top: var(--spacing-8);">Right pane = COMPONENT only, not whole app. Tabs = focused review surfaces. Below preview = context map (where it lands, what it uses, BE impact, audit flag).</p>
+  </div>
+
+  <!-- Implementation roadmap — pivot -->
+  <div class="card">
+    <div class="card-head"><h3>Implementation roadmap — 3 phase</h3></div>
     <div class="stage-grid">
 
       <div class="stage-card">
-        <div class="stage-card-head"><h4>Central clone pool</h4><span class="time">1 minggu</span></div>
-        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Replace per-user clone dengan 1 central pool per repo.</p>
+        <div class="stage-card-head"><h4>Lovable home + workspace shell</h4><span class="time">3-5 hari</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Replace current dashboard chrome with Lovable pattern.</p>
         <ul class="dash-list">
-          <li><span class="li-marker ok">●</span> New: <code>daemon/services/central-clone-pool.ts</code></li>
-          <li><span class="li-marker ok">●</span> Cron <code>git pull</code> every 5 min per repo</li>
-          <li><span class="li-marker ok">●</span> 1 next dev :3101 always warm per repo</li>
-          <li><span class="li-marker ok">●</span> Dashboard "Bootstrap" button HILANG</li>
-          <li><span class="li-marker warn">!</span> BREAKING: existing per-user state migration</li>
+          <li><span class="li-marker ok">●</span> Sidebar nav: Home / Search / Resources / Connectors</li>
+          <li><span class="li-marker ok">●</span> Home: prompt box + recent + templates cards</li>
+          <li><span class="li-marker ok">●</span> Project = entity (rename from "thread")</li>
+          <li><span class="li-marker ok">●</span> Chat workspace 2-pane (chat left, preview right)</li>
+          <li><span class="li-marker ok">●</span> Strip clone-status badges (Clone idle, Start dev, shim, sync)</li>
+          <li><span class="li-marker warn">!</span> Clone code UNCHANGED — hold not remove</li>
         </ul>
       </div>
 
       <div class="stage-card">
-        <div class="stage-card-head"><h4>Branch preview spawner</h4><span class="time">1 minggu</span></div>
-        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Per-prompt isolated preview via git worktree.</p>
+        <div class="stage-card-head"><h4>Component preview MVP</h4><span class="time">1 minggu</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Focused isolated render replace iframe full-app.</p>
         <ul class="dash-list">
-          <li><span class="li-marker ok">●</span> New: <code>daemon/services/branch-preview-pool.ts</code></li>
-          <li><span class="li-marker ok">●</span> git worktree per active prompt</li>
-          <li><span class="li-marker ok">●</span> Port allocator (3102-3199 pool)</li>
-          <li><span class="li-marker ok">●</span> Cleanup idle preview &gt;15 min</li>
-          <li><span class="li-marker ok">●</span> Iframe URL dynamic per user/prompt</li>
+          <li><span class="li-marker ok">●</span> Pick stack: Sandpack / Storybook / custom Vite (spec evaluate)</li>
+          <li><span class="li-marker ok">●</span> Daemon endpoint <code>/api/preview/component/:id</code></li>
+          <li><span class="li-marker ok">●</span> Dash DS components as preview deps</li>
+          <li><span class="li-marker ok">●</span> Tabs: Component / Diff / BE Impact / Audit / Files</li>
+          <li><span class="li-marker ok">●</span> Context map "Lands at..."</li>
         </ul>
       </div>
 
       <div class="stage-card">
-        <div class="stage-card-head"><h4>Webhook sync</h4><span class="time">3-5 hari</span></div>
-        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">GitHub push event → instant sync (vs 5-min poll).</p>
+        <div class="stage-card-head"><h4>BE-aware capability</h4><span class="time">2-3 minggu</span></div>
+        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">3 scenario: Update / New / Extend FE+BE. Non-negotiable moat.</p>
         <ul class="dash-list">
-          <li><span class="li-marker ok">●</span> Endpoint: <code>/api/github/webhook</code></li>
-          <li><span class="li-marker ok">●</span> Verify HMAC signature</li>
-          <li><span class="li-marker ok">●</span> Push event → trigger sync for affected repo</li>
-          <li><span class="li-marker ok">●</span> Polling fallback kalau webhook lost</li>
-        </ul>
-      </div>
-
-      <div class="stage-card">
-        <div class="stage-card-head"><h4>Multi-tenant isolation</h4><span class="time">3-5 hari</span></div>
-        <p class="text-paragraph-sm text-sub-600" style="margin: 0;">Per-user session + namespaced branch.</p>
-        <ul class="dash-list">
-          <li><span class="li-marker ok">●</span> Session token per browser</li>
-          <li><span class="li-marker ok">●</span> Branch naming: <code>dash-build/&lt;userId&gt;/&lt;runId&gt;</code></li>
-          <li><span class="li-marker ok">●</span> State machine per user (separate from central)</li>
-          <li><span class="li-marker ok">●</span> Cleanup on user logout</li>
+          <li><span class="li-marker ok">●</span> Endpoint catalog scanner (BE intake)</li>
+          <li><span class="li-marker ok">●</span> DB schema reader (Prisma / migrations)</li>
+          <li><span class="li-marker ok">●</span> Verify endpoint exist pre-generate</li>
+          <li><span class="li-marker ok">●</span> 3-scenario classifier (intake step)</li>
+          <li><span class="li-marker ok">●</span> Audit-trail CR-3 enforcer</li>
+          <li><span class="li-marker ok">●</span> BE handler + DB migration generation</li>
         </ul>
       </div>
     </div>
+  </div>
+
+  <!-- 3 scenario walkthrough -->
+  <div class="card">
+    <div class="card-head">
+      <h3>3 generation scenario — required to support</h3>
+      <span class="badge badge-lighter s-feature">moat differentiator</span>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Type</th><th>Example prompt</th><th>What AI does</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><span class="badge badge-lighter s-information">Update</span></td>
+          <td>"tambahin filter status di list mitra"</td>
+          <td>FE patch (safe additive UI) + BE patch (safe additive query whitelist) — both via patch validator LENIENT</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><span class="badge badge-lighter s-feature">New product</span></td>
+          <td>"buat fitur expense tracking dispatcher"</td>
+          <td>10-15 new file: DB migration + BE handler + service layer + FE pages + components + shared types + tests</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><span class="badge badge-lighter s-stable">Extend FE+BE</span></td>
+          <td>"tambahin chart payroll group by mitra Lvl + PDF export"</td>
+          <td>NEW BE aggregate endpoint + NEW FE chart component + NEW PDF util + PATCH routes/nav (safe append)</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- What user sees -->
@@ -2474,17 +2636,17 @@ flowchart TB
         </ul>
       </div>
       <div>
-        <div class="card-section-label">v2 (proposed) — designer first session</div>
+        <div class="card-section-label">NEW (Lovable home + component preview)</div>
         <ul class="dash-list">
           <li><span class="li-marker">①</span> Buka <code>dashbuild.dash.com</code></li>
-          <li><span class="li-marker">②</span> Google SSO klik (5 detik)</li>
-          <li><span class="li-marker">③</span> Pilih repo dari sidebar (or auto-detect)</li>
-          <li><span class="li-marker ok">✓</span> Iframe LANGSUNG live (central pool warm)</li>
-          <li><span class="li-marker">④</span> Type prompt</li>
-          <li><span class="li-marker">⑤</span> AI generate (~5-15s spawn branch preview)</li>
-          <li><span class="li-marker">⑥</span> Lihat preview branch dia sendiri</li>
-          <li><span class="li-marker">⑦</span> Approve → PR</li>
-          <li><span class="li-marker ok">✓</span> Selesai di menit ke-3</li>
+          <li><span class="li-marker">②</span> Google SSO (5s) → Lovable-style home</li>
+          <li><span class="li-marker">③</span> Type prompt di big center box OR pick recent project</li>
+          <li><span class="li-marker">④</span> Workspace open → chat thread + preview panel</li>
+          <li><span class="li-marker ok">✓</span> AI generate (~5-15s) → component preview LIVE</li>
+          <li><span class="li-marker ok">✓</span> See diff + BE impact + audit flag in tabs</li>
+          <li><span class="li-marker">⑤</span> Iterate prompt kalau perlu</li>
+          <li><span class="li-marker">⑥</span> Approve → PR</li>
+          <li><span class="li-marker ok">✓</span> Selesai di menit ke-3 (zero clone wait)</li>
         </ul>
       </div>
     </div>
@@ -2510,13 +2672,25 @@ flowchart TB
     </table>
   </div>
 
-  <!-- Decision needed -->
-  <div class="alert alert-info">
-    <span class="alert-icon">i</span>
+  <!-- Decision locked + execution plan -->
+  <div class="alert alert-success">
+    <span class="alert-icon">✓</span>
     <div>
-      <strong>Decision needed.</strong> v2 = 3-4 minggu rewrite, but solves the #1 UX blocker (waiting + per-user clone friction). Without it: Q12 designer test session bakal fail di menit ke-3.
-      Alternatives: (A) approve v2 pivot full, (B) hybrid — v2 central preview + keep v1 per-user untuk generation, (C) defer + patch v1 bug + add pre-warm last-used (less elegant but faster ship).
+      <strong>Decision locked 2026-05-28.</strong> Pivot ke component preview + Lovable home + BE-aware. Clone code HOLD (foundation). Estimasi total 4-5 minggu (3-5 hari home + 1 mg preview + 2-3 mg BE-aware). Saved to vault memory <code>project_dash_build_pivot_2026_05_28.md</code>.
     </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Execution plan — TODAY + WEEK 1 + WEEK 2-3</h3></div>
+    <ul class="dash-list">
+      <li><span class="li-marker ok">●</span> <strong>TODAY</strong> — Save memory + update HTML pivot + spec MD + commit + push PR #10</li>
+      <li><span class="li-marker">→</span> <strong>WEEK 1</strong> — Implement Lovable home + chat workspace shell + strip clone-status UI (clone code unchanged)</li>
+      <li><span class="li-marker">→</span> <strong>WEEK 1.5</strong> — Component preview MVP (pick Sandpack/Storybook/custom Vite + ship)</li>
+      <li><span class="li-marker">→</span> <strong>WEEK 2</strong> — Endpoint catalog scanner + DB schema reader</li>
+      <li><span class="li-marker">→</span> <strong>WEEK 2.5</strong> — 3-scenario classifier + audit-trail enforcer</li>
+      <li><span class="li-marker">→</span> <strong>WEEK 3</strong> — BE handler + migration generation</li>
+      <li><span class="li-marker">→</span> <strong>WEEK 3+</strong> — E2E test 3 scenario via real prompt (designer session)</li>
+    </ul>
   </div>
 </section>
 
