@@ -116,13 +116,23 @@ The layered model is the only approach that lets Layer 3 (`ride-dispatch-board`)
 
 ### Internal: Dash product family
 
-| Theme key | Product | Accent | Voice | Status |
-| --- | --- | --- | --- | --- |
-| `ride` | Dash Ride | `#5e2aac` purple | formal Anda | shipped |
-| `logistic` | Dash Logistic | `#1f6feb` industrial blue | formal Anda | wip |
-| `travel` | Dash Travel | `#c79a2b` warm gold | mixed | planned |
-| `marketplace` | Dash Marketplace | `#0f9d58` market green | mixed | planned |
-| `outsourcing` | Dash Outsourcing | `#475569` operations slate | formal Anda | planned |
+> **Canonical source for accent values:** `apps/docs/registry/dash/themes/manifest.json`.
+> The table below mirrors that manifest (verified 2026-05-28 per
+> RULE-REALITY-AUDIT C5). Dash Purple `#5e2aac` is the **brand** color in
+> `primaryBrand`; per-product **accent** colors differ from brand to give each
+> vertical its own surface identity while sharing the same chrome / foundation.
+
+| Theme key | Product | Accent | Accent name | Voice | Status |
+| --- | --- | --- | --- | --- | --- |
+| `ride` | Dash Ride | `#16a34a` | mobility-green | formal Anda | shipped (default) |
+| `logistic` | Dash Logistic | `#ea580c` | delivery-orange | formal Anda | wip |
+| `travel` | Dash Travel | `#0284c7` | ocean-blue | mixed | planned |
+| `marketplace` | Dash Marketplace | `#ca8a04` | commerce-yellow | mixed | planned |
+| `trellis-tenant` | Trellis tenant (template) | `#6b7280` | neutral-placeholder | per-tenant | template |
+| `outsourcing` | Dash Outsourcing | TBD | operations-slate | formal Anda | planned (no manifest entry yet) |
+
+Brand purple `#5e2aac` remains the cross-product brand mark (logo, primary CTA
+hover state, chrome accents) via the `primaryBrand` field of the manifest.
 
 ### External: Trellis SaaS
 
