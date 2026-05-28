@@ -71,6 +71,16 @@ const DAEMON_OVERRIDES_CSS = `
 /* ----- Reset ----- */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+/* When the Lovable shell is mounted (has .db-shell anywhere in DOM),
+   lock the page to exactly viewport height with no outer scroll.
+   .db-shell + .db-split fill via flex distribution from body downward.
+   Replaces the broken calc 100vh minus 64px magic number which did not
+   account for actual header + footer heights. */
+html:has(.db-shell), body:has(.db-shell) {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
 body {
   font-family: var(--font-sans);
   font-size: 15px;
@@ -2928,10 +2938,17 @@ button { font-family: inherit; }
   margin: 0;
   padding: 0;
   gap: 0;
-  height: calc(100vh - 64px);
-  min-height: calc(100vh - 64px);
-  max-height: calc(100vh - 64px);
+  /* Let body flex distribute height — no magic-number calc.
+     body = column flex, header (natural) + this (flex:1) + footer (natural). */
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
+}
+/* When .db-shell mounted, suppress page footer chrome so the .db-split
+   (canvas + chat rail) gets remaining viewport height. Keep page header
+   (Dash Build + Connected status + theme toggle) — operational info. */
+body:has(.db-shell) > .db-footer {
+  display: none;
 }
 
 .db-shell {
