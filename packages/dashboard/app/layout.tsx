@@ -29,6 +29,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
+        {/*
+          A11y E4 — skip-link must be the first focusable element so keyboard
+          users can bypass the header chrome and land directly on widget grid.
+          Visually hidden by default; reveals on :focus via .skip-link CSS in
+          globals.css (server-component friendly — no React event handlers).
+        */}
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         <div
           style={{
             display: "flex",
@@ -37,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         >
           <header
+            role="banner"
             style={{
               borderBottom: "1px solid var(--border-soft)",
               background: "var(--bg-surface)",
@@ -90,7 +100,25 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               Control tower · v0.1.0
             </div>
           </header>
-          <main style={{ flex: 1, padding: "24px 24px" }}>{children}</main>
+          <main
+            id="main-content"
+            tabIndex={-1}
+            style={{ flex: 1, padding: "24px 24px" }}
+          >
+            {children}
+          </main>
+          <footer
+            role="contentinfo"
+            style={{
+              padding: "12px 24px",
+              borderTop: "1px solid var(--border-soft)",
+              color: "var(--text-soft)",
+              fontSize: 11,
+              textAlign: "center",
+            }}
+          >
+            Dash Dashboard · Control tower · MVP
+          </footer>
         </div>
       </body>
     </html>
