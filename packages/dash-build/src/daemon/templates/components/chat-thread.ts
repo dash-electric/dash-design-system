@@ -22,6 +22,13 @@ export interface ChatMessage {
     summary: string
     stats: Array<{ label: string; value: string; tone?: "good" | "warn" | "neutral" }>
   }
+  /** Sprint 2C — patches blocked by the additive-only validator. Surfaced
+   *  inline so the user can re-prompt with a "create a new file" hint. */
+  rejectedPatches?: Array<{
+    path: string
+    summary: string
+    hint?: string
+  }>
   /** Optional prompt id so client-side updates can target this bubble. */
   promptId?: string
 }
@@ -44,6 +51,31 @@ function fileChip(path: string, size?: number): string {
     <span class="db-chat-file-chip-name db-mono">${escapeHtml(path)}</span>
     ${sizeLabel ? `<span class="db-chat-file-chip-size db-mono">${escapeHtml(sizeLabel)}</span>` : ""}
   </span>`
+}
+
+function renderRejectedPatches(
+  rejected: NonNullable<ChatMessage["rejectedPatches"]>,
+): string {
+  if (rejected.length === 0) return ""
+  const items = rejected
+    .map(
+      (r) => `<li class="db-rejected-patch-item">
+        <code class="db-mono">${escapeHtml(r.path)}</code>
+        <span class="db-rejected-patch-reason">${escapeHtml(r.summary)}</span>
+        ${r.hint ? `<p class="db-rejected-patch-hint">${escapeHtml(r.hint)}</p>` : ""}
+      </li>`,
+    )
+    .join("")
+  const count = rejected.length
+  const noun = count === 1 ? "patch" : "patches"
+  return `<section class="db-rejected-patches" aria-label="Patches rejected by additive-only rule">
+    <div class="db-rejected-patches-head">
+      <span class="db-rejected-patches-kicker">Blocked — additive-only rule</span>
+      <h4>${count} ${noun} rejected</h4>
+    </div>
+    <p class="db-rejected-patches-body">Dash Build refused to modify these existing files. Rephrase your prompt to create a new file instead, or use a safe append pattern (route entry, nav config, barrel export).</p>
+    <ul class="db-rejected-patches-list">${items}</ul>
+  </section>`
 }
 
 function renderReview(review: NonNullable<ChatMessage["review"]>): string {
@@ -92,6 +124,9 @@ export function renderChatMessage(msg: ChatMessage): string {
       ? `<div class="db-chat-files">${msg.files.map((f) => fileChip(f.path, f.size)).join("")}</div>`
       : ""
   const reviewBlock = msg.review ? renderReview(msg.review) : ""
+  const rejectedBlock = msg.rejectedPatches?.length
+    ? renderRejectedPatches(msg.rejectedPatches)
+    : ""
 
   const timeLabel = formatTime(msg.timestamp)
 
@@ -100,6 +135,7 @@ export function renderChatMessage(msg: ChatMessage): string {
       ${bubbleInner}
     </div>
     ${reviewBlock}
+    ${rejectedBlock}
     ${filesBlock}
     ${timeLabel ? `<span class="db-chat-time">${escapeHtml(timeLabel)}</span>` : ""}
   </li>`

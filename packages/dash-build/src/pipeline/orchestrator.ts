@@ -76,6 +76,12 @@ import { getShimForRepo } from "../runs/preview-shim.js"
 import { resolveRepoPreviewConfig } from "../daemon/repo-preview.js"
 import { PatchApplier } from "../runs/patch-applier.js"
 import { GitOps } from "../runs/git-ops.js"
+import {
+  DEFAULT_PATCH_ALLOWLIST,
+  validatePatch,
+  summarizeRejection,
+  type RejectedPatch,
+} from "./patch-validator.js"
 
 export interface OrchestratorOptions {
   store: Store
@@ -828,11 +834,47 @@ export class Orchestrator {
         )
 
         const patches = artifact.patches ?? []
-        if (patches.length > 0) {
+        // Sprint 2C — additive-only gate. Validate each patch against the
+        // cardinal-rule allowlist BEFORE handing it to `git apply`. Rejected
+        // patches are recorded on the artifact for the UI surface; the
+        // remaining safe patches still flow through the existing applier.
+        const safePatches: typeof patches = []
+        const rejectedPatches: RejectedPatch[] = []
+        for (const patch of patches) {
+          const validation = validatePatch(patch, DEFAULT_PATCH_ALLOWLIST)
+          if (!validation.ok) {
+            const rejection: RejectedPatch = {
+              path: patch.path,
+              reason: validation.reason,
+              details: validation.details,
+            }
+            rejectedPatches.push(rejection)
+            this.logger.warn("patch rejected by additive-only validator", {
+              id: prompt.id,
+              path: patch.path,
+              reason: validation.reason,
+            })
+            continue
+          }
+          safePatches.push(patch)
+        }
+        if (rejectedPatches.length > 0) {
+          artifact.rejectedPatches = rejectedPatches
+          this.broadcaster.broadcast("patches:rejected", {
+            promptId: prompt.id,
+            count: rejectedPatches.length,
+            rejected: rejectedPatches.map((r) => ({
+              path: r.path,
+              reason: r.reason,
+              summary: summarizeRejection(r.reason),
+            })),
+          })
+        }
+        if (safePatches.length > 0) {
           const applier = this.patchApplierFactory(this.workspace.clonePath)
           const applied: Array<{ path: string }> = []
           let conflicted: { path: string; error: string } | null = null
-          for (const patch of patches) {
+          for (const patch of safePatches) {
             const outcome = await applier.applyPatch(patch.path, patch.patchContent)
             if (!outcome.ok) {
               conflicted = {
@@ -854,7 +896,7 @@ export class Orchestrator {
               })
             })
             throw new Error(
-              `patch failed for ${conflicted.path} (applied ${applied.length}/${patches.length}): ${conflicted.error}`,
+              `patch failed for ${conflicted.path} (applied ${applied.length}/${safePatches.length}): ${conflicted.error}`,
             )
           }
         }
@@ -868,7 +910,7 @@ export class Orchestrator {
             commitMessage:
               this.buildCommitMessage(prompt) + ` [run ${prompt.id}]`,
           })
-        } else if (patches.length > 0) {
+        } else if (safePatches.length > 0) {
           // Patches mutated the working tree; commit them so the branch has
           // history before publish.
           const git = new GitOps(this.workspace.clonePath)
@@ -898,6 +940,7 @@ export class Orchestrator {
       score: result.validation.score,
       fileCount: result.response.files.length,
       patchCount: artifact.patches?.length ?? 0,
+      rejectedPatchCount: artifact.rejectedPatches?.length ?? 0,
       passed: result.validation.passed,
       errorCount: result.validation.errors.length,
       previewAvailable: Boolean(artifact.bundleResult),

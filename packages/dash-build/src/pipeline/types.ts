@@ -28,6 +28,7 @@ import type {
   ValidationResult,
 } from "../skills/types.js"
 import type { BundleInput, BundleResult } from "../preview/types.js"
+import type { RejectedPatch } from "./patch-validator.js"
 
 // ── Pipeline result ────────────────────────────────────────────────────────
 
@@ -78,6 +79,10 @@ export interface GenerationArtifact {
   previewMode?: "component" | "fallback"
   /** Repo-aware context used for generation; surfaced in review UI. */
   contextPack?: RepoContextPack
+  /** Sprint 2C — patches that failed the additive-only validator and were
+   *  skipped before `git apply`. Surfaced to the user so they can rephrase
+   *  the prompt (typically: "create a new file instead of patching X"). */
+  rejectedPatches?: RejectedPatch[]
 }
 
 /**

@@ -238,6 +238,7 @@ function promptToChatMessages(
   let body: string
   let files: ChatMessage["files"]
   let review: ChatMessage["review"]
+  let rejectedPatches: ChatMessage["rejectedPatches"]
 
   switch (prompt.status) {
     case "queued":
@@ -257,6 +258,13 @@ function promptToChatMessages(
       body =
         "Done. Review the preview. GitHub is only needed when you want to open a PR."
       const artifact = resolveArtifact?.(prompt.id)
+      if (artifact?.rejectedPatches?.length) {
+        rejectedPatches = artifact.rejectedPatches.map((r) => ({
+          path: r.path,
+          summary: humanizeRejection(r.reason),
+          hint: r.details,
+        }))
+      }
       if (artifact?.files?.length) {
         files = artifact.files.map((f) => ({
           path: f.path,
@@ -336,8 +344,31 @@ function promptToChatMessages(
     promptId: prompt.id,
     files,
     review,
+    rejectedPatches,
   })
   return out
+}
+
+/** Friendly label for the rejected-patches panel. Mirrors
+ *  patch-validator.summarizeRejection but kept colocated with the dashboard
+ *  to avoid pulling pipeline imports into the template module. */
+function humanizeRejection(reason: string): string {
+  switch (reason) {
+    case "modifies-existing-logic":
+      return "modifies existing logic"
+    case "renames-identifier":
+      return "renames an identifier"
+    case "deletes-code":
+      return "deletes existing code"
+    case "removes-export":
+      return "removes a public export"
+    case "touches-protected-path":
+      return "touches a protected path"
+    case "malformed-patch":
+      return "is not a valid unified diff"
+    default:
+      return reason
+  }
 }
 
 function pickActivePrompt(

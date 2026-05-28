@@ -172,6 +172,17 @@ OR explicitly call card-in-table-row a separate class with 6-8px and keep card-a
 
 ---
 
+#### A15. Patches must be additive [🟢 FIX CODE — implemented 2026-05-28]
+**Verdict:** Implemented LENIENT patch validator per cardinal rule #1.
+**Gap found:** Sprint 2B introduced `mode=patch` unified-diff fragments in `packages/dash-build/src/pipeline/orchestrator.ts:836-845`. Patches flowed straight into `PatchApplier.applyPatch` (`git apply`) with zero rule enforcement — the AI agent could emit any patch (refactor, rename, delete an export) and the system silently applied it. Direct violation of cardinal rule #1 ("Existing Dash production code is NEVER modified").
+**Implementation:** `src/pipeline/patch-validator.ts` (NEW) — regex-only, zero new deps. Lenient by design: allows pure additive, allowlisted-pattern (routes/nav-config/barrel/registry), and structural-only deletions (append-entry to arrays/objects). Rejects logic deletion, identifier rename, export removal, malformed diffs, and any patch on a protected path.
+**Allowlist + protected paths:** per `DEFAULT_PATCH_ALLOWLIST` constant. Safe patterns: `routes.*`, `nav-config.*`, `index.*` (barrel), `menu.*`, `registry.json`, `*.config.*`. Protected: `**/auth/**`, `**/payment/**`, `**/middleware.*`, `**/lib/api.*`, `.env*`.
+**Wiring:** orchestrator splits incoming `artifact.patches` into `safePatches` (apply) + `rejectedPatches` (record + broadcast `patches:rejected` WS event). UI surface: `.db-rejected-patches` panel rendered inside the awaiting-approval chat bubble via `chat-thread.ts` → `renderRejectedPatches()`.
+**Tests:** 25 cases in `src/pipeline/__tests__/patch-validator.test.ts` (happy paths, rejection paths, allowlist customization, default-list sanity).
+**Doc:** see `docs/artifact-contracts.md` § 6b.
+
+---
+
 ### B. Cardinal rules (`CLAUDE.md`)
 
 ---
