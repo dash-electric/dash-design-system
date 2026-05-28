@@ -116,3 +116,47 @@ a:hover {
 button {
   font-family: inherit;
 }
+
+/*
+ * A11y E4 — skip-link.
+ * Visually hidden until focused; on :focus pops into the top-left so
+ * keyboard users can bypass the header chrome and jump to <main>.
+ */
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 100;
+  padding: 8px 12px;
+  background: var(--text-strong);
+  color: var(--bg-surface);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 120ms ease;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--dash-purple);
+  outline-offset: 2px;
+}
+
+/*
+ * A11y — reduced-motion gate (design.md A12 / WCAG 2.3.3).
+ * Users opting into reduced motion via OS preferences get near-instant
+ * animations and transitions. Critical loops (loaders, status spinners)
+ * fall back to a single iteration so meaning is preserved without motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

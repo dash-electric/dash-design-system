@@ -71,6 +71,24 @@ const DAEMON_OVERRIDES_CSS = `
 /* ----- Reset ----- */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+
+/*
+ * A11y — reduced-motion gate (design.md A12 / WCAG 2.3.3).
+ * Users opting into reduced motion via OS preferences get near-instant
+ * animations + transitions. Status loops (db-pulse, db-spin, shimmer)
+ * fall back to a single iteration so meaning survives without motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* When the Lovable shell is mounted (has .db-shell anywhere in DOM),
    lock the page to exactly viewport height with no outer scroll.
    .db-shell + .db-split fill via flex distribution from body downward.
@@ -1100,6 +1118,78 @@ button { font-family: inherit; }
 .db-chat-review-stat[data-tone="good"] strong { color: var(--success); }
 .db-chat-review-stat[data-tone="warn"] { border-color: color-mix(in srgb, var(--warn) 44%, var(--rule)); }
 .db-chat-review-stat[data-tone="warn"] strong { color: var(--warn); }
+
+/* Sprint 2C — rejected patches panel. Shown when the additive-only
+   validator blocks one or more patches from git apply. Uses the warn
+   colour token so it parses as attention-needed, not a hard failure: the
+   underlying generation succeeded; only the patch sub-step was vetoed. */
+.db-rejected-patches {
+  margin: 8px 0 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--warn) 40%, var(--rule));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--warn) 8%, var(--paper-2));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.db-rejected-patches-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.db-rejected-patches-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--warn);
+}
+.db-rejected-patches h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.db-rejected-patches-body {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--mute);
+}
+.db-rejected-patches-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.db-rejected-patch-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+.db-rejected-patch-item code {
+  font-size: 12px;
+  color: var(--ink);
+}
+.db-rejected-patch-reason {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--warn);
+}
+.db-rejected-patch-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--mute);
+  line-height: 1.4;
+}
 
 /* Composer pinned at the bottom of the left pane. */
 .db-chat-composer {

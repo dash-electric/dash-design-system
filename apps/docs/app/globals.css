@@ -762,3 +762,20 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
+
+/*
+ * A11y — reduced-motion gate (design.md A12 / WCAG 2.3.3).
+ * Users opting into reduced motion via OS preferences get near-instant
+ * animations and transitions. Critical loops (loaders, status spinners)
+ * fall back to a single iteration so meaning is preserved without motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
