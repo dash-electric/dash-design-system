@@ -271,6 +271,28 @@ Avoid raw colors. Always reach for semantic tokens:
    - External signals: BMKG (weather), Lebaran rate freeze (holiday pricing)
    - Patterns: 3-miss auto-suspend, surge factor X.Y×, dispatch radius
 
+## External brand color allow-list
+
+Third-party OAuth / brand identity colors are sanctioned exceptions to the
+"no raw hex" rule. Allowed inside `SocialButton` and any other component
+representing an external brand:
+
+| Brand | Hex |
+|---|---|
+| Facebook | `#1977F3` |
+| Google | brand quad `#4285F4` / `#34A853` / `#FBBC05` / `#EA4335` |
+| LinkedIn | `#0077B5` |
+| GitHub | `#24292F` |
+| Dropbox | `#3984FF` |
+| Apple | `#000000` |
+| X / Twitter | `#000000` |
+| Microsoft | quad `#F25022` / `#7FBA00` / `#00A4EF` / `#FFB900` |
+
+These are not Dash's to abstract — third-party brand recognition matters more
+than token discipline. Inside `SocialButton` and OAuth-button surfaces, raw hex
+for the above brands is **allowed and expected**. Anywhere else, raw hex
+remains banned.
+
 ## Border + shadow policy
 
 Default: hairline border OR shadow, not both. This keeps inline workspace cards
