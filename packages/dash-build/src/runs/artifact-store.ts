@@ -15,6 +15,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
 import { dirname, join, resolve, sep } from "node:path"
 import type {
+  IntakeContext,
   ParsedFile,
   RepoContextPack,
   ValidationResult,
@@ -40,6 +41,84 @@ export interface RunArtifactPayload {
   validation: ValidationResult
   explanation: string
   contextPack?: RepoContextPack
+}
+
+/**
+ * Surfaced intake snapshot persisted at `<runDir>/intake.json`. Mirrors the
+ * shape consumed by `loadInitialPreview` (`contextMap.be` / `audit`) plus a
+ * compact list of FE patterns the chain matched on. Keeping the shape narrow
+ * keeps the on-disk JSON readable for ops debugging without bloating disk.
+ */
+export interface IntakeSnapshot {
+  scenario: string
+  beEndpoints: Array<{ method: string; path: string; file: string }>
+  dbSchema: { tables: string[]; prismaPath?: string | null }
+  fePatterns: Array<{ name: string; path: string; excerpt?: string }>
+  audit: {
+    detected: boolean
+    reasonsCode: string[]
+    requiredFields: string[]
+  }
+}
+
+/**
+ * Project an IntakeContext into the compact on-disk snapshot. Lives here
+ * (next to writeRunArtifacts) so any consumer reaching for the snapshot stays
+ * in lockstep with the writer.
+ */
+export function snapshotFromIntake(intake: IntakeContext): IntakeSnapshot {
+  const prismaPath =
+    intake.dbCatalog.tables.find((t) => t.source === "prisma")?.filePath ?? null
+  return {
+    scenario: intake.classification.scenario,
+    beEndpoints: intake.beCatalog.endpoints.slice(0, 50).map((ep) => ({
+      method: ep.method,
+      path: ep.path,
+      file: ep.filePath,
+    })),
+    dbSchema: {
+      tables: intake.dbCatalog.tables.map((t) => t.name),
+      prismaPath,
+    },
+    fePatterns: (intake.classification.affectedFiles?.fe ?? [])
+      .slice(0, 30)
+      .map((p) => ({
+        name: p.split(/[\\/]/).pop() ?? p,
+        path: p,
+      })),
+    audit: {
+      detected: intake.auditTrail.required,
+      reasonsCode: intake.auditTrail.required
+        ? [intake.auditTrail.pattern]
+        : [],
+      requiredFields: intake.auditTrail.fieldsToLog,
+    },
+  }
+}
+
+export async function writeIntakeSnapshot(
+  runId: string,
+  snapshot: IntakeSnapshot,
+  root: string = DEFAULT_RUNS_ROOT,
+): Promise<string> {
+  const runDir = resolveRunDir(runId, root)
+  await mkdir(runDir, { recursive: true })
+  const file = join(runDir, "intake.json")
+  await writeFile(file, JSON.stringify(snapshot, null, 2), "utf8")
+  return file
+}
+
+export async function readIntakeSnapshot(
+  runId: string,
+  root: string = DEFAULT_RUNS_ROOT,
+): Promise<IntakeSnapshot | null> {
+  const file = join(resolveRunDir(runId, root), "intake.json")
+  if (!existsSync(file)) return null
+  try {
+    return JSON.parse(await readFile(file, "utf8")) as IntakeSnapshot
+  } catch {
+    return null
+  }
 }
 
 export interface RunArtifactWriteResult {

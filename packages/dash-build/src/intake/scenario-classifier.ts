@@ -452,6 +452,32 @@ export async function classifyPrompt(
     }
   }
 
+  // ── 5b. ID add-verb + existing-surface hint (no NEW_ADDITION) ────────────
+  //     Patterns like "tambahin filter status di list mitra" carry an add-
+  //     verb without a NEW_ADDITION noun (filter/status are not "new pages").
+  //     When paired with an existing-surface hint (di X / path / existing
+  //     files) treat as modification of that surface (update_existing). This
+  //     keeps "tambahin filter di X" out of the ambiguous bucket where the
+  //     intake clarify gate would block the user unnecessarily.
+  const hasAddVerb = ID_ADD_VERBS.some((v) =>
+    new RegExp(`\\b${v}\\b`, "i").test(prompt),
+  )
+  if (
+    hasAddVerb &&
+    !newAddSignal &&
+    detectExistingSurfaceHint(prompt, context.existingFiles)
+  ) {
+    return {
+      scenario: "update_existing",
+      confidence: 0.6,
+      reasoning:
+        "Add-verb (tambahin/tambah/bikin/buat) without a NEW_ADDITION noun, " +
+        "but the prompt references an existing surface (`di …`, a path, or " +
+        "existing files in scope) — treat as a modification of that surface.",
+      affectedFiles,
+    }
+  }
+
   // ── 6. Ambiguous ─────────────────────────────────────────────────────────
   const clarify = buildClarifyQuestion({
     feHits,

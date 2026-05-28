@@ -42,6 +42,7 @@ import type {
   ClarificationQuestion,
 } from "../clarification/types.js"
 import type { GenerateResult, ParsedFile, ValidationResult } from "../skills/types.js"
+import { enforceAuditLogCall } from "../skills/validator.js"
 import type {
   AnthropicProvider,
   ApprovePRInput,
@@ -65,7 +66,11 @@ import {
   resolvePreviewDir,
 } from "../preview/index.js"
 import type { BundleResult } from "../preview/index.js"
-import { writeRunArtifacts } from "../runs/artifact-store.js"
+import {
+  snapshotFromIntake,
+  writeIntakeSnapshot,
+  writeRunArtifacts,
+} from "../runs/artifact-store.js"
 import type { BranchManager, Workspace } from "../runs/branch-manager.js"
 import type { Publisher } from "../runs/publish.js"
 import {
@@ -73,7 +78,10 @@ import {
   defaultClonePathFor,
 } from "../runs/workspace.js"
 import { getShimForRepo } from "../runs/preview-shim.js"
-import { resolveRepoPreviewConfig } from "../daemon/repo-preview.js"
+import {
+  resolveRepoPreviewConfig,
+  resolveTargetRepoPath,
+} from "../daemon/repo-preview.js"
 import { PatchApplier } from "../runs/patch-applier.js"
 import { GitOps } from "../runs/git-ops.js"
 import {
@@ -233,7 +241,13 @@ export class Orchestrator {
     this.anthropic = opts.anthropic
     this.github = opts.github
     this.skillChain = opts.skillChain
-    this.repoPathResolver = opts.repoPathResolver ?? (() => process.cwd())
+    // Default resolver: map prompt.repo (e.g. "dash/backoffice") onto the
+    // target repo path via the manifest so intake scans the REAL repo instead
+    // of dash-build's own cwd. Falls back to process.cwd() when the slug is
+    // unknown / null (legacy/unit-test prompts that don't pick a repo).
+    this.repoPathResolver =
+      opts.repoPathResolver ??
+      ((fullName) => resolveTargetRepoPath(fullName) ?? process.cwd())
     this.defaultBaseBranch = opts.defaultBaseBranch ?? "main"
     this.logger = opts.logger ?? NOOP_LOGGER
     this.previewBundler =
@@ -792,6 +806,20 @@ export class Orchestrator {
     if (this.intakeEnabled) {
       intake = await this.runIntake(prompt.text, repoPath)
 
+      // Persist the intake snapshot to <runDir>/intake.json so the workspace
+      // cold-load (`loadInitialPreview`) can surface BE endpoints / DB tables /
+      // audit reason in the context map without waiting for the SSE event. We
+      // write BEFORE the clarify gate short-circuits so even clarifying prompts
+      // expose the intake context in the UI.
+      try {
+        await writeIntakeSnapshot(prompt.id, snapshotFromIntake(intake))
+      } catch (err) {
+        this.logger.warn("intake snapshot persist failed", {
+          id: prompt.id,
+          err: (err as Error).message,
+        })
+      }
+
       // 2a. Intake-driven clarify gate — short-circuit ambiguous prompts so
       //     the user can disambiguate before we generate. The chain has its
       //     own gate too, but doing it here avoids the SDK client build +
@@ -857,6 +885,47 @@ export class Orchestrator {
       generatedAt: new Date().toISOString(),
       contextPack: result.meta.repoContext,
       ...(intake ? { intake } : {}),
+    }
+
+    // 5a. CR-3 OUTPUT enforcement — independent of intake.auditTrail.
+    //     When the generated artifact ships a sensitive field name (payment /
+    //     KYC / signature / image-proof) WITHOUT an audit-log call, mark the
+    //     validation failed + push a high-severity error onto the artifact so
+    //     the UI surfaces a rejection. We do NOT short-circuit to failed status
+    //     — keeping awaiting_approval lets the user inspect the artifact and
+    //     re-prompt; the dashboard hides the merge button while passed=false.
+    const auditEnforcement = enforceAuditLogCall(result.response)
+    if (!auditEnforcement.ok && auditEnforcement.sensitiveField) {
+      const focusFile = auditEnforcement.files[0] ?? "(unknown)"
+      const enforcedError = {
+        severity: "high" as const,
+        message:
+          `Output ships sensitive field "${auditEnforcement.sensitiveField}" ` +
+          `without an audit-log call. CR-3 requires auditLog.create({...}) ` +
+          "(or writeAuditLog / logAudit / audit.create) for payment / KYC / " +
+          "signature / image-proof fields. Re-prompt with explicit audit " +
+          "logging or use a @dash/blocks audit-bearing component.",
+        file: focusFile,
+        ruleId: "CR-3-OUTPUT",
+      }
+      artifact.validation = {
+        ...artifact.validation,
+        errors: [...artifact.validation.errors, enforcedError],
+        passed: false,
+        score: Math.max(0, artifact.validation.score - 20),
+      }
+      this.broadcaster.broadcast("validation:rejected", {
+        promptId: prompt.id,
+        ruleId: "CR-3-OUTPUT",
+        sensitiveField: auditEnforcement.sensitiveField,
+        file: focusFile,
+        message: enforcedError.message,
+      })
+      this.logger.warn("CR-3 output enforcement rejected artifact", {
+        id: prompt.id,
+        sensitiveField: auditEnforcement.sensitiveField,
+        file: focusFile,
+      })
     }
 
     // 4b. Best-effort sandbox bundle for the iframe preview. Failure is
@@ -1027,6 +1096,15 @@ export class Orchestrator {
    * catalogs + an "ambiguous" classification is a valid baseline.
    */
   private async runIntake(promptText: string, repoPath: string): Promise<IntakeContext> {
+    // Defensive: if the resolved target path doesn't exist, log + scan anyway
+    // (scanners return empty catalogs gracefully). This surfaces config drift
+    // — e.g. DASH_BUILD_DASH_ROOT pointing at a stale ~/Dash folder.
+    if (!existsSync(repoPath)) {
+      this.logger.warn(
+        "intake: target repo path does not exist — scanning empty catalogs",
+        { repoPath },
+      )
+    }
     const [beCatalog, dbCatalog] = await Promise.all([
       scanBeCatalog(repoPath).catch((err): BeCatalog => {
         this.logger.warn("intake.scanBeCatalog failed", {

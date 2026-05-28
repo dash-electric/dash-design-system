@@ -24,7 +24,11 @@
 import { existsSync } from "node:fs"
 import { readFile, readdir } from "node:fs/promises"
 import { join, relative, sep } from "node:path"
-import { DEFAULT_RUNS_ROOT, resolveRunDir } from "../runs/artifact-store.js"
+import {
+  DEFAULT_RUNS_ROOT,
+  readIntakeSnapshot,
+  resolveRunDir,
+} from "../runs/artifact-store.js"
 import {
   detectBannedImports,
   detectDashDsImports,
@@ -164,14 +168,28 @@ export async function loadInitialPreview(
   // a defense-in-depth check for stale / hand-edited artifacts.
   if (detectBannedImports(picked.content).length > 0) return null
 
+  // Best-effort: read the intake snapshot the orchestrator persisted so the
+  // workspace cold-load surfaces BE endpoints + audit reason in the context
+  // map. Missing/malformed snapshot → degrade to empty be/null audit (matches
+  // legacy behaviour).
+  const intake = await readIntakeSnapshot(resolvedId, root).catch(() => null)
+  const be = intake
+    ? intake.beEndpoints
+        .slice(0, 20)
+        .map((ep) => `${ep.method} ${ep.path}`)
+    : []
+  const audit = intake && intake.audit.detected
+    ? intake.audit.reasonsCode.join(", ") || "audit required"
+    : null
+
   return {
     componentId: resolvedId,
     componentSource: picked.content,
     contextMap: {
       landsAt: picked.path,
       uses: detectDashDsImports(picked.content),
-      be: [],
-      audit: null,
+      be,
+      audit,
     },
   }
 }

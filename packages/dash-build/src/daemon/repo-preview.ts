@@ -245,6 +245,113 @@ export function isRepoPreviewAllowed(repo: string | null | undefined): repo is s
   return Boolean(resolveRepoManifest(repo))
 }
 
+/**
+ * Resolve the on-disk **target repo path** for a Dash Build run. This is the
+ * path the intake scanners walk (`scanBeCatalog` / `readDbSchema`) — i.e. the
+ * actual product repo the user is generating against, NOT the dash-build
+ * package cwd.
+ *
+ * Resolution priority (highest → lowest):
+ *   1. Manifest-driven env override (e.g. `DASH_BUILD_BACKOFFICE_PATH`)
+ *   2. `<DASH_BUILD_DASH_ROOT or ~/Dash>/<manifest.localDirName>` (legacy default)
+ *   3. `<DASH_BUILD_WORK_ROOT>/<manifest.localDirName>` — when set, this is the
+ *      sibling-repos layout used on this dev machine (Work/dash/<repo>).
+ *   4. Common sibling-of-dash-ds fallback: `<dash-ds parent>/<localDirName>`
+ *      (covers the Work/dash workspace layout without env config).
+ *   5. `null` when no candidate path exists.
+ *
+ * Returns null instead of throwing when the repo slug is unknown — caller
+ * (orchestrator) treats null as "skip intake, log warn, degrade gracefully".
+ */
+/**
+ * Slugs that are valid Dash Build target repos but NOT surfaced through the
+ * preview manifest (no iframe canvas, no online URL). Intake still needs to
+ * find them on disk so the BE/DB scanners can walk their endpoints/schema.
+ *
+ * Add entries here whenever a new Dash repo becomes a generation target but
+ * shouldn't appear in the dashboard repo selector.
+ */
+const NON_PREVIEW_TARGET_REPOS: Record<
+  string,
+  { envName: string; localDirName: string }
+> = {
+  "dash/halo-dash-fe": {
+    envName: "DASH_BUILD_HALO_DASH_FE_PATH",
+    localDirName: "halo-dash-fe",
+  },
+  "dash/halo-dash-be": {
+    envName: "DASH_BUILD_HALO_DASH_BE_PATH",
+    localDirName: "halo-dash-be",
+  },
+}
+
+export function resolveTargetRepoPath(
+  repo: string | null | undefined,
+  options: {
+    /** Absolute path to the dash-build package — used to find sibling repos
+     *  in the same workspace. Defaults to process.cwd(). */
+    cwd?: string
+  } = {},
+): string | null {
+  if (!repo) return null
+  const manifest = resolveRepoManifest(repo)
+  const fallback = NON_PREVIEW_TARGET_REPOS[repo]
+  if (!manifest && !fallback) return null
+
+  const envName = manifest?.localDirEnv ?? fallback!.envName
+  const localDirName = manifest?.localDirName ?? fallback!.localDirName
+
+  const candidates: string[] = []
+
+  // 1. Explicit env override first.
+  const envOverride = process.env[envName]?.trim()
+  if (envOverride) candidates.push(envOverride)
+
+  // 2. DASH_BUILD_DASH_ROOT (legacy default points at ~/Dash).
+  const dashRoot = process.env.DASH_BUILD_DASH_ROOT ?? path.join(homedir(), "Dash")
+  candidates.push(path.join(dashRoot, localDirName))
+
+  // 3. DASH_BUILD_WORK_ROOT — newer Work/dash layout (sibling-repos in the
+  //    user's workspace). Skipped when unset.
+  const workRoot = process.env.DASH_BUILD_WORK_ROOT?.trim()
+  if (workRoot) candidates.push(path.join(workRoot, localDirName))
+
+  // 4. Sibling-of-dash-ds heuristic. dash-ds sits at <workspace>/dash-ds, and
+  //    target repos live at <workspace>/<localDirName>. We walk up from the
+  //    caller cwd until we find a `dash-ds` directory, then try its parent.
+  const cwd = options.cwd ?? process.cwd()
+  const siblingGuess = findSiblingRepo(cwd, localDirName)
+  if (siblingGuess) candidates.push(siblingGuess)
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) return candidate
+  }
+  // Last resort: return the first candidate even if missing so caller can log
+  // a useful warn ("scanned path X — not found"). Null means truly nothing.
+  return candidates[0] ?? null
+}
+
+/**
+ * Walk up from `start` looking for a `dash-ds` directory. When found, return
+ * `<parent>/<repoDir>` (the sibling layout used in the Work/dash workspace).
+ * Returns null when no dash-ds ancestor is found within 5 levels.
+ */
+function findSiblingRepo(start: string, repoDir: string): string | null {
+  let cur = path.resolve(start)
+  for (let i = 0; i < 6; i++) {
+    if (path.basename(cur) === "dash-ds") {
+      return path.join(path.dirname(cur), repoDir)
+    }
+    if (existsSync(path.join(cur, "dash-ds"))) {
+      return path.join(cur, repoDir)
+    }
+    const parent = path.dirname(cur)
+    if (parent === cur) break
+    cur = parent
+  }
+  return null
+}
+
 export function resolveRepoPreviewConfig(
   repo: string | null | undefined,
   sandboxStateProvider?: SandboxStateProvider | null,
