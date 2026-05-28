@@ -957,8 +957,12 @@ button { font-family: inherit; }
 .db-chat-msg[data-role="builder"] { align-items: flex-start; }
 
 .db-chat-bubble {
+  /* Shrink to fit content; cap at max so long lines wrap.
+     No min-height — pure content height with respected padding. */
+  width: fit-content;
   max-width: min(520px, 84%);
-  padding: 7px 11px;
+  /* Padding on Dash spacing scale (4-multiple): 8 + 12 = spacing-8 + spacing-12. */
+  padding: 8px 12px;
   border-radius: 10px;
   font-size: 14px;
   line-height: 1.4;
@@ -3185,15 +3189,18 @@ body:has(.db-shell) > .db-footer {
   border: 1px solid var(--rule);
   color: var(--ink);
   border-radius: 10px;
-  padding: 9px 12px;
+  /* Spacing 4-multiple (spacing-8 + spacing-12). Removed align-self: stretch
+     so bubble shrinks to fit text content instead of filling rail width. */
+  padding: 8px 12px;
   font-size: 13px;
   line-height: 1.45;
-  align-self: stretch;
 }
 .db-rail-history .db-chat-msg[data-role="builder"] .db-chat-bubble {
   background: transparent;
   border: 0;
-  padding: 4px 2px;
+  /* Builder = transparent inline copy, no bg. Horizontal padding zero so
+     text aligns flush with rail. spacing-4 vertical only. */
+  padding: 4px 0;
   color: var(--mute);
   font-size: 13px;
   line-height: 1.5;
