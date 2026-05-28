@@ -104,11 +104,14 @@ body {
   font-size: var(--text-body);
   line-height: 1.55;
   color: var(--ink);
-  background:
-    radial-gradient(circle at top left, rgba(94, 42, 172, 0.08), transparent 28%),
-    radial-gradient(circle at top right, rgba(15, 110, 86, 0.06), transparent 30%),
-    radial-gradient(circle at bottom center, rgba(176, 128, 21, 0.07), transparent 24%),
-    var(--canvas);
+  /*
+   * design.md A3 — "no decorative gradients / blobs / bokeh in operational
+   * tools". The Dash Build dashboard IS an operational tool, so the prior
+   * 3-radial backdrop (purple/green/gold) was a meta-violation flagged in
+   * the rule audit. Replaced with the flat canvas surface — chrome
+   * breathing room comes from spacing + hairlines, not painted atmosphere.
+   */
+  background: var(--canvas);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
