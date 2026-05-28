@@ -1404,6 +1404,103 @@ export const DASHBOARD_JS = `
     syncHljsTheme(nowDark);
   });
 
+  // ---------- Lovable home + workspace wiring ----------
+  // The home page (/) and workspace (/workspace/:id) ship via separate
+  // server-rendered templates. Both rely on a handful of progressive
+  // enhancements: the sidebar collapse toggle, the home prompt → workspace
+  // transition, and recent/template card clicks.
+  function navigateTo(url) {
+    try {
+      window.location.assign(url);
+    } catch (e) {
+      window.location.href = url;
+    }
+  }
+
+  function hookHomePrompt() {
+    var form = document.getElementById("db-home-prompt-form");
+    if (!form) return;
+    var textarea = form.querySelector("#db-prompt-input");
+    function submit(ev) {
+      if (ev && ev.preventDefault) ev.preventDefault();
+      var raw = textarea && textarea.value ? textarea.value.trim() : "";
+      // Always navigate to workspace — the workspace's composer will hand
+      // the prompt to the existing /api/prompt flow. Carry the seed prompt
+      // through the URL hash so the workspace can pre-fill its composer.
+      var hash = raw ? "#prompt=" + encodeURIComponent(raw) : "";
+      navigateTo("/workspace/" + hash);
+    }
+    form.addEventListener("submit", submit);
+  }
+
+  function hookHomeTabs() {
+    var tabs = document.querySelectorAll("[data-home-tab]");
+    if (!tabs || tabs.length === 0) return;
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        var target = tab.getAttribute("data-home-tab");
+        tabs.forEach(function (t) {
+          var isActive = t === tab;
+          t.classList.toggle("db-home-tab--active", isActive);
+          t.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+        var panels = document.querySelectorAll("[data-home-panel]");
+        panels.forEach(function (panel) {
+          var match = panel.getAttribute("data-home-panel") === target;
+          if (match) {
+            panel.removeAttribute("hidden");
+          } else {
+            panel.setAttribute("hidden", "");
+          }
+        });
+      });
+    });
+  }
+
+  function hookSidebarToggle() {
+    var btn = document.querySelector("[data-sidebar-toggle]");
+    var sidebar = document.getElementById("db-sidebar");
+    if (!btn || !sidebar) return;
+    btn.addEventListener("click", function () {
+      var collapsed = sidebar.getAttribute("data-collapsed") === "true";
+      if (collapsed) {
+        sidebar.removeAttribute("data-collapsed");
+      } else {
+        sidebar.setAttribute("data-collapsed", "true");
+      }
+    });
+  }
+
+  function hookNewProjectButton() {
+    var btn = document.querySelector("[data-new-project]");
+    if (!btn) return;
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      // Land on a fresh workspace shell. The orchestrator will own actual
+      // run creation once the first prompt fires from the workspace composer.
+      navigateTo("/workspace/");
+    });
+  }
+
+  function hookTemplateCards() {
+    var cards = document.querySelectorAll("[data-template-id]");
+    cards.forEach(function (card) {
+      card.addEventListener("click", function () {
+        var id = card.getAttribute("data-template-id") || "";
+        navigateTo("/workspace/#template=" + encodeURIComponent(id));
+      });
+    });
+  }
+
+  function bootLovableShell() {
+    hookHomePrompt();
+    hookHomeTabs();
+    hookSidebarToggle();
+    hookNewProjectButton();
+    hookTemplateCards();
+  }
+  bootLovableShell();
+
   // ---------- Boot ----------
   setWsState("connecting", "Connecting…");
   connectWs();
