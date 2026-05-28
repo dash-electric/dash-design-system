@@ -157,10 +157,26 @@ describe("artifactToActions — context + validation states", () => {
     expect(validate.detail).toContain("coverage low")
   })
 
-  it("marks preview as `warn` when fallback shell is used", () => {
-    const artifact = makeArtifact({ previewMode: "fallback" })
+  it("marks preview as `warn` when fallback shell is used and no .tsx file exists", () => {
+    // Post-pivot behavior: when there's a renderable .tsx/.jsx file in the
+    // artifact, Sandpack mounts client-side regardless of legacy iframe
+    // bundler result → "ready". Fallback warn only applies when there's
+    // genuinely no renderable file to mount.
+    const artifact = makeArtifact({
+      previewMode: "fallback",
+      files: [{ path: "patches.json", content: "[]", bytes: 2 }],
+    })
     const preview = artifactToActions(artifact).find((a) => a.kind === "preview")!
     expect(preview.tone).toBe("warn")
     expect(preview.summary).toContain("fallback")
+  })
+
+  it("marks preview as `ready` when a .tsx file exists even if legacy iframe bundler said fallback", () => {
+    const artifact = makeArtifact({
+      previewMode: "fallback",
+      files: [{ path: "preview.tsx", content: "export default () => null", bytes: 30 }],
+    })
+    const preview = artifactToActions(artifact).find((a) => a.kind === "preview")!
+    expect(preview.summary).toBe("Preview: ready")
   })
 })

@@ -413,10 +413,22 @@ export function artifactToActions(artifact: GenerationArtifact): ChatAction[] {
     tone: v.passed ? "success" : "warn",
   })
 
-  // 5. Preview — component live vs fallback shell.
+  // 5. Preview — Sandpack mounts client-side via SSE component:updated, so
+  // any artifact with a .tsx/.jsx file is "ready" regardless of the legacy
+  // iframe bundler result (artifact.previewMode is a pre-pivot field from
+  // the abandoned full-app iframe path; component-focused preview pivot
+  // uses Sandpack browser bundler instead).
+  const hasRenderableFile = (artifact.files ?? []).some((f) =>
+    /\.(tsx|jsx)$/i.test(f.path),
+  )
   const previewMode =
     artifact.previewMode ?? (artifact.bundleResult ? "component" : "fallback")
-  if (previewMode === "fallback") {
+  if (hasRenderableFile) {
+    out.push({
+      kind: "preview",
+      summary: "Preview: ready",
+    })
+  } else if (previewMode === "fallback") {
     out.push({
       kind: "preview",
       summary: "Preview: fallback shell (component bundle skipped)",

@@ -186,11 +186,16 @@ export const DASHBOARD_JS = `
           // iframe, so patch-mode + iteration-mode preview both stay blank.
           if (msg.event === "component:updated") {
             try {
+              // Broadcaster wraps payload as { event, data, ts } — pull from
+              // msg.data NOT msg root. Earlier shape mismatch dispatched
+              // empty-detail CustomEvents → Sandpack received no source →
+              // preview stayed at idle placeholder.
+              var payload = msg.data || {};
               var detail = {
-                runId: msg.runId,
-                componentId: msg.componentId,
-                componentSource: msg.componentSource,
-                contextMap: msg.contextMap,
+                runId: payload.runId,
+                componentId: payload.componentId,
+                componentSource: payload.componentSource,
+                contextMap: payload.contextMap,
               };
               var mounts = document.querySelectorAll(
                 "[data-component-id]"
@@ -200,7 +205,7 @@ export const DASHBOARD_JS = `
                 // Scope dispatch to mounts whose component id matches the
                 // payload (avoids cross-talk between A/B variant mounts).
                 var mid = m.getAttribute("data-component-id") || "";
-                if (mid && msg.componentId && mid !== msg.componentId) continue;
+                if (mid && payload.componentId && mid !== payload.componentId) continue;
                 // Fresh CustomEvent per dispatch so each listener sees a
                 // pristine event object (cheap; payload is small).
                 m.dispatchEvent(
