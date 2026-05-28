@@ -176,6 +176,11 @@ Use:
 - predictable spacing
 - clear affordances
 - sober motion for feedback
+- reduced-motion respect — every shipped surface MUST honor
+  `@media (prefers-reduced-motion: reduce)`; consumer repos add one global
+  block to `globals.css` that flattens animation-duration / transition-duration
+  for users who opt out. Keyframe-driven loops (Shimmer, Spinner, AnnouncementBar)
+  fall back to a static state under reduced-motion.
 
 Avoid:
 
