@@ -3,6 +3,12 @@ import type { Store } from "./state/store.js"
 import type { Broadcaster } from "./ws/broadcaster.js"
 import type { Orchestrator } from "../pipeline/orchestrator.js"
 import { handleDashboard } from "./routes/dashboard.js"
+import {
+  handleHome,
+  handleWorkspace,
+  isWorkspacePath,
+  workspaceRunId,
+} from "./routes/home.js"
 import { handleOwner } from "./routes/owner.js"
 import { handleHealth } from "./routes/health.js"
 import { handleStatus } from "./routes/status.js"
@@ -14,7 +20,11 @@ import { handleOpenAIReconnectRoute } from "./routes/api/auth/reconnect.js"
 import { handleRepoPreviewRoute } from "./routes/api/repo-preview.js"
 import { handleProjectsRoute, isProjectsPath } from "./routes/api/projects.js"
 import { handleSandboxRoute, isSandboxPath } from "./routes/api/sandbox.js"
-import { notFound, sendJson, sendRedirect } from "./routes/_helpers.js"
+import {
+  handlePreviewApiRoute,
+  isPreviewApiPath,
+} from "./routes/api/preview.js"
+import { notFound, sendJson } from "./routes/_helpers.js"
 import { handlePreviewRoute } from "../preview/api-routes.js"
 import { handleBridgeRoute, isBridgePath } from "./routes/api/bridge.js"
 import { handleOwnerBranches } from "./routes/api/owner/branches.js"
@@ -41,7 +51,13 @@ export async function router(
 
   try {
     if (pathname === "/") {
-      return sendRedirect(res, "/dashboard")
+      return handleHome(res, deps.store)
+    }
+    if (pathname === "/home") {
+      return handleHome(res, deps.store)
+    }
+    if (isWorkspacePath(pathname)) {
+      return handleWorkspace(res, deps.store, workspaceRunId(pathname))
     }
     if (pathname === "/dashboard") {
       return handleDashboard(res, deps.store, deps.orchestrator)
@@ -95,6 +111,9 @@ export async function router(
         deps.store,
         deps.orchestrator,
       )
+    }
+    if (isPreviewApiPath(pathname)) {
+      return await handlePreviewApiRoute(req, res, pathname)
     }
     if (pathname.startsWith("/preview/")) {
       return await handlePreviewRoute(req, res, pathname)

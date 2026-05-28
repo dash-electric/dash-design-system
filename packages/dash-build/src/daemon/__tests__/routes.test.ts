@@ -55,10 +55,23 @@ describe("HTTP routes", () => {
     expect(Array.isArray(body.prompts.recent)).toBe(true)
   })
 
-  it("GET / redirects to /dashboard", async () => {
-    const r = await fetch(`${baseUrl}/`, { redirect: "manual" })
-    expect(r.status).toBe(302)
-    expect(r.headers.get("location")).toBe("/dashboard")
+  it("GET / renders the Lovable home shell", async () => {
+    const r = await fetch(`${baseUrl}/`)
+    expect(r.status).toBe(200)
+    expect(r.headers.get("content-type")).toMatch(/text\/html/)
+    const html = await r.text()
+    expect(html).toContain("db-sidebar")
+    expect(html).toContain("db-home-shell")
+    expect(html).toContain("Let's build something")
+  })
+
+  it("GET /workspace/:runId renders the chat workspace + preview mount", async () => {
+    const r = await fetch(`${baseUrl}/workspace/run-abc`)
+    expect(r.status).toBe(200)
+    const html = await r.text()
+    expect(html).toContain("db-workspace-shell")
+    expect(html).toContain('id="db-preview-mount"')
+    expect(html).toContain('data-component-id="run-abc"')
   })
 
   it("GET /dashboard returns HTML", async () => {
