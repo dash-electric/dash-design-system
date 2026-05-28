@@ -89,6 +89,38 @@ export async function generateWithSkillChain(
     }
   }
 
+  // ── Stage 1b: Intake-driven clarify gate ─────────────────────────────────
+  // When the orchestrator pre-classified the prompt and flagged it as
+  // ambiguous with low confidence, short-circuit BEFORE we burn an LLM call.
+  // PRD evaluator's clarify gate may also fire — this gate is independent.
+  if (
+    input.intake &&
+    input.intake.classification.scenario === "ambiguous" &&
+    input.intake.classification.confidence < 0.5
+  ) {
+    const intakeQuestion =
+      input.intake.classification.needsClarify ??
+      "We could not classify this prompt — can you specify whether this is a visual change, a new BE endpoint, or a DB-schema change?"
+    return {
+      kind: "clarify",
+      questions: [
+        {
+          id: "intake-scenario",
+          text: intakeQuestion,
+          type: "free-text",
+          rationale:
+            "Intake classifier returned ambiguous scenario at confidence " +
+            `${input.intake.classification.confidence.toFixed(2)}. ` +
+            "Need user disambiguation before generating.",
+          required: true,
+        },
+      ],
+      summary:
+        "Intake classifier ambiguous — " + input.intake.classification.reasoning,
+      confidence: Math.round(input.intake.classification.confidence * 100),
+    }
+  }
+
   // ── Stage 2 + 3: load design + skill context in parallel ─────────────────
   const loadDesign = deps.loadDesign ?? (() => loadDesignContext({ cwd: input.repoPath }))
   const loadSkill = deps.loadSkill ?? loadSkillContext
@@ -135,6 +167,7 @@ export async function generateWithSkillChain(
     introspection,
     existingFiles,
     outputMode,
+    intake: input.intake,
   })
 
   // ── Stage 5: call Claude ─────────────────────────────────────────────────
@@ -171,7 +204,10 @@ export async function generateWithSkillChain(
   // Sprint 2B — thread existingFiles so patch-mode outputs can be vetted
   // against the real on-disk content (path existence, additions-only hex
   // checks, hunk header sanity).
-  const validation = validateOutput(parsed, design, { existingFiles })
+  const validation = validateOutput(parsed, design, {
+    existingFiles,
+    intake: input.intake ?? null,
+  })
 
   return {
     kind: "generated",
@@ -186,6 +222,7 @@ export async function generateWithSkillChain(
       designSources: design.loadedSources,
       skillSources: skill.sources,
       existingFiles,
+      intake: input.intake,
     },
   }
 }

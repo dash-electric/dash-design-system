@@ -22,6 +22,7 @@ import type {
 import type {
   AnthropicLike,
   GenerateResult,
+  IntakeContext,
   ParsedFile,
   ParsedPatch,
   RepoContextPack,
@@ -83,6 +84,9 @@ export interface GenerationArtifact {
    *  skipped before `git apply`. Surfaced to the user so they can rephrase
    *  the prompt (typically: "create a new file instead of patching X"). */
   rejectedPatches?: RejectedPatch[]
+  /** BE-aware intake snapshot used for this generation. Surfaced so the
+   *  dashboard can show scenario + audit-trail metadata next to the run. */
+  intake?: IntakeContext
 }
 
 /**
@@ -140,6 +144,8 @@ export interface SkillChainRunner {
     repoPath: string
     selectedRepo?: string | null
     anthropic: AnthropicLike
+    /** BE-aware intake context. Optional so legacy tests/stubs still work. */
+    intake?: IntakeContext
   }): Promise<GenerateResult>
 }
 

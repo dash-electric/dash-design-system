@@ -82,6 +82,16 @@ import {
   summarizeRejection,
   type RejectedPatch,
 } from "./patch-validator.js"
+import {
+  checkAuditTrailRequired,
+  classifyPrompt,
+  readDbSchema,
+  scanBeCatalog,
+  type BeCatalog,
+  type DbCatalog,
+} from "../intake/index.js"
+import type { IntakeContext } from "../skills/types.js"
+import { detectDashDsImports } from "../services/component-preview.js"
 
 export interface OrchestratorOptions {
   store: Store
@@ -157,6 +167,13 @@ export interface OrchestratorOptions {
       error?: string
     }>
   }
+  /**
+   * Whether to enable the BE-aware intake step before each prompt. Defaults
+   * to `true` in the daemon wiring (see daemon/launch.ts). Unit-test fixtures
+   * pass `false` to preserve hermetic prompt semantics — empty/vague prompts
+   * would otherwise trip the intake classifier's ambiguous gate.
+   */
+  intakeEnabled?: boolean
 }
 
 const NOOP_LOGGER: Logger = {
@@ -191,6 +208,7 @@ export class Orchestrator {
       error?: string
     }>
   }
+  private readonly intakeEnabled: boolean
 
   /** In-memory artifact cache, keyed by promptId. Survives process lifetime
    *  only — by-design, since regenerating is cheaper than reloading from disk. */
@@ -232,6 +250,7 @@ export class Orchestrator {
           workspaceDir,
           gitOps: new GitOps(workspaceDir),
         }))
+    this.intakeEnabled = opts.intakeEnabled ?? false
 
     // Sprint 1C: wire sandbox state-machine transitions through Store +
     // Broadcaster for any Workspace passed in via DI (e.g. integration tests
@@ -758,21 +777,63 @@ export class Orchestrator {
       return this.failPrompt(prompt, err)
     }
 
-    // 2. Build SDK client + run skill chain
+    // 2. BE-aware intake — scan catalogs + classify scenario + audit-trail
+    //    gate. Run BEFORE the skill chain so the model gets BE/DB context and
+    //    we can short-circuit ambiguous prompts without burning an LLM call.
+    //    All four scanners are best-effort by design (see intake/INTEGRATION-
+    //    TODO.md "Error handling") — failures degrade gracefully.
+    //    Gated by intakeEnabled (default off) so legacy/unit-test prompts
+    //    don't trip the ambiguous-clarify gate; daemon turns it on.
+    const repoPath = this.repoPathResolver(prompt.repo)
+    let intake: IntakeContext | undefined
+    if (this.intakeEnabled) {
+      intake = await this.runIntake(prompt.text, repoPath)
+
+      // 2a. Intake-driven clarify gate — short-circuit ambiguous prompts so
+      //     the user can disambiguate before we generate. The chain has its
+      //     own gate too, but doing it here avoids the SDK client build +
+      //     model call.
+      if (
+        intake.classification.scenario === "ambiguous" &&
+        intake.classification.confidence < 0.5
+      ) {
+        const question = intake.classification.needsClarify ??
+          "We couldn't classify this prompt — is it a visual change, a new BE endpoint, or a DB-schema change?"
+        return this.beginClarification(
+          prompt,
+          [
+            {
+              id: "intake-scenario",
+              text: question,
+              type: "free-text",
+              rationale:
+                "Intake classifier returned ambiguous scenario at confidence " +
+                `${intake.classification.confidence.toFixed(2)}. ` +
+                "Need user disambiguation before generating.",
+              required: true,
+            },
+          ],
+          prompt.text,
+        )
+      }
+    }
+
+    // 3. Build SDK client + run skill chain
     let result: GenerateResult
     try {
       const sdk = await this.anthropic.buildSdkClient()
       result = await this.skillChain.run({
         prompt: prompt.text,
-        repoPath: this.repoPathResolver(prompt.repo),
+        repoPath,
         selectedRepo: prompt.repo,
         anthropic: sdk,
+        intake,
       })
     } catch (err) {
       return this.failPrompt(prompt, err)
     }
 
-    // 3. Branch on chain result
+    // 4. Branch on chain result
     if (result.kind === "clarify") {
       return this.beginClarification(prompt, result.questions, prompt.text)
     }
@@ -783,7 +844,7 @@ export class Orchestrator {
       )
     }
 
-    // 4. Generated — capture artifact + mark awaiting approval
+    // 5. Generated — capture artifact + mark awaiting approval
     const artifact: GenerationArtifact = {
       promptId: prompt.id,
       files: result.response.files,
@@ -792,6 +853,7 @@ export class Orchestrator {
       validation: result.validation,
       generatedAt: new Date().toISOString(),
       contextPack: result.meta.repoContext,
+      ...(intake ? { intake } : {}),
     }
 
     // 4b. Best-effort sandbox bundle for the iframe preview. Failure is
@@ -945,6 +1007,107 @@ export class Orchestrator {
       errorCount: result.validation.errors.length,
       previewAvailable: Boolean(artifact.bundleResult),
       previewMode: artifact.previewMode ?? null,
+    })
+
+    // 6. SSE component:updated — feeds preview-mount.ts on the dashboard so
+    //    the Sandpack iframe re-mounts with the freshly generated component
+    //    source. Best-effort: skip silently when we cannot find a component
+    //    source candidate (e.g. patch-only output, JSON-only generation).
+    this.emitComponentUpdated(prompt, artifact, intake ?? null)
+  }
+
+  // ── BE-aware intake helpers ──────────────────────────────────────────────
+
+  /**
+   * Run the four intake scanners (BE catalog + DB schema + classifier + audit
+   * enforcer). Returns an IntakeContext even on partial failure — empty
+   * catalogs + an "ambiguous" classification is a valid baseline.
+   */
+  private async runIntake(promptText: string, repoPath: string): Promise<IntakeContext> {
+    const [beCatalog, dbCatalog] = await Promise.all([
+      scanBeCatalog(repoPath).catch((err): BeCatalog => {
+        this.logger.warn("intake.scanBeCatalog failed", {
+          repoPath,
+          err: (err as Error).message,
+        })
+        return { endpoints: [], framework: "none", totalEndpoints: 0 }
+      }),
+      readDbSchema(repoPath).catch((err): DbCatalog => {
+        this.logger.warn("intake.readDbSchema failed", {
+          repoPath,
+          err: (err as Error).message,
+        })
+        return { tables: [], source: "none" }
+      }),
+    ])
+
+    let classification
+    try {
+      classification = await classifyPrompt(promptText, {
+        beCatalog,
+        dbCatalog,
+        // Existing-file context arrives later in the chain (existing-file-
+        // reader); the classifier only needs a flat list of paths to detect
+        // "greenfield vs update". We pass [] here and rely on BE/DB keywords
+        // + catalog hits for the strong signals.
+        existingFiles: [],
+      })
+    } catch (err) {
+      this.logger.warn("intake.classifyPrompt failed", { err: (err as Error).message })
+      classification = {
+        scenario: "ambiguous" as const,
+        confidence: 0,
+        reasoning: "Classifier threw; treating as ambiguous.",
+        affectedFiles: { fe: [], be: [], db: [] },
+      }
+    }
+
+    let auditTrail
+    try {
+      auditTrail = checkAuditTrailRequired(
+        promptText,
+        classification.affectedFiles?.fe ?? [],
+      )
+    } catch (err) {
+      this.logger.warn("intake.checkAuditTrailRequired failed", {
+        err: (err as Error).message,
+      })
+      auditTrail = {
+        required: false,
+        reason: "Audit-trail enforcer threw; defaulting to not required.",
+        pattern: "inline-edit-with-audit" as const,
+        fieldsToLog: [],
+      }
+    }
+
+    return { beCatalog, dbCatalog, classification, auditTrail }
+  }
+
+  /**
+   * Emit the `component:updated` SSE event consumed by
+   * `daemon/templates/client/preview-mount.ts`. The browser script picks the
+   * source out of `detail.componentSource` and re-mounts the Sandpack iframe.
+   */
+  private emitComponentUpdated(
+    prompt: PromptRecord,
+    artifact: GenerationArtifact,
+    intake: IntakeContext | null,
+  ): void {
+    const candidate = pickComponentSource(artifact)
+    if (!candidate) return
+    const targetPath = candidate.path
+    const componentSource = candidate.content
+
+    this.broadcaster.broadcast("component:updated", {
+      runId: prompt.id,
+      componentId: prompt.id,
+      componentSource,
+      contextMap: {
+        landsAt: targetPath,
+        uses: detectDashDsImports(componentSource),
+        be: intake?.classification.affectedFiles?.be ?? [],
+        audit: intake?.auditTrail.required ? intake.auditTrail.reason : null,
+      },
     })
   }
 
@@ -1225,6 +1388,36 @@ ${artifact.explanation}
 const ARTIFACT_MANIFEST = "artifact.json"
 const GENERATED_ENTRY_FILE = "__dash_preview_entry.tsx"
 
+/**
+ * Pick the "main" generated component file for the SSE preview event.
+ *
+ * Priority:
+ *   1. `preview.tsx`  (canonical Dash Build canvas — always exported when UI
+ *      changes per the composer's contract).
+ *   2. First .tsx file that has a `export default` (likely the real component).
+ *   3. First .tsx / .jsx file found.
+ *
+ * Returns null when nothing matches (patch-only or non-UI output) — caller
+ * skips the broadcast in that case.
+ */
+function pickComponentSource(
+  artifact: GenerationArtifact,
+): { path: string; content: string } | null {
+  const tsxLike = artifact.files.filter(
+    (f) => /\.(tsx|jsx)$/.test(f.path) || f.language === "tsx" || f.language === "jsx",
+  )
+  if (tsxLike.length === 0) return null
+
+  const preview = tsxLike.find((f) => f.path.endsWith("preview.tsx"))
+  if (preview) return { path: preview.path, content: preview.content }
+
+  const withDefault = tsxLike.find((f) => /export\s+default/.test(f.content))
+  if (withDefault) return { path: withDefault.path, content: withDefault.content }
+
+  const first = tsxLike[0]!
+  return { path: first.path, content: first.content }
+}
+
 function detectLanguage(filePath: string): string {
   if (filePath.endsWith(".tsx")) return "tsx"
   if (filePath.endsWith(".ts")) return "ts"
@@ -1430,6 +1623,7 @@ export function defaultSkillChainRunner(): SkillChainRunner {
           prompt: input.prompt,
           repoPath: input.repoPath,
           selectedRepo: input.selectedRepo ?? null,
+          intake: input.intake,
         },
         { anthropic: input.anthropic },
       )

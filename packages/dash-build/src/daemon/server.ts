@@ -83,6 +83,10 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
       github: defaultGithubProvider(githubClient),
       skillChain: defaultSkillChainRunner(),
       expireSessions: (ms) => sessionStoreRef.expire(ms),
+      // Production daemon enables BE-aware intake (catalog + classifier +
+      // audit-trail). Unit tests construct Orchestrator without this flag so
+      // hermetic vague prompts ("do thing") don't trip the ambiguous gate.
+      intakeEnabled: true,
     })
 
     if (enableWorker) {

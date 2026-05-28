@@ -11,12 +11,15 @@ import type {
   DesignContext,
   ExistingFileContent,
   ExistingFilesContext,
+  IntakeContext,
   PRDEval,
   RepoContextPack,
   RepoIntrospection,
   RepoSurface,
   SkillContext,
 } from "./types.js"
+import type { EndpointEntry } from "../intake/be-endpoint-catalog.js"
+import type { TableSchema } from "../intake/db-schema-reader.js"
 import { describeOutputMode, type OutputMode } from "./output-mode-detector.js"
 
 export interface ComposeInput {
@@ -34,6 +37,11 @@ export interface ComposeInput {
    *  defaults to "mixed" so the model can decide per file based on whether
    *  the target path appears in CURRENT FILE STATE. */
   outputMode?: OutputMode
+  /** BE-aware intake context, passed through from the orchestrator. When
+   *  present, the composer injects scenario-aware BE/DB blocks + audit-trail
+   *  block. Absent = legacy callers (tests, direct chain invocation) — the
+   *  composer falls back to today's behaviour. */
+  intake?: IntakeContext
 }
 
 /** Top-level banned imports embedded verbatim in the system prompt. */
@@ -389,6 +397,160 @@ function renderExistingFiles(ctx: ExistingFilesContext): string {
   return lines.join("\n").trimEnd()
 }
 
+// ---------------------------------------------------------------------------
+// Intake renderers — BE catalog summary + DB tables + scenario hint + audit
+// trail block. Render only what matters for the detected scenario so prompt
+// budget stays tight on FE-only changes.
+// ---------------------------------------------------------------------------
+
+function renderEndpointList(endpoints: EndpointEntry[], cap = 25): string[] {
+  const lines: string[] = []
+  for (const ep of endpoints.slice(0, cap)) {
+    lines.push(`- ${ep.method} ${ep.path}  →  ${ep.handlerExport}() (${ep.framework}, ${ep.filePath})`)
+  }
+  if (endpoints.length > cap) {
+    lines.push(`- …(+${endpoints.length - cap} more endpoints truncated)`)
+  }
+  return lines
+}
+
+function renderTableList(tables: TableSchema[], cap = 20): string[] {
+  const lines: string[] = []
+  for (const t of tables.slice(0, cap)) {
+    const cols = t.columns
+      .slice(0, 12)
+      .map((c) => `${c.name}: ${c.type}${c.nullable ? "?" : ""}`)
+      .join(", ")
+    const extra = t.columns.length > 12 ? ` …(+${t.columns.length - 12} more cols)` : ""
+    lines.push(`- ${t.name} (${t.source}): ${cols}${extra}`)
+  }
+  if (tables.length > cap) {
+    lines.push(`- …(+${tables.length - cap} more tables truncated)`)
+  }
+  return lines
+}
+
+function renderIntakeBlocks(intake: IntakeContext): string[] {
+  const scenario = intake.classification.scenario
+  const lines: string[] = []
+  lines.push(`Detected scenario: ${scenario} (confidence ${intake.classification.confidence.toFixed(2)}).`)
+  lines.push(`Reasoning: ${intake.classification.reasoning}`)
+  lines.push("")
+
+  // Affected files surfaced by the classifier — always render when present so
+  // the model knows which paths are in play (regardless of scenario).
+  const aff = intake.classification.affectedFiles
+  if (aff) {
+    const feLines = aff.fe.length > 0 ? aff.fe.map((p) => `  - ${p}`).join("\n") : "  - (none)"
+    const beLines = aff.be.length > 0 ? aff.be.map((p) => `  - ${p}`).join("\n") : "  - (none)"
+    const dbLines = aff.db.length > 0 ? aff.db.map((p) => `  - ${p}`).join("\n") : "  - (none)"
+    lines.push("Affected files (per classifier):")
+    lines.push(`FE:\n${feLines}`)
+    lines.push(`BE:\n${beLines}`)
+    lines.push(`DB:\n${dbLines}`)
+    lines.push("")
+  }
+
+  switch (scenario) {
+    case "fe_only":
+      lines.push(
+        "BE/DB context intentionally omitted — pure FE change. Do not add fetch calls, new endpoints, or schema migrations.",
+      )
+      break
+    case "update_existing": {
+      const matchedBe = filterEndpointsByAffected(intake)
+      if (matchedBe.length > 0) {
+        lines.push("Existing endpoints relevant to this update (use the SAME handler signatures, do NOT invent new ones):")
+        lines.push(...renderEndpointList(matchedBe))
+        lines.push("")
+      }
+      const matchedDb = filterTablesByAffected(intake)
+      if (matchedDb.length > 0) {
+        lines.push("Existing tables relevant to this update (use the SAME column names, do NOT add fields silently):")
+        lines.push(...renderTableList(matchedDb))
+        lines.push("")
+      }
+      break
+    }
+    case "extend_fe_be": {
+      lines.push(
+        `Full BE catalog (${intake.beCatalog.totalEndpoints} endpoints, framework=${intake.beCatalog.framework}). A NEW endpoint is expected — do NOT duplicate paths below.`,
+      )
+      if (intake.beCatalog.endpoints.length > 0) {
+        lines.push(...renderEndpointList(intake.beCatalog.endpoints))
+        lines.push("")
+      }
+      break
+    }
+    case "extend_fe_be_db": {
+      lines.push(
+        `Full BE catalog (${intake.beCatalog.totalEndpoints} endpoints, framework=${intake.beCatalog.framework}).`,
+      )
+      if (intake.beCatalog.endpoints.length > 0) {
+        lines.push(...renderEndpointList(intake.beCatalog.endpoints))
+        lines.push("")
+      }
+      lines.push(
+        `Full DB catalog (${intake.dbCatalog.tables.length} tables, source=${intake.dbCatalog.source}). New schema additions are expected — surface the migration as a TODO or generate a Prisma/Drizzle/SQL stub.`,
+      )
+      if (intake.dbCatalog.tables.length > 0) {
+        lines.push(...renderTableList(intake.dbCatalog.tables))
+        lines.push("")
+      }
+      break
+    }
+    case "new_product": {
+      lines.push(
+        "EXISTING SURFACE — DO NOT DUPLICATE. The catalogs below represent endpoints and tables that already ship. If the new product needs similar primitives, reuse instead of re-creating.",
+      )
+      if (intake.beCatalog.endpoints.length > 0) {
+        lines.push("Existing endpoints:")
+        lines.push(...renderEndpointList(intake.beCatalog.endpoints, 40))
+        lines.push("")
+      }
+      if (intake.dbCatalog.tables.length > 0) {
+        lines.push("Existing tables:")
+        lines.push(...renderTableList(intake.dbCatalog.tables, 40))
+        lines.push("")
+      }
+      break
+    }
+    default:
+      break
+  }
+  return lines
+}
+
+/** When the classifier surfaced affected paths, narrow the catalog to those. */
+function filterEndpointsByAffected(intake: IntakeContext): EndpointEntry[] {
+  const targets = new Set(intake.classification.affectedFiles?.be ?? [])
+  if (targets.size === 0) return []
+  return intake.beCatalog.endpoints.filter((e) => targets.has(e.filePath))
+}
+
+function filterTablesByAffected(intake: IntakeContext): TableSchema[] {
+  const targets = new Set(intake.classification.affectedFiles?.db ?? [])
+  if (targets.size === 0) return []
+  return intake.dbCatalog.tables.filter((t) => targets.has(t.filePath))
+}
+
+function renderAuditTrailBlock(intake: IntakeContext): string[] {
+  const at = intake.auditTrail
+  if (!at.required) return []
+  return [
+    "AUDIT TRAIL REQUIRED (CR-3)",
+    `Pattern : ${at.pattern}`,
+    `Reason  : ${at.reason}`,
+    `Fields to log: ${at.fieldsToLog.join(", ")}`,
+    "",
+    "You MUST reference a Dash DS audit-bearing block. Do NOT emit raw inline-edit.",
+    "Options:",
+    "  - import { InlineEditWithAudit } from '@dash/blocks/inline-edit-with-audit'",
+    "  - import { ImageEditorWithAudit } from '@dash/blocks/image-editor-with-audit'",
+    "Pair the edit with an audit_log insert in the same transaction (or TODO if the BE table is missing).",
+  ]
+}
+
 /** Render the Sprint 2B output-format section. */
 function renderOutputFormatSection(
   ctx: ComposeInput,
@@ -540,6 +702,28 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
       renderExistingFiles(ctx.existingFiles as ExistingFilesContext),
       "",
     )
+  }
+
+  // ── BE-aware intake blocks (only render when orchestrator passed intake) ──
+  if (ctx.intake) {
+    const blocks = renderIntakeBlocks(ctx.intake)
+    if (blocks.length > 0) {
+      out.push(
+        `## ${sectionNum()}. BE/DB Intake (scenario-aware)`,
+        "",
+        ...blocks,
+        "",
+      )
+    }
+    const auditBlock = renderAuditTrailBlock(ctx.intake)
+    if (auditBlock.length > 0) {
+      out.push(
+        `## ${sectionNum()}. Audit Trail Enforcement (CR-3)`,
+        "",
+        ...auditBlock,
+        "",
+      )
+    }
   }
 
   out.push(

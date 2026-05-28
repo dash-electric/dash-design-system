@@ -11,8 +11,28 @@
 
 import type { ClarificationQuestion } from "../clarification/types.js"
 import type { RepoIntrospection } from "./repo-introspector.js"
+import type {
+  AuditTrailRequirement,
+  BeCatalog,
+  ClassificationResult,
+  DbCatalog,
+} from "../intake/index.js"
 
 export type { RepoIntrospection } from "./repo-introspector.js"
+
+// ---------------------------------------------------------------------------
+// Intake pack — BE-aware context that runs BEFORE the skill chain. Attached by
+// the orchestrator (see pipeline/orchestrator.ts::processPrompt). Consumed by
+// prompt-composer (system prompt blocks) + validator (audit-trail enforcement)
+// + chain (clarify short-circuit).
+// ---------------------------------------------------------------------------
+
+export interface IntakeContext {
+  beCatalog: BeCatalog
+  dbCatalog: DbCatalog
+  classification: ClassificationResult
+  auditTrail: AuditTrailRequirement
+}
 
 // ---------------------------------------------------------------------------
 // Stage 1 — PRD evaluation
@@ -246,6 +266,16 @@ export interface GenerateInput {
   detectedRepo?: string | null
   detectedLayer?: "ride" | "logistic" | "shared" | null
   contextPack?: RepoContextPack
+  /**
+   * BE-aware intake context, populated by the orchestrator before the skill
+   * chain runs. When present:
+   *   - prompt-composer injects scenario-aware BE/DB blocks + audit-trail block
+   *   - chain short-circuits to clarify when scenario is ambiguous + low conf
+   *   - validator enforces audit-trail block reference when required
+   *
+   * Optional so legacy callers (CLI smoke / direct chain tests) still work.
+   */
+  intake?: IntakeContext
 }
 
 export type GenerateResult =
@@ -270,6 +300,8 @@ export type GenerateResult =
         /** Phase C — existing files + path resolutions injected into prompt.
          *  Orchestrator (S2B) uses this to decide patch-mode vs greenfield. */
         existingFiles?: ExistingFilesContext | null
+        /** Intake pack threaded through from orchestrator (when present). */
+        intake?: IntakeContext
       }
     }
   | {

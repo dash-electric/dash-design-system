@@ -27,6 +27,7 @@ import { looksLikeUnifiedDiff } from "../runs/patch-applier.js"
 import type {
   DesignContext,
   ExistingFilesContext,
+  IntakeContext,
   ParsedFile,
   ParsedPatch,
   ParsedResponse,
@@ -93,6 +94,33 @@ export interface ValidateOptions {
    * the model invented an edit target the path-resolver never surfaced.
    */
   existingFiles?: ExistingFilesContext | null
+  /**
+   * Intake context from the orchestrator. When `intake.auditTrail.required`
+   * is true, the validator enforces that the generated output references one
+   * of the known audit-bearing blocks. Missing reference → high-severity
+   * validation error.
+   */
+  intake?: IntakeContext | null
+}
+
+/** Patterns that satisfy CR-3 audit-trail enforcement. The pipeline composer
+ *  hints these to the model; the validator accepts either an import OR a JSX
+ *  reference to the same block name. */
+const AUDIT_BEARING_TOKENS: readonly string[] = [
+  "inline-edit-with-audit",
+  "image-editor-with-audit",
+  "InlineEditWithAudit",
+  "ImageEditorWithAudit",
+] as const
+
+function outputReferencesAuditBlock(parsed: ParsedResponse): boolean {
+  const haystacks: string[] = []
+  for (const f of parsed.files) haystacks.push(f.content)
+  for (const p of parsed.patches ?? []) haystacks.push(p.patchContent)
+  if (haystacks.length === 0) return false
+  return haystacks.some((text) =>
+    AUDIT_BEARING_TOKENS.some((token) => text.includes(token)),
+  )
 }
 
 /**
@@ -187,6 +215,27 @@ export function validateOutput(
       for (const w of checkAstIntegrity(patch)) {
         warnings.push(w)
       }
+    }
+  }
+
+  // ── CR-3 audit-trail enforcement ────────────────────────────────────────
+  // When intake flagged audit-trail required, the generated output MUST
+  // reference one of the known audit-bearing Dash DS blocks. Otherwise the
+  // model silently produced raw inline-edit and we'd ship a legal gap.
+  if (opts.intake?.auditTrail.required) {
+    const found = outputReferencesAuditBlock(parsed)
+    if (!found) {
+      const focusFile =
+        parsed.files[0]?.path ?? parsed.patches?.[0]?.path ?? "(unknown)"
+      errors.push({
+        severity: "high",
+        message:
+          "Output skips audit-trail pattern; CR-3 requires logging for legal/financial fields. " +
+          `Use @dash/blocks/${opts.intake.auditTrail.pattern} (or the matching JSX component).`,
+        file: focusFile,
+        ruleId: "CR-3",
+      })
+      score -= 20
     }
   }
 
