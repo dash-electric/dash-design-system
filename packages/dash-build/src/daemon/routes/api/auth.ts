@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
+import { userInfo } from "node:os"
 import type { Store } from "../../state/store.js"
 import type { Broadcaster } from "../../ws/broadcaster.js"
 import {
@@ -14,6 +15,12 @@ import {
   CodexCliRunner,
   type CodexCliDeviceAuthSession,
 } from "../../../auth/codex-cli/runner.js"
+import {
+  getInstallUrl,
+  handleCallback,
+  hasAppConfig,
+  GitHubTokenStore,
+} from "../../../integrations/github/index.js"
 
 /**
  * Auth routes — OpenAI / Codex-first auth surface (May 2026).
@@ -240,21 +247,111 @@ export function handleAuthRoute(
     return methodNotAllowed(res)
   }
 
-  // ── GitHub: still stub (Wave 5 = per-user pilot grant) ─────────────────
+  // ── GitHub App install + callback ──────────────────────────────────────
+  //
+  // Two paths:
+  //
+  //   Configured: DASH_BUILD_GITHUB_APP_ID + PRIVATE_KEY + CLIENT_ID +
+  //   CLIENT_SECRET present in env. The dashboard "Connect GitHub" button
+  //   POSTs `/api/auth/github` → we mint an install URL via the install-flow
+  //   helper and 302 the user there. GitHub redirects back to
+  //   `/api/auth/github/callback?installation_id=...&state=...`; we exchange
+  //   that for accessible repos, persist via `GitHubTokenStore` (machine-key
+  //   AES-256-GCM at `~/.dash-build/auth/github.json`), flip the store auth
+  //   indicator, and broadcast `auth:changed` so the UI repaints.
+  //
+  //   Unconfigured: legacy stub behavior — return a structured error so the
+  //   UI can surface "Set up GitHub App at github.com/settings/apps and
+  //   export DASH_BUILD_GITHUB_* env vars". The fields match the README
+  //   `GitHub App Setup` section so a copy-paste fixes the gap.
+  //
+  // PR creation itself is already wired through the orchestrator
+  // (approvePR → submitChanges → createBranch + commitFiles +
+  // createPullRequest). This file only handles the auth side of the loop.
   if (pathname === "/api/auth/github") {
     if (req.method !== "POST" && req.method !== "GET") return methodNotAllowed(res)
-    return sendRedirect(res, "/api/auth/github/callback?stub=1")
+    if (!hasAppConfig()) {
+      return sendJson(res, 503, {
+        ok: false,
+        error: "github_app_not_configured",
+        message:
+          "Set up the GitHub App at https://github.com/settings/apps and export " +
+          "DASH_BUILD_GITHUB_APP_ID, DASH_BUILD_GITHUB_PRIVATE_KEY, " +
+          "DASH_BUILD_GITHUB_CLIENT_ID, DASH_BUILD_GITHUB_CLIENT_SECRET. " +
+          "See packages/dash-build/README.md `GitHub App Setup`.",
+        setupUrl: "https://github.com/settings/apps",
+      })
+    }
+    try {
+      const { url } = getInstallUrl({ port: 0 })
+      return sendRedirect(res, url)
+    } catch (err) {
+      return badRequest(res, `github_install_url_failed: ${(err as Error).message}`)
+    }
   }
 
   if (pathname === "/api/auth/github/callback") {
-    void store
-      .setAuth("github", { connected: false, repos: [] })
-      .then(() => broadcaster.broadcast("auth:changed", { provider: "github" }))
-    return sendJson(res, 200, {
-      ok: true,
-      provider: "github",
-      message: "github_app_stub_pending_per_user_pilot_grant",
-    })
+    if (req.method !== "GET") return methodNotAllowed(res)
+    if (!hasAppConfig()) {
+      // Preserve the legacy stub payload so existing UI handlers don't break,
+      // but report the underlying state honestly.
+      void store
+        .setAuth("github", { connected: false, repos: [] })
+        .then(() => broadcaster.broadcast("auth:changed", { provider: "github" }))
+      return sendJson(res, 200, {
+        ok: true,
+        provider: "github",
+        connected: false,
+        message: "github_app_stub_pending_per_user_pilot_grant",
+      })
+    }
+    void (async () => {
+      try {
+        const url = new URL(req.url ?? "/", "http://localhost")
+        const installationIdRaw = url.searchParams.get("installation_id")
+        const setupAction = url.searchParams.get("setup_action") ?? "install"
+        const state = url.searchParams.get("state") ?? undefined
+        const installationId = installationIdRaw ? Number(installationIdRaw) : NaN
+        if (!Number.isFinite(installationId) || installationId <= 0) {
+          return badRequest(res, "missing_installation_id")
+        }
+        const callback = await handleCallback({
+          installation_id: installationId,
+          setup_action: setupAction,
+          state,
+        })
+        const username = (() => {
+          try {
+            return userInfo().username
+          } catch {
+            return "dash-build"
+          }
+        })()
+        const tokenStore = new GitHubTokenStore()
+        await tokenStore.save({
+          installationId: callback.installationId,
+          user: username,
+          accessibleRepos: callback.accessibleRepos,
+          installedAt: new Date().toISOString(),
+        })
+        await store.setAuth("github", {
+          connected: true,
+          repos: callback.accessibleRepos.map((r) => r.fullName),
+        })
+        broadcaster.broadcast("auth:changed", { provider: "github" })
+        sendJson(res, 200, {
+          ok: true,
+          provider: "github",
+          connected: true,
+          installationId: callback.installationId,
+          setupAction: callback.setupAction,
+          repos: callback.accessibleRepos,
+        })
+      } catch (err) {
+        badRequest(res, `github_callback_failed: ${(err as Error).message}`)
+      }
+    })()
+    return
   }
 
   return notFound(res)

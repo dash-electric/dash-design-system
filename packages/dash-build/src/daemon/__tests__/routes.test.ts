@@ -386,4 +386,98 @@ describe("HTTP routes", () => {
     expect(html).toContain("db-prompt-input")
     expect(html).not.toContain("Install the Dash Build GitHub App")
   })
+
+  // Tier 3 #12 — Mobile responsive workspace. The dashboard CSS bundle must
+  // ship the <=768px media block so phone viewports stack chat above canvas
+  // instead of starving the canvas down to ~40px wide.
+  it("static app.css ships mobile responsive workspace breakpoint", async () => {
+    const r = await fetch(`${baseUrl}/static/app.css`)
+    expect(r.status).toBe(200)
+    const css = await r.text()
+    // Tier 3 #12 media query present.
+    expect(css).toMatch(/@media\s*\(max-width:\s*768px\)/)
+    // Locate the breakpoint block + assert the workspace rules live inside it.
+    // We can't trivially regex over CSS curly braces in a non-balanced way, so
+    // slice from "max-width: 768px" up to the next top-level @media or EOF
+    // and assert the targeted selectors + declarations are present.
+    const mobileStart = css.indexOf("@media (max-width: 768px)")
+    expect(mobileStart).toBeGreaterThan(0)
+    const narrowStart = css.indexOf("@media (max-width: 480px)", mobileStart)
+    expect(narrowStart).toBeGreaterThan(mobileStart)
+    const mobileBlock = css.slice(mobileStart, narrowStart)
+    // Workspace split collapses to single column on mobile.
+    expect(mobileBlock).toContain(".db-workspace-split")
+    expect(mobileBlock).toMatch(/grid-template-columns:\s*1fr/)
+    // Tabs allow horizontal scroll on mobile instead of wrapping.
+    expect(mobileBlock).toContain(".db-workspace-tabs")
+    expect(mobileBlock).toMatch(/overflow-x:\s*auto/)
+    // Context-list footer stacks vertically + drops the ellipsis truncation.
+    expect(mobileBlock).toContain(".db-preview-context-list")
+    expect(mobileBlock).toMatch(/white-space:\s*normal/)
+    // Thread crumb segment hidden on phones.
+    expect(mobileBlock).toContain(".db-workspace-crumb-thread")
+  })
+
+  // Tier 2 #5 (bug) — Agent D's tab handler only listened to click events,
+  // so `location.hash = "#tab=audit"` silently failed to switch the active
+  // tab. Bundle must now also wire a hashchange listener that re-applies
+  // the tab + viewport from the parsed hash.
+  it("static app.js wires hashchange → applyHashTab for tab switching", async () => {
+    const r = await fetch(`${baseUrl}/static/app.js`)
+    expect(r.status).toBe(200)
+    const js = await r.text()
+    // Helper function name surfaces in the bundle (no minifier in dev tsup).
+    expect(js).toContain("applyHashTab")
+    // hashchange listener wired to the window.
+    expect(js).toContain("hashchange")
+    // Idempotency guard so HMR / double-boot doesn't stack duplicate listeners.
+    expect(js).toContain("data-workspace-hash-wired")
+  })
+
+  // Tier 2 #2.10 — GitHub PR wiring. Without GitHub App env vars the install
+  // route must return a structured 503 (not the legacy `?stub=1` redirect)
+  // so the dashboard can surface a helpful "set up GitHub App" message
+  // instead of silently swallowing the click.
+  it("POST /api/auth/github returns 503 with setup hint when app env missing", async () => {
+    // Belt-and-suspenders: clear any stray env that could enable the path.
+    const saved = {
+      appId: process.env.DASH_BUILD_GITHUB_APP_ID,
+      pk: process.env.DASH_BUILD_GITHUB_PRIVATE_KEY,
+      cid: process.env.DASH_BUILD_GITHUB_CLIENT_ID,
+      cs: process.env.DASH_BUILD_GITHUB_CLIENT_SECRET,
+    }
+    delete process.env.DASH_BUILD_GITHUB_APP_ID
+    delete process.env.DASH_BUILD_GITHUB_PRIVATE_KEY
+    delete process.env.DASH_BUILD_GITHUB_CLIENT_ID
+    delete process.env.DASH_BUILD_GITHUB_CLIENT_SECRET
+    try {
+      const r = await fetch(`${baseUrl}/api/auth/github`, { method: "POST" })
+      expect(r.status).toBe(503)
+      const body = await r.json()
+      expect(body.ok).toBe(false)
+      expect(body.error).toBe("github_app_not_configured")
+      expect(body.setupUrl).toBe("https://github.com/settings/apps")
+      // Hint references the README setup section so devs find the doc.
+      expect(body.message).toMatch(/DASH_BUILD_GITHUB_APP_ID/)
+    } finally {
+      if (saved.appId !== undefined) process.env.DASH_BUILD_GITHUB_APP_ID = saved.appId
+      if (saved.pk !== undefined) process.env.DASH_BUILD_GITHUB_PRIVATE_KEY = saved.pk
+      if (saved.cid !== undefined) process.env.DASH_BUILD_GITHUB_CLIENT_ID = saved.cid
+      if (saved.cs !== undefined) process.env.DASH_BUILD_GITHUB_CLIENT_SECRET = saved.cs
+    }
+  })
+
+  // Tier 2 #2.10 — Callback path mirror. When unconfigured the callback
+  // still returns the legacy stub shape (200 + connected:false) so any
+  // older UI handler keeps working, but the new field `connected: false`
+  // tells fresh clients to surface the setup prompt.
+  it("GET /api/auth/github/callback without config returns legacy stub payload", async () => {
+    const r = await fetch(`${baseUrl}/api/auth/github/callback`)
+    expect(r.status).toBe(200)
+    const body = await r.json()
+    expect(body.ok).toBe(true)
+    expect(body.provider).toBe("github")
+    expect(body.connected).toBe(false)
+    expect(body.message).toMatch(/stub/i)
+  })
 })

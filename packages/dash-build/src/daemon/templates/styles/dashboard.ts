@@ -5429,11 +5429,85 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
 .db-workspace-crumb-surface {
   color: var(--primary-strong);
   font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.15s ease;
+}
+.db-workspace-crumb-surface:hover,
+.db-workspace-crumb-surface:focus-visible {
+  border-bottom-color: var(--primary-strong);
 }
 .db-workspace-crumb-divider { color: var(--mute-2); }
 .db-workspace-topbar-actions {
   display: inline-flex;
   gap: 8px;
+  align-items: center;
+}
+
+/* Tier 6 — Layer 2 theme picker. Compact pill that lives next to Share / Run
+ * in the workspace topbar. Selecting an option hot-swaps the accent token
+ * overlay via /api/themes/:name/css. */
+.db-workspace-theme-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper-2);
+  font-size: 12px;
+  color: var(--mute-1);
+}
+.db-workspace-theme-picker-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.db-workspace-theme-picker-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-strong);
+  display: inline-block;
+}
+.db-workspace-theme-picker-select {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  padding: 2px 4px;
+  max-width: 160px;
+}
+.db-workspace-theme-picker-select:focus-visible {
+  outline: 2px solid var(--primary-strong);
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+/* Tier 6 — sidebar "Open docs" footer link. Mirrors .db-sidebar-upgrade
+ * spacing but uses a flat hover treatment so it reads as a secondary nav,
+ * not a CTA. */
+.db-sidebar-docs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--mute-1);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.db-sidebar-docs:hover,
+.db-sidebar-docs:focus-visible {
+  background: var(--paper-2);
+  color: var(--ink);
+  outline: none;
+}
+.db-sidebar-docs-icon {
+  font-size: 14px;
 }
 
 .db-workspace-split {
@@ -6210,6 +6284,132 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
 .db-preview-validation-warnings ul {
   margin: 4px 0 0 16px;
   padding: 0;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+ * Tier 3 #12 — Mobile responsive workspace (<=768px).
+ *
+ * Pre-pivot the chat | canvas split was a fixed 380px gutter + canvas fill.
+ * On phones (<=480px) and tablets (<=768px) the gutter eats nearly all width
+ * so Sandpack collapses to ~40px wide and tabs overflow off-screen.
+ *
+ * Strategy:
+ *   1. Stack vertically: chat on top (auto height, capped at 45vh so canvas
+ *      stays visible), canvas fills the rest. Composer pinned to chat tail.
+ *   2. Tabs allow horizontal scroll instead of wrap so tab order stays
+ *      predictable on narrow screens.
+ *   3. Context map footer drops the truncating ellipsis and wraps so values
+ *      stay readable.
+ *   4. Top bar hides the breadcrumb thread name (longest segment) so the
+ *      project + surface still fit on a phone width.
+ *   5. Composer actions full-width so the Build button is always tappable
+ *      (avoids the half-clipped state on 375px viewports).
+ *   6. Workspace topbar action labels shrink padding so Share+Run still fit.
+ *
+ * Cardinal rule: additive only — no existing desktop rule was touched. All
+ * adjustments live inside the media block so >768px viewports are bit-for-bit
+ * identical to before.
+ * ────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .db-workspace-shell {
+    /* Collapse sidebar on phones — workspace shell now full-width column. */
+    flex-direction: column;
+  }
+  .db-sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 56px;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 8px 12px;
+  }
+  .db-workspace-split {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 45vh) minmax(0, 1fr);
+  }
+  .db-workspace-chat {
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+    min-height: 0;
+  }
+  .db-workspace-composer-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .db-workspace-composer-actions > * {
+    flex: 1 1 auto;
+  }
+  .db-workspace-tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    padding: 6px 8px 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .db-workspace-tab {
+    font-size: var(--text-xs);
+    padding: 6px 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .db-workspace-topbar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .db-workspace-crumb {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Hide the thread name + its trailing divider on phones — project +
+   * surface still tell the user where they are. */
+  .db-workspace-crumb-thread,
+  .db-workspace-crumb-thread + .db-workspace-crumb-divider,
+  /* The divider that precedes thread (between surface and thread). */
+  .db-workspace-crumb-surface + .db-workspace-crumb-divider {
+    display: none;
+  }
+  .db-workspace-topbar-actions {
+    flex-shrink: 0;
+  }
+  .db-preview-context-map {
+    padding: 8px 10px;
+  }
+  .db-preview-context-list {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .db-preview-context-item dd {
+    /* Drop the ellipsis truncation — wrap freely instead. */
+    white-space: normal;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-all;
+  }
+  .db-preview-viewport-toggle {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Hide the surface segment too — only project breadcrumb survives on
+   * the narrowest phones so action buttons keep their full label. */
+  .db-workspace-crumb-surface,
+  .db-workspace-crumb-project + .db-workspace-crumb-divider {
+    display: none;
+  }
+  .db-workspace-split {
+    grid-template-rows: minmax(0, 40vh) minmax(0, 1fr);
+  }
 }
 `
 

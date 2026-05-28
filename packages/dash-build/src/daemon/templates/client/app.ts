@@ -1432,9 +1432,86 @@ export const DASHBOARD_JS = `
         });
       return;
     }
+    // Tier 6 — Export PPT button. Renders as an <a download> when a run id is
+    // present so the browser handles the download natively. When the workspace
+    // is empty the link carries data-export-disabled="true" and we swallow
+    // the click with a toast so the user understands why nothing happened.
+    if (action === "export-pptx") {
+      if (actionBtn.getAttribute("data-export-disabled") === "true") {
+        ev.preventDefault();
+        showToast({
+          message: "Submit a prompt first — there's nothing to export yet",
+          kind: "warn",
+        });
+        return;
+      }
+      // Let the browser follow the href via the download attribute.
+      return;
+    }
     // "reset" + other actions are still handled by their own dedicated
     // listeners (see composer / dashboard wiring above).
   });
+
+  // ---------- Tier 6: Layer 2 theme runtime switcher ----------
+  // Hydrates the workspace theme picker. On mount we fetch /api/themes to
+  // populate the dropdown, restore any persisted choice from localStorage
+  // (dash-build-theme), and bind a change handler that swaps the accent
+  // overlay by injecting a link tag against /api/themes/:name/css.
+  var DASH_BUILD_THEME_STORAGE_KEY = "dash-build-theme";
+  var DASH_BUILD_THEME_LINK_ID = "db-theme-overlay";
+  function applyDashBuildTheme(name) {
+    var existing = document.getElementById(DASH_BUILD_THEME_LINK_ID);
+    if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+    if (!name) return;
+    var link = document.createElement("link");
+    link.id = DASH_BUILD_THEME_LINK_ID;
+    link.rel = "stylesheet";
+    link.href = "/api/themes/" + encodeURIComponent(name) + "/css";
+    link.setAttribute("data-dash-build-theme", name);
+    document.head.appendChild(link);
+  }
+  function hydrateThemePicker(picker) {
+    var select = picker.querySelector("[data-workspace-theme-select]");
+    if (!select) return;
+    var current = picker.getAttribute("data-current-theme") || "";
+    var stored = "";
+    try {
+      stored = window.localStorage.getItem(DASH_BUILD_THEME_STORAGE_KEY) || "";
+    } catch (_) { /* private mode: ignore */ }
+    fetch("/api/themes", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (body) {
+        if (!body || !Array.isArray(body.themes)) return;
+        body.themes.forEach(function (t) {
+          var opt = document.createElement("option");
+          opt.value = t.name;
+          opt.textContent = t.title + " (" + t.accentName + ")";
+          select.appendChild(opt);
+        });
+        var pick = stored || (current && current.length > 0 ? "" : "");
+        if (pick) {
+          select.value = pick;
+          applyDashBuildTheme(pick);
+        }
+      })
+      .catch(function () { /* offline: silently skip */ });
+    select.addEventListener("change", function () {
+      var value = select.value;
+      applyDashBuildTheme(value);
+      try {
+        if (value) window.localStorage.setItem(DASH_BUILD_THEME_STORAGE_KEY, value);
+        else window.localStorage.removeItem(DASH_BUILD_THEME_STORAGE_KEY);
+      } catch (_) { /* ignore */ }
+      showToast({
+        message: value ? "Theme switched to " + value : "Theme reset to project default",
+        kind: "info",
+      });
+    });
+  }
+  var dbThemePickers = document.querySelectorAll("[data-workspace-theme-picker]");
+  for (var dbI = 0; dbI < dbThemePickers.length; dbI++) {
+    hydrateThemePicker(dbThemePickers[dbI]);
+  }
 
   // ---------- Sprint 1A: sandbox bootstrap button ----------
   // Topbar trigger that kicks the orchestrator ensureWorkspaceBootstrap()
@@ -1860,6 +1937,27 @@ export const DASHBOARD_JS = `
     }
   }
 
+  // Tier 2 #5 bug — Agent D's tab handler only listened to click events, so
+  // programmatic 'location.hash = "#tab=audit"' (used by deep-links + the
+  // Files-tab open-file flow) silently failed to activate the target tab.
+  //
+  // applyHashTab parses the current URL hash and routes BOTH tab + viewport
+  // updates through the same setters used by click handlers. Idempotent —
+  // calling it when the hash matches the current active tab is a no-op
+  // (setWorkspaceTab toggles attributes against the desired state).
+  //
+  // Bonus: we explicitly handle the empty-hash case (someone cleared the
+  // hash) by falling back to the default tab + viewport. Without this branch
+  // the user would be stuck on whatever tab was last set.
+  function applyHashTab() {
+    var path = location.pathname || "";
+    if (path.indexOf("/workspace") !== 0) return;
+    var state = parseWorkspaceHash();
+    setWorkspaceTab(state.tab || "component");
+    setWorkspaceViewport(state.viewport || "desktop");
+    if (typeof highlightCodePanel === "function") highlightCodePanel();
+  }
+
   function hookWorkspaceState() {
     var path = location.pathname || "";
     if (path.indexOf("/workspace") !== 0) return;
@@ -1868,6 +1966,14 @@ export const DASHBOARD_JS = `
     var state = parseWorkspaceHash();
     if (state.tab) setWorkspaceTab(state.tab);
     if (state.viewport) setWorkspaceViewport(state.viewport);
+    // Listen for hash changes (deep-link clicks, programmatic
+    // location.hash = '#tab=...') so the active tab/viewport mirrors the URL.
+    // Guarded by data-wired so repeat boots (HMR, double-mount) don't
+    // stack duplicate listeners.
+    if (!document.documentElement.getAttribute("data-workspace-hash-wired")) {
+      document.documentElement.setAttribute("data-workspace-hash-wired", "true");
+      window.addEventListener("hashchange", applyHashTab);
+    }
     // Diff tab uses language-diff blocks server-rendered into the panel; run
     // highlight.js once on boot so colors paint immediately.
     if (typeof highlightCodePanel === "function") highlightCodePanel();
