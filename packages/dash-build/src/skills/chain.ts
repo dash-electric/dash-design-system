@@ -27,11 +27,13 @@ import { loadSkillContext } from "./skill-loader.js"
 import { composeSystemPrompt, inferRepoContextPack } from "./prompt-composer.js"
 import { introspectRepo } from "./repo-introspector.js"
 import { loadExistingFilesContext } from "./existing-file-reader.js"
+import { loadDSContext } from "./ds-catalog-loader.js"
 import { extractText, parseResponse } from "./response-parser.js"
 import { validateOutput } from "./validator.js"
 import { detectOutputMode } from "./output-mode-detector.js"
 import type {
   ChainDeps,
+  DSContext,
   ExistingFilesContext,
   GenerateInput,
   GenerateResult,
@@ -124,8 +126,10 @@ export async function generateWithSkillChain(
   // ── Stage 2 + 3: load design + skill context in parallel ─────────────────
   const loadDesign = deps.loadDesign ?? (() => loadDesignContext({ cwd: input.repoPath }))
   const loadSkill = deps.loadSkill ?? loadSkillContext
+  const loadDSCtxFn =
+    deps.loadDSContext ?? (({ repoPath }) => loadDSContext({ cwd: repoPath }))
 
-  const [design, skill, introspection, existingFiles] = await Promise.all([
+  const [design, skill, introspection, existingFiles, dsContext] = await Promise.all([
     loadDesign().catch(() => ({
       cardinalRules: "",
       designContract: "",
@@ -149,6 +153,8 @@ export async function generateWithSkillChain(
       prompt: input.prompt,
       contextPack: repoContext,
     }).catch<ExistingFilesContext>(() => ({ resolutions: [], files: [] })),
+    // Phase B Tier 0A/0B/0L — Dash DS catalog + compressed rules + glossary.
+    loadDSCtxFn({ repoPath: input.repoPath }).catch<DSContext | null>(() => null),
   ])
 
   // ── Stage 4: compose system prompt ───────────────────────────────────────
@@ -168,6 +174,7 @@ export async function generateWithSkillChain(
     existingFiles,
     outputMode,
     intake: input.intake,
+    dsContext,
   })
 
   // ── Stage 5: call Claude ─────────────────────────────────────────────────
@@ -207,6 +214,8 @@ export async function generateWithSkillChain(
   const validation = validateOutput(parsed, design, {
     existingFiles,
     intake: input.intake ?? null,
+    repoContext,
+    prompt: input.prompt,
   })
 
   return {

@@ -17,8 +17,15 @@ import type {
   ClassificationResult,
   DbCatalog,
 } from "../intake/index.js"
+import type { DSContext } from "./ds-catalog-loader.js"
 
 export type { RepoIntrospection } from "./repo-introspector.js"
+export type {
+  DSCatalog,
+  DSCatalogAtom,
+  DSContext,
+  LoadDSContextOpts,
+} from "./ds-catalog-loader.js"
 
 // ---------------------------------------------------------------------------
 // Intake pack — BE-aware context that runs BEFORE the skill chain. Attached by
@@ -329,6 +336,8 @@ export interface ChainDeps {
   anthropic?: AnthropicLike
   loadDesign?: () => Promise<DesignContext>
   loadSkill?: (opts: { repoPath: string }) => Promise<SkillContext>
+  /** Optional Phase B — load Dash DS catalog + compressed rules + glossary. */
+  loadDSContext?: (opts: { repoPath: string }) => Promise<DSContext>
   evaluatePRD?: (input: PRDEvalInput) => Promise<PRDEval>
   modelId?: string
   /** Defaults to randomUUID. Injectable for deterministic tests. */

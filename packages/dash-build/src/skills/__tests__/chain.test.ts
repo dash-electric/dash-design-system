@@ -44,9 +44,13 @@ function passingDeps(overrides: Partial<ChainDeps> = {}): ChainDeps {
           {
             type: "text",
             text:
-              "Generated:\n\n```tsx [src/pages/suspensions.tsx]\n" +
+              // backoffice surface mandates .js (Pages Router + JavaScript).
+              // Imports a Dash DS atom so the Phase 0D DS-coverage gate
+              // passes even when the prompt is UI-shaped ("dashboard").
+              "Generated:\n\n```js [src/pages/suspensions.js]\n" +
               'import { useState } from "react"\n' +
-              'export default function P() {\n  return <div className="bg-primary-500 text-text-strong-950">Anda</div>\n}\n' +
+              'import { Badge } from "@dash/ui"\n' +
+              'export default function P() {\n  return <Badge variant="success" className="bg-primary-500 text-text-strong-950">Anda</Badge>\n}\n' +
               "```\n\nUses useState. No banned libs.",
           },
         ],
@@ -203,7 +207,7 @@ describe("generateWithSkillChain", () => {
     )
     if (r.kind !== "generated") throw new Error("expected generated")
     expect(r.response.files).toHaveLength(1)
-    expect(r.response.files[0].path).toBe("src/pages/suspensions.tsx")
+    expect(r.response.files[0].path).toBe("src/pages/suspensions.js")
     expect(r.validation.passed).toBe(true)
     expect(r.meta.promptId).toBe("fixed-id")
     expect(r.meta.modelId).toBe("claude-test")
@@ -287,5 +291,126 @@ describe("generateWithSkillChain", () => {
     if (r.kind === "generated") {
       expect(r.validation.warnings.some((w) => w.toLowerCase().includes("degraded"))).toBe(true)
     }
+  })
+
+  // ─── Phase B Tier 0A/0B/0J/0K/0L ──────────────────────────────────────────
+  describe("Phase B — DS-first directive + catalog + stack mandate + voice", () => {
+    it("injects the DS-FIRST directive block into the system prompt (Tier 0A)", async () => {
+      const deps = passingDeps()
+      await generateWithSkillChain(
+        { prompt: RICH_PROMPT, repoPath: process.cwd() },
+        deps,
+      )
+      const call = (deps.anthropic!.messages.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
+      expect(call.system).toContain("DS-FIRST DIRECTIVE")
+      expect(call.system).toContain('import { X } from "@dash/ui"')
+      expect(call.system).toContain("anti-pattern")
+      expect(call.system).toContain("Badge")
+    })
+
+    it("injects the per-repo stack mandate block (Tier 0J)", async () => {
+      const deps = passingDeps()
+      await generateWithSkillChain(
+        {
+          prompt: "Add a billing tab reachable from account navigation",
+          repoPath: process.cwd(),
+          selectedRepo: "dash/portal-v2",
+        },
+        deps,
+      )
+      const call = (deps.anthropic!.messages.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
+      expect(call.system).toContain("STACK MANDATE for portal-v2")
+      expect(call.system).toContain("Jotai")
+      expect(call.system).toContain("App Router")
+    })
+
+    it("injects the voice register block (Tier 0K)", async () => {
+      const deps = passingDeps()
+      await generateWithSkillChain(
+        { prompt: RICH_PROMPT, repoPath: process.cwd() },
+        deps,
+      )
+      const call = (deps.anthropic!.messages.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
+      expect(call.system).toContain("VOICE REGISTER")
+      expect(call.system).toMatch(/formal "Anda"/i)
+      expect(call.system).toContain('"kamu"')
+    })
+
+    it("injects the DS catalog when loadDSContext returns one (Tier 0B)", async () => {
+      const deps = passingDeps({
+        loadDSContext: async () => ({
+          catalog: {
+            atoms: [
+              {
+                name: "badge",
+                title: "Badge",
+                description: "Inline status tag — 6 statuses × 4 styles.",
+                categories: ["component"],
+                type: "registry:ui",
+              },
+              {
+                name: "button",
+                title: "Button",
+                description: "Primary CTA.",
+                categories: ["component"],
+                type: "registry:ui",
+              },
+            ],
+            blocks: [],
+            templates: [],
+            total: 2,
+            source: "/tmp/registry.json",
+          },
+          compressedRules: "## Compressed rules — Always use semantic tokens.",
+          domainGlossary: "## Glossary — DRV- prefix denotes a driver record.",
+          loadedSources: ["/tmp/registry.json"],
+          missingSources: [],
+        }),
+      })
+      await generateWithSkillChain(
+        { prompt: RICH_PROMPT, repoPath: process.cwd() },
+        deps,
+      )
+      const call = (deps.anthropic!.messages.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
+      expect(call.system).toContain("Dash DS Catalog (registry-first import targets)")
+      expect(call.system).toContain("`badge`")
+      expect(call.system).toContain("`button`")
+      expect(call.system).toContain("Compressed Dash AI rules")
+      expect(call.system).toContain("DRV-")
+    })
+
+    it("skips the catalog block when loadDSContext returns an empty registry", async () => {
+      const deps = passingDeps({
+        loadDSContext: async () => ({
+          catalog: { atoms: [], blocks: [], templates: [], total: 0, source: null },
+          compressedRules: "",
+          domainGlossary: "",
+          loadedSources: [],
+          missingSources: ["/missing/registry.json"],
+        }),
+      })
+      await generateWithSkillChain(
+        { prompt: RICH_PROMPT, repoPath: process.cwd() },
+        deps,
+      )
+      const call = (deps.anthropic!.messages.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
+      // The section header ends with "(registry-first import targets)" —
+      // anchor against the parenthesised suffix because the DS-FIRST
+      // directive block already mentions "Dash DS Catalog" in its body.
+      expect(call.system).not.toContain("Dash DS Catalog (registry-first import targets)")
+    })
+
+    it("propagates a DS-context loader exception without blocking generation", async () => {
+      const deps = passingDeps({
+        loadDSContext: async () => {
+          throw new Error("registry read failed")
+        },
+      })
+      const r = await generateWithSkillChain(
+        { prompt: RICH_PROMPT, repoPath: process.cwd() },
+        deps,
+      )
+      expect(r.kind).toBe("generated")
+    })
   })
 })

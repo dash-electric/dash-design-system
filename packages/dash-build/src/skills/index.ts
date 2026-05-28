@@ -7,7 +7,20 @@ export { generateWithSkillChain, DEFAULT_MODEL_ID } from "./chain.js"
 export { evaluatePromptScope, countPrdSectionsTouched } from "./prd-evaluator.js"
 export { loadDesignContext, findRepoRoot } from "./design-loader.js"
 export { loadSkillContext } from "./skill-loader.js"
-export { composeSystemPrompt, inferRepoContextPack, BANNED_IMPORTS } from "./prompt-composer.js"
+export {
+  composeSystemPrompt,
+  inferRepoContextPack,
+  BANNED_IMPORTS,
+  DS_FIRST_DIRECTIVE_BLOCK,
+  VOICE_REGISTER_BLOCK,
+} from "./prompt-composer.js"
+export {
+  loadDSContext,
+  parseRegistry,
+  renderDSCatalogBlock,
+  truncateGlossary,
+  hasRegistry,
+} from "./ds-catalog-loader.js"
 export { parseResponse, extractText, isSafePath, parseFenceHeader } from "./response-parser.js"
 export { validateOutput } from "./validator.js"
 export { introspectRepo } from "./repo-introspector.js"
@@ -42,4 +55,8 @@ export type {
   ExistingFileContent,
   ExistingFilesContext,
   PathResolution,
+  DSContext,
+  DSCatalog,
+  DSCatalogAtom,
+  LoadDSContextOpts,
 } from "./types.js"

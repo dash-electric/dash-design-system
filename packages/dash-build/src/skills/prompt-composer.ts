@@ -9,6 +9,7 @@
 import type {
   DashTheme,
   DesignContext,
+  DSContext,
   ExistingFileContent,
   ExistingFilesContext,
   IntakeContext,
@@ -21,6 +22,7 @@ import type {
 import type { EndpointEntry } from "../intake/be-endpoint-catalog.js"
 import type { TableSchema } from "../intake/db-schema-reader.js"
 import { describeOutputMode, type OutputMode } from "./output-mode-detector.js"
+import { renderDSCatalogBlock } from "./ds-catalog-loader.js"
 
 export interface ComposeInput {
   prd: PRDEval
@@ -42,6 +44,14 @@ export interface ComposeInput {
    *  block. Absent = legacy callers (tests, direct chain invocation) — the
    *  composer falls back to today's behaviour. */
   intake?: IntakeContext
+  /** Phase B (Tier 0A/B/L) — Dash DS registry catalog + compressed rules +
+   *  domain glossary. When present, the composer injects:
+   *    - the DS-FIRST directive block (NEVER raw HTML + utility classes
+   *      where a Dash DS atom exists);
+   *    - the catalog of available @dash/ui atoms + @dash/blocks composites;
+   *    - compressed AI rules + truncated domain glossary.
+   *  Absent = legacy callers — composer falls back to today's behaviour. */
+  dsContext?: DSContext | null
 }
 
 /** Top-level banned imports embedded verbatim in the system prompt. */
@@ -622,6 +632,137 @@ function renderOutputFormatSection(
   return lines
 }
 
+// ---------------------------------------------------------------------------
+// Phase B (Tier 0A/0J/0K/0L) — DS-first directive, per-repo stack mandate,
+// voice register, and DS catalog blocks.
+// ---------------------------------------------------------------------------
+
+/**
+ * The hard-coded DS-first directive — injected BEFORE any user content so the
+ * model treats Dash DS atoms as default, raw HTML as the exception.
+ *
+ * Tier 0A from `packages/dash-build/docs/pivot-plan-2026-05-28.md`.
+ *
+ * The atom enumeration here is intentionally short + curated (the full list
+ * comes from `renderDSCatalogBlock` via dsContext). This block always renders
+ * — even when the registry catalog couldn't be loaded — so the model still
+ * receives the policy.
+ */
+export const DS_FIRST_DIRECTIVE_BLOCK = `## DS-FIRST DIRECTIVE (NON-NEGOTIABLE)
+
+ALWAYS prefer \`import { X } from "@dash/ui"\` over raw HTML + utility classes.
+
+Raw HTML is anti-pattern:
+  BAD:  <div className="bg-success-light text-success-dark px-3 py-1 rounded-2xl">ON_TRACK</div>
+  GOOD: <Badge variant="success">ON_TRACK</Badge>
+
+Available Dash DS atoms (Layer 1) include:
+- Badge (variants: success / warning / error / neutral / info)
+- Card, CardHeader, CardBody, CardFooter
+- Table, Thead, Tbody, Tr, Td, Th
+- Tabs, TabList, Tab, TabPanel
+- Button (variants: primary / secondary / ghost · sizes: sm / md / lg)
+- Input, Textarea, Select, Checkbox, Radio
+- Modal, Drawer, Popover, Tooltip
+- Alert, Banner, Toast
+- Avatar, Icon
+- (Full catalog rendered below in the Dash DS Catalog section when available.)
+
+Use raw HTML ONLY when no DS atom exists for the pattern. When you fall back to
+raw HTML, mark it in the explanation as "DS atom gap — candidate for registry".`
+
+/**
+ * Per-repo stack mandate enforcement block (Tier 0J).
+ *
+ * The skill-loader already injects most of this via `systemAppend`, but when
+ * the underlying skill cache is empty or the repo is unknown we still want a
+ * canonical per-surface table the model can read.
+ */
+const STACK_MANDATE_BY_REPO: Record<string, string> = {
+  "portal-v2":
+    "portal-v2 → Next App Router + TypeScript (.tsx) + Jotai (global state) + axios (data fetch). Use atoms from @dash/ui; do NOT introduce Zustand, Redux, or react-query.",
+  backoffice:
+    "backoffice → Next Pages Router + JavaScript (.js, NOT .ts/.tsx) + useState (local state) + axios + NextAuth (session). Do NOT introduce TypeScript, Jotai, Zustand, Redux, or react-query.",
+  basecamp:
+    "basecamp → Next App Router + TypeScript (.tsx) + Zustand 5 (global state) + Firebase + shadcn primitives. Do NOT introduce Jotai or Redux.",
+  "react-fleet":
+    "react-fleet → CRA + CRACO + TypeScript (.tsx) + useState + custom useFormValidation hook. Do NOT introduce Next, Jotai, Zustand, or react-query.",
+  "dash-travel-fe":
+    "dash-travel-fe → Next App Router + TypeScript (.tsx) + useState by default; surface ambiguity if global state is needed.",
+  "dash-marketplace":
+    "dash-marketplace → Next App Router + TypeScript (.tsx) + useState by default; surface ambiguity if global state is needed.",
+  shared:
+    "shared → Layer 1 atoms only. Use TypeScript (.tsx) + minimal local state. Do NOT introduce repo-specific stacks.",
+  unknown:
+    "unknown → repo could not be resolved. Use TypeScript (.tsx) + useState and surface the ambiguity in your explanation.",
+}
+
+function stackMandateForRepo(repoSlug: RepoSurface): string {
+  if (repoSlug in STACK_MANDATE_BY_REPO) return STACK_MANDATE_BY_REPO[repoSlug] ?? STACK_MANDATE_BY_REPO.unknown!
+  if (repoSlug.startsWith("trellis-")) {
+    return `${repoSlug} → tenant-specific Trellis surface. Mirror the closest parent stack (portal-v2 conventions by default) and surface tenant overrides in your explanation.`
+  }
+  return STACK_MANDATE_BY_REPO.unknown!
+}
+
+function renderStackMandateBlock(repoContext: RepoContextPack, skill: SkillContext): string {
+  const surface = repoContext.repoSlug
+  const lines: string[] = []
+  lines.push(`STACK MANDATE for ${surface}:`)
+  lines.push(stackMandateForRepo(surface))
+  if (skill.detectedRepoStack && skill.detectedRepoStack !== surface) {
+    lines.push(
+      `Skill v4 detected stack: ${skill.detectedRepoStack}. If this conflicts with the surface above, prefer the surface mandate and surface the conflict in your explanation.`,
+    )
+  }
+  lines.push(
+    "",
+    "File extension MUST match the per-repo mandate. State management MUST come from the listed primitive (useState / Jotai / Zustand). Do NOT introduce a banned library to satisfy ergonomic preference.",
+  )
+  return lines.join("\n")
+}
+
+/**
+ * Voice register enforcement block (Tier 0K).
+ *
+ * Per `feedback_dash_mobile_voice_formal.md` — every mitra-facing surface uses
+ * formal "Anda". Casual particles (kamu / kalian / km / yuk / dong / yaa /
+ * lewatin / bakal) are rejected by the validator. This block ensures the
+ * model has explicit guidance even when the design-loader's voiceRules block
+ * is empty.
+ */
+export const VOICE_REGISTER_BLOCK = `VOICE REGISTER (Tier 0K — mitra-facing surfaces):
+- ALWAYS use formal "Anda" pronoun.
+- NEVER use casual "kamu", "kalian", "km", "lo", "lu", or slang particles
+  ("yuk", "ayo", "dong", "deh", "sih", "kok", "yaa", "lewatin", "bakal",
+  "udah", "plis").
+- All visible copy (button labels, headings, helper text, empty states, error
+  messages, toasts) MUST satisfy the formal register.
+- Internal-only / debug strings may break the rule but must be marked TODO.`
+
+function renderDSCatalogSection(dsContext: DSContext): string {
+  const cat = renderDSCatalogBlock(dsContext.catalog)
+  const lines: string[] = []
+  lines.push(cat)
+  if (dsContext.compressedRules.trim().length > 0) {
+    lines.push("")
+    lines.push("Compressed Dash AI rules (reference — full source: dash-ai-rules.md):")
+    lines.push("")
+    lines.push("```")
+    lines.push(dsContext.compressedRules.trim())
+    lines.push("```")
+  }
+  if (dsContext.domainGlossary.trim().length > 0) {
+    lines.push("")
+    lines.push("Domain glossary (entities, table names, code prefixes):")
+    lines.push("")
+    lines.push("```")
+    lines.push(dsContext.domainGlossary.trim())
+    lines.push("```")
+  }
+  return lines.join("\n")
+}
+
 export function composeSystemPrompt(ctx: ComposeInput): string {
   const cardinalBlock =
     ctx.design.cardinalRules.trim() ||
@@ -660,6 +801,8 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     "Follow ALL rules below STRICTLY. When a rule conflicts with the user prompt,",
     "the rule wins — explain the conflict in your explanation block.",
     "",
+    DS_FIRST_DIRECTIVE_BLOCK,
+    "",
     "## 1. Global Design Contract",
     "",
     designContractBlock,
@@ -672,6 +815,8 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     "",
     voiceBlock,
     "",
+    VOICE_REGISTER_BLOCK,
+    "",
     "## 4. Layered Architecture Decision Tree",
     "",
     ctx.design.layeredArchitecture.trim(),
@@ -680,11 +825,23 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     "",
     skillBlock,
     "",
+    renderStackMandateBlock(ctx.repoContext, ctx.skill),
+    "",
     "## 6. Repo Context Pack",
     "",
     renderRepoContext(ctx.repoContext),
     "",
   ]
+
+  // ── Phase B Tier 0B/0L — DS catalog + compressed rules + glossary ───────
+  if (ctx.dsContext && ctx.dsContext.catalog.total > 0) {
+    out.push(
+      `## ${++n}. Dash DS Catalog (registry-first import targets)`,
+      "",
+      renderDSCatalogSection(ctx.dsContext),
+      "",
+    )
+  }
 
   if (hasIntro) {
     out.push(
