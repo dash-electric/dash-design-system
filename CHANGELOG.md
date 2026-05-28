@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `dash audit` (and any `dash` CLI command that touches the registry) crashed
+  with `ERR_MODULE_NOT_FOUND: Cannot find module zod-schemas.js` because
+  `@dash/registry-schema` had no build step and shipped its `src/` directly.
+  The package now emits `dist/` via `tsc`, and `main` / `exports` resolve to
+  the built `.js` artifacts so Node can load them at runtime.
+  ([packages/registry-schema/package.json](packages/registry-schema/package.json),
+  [packages/registry-schema/tsconfig.json](packages/registry-schema/tsconfig.json))
+
 ## [0.6.0] - 2026-05-21
 
 ### Added — Dash Build MVP
