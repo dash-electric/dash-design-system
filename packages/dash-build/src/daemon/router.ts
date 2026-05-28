@@ -10,6 +10,7 @@ import {
   workspaceRunId,
 } from "./routes/home.js"
 import { handleOwner } from "./routes/owner.js"
+import { handleOwnerHealth } from "./routes/owner-health.js"
 import { handleHealth } from "./routes/health.js"
 import { handleStatus } from "./routes/status.js"
 import { handleStatic } from "./routes/static.js"
@@ -31,6 +32,9 @@ import { handleOwnerBranches } from "./routes/api/owner/branches.js"
 import { handleOwnerCost } from "./routes/api/owner/cost.js"
 import { handleOwnerDSCandidates } from "./routes/api/owner/ds-candidates.js"
 import { handleOwnerActivity } from "./routes/api/owner/activity.js"
+import { handleDSCandidates } from "./routes/api/ds-candidates.js"
+import { handleExportRoute, isExportPath } from "./routes/api/export.js"
+import { handleThemesRoute, isThemesPath } from "./routes/api/themes.js"
 import type { AutoReconnect } from "../auth/openai/auto-reconnect.js"
 
 export interface RouterDeps {
@@ -73,6 +77,12 @@ export async function router(
     }
     if (pathname === "/owner") {
       return await handleOwner(res, deps.store)
+    }
+    // Tier 6 — Owner standalone health probe. Lives under `/owner/*` so a
+    // reverse proxy that only forwards the Owner surface still gets a
+    // liveness endpoint.
+    if (pathname === "/owner/health") {
+      return handleOwnerHealth(res, deps.store)
     }
     if (pathname === "/health") {
       return handleHealth(res, deps.store)
@@ -143,6 +153,19 @@ export async function router(
     }
     if (pathname === "/api/owner/activity") {
       return await handleOwnerActivity(req, res, { store: deps.store })
+    }
+    // Tier 6 — content-based DS candidate scanner (complements the
+    // name-based `/api/owner/ds-candidates` surface above).
+    if (pathname === "/api/ds-candidates") {
+      return await handleDSCandidates(req, res, { store: deps.store })
+    }
+    // Tier 6 — PPT/HTML deck export per run.
+    if (isExportPath(pathname)) {
+      return await handleExportRoute(req, res, pathname, deps.store)
+    }
+    // Tier 6 — Layer 2 theme runtime switcher endpoints.
+    if (isThemesPath(pathname)) {
+      return await handleThemesRoute(req, res, pathname)
     }
     return notFound(res)
   } catch (err) {

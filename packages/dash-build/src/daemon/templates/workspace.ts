@@ -26,6 +26,7 @@ import {
   renderInitialPreviewScript,
   type PreviewInitialBlob,
 } from "../preview-initial.js"
+import { buildSurfaceDocsUrl } from "../../constants/docs.js"
 
 export interface WorkspaceOptions {
   /** Active run id (matches a PromptRecord). Optional — null = empty state. */
@@ -151,7 +152,12 @@ export function renderWorkspace(
     opts.surface ?? project?.theme ?? project?.repoFullName ?? "shared"
   const threadTitle = thread?.title ?? "New thread"
 
-  const sidebar = renderSidebar({ active: null, recents, collapsed: true })
+  const sidebar = renderSidebar({
+    active: null,
+    recents,
+    collapsed: true,
+    docsSurface: opts.surface ?? project?.theme ?? null,
+  })
 
   // Map run id. If a cold-load preview blob came back from disk, prefer its
   // canonical id — the URL may carry a truncated badge id (e.g. `prm_20cb`)
@@ -211,6 +217,24 @@ export function renderWorkspace(
     </div>
   </div>`
 
+  // Tier 6 — Surface 1 Docs integration. The crumb surface badge is now a
+  // direct link to the Dash DS docs surface page so any team member can
+  // pivot from the workspace to the canonical pattern + voice guidance for
+  // the surface in one click. Builds via `buildSurfaceDocsUrl()` so the
+  // hostname is controlled by `DASH_DOCS_URL` env.
+  const surfaceDocsUrl = buildSurfaceDocsUrl(surface)
+  // Tier 6 — Export PPT button + Layer 2 theme picker live in the topbar
+  // actions strip. The button enables when a `runId` is present (cold-load
+  // or post-prompt) — empty workspaces have nothing to export so the button
+  // renders disabled. The theme picker hits `/api/themes` on first open and
+  // `/api/themes/:name/css` when the selection changes; the client-side
+  // handler injects the CSS as a `<link>` overlay so accent tokens swap at
+  // runtime without a reload.
+  const runId = opts.runId ?? ""
+  const exportDisabled = runId.length === 0
+  const exportHref = exportDisabled
+    ? "#"
+    : `/api/runs/${encodeURIComponent(runId)}/export/pptx`
   const body = `<section class="db-workspace-shell" data-shell="lovable">
     ${sidebar}
     <section class="db-workspace-main" aria-label="Workspace">
@@ -219,11 +243,49 @@ export function renderWorkspace(
           <a class="db-workspace-crumb-back" href="/" aria-label="Back to home">←</a>
           <span class="db-workspace-crumb-project">${escapeHtml(projectName)}</span>
           <span class="db-workspace-crumb-divider" aria-hidden="true">·</span>
-          <span class="db-workspace-crumb-surface">${escapeHtml(surface)}</span>
+          <a
+            class="db-workspace-crumb-surface"
+            href="${escapeHtml(surfaceDocsUrl)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-workspace-surface-docs
+            data-surface="${escapeHtml(surface)}"
+            title="Open Dash DS docs for this surface"
+          >${escapeHtml(surface)}</a>
           <span class="db-workspace-crumb-divider" aria-hidden="true">·</span>
           <span class="db-workspace-crumb-thread">${escapeHtml(threadTitle)}</span>
         </div>
         <div class="db-workspace-topbar-actions">
+          <div
+            class="db-workspace-theme-picker"
+            data-workspace-theme-picker
+            data-current-theme="${escapeHtml(surface)}"
+          >
+            <label class="db-workspace-theme-picker-label" for="db-workspace-theme">
+              <span class="db-workspace-theme-picker-dot" aria-hidden="true"></span>
+              <span class="db-workspace-theme-picker-text">Theme</span>
+            </label>
+            <select
+              id="db-workspace-theme"
+              class="db-workspace-theme-picker-select"
+              data-workspace-theme-select
+              aria-label="Layer 2 theme override"
+            >
+              <option value="">Default (project)</option>
+            </select>
+          </div>
+          <a
+            class="db-button db-button-ghost db-button-compact"
+            href="${escapeHtml(exportHref)}"
+            data-workspace-action="export-pptx"
+            data-export-disabled="${exportDisabled ? "true" : "false"}"
+            data-run-id="${escapeHtml(runId)}"
+            aria-label="Export deck for this run"
+            ${exportDisabled ? 'aria-disabled="true" tabindex="-1"' : 'download="dash-build-deck.html"'}
+          >
+            <span aria-hidden="true">⎙</span>
+            <span>Export PPT</span>
+          </a>
           <button
             type="button"
             class="db-button db-button-ghost db-button-compact"

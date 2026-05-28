@@ -18,6 +18,7 @@
 
 import { escapeHtml } from "./layout.js"
 import type { Project } from "../state/types.js"
+import { buildSurfaceDocsUrl, getDashDocsUrl } from "../../constants/docs.js"
 
 export interface SidebarRecent {
   /** Project id. */
@@ -48,6 +49,12 @@ export interface SidebarOptions {
   recents?: SidebarRecent[]
   /** When true, marks the sidebar collapsed for narrow viewports. */
   collapsed?: boolean
+  /**
+   * Tier 6 — Surface 1 Docs integration. When provided, the sidebar
+   * footer renders an "Open docs" link pointing at the matching Dash DS
+   * docs surface page. Falls back to the docs root when omitted.
+   */
+  docsSurface?: string | null
 }
 
 interface NavItem {
@@ -172,6 +179,19 @@ export function renderSidebar(opts: SidebarOptions = {}): string {
         <span class="db-sidebar-new-icon" aria-hidden="true">+</span>
         <span class="db-sidebar-new-label">New Project</span>
       </button>
+      <a
+        class="db-sidebar-docs"
+        href="${escapeHtml(opts.docsSurface ? buildSurfaceDocsUrl(opts.docsSurface) : getDashDocsUrl())}"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-sidebar-docs
+        data-docs-surface="${escapeHtml(opts.docsSurface ?? "")}"
+        title="Open Dash DS docs"
+        aria-label="Open Dash DS docs in a new tab"
+      >
+        <span class="db-sidebar-docs-icon" aria-hidden="true">📖</span>
+        <span class="db-sidebar-docs-label">Open docs</span>
+      </a>
       <a class="db-sidebar-upgrade" href="/?upgrade=plan">
         <span class="db-sidebar-upgrade-title">Upgrade</span>
         <span class="db-sidebar-upgrade-sub">Unlock private workspaces</span>
