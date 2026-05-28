@@ -1,0 +1,76 @@
+/*
+ * Dash Dashboard — global styles.
+ *
+ * Tokens mirror the canonical Layer 0 ramp from
+ * apps/docs/registry/dash/foundation/tokens/colors.css.
+ *
+ * Per design.md: hairline borders, no decorative gradients,
+ * 8px radius on cards, operational density.
+ * Light mode only for MVP.
+ */
+
+:root {
+  /* Brand */
+  --dash-purple: #5e2aac;
+  --dash-purple-600: #4d2392;
+  --dash-purple-100: #ece5f7;
+
+  /* Neutrals (slate ramp) */
+  --bg-app: #f5f7fa;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f2f5f8;
+
+  --text-strong: #181b25;
+  --text-body: #2b303b;
+  --text-sub: #525866;
+  --text-soft: #717784;
+  --text-disabled: #99a0ae;
+
+  --border-soft: #e1e4ea;
+  --border-stronger: #cacfd8;
+
+  /* State (semantic) */
+  --state-ok-fg: #1f8a4c;
+  --state-ok-bg: #e6f5ec;
+  --state-warn-fg: #b06a00;
+  --state-warn-bg: #fff3eb;
+  --state-down-fg: #d02533;
+  --state-down-bg: #ffebec;
+
+  /* Radius / shadow */
+  --radius-card: 8px;
+  --radius-pill: 999px;
+
+  /* Type scale */
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-app);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--dash-purple);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+}

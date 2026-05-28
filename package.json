@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "pnpm --filter @dash/docs dev",
+    "dashboard:dev": "pnpm --filter @dash/dashboard dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
