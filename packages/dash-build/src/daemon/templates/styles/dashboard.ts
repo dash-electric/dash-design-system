@@ -1484,6 +1484,144 @@ button { font-family: inherit; }
 .db-chat-review-stat[data-tone="warn"] { border-color: color-mix(in srgb, var(--warn) 44%, var(--rule)); }
 .db-chat-review-stat[data-tone="warn"] strong { color: var(--warn); }
 
+/* Big Bug 4 (2026-05-28) — Claude Code action stream.
+   Replaces the wall-of-text "review" card with a compact, scannable list
+   of status-iconed lines. Each line is either a plain <div.db-chat-action>
+   or a <details.db-chat-action> when there's expandable detail. Tone-coded
+   left borders (success / warn / error / info / pending) give a quick
+   visual scan of what passed vs needs attention. */
+.db-chat-actions {
+  width: min(620px, 92%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 2px 0 0;
+}
+.db-chat-action {
+  display: block;
+  padding: 0;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-left-width: 3px;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink);
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.db-chat-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  min-height: 28px;
+}
+details.db-chat-action > summary.db-chat-action-row {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+details.db-chat-action > summary.db-chat-action-row::-webkit-details-marker {
+  display: none;
+}
+details.db-chat-action:hover {
+  background: color-mix(in srgb, var(--paper-2) 88%, var(--paper));
+  border-color: color-mix(in srgb, var(--rule) 60%, var(--ink) 6%);
+}
+.db-chat-action-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+.db-chat-action-summary {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+.db-chat-action-link {
+  flex: 0 0 auto;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--primary) 32%, var(--rule));
+}
+.db-chat-action-link:hover {
+  background: var(--primary-soft);
+  text-decoration: none;
+}
+.db-chat-action-toggle {
+  flex: 0 0 auto;
+  font-size: 9px;
+  color: var(--mute);
+  transition: transform 140ms ease;
+  transform-origin: center;
+}
+details.db-chat-action[open] > summary > .db-chat-action-toggle {
+  transform: rotate(90deg);
+}
+.db-chat-action-detail {
+  padding: 8px 12px 10px 30px;
+  border-top: 1px solid var(--rule-2);
+  background: var(--paper);
+  font-size: 12px;
+  color: var(--mute);
+  animation: db-chat-action-fade 160ms ease;
+}
+@keyframes db-chat-action-fade {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.db-chat-action-pre {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--paper-3);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre;
+}
+/* Tone-coded left borders + icon colours. Mirrors Claude Code's
+   green/yellow/red action stream cues. */
+.db-chat-action[data-tone="success"] { border-left-color: var(--success); }
+.db-chat-action[data-tone="success"] .db-chat-action-icon { color: var(--success); }
+.db-chat-action[data-tone="warn"]    { border-left-color: var(--warn); }
+.db-chat-action[data-tone="warn"]    .db-chat-action-icon { color: var(--warn); }
+.db-chat-action[data-tone="error"]   { border-left-color: var(--danger); }
+.db-chat-action[data-tone="error"]   .db-chat-action-icon { color: var(--danger); }
+.db-chat-action[data-tone="info"]    { border-left-color: var(--primary); }
+.db-chat-action[data-tone="info"]    .db-chat-action-icon { color: var(--primary); }
+.db-chat-action[data-tone="pending"] {
+  border-left-color: var(--mute);
+}
+.db-chat-action[data-tone="pending"] .db-chat-action-icon {
+  color: var(--mute);
+}
+/* Pending kind animates a quiet pulse so the user knows work is in flight. */
+.db-chat-action[data-tone="pending"][data-kind="thinking"] .db-chat-action-icon,
+.db-chat-action[data-tone="pending"][data-kind="cost"] .db-chat-action-icon {
+  animation: db-chat-action-pulse 1.4s ease-in-out infinite;
+}
+@keyframes db-chat-action-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
 /* Sprint 2C — rejected patches panel. Shown when the additive-only
    validator blocks one or more patches from git apply. Uses the warn
    colour token so it parses as attention-needed, not a hard failure: the
@@ -6780,7 +6918,7 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--primary, #5e2aac);
-  color: #fff;
+  color: var(--text-white-0);
   font-size: var(--text-xs, 11px);
   font-weight: 700;
   letter-spacing: 0.04em;

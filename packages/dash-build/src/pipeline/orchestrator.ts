@@ -32,8 +32,8 @@ import {
   readdirSync,
   statSync,
 } from "node:fs"
-import { stat, writeFile } from "node:fs/promises"
-import { join } from "node:path"
+import { mkdir, stat, writeFile } from "node:fs/promises"
+import { join, resolve as resolvePath, sep as pathSep } from "node:path"
 import type { Store } from "../daemon/state/store.js"
 import type { Broadcaster } from "../daemon/ws/broadcaster.js"
 import type { PromptRecord, PromptStatus } from "../daemon/state/types.js"
@@ -70,6 +70,7 @@ import {
 import type { BundleResult } from "../preview/index.js"
 import {
   promoteVariantToCanonical,
+  resolveRunDir,
   snapshotFromIntake,
   writeIntakeSnapshot,
   writeRunArtifacts,
@@ -1476,6 +1477,27 @@ export class Orchestrator {
     }
 
     const componentSource = applied.result
+
+    // Bug 2 fix (2026-05-28): persist the post-patch component source under
+    // <runDir>/files/<patchpath> so the next /workspace/<runId> cold load can
+    // pick it up via the existing pickComponentFile() walk. Without this the
+    // patch-mode preview goes blank after a process restart because the
+    // SSE-only path never re-fires and loadInitialPreview returns null for
+    // patch-only artifacts (no .tsx in <runDir>/files/).
+    //
+    // Best-effort: a write failure does NOT block the live SSE broadcast.
+    void persistPatchedComponentSource({
+      runId: prompt.id,
+      patchPath: patchCandidate.path,
+      content: componentSource,
+    }).catch((err) => {
+      this.logger.warn("preview: failed to persist patched component source", {
+        id: prompt.id,
+        path: patchCandidate.path,
+        err: (err as Error).message,
+      })
+    })
+
     this.broadcaster.broadcast("component:updated", {
       runId: prompt.id,
       componentId: prompt.id,
@@ -1920,6 +1942,35 @@ function detectLanguage(filePath: string): string {
   if (filePath.endsWith(".css")) return "css"
   if (filePath.endsWith(".md")) return "md"
   return "text"
+}
+
+/**
+ * Bug 2 fix (2026-05-28): mirror the post-patch component source under
+ * `<runDir>/files/<patchPath>` so cold-load (`loadInitialPreview`) can pick
+ * it up via the standard pickComponentFile() walk. Used for patch-only
+ * generations where `artifact.files` is empty.
+ *
+ * Best-effort: silent fail if the run dir does not exist yet (caller already
+ * persisted run.json before reaching this codepath in normal flow). Path
+ * traversal is prevented by joining against the resolved runDir + checking
+ * the result still starts with the runDir prefix — mirrors the safeRelative
+ * guard in artifact-store.ts.
+ */
+async function persistPatchedComponentSource(input: {
+  runId: string
+  patchPath: string
+  content: string
+}): Promise<void> {
+  if (!input.runId || !input.patchPath) return
+  const runDir = resolveRunDir(input.runId)
+  if (!existsSync(runDir)) return
+  const filesDir = join(runDir, "files")
+  const target = join(filesDir, input.patchPath)
+  const resolvedTarget = resolvePath(target)
+  const base = resolvePath(filesDir)
+  if (resolvedTarget !== base && !resolvedTarget.startsWith(base + pathSep)) return
+  await mkdir(join(target, ".."), { recursive: true })
+  await writeFile(target, input.content, "utf8")
 }
 
 async function persistArtifact(

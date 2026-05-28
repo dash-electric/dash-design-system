@@ -11,6 +11,7 @@ import { renderPromptInput } from "./components/prompt-input.js"
 import { renderRepoSelect } from "./components/repo-select.js"
 import {
   renderChatThread,
+  type ChatAction,
   type ChatMessage,
 } from "./components/chat-thread.js"
 import {
@@ -236,8 +237,7 @@ function promptToChatMessages(
 
   let status: ChatMessage["status"] = "ok"
   let body: string
-  let files: ChatMessage["files"]
-  let review: ChatMessage["review"]
+  let actions: ChatAction[] | undefined
   let rejectedPatches: ChatMessage["rejectedPatches"]
 
   switch (prompt.status) {
@@ -255,8 +255,6 @@ function promptToChatMessages(
       break
     case "awaiting_approval": {
       status = "ok"
-      body =
-        "Done. Review the preview. GitHub is only needed when you want to open a PR."
       const artifact = resolveArtifact?.(prompt.id)
       if (artifact?.rejectedPatches?.length) {
         rejectedPatches = artifact.rejectedPatches.map((r) => ({
@@ -265,53 +263,16 @@ function promptToChatMessages(
           hint: r.details,
         }))
       }
-      if (artifact?.files?.length) {
-        files = artifact.files.map((f) => ({
-          path: f.path,
-          size: f.content.length,
-        }))
-        const previewMode = artifact.previewMode ?? (artifact.bundleResult ? "component" : "fallback")
-        const route = artifact.contextPack?.targetRoute ?? artifact.contextPack?.defaultRoute
-        const nav = artifact.contextPack?.targetNavLabel
-        const contextSummary = artifact.contextPack
-          ? `Context locked to ${artifact.contextPack.surface} (${artifact.contextPack.theme})${route ? ` at ${route}` : ""}${nav ? ` via ${nav}` : ""}. ${artifact.explanation || "Dash Build generated code and prepared it for local preview."}`
-          : artifact.explanation || "Dash Build generated code and prepared it for local preview."
-        review = {
-          title: "Review generated Dash files",
-          summary: contextSummary,
-          stats: [
-            { label: "Files", value: String(artifact.files.length), tone: "neutral" },
-            artifact.contextPack
-              ? {
-                  label: "Context",
-                  value: artifact.contextPack.repoSlug,
-                  tone: "good",
-                }
-              : null,
-            route
-              ? {
-                  label: "Route",
-                  value: route,
-                  tone: "neutral",
-                }
-              : null,
-            {
-              label: "Foundation",
-              value: `${artifact.validation.score}/100`,
-              tone: artifact.validation.passed ? "good" : "warn",
-            },
-            {
-              label: "Preview",
-              value: previewMode === "fallback" ? "Fallback" : "Live",
-              tone: previewMode === "fallback" ? "warn" : "good",
-            },
-            {
-              label: "Validation",
-              value: artifact.validation.passed ? "Passed" : "Review",
-              tone: artifact.validation.passed ? "good" : "warn",
-            },
-          ].filter(Boolean) as NonNullable<ChatMessage["review"]>["stats"],
-        }
+      // Big Bug 4 (2026-05-28) — Claude Code action stream replaces the
+      // wall-of-text review card. When we have an artifact, the body is
+      // empty (action lines do the talking) and a final `status` action
+      // closes with the next-step hint.
+      if (artifact) {
+        actions = artifactToActions(artifact)
+        body = ""
+      } else {
+        body =
+          "Done. Review the preview. GitHub is only needed when you want to open a PR."
       }
       break
     }
@@ -342,11 +303,180 @@ function promptToChatMessages(
     status,
     timestamp: prompt.updatedAt,
     promptId: prompt.id,
-    files,
-    review,
+    actions,
     rejectedPatches,
   })
   return out
+}
+
+/**
+ * Translate a `GenerationArtifact` into a Claude Code-style action stream.
+ *
+ * Six possible action lines, all collapsed by default:
+ *   1. ✓ Read context        (repo + route + nav surface, when available)
+ *   2. ✓ Generated N files   (expandable: per-file path + size)
+ *   3. ✓ Edited N files      (expandable: per-patch unified diff)
+ *   4. ✓ Validation passed   (expandable: foundation score + warnings)
+ *   5. 🎨 Preview ready      (or ⚠ Fallback preview)
+ *   6. → Done. Review preview. Create PR when ready.  (terminal status)
+ *
+ * Lines 1, 3, 4 are skipped when there's nothing meaningful to show
+ * (e.g. patch-less generation skips "Edited", failed validation flips
+ * line 4 to warn tone, etc.). This keeps the stream tight — no zero-state
+ * filler.
+ */
+export function artifactToActions(artifact: GenerationArtifact): ChatAction[] {
+  const out: ChatAction[] = []
+
+  // 1. Read context — only show when we actually have a context pack.
+  if (artifact.contextPack) {
+    const ctx = artifact.contextPack
+    const route =
+      ctx.targetRoute ?? ctx.defaultRoute ?? null
+    const surfaceLine = `${ctx.surface}${ctx.theme ? ` (${ctx.theme})` : ""}`
+    const detail = [
+      `Repo: ${ctx.repoSlug}`,
+      `Surface: ${surfaceLine}`,
+      route ? `Route: ${route}` : null,
+      ctx.targetNavLabel ? `Nav: ${ctx.targetNavLabel}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n")
+    out.push({
+      kind: "scan",
+      summary: `Read context · ${ctx.repoSlug}${route ? ` · ${route}` : ""}`,
+      detail,
+    })
+  }
+
+  // 2. Generated files — every artifact has at least one ParsedFile in
+  // happy-path generation, but patch-only runs can be empty.
+  if (artifact.files.length > 0) {
+    const totalBytes = artifact.files.reduce(
+      (sum, f) => sum + f.content.length,
+      0,
+    )
+    const sizeLabel = formatBytes(totalBytes)
+    const fileList = artifact.files
+      .map((f) => `${f.path} · ${formatBytes(f.content.length)}`)
+      .join("\n")
+    const noun = artifact.files.length === 1 ? "file" : "files"
+    out.push({
+      kind: "generate",
+      summary: `Generated ${artifact.files.length} new ${noun} · ${sizeLabel}`,
+      detail: fileList,
+    })
+  }
+
+  // 3. Edited files (patches) — Sprint 2B unified diffs. Each patch ships
+  // raw diff text, so we render it inside <details> with monospace.
+  const patches = artifact.patches ?? []
+  if (patches.length > 0) {
+    const noun = patches.length === 1 ? "file" : "files"
+    const loc = patches.map((p) => countDiffLoc(p.patchContent))
+    const added = loc.reduce((s, l) => s + l.added, 0)
+    const removed = loc.reduce((s, l) => s + l.removed, 0)
+    const detail = patches
+      .map((p) => `--- ${p.path}\n${p.patchContent}`)
+      .join("\n\n")
+    out.push({
+      kind: "edit",
+      summary: `Edited ${patches.length} ${noun} · +${added} / -${removed} lines`,
+      detail,
+    })
+  }
+
+  // 4. Validation — always show; tone shifts with pass/fail.
+  const v = artifact.validation
+  const validateDetail = [
+    `Foundation score: ${v.score}/100`,
+    `Status: ${v.passed ? "PASS" : "REVIEW"}`,
+    v.errors.length > 0
+      ? `Errors:\n${v.errors.map((e) => `  - ${describeValidationError(e)}`).join("\n")}`
+      : null,
+    v.warnings.length > 0
+      ? `Warnings:\n${v.warnings.map((w) => `  - ${w}`).join("\n")}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join("\n")
+  const checkCount = v.errors.length + v.warnings.length
+  const passSummary = v.passed
+    ? checkCount === 0
+      ? `Validation passed · ${v.score}/100`
+      : `Validation passed with ${v.warnings.length} warning${v.warnings.length === 1 ? "" : "s"} · ${v.score}/100`
+    : `Validation needs review · ${v.score}/100`
+  out.push({
+    kind: "validate",
+    summary: passSummary,
+    detail: validateDetail,
+    tone: v.passed ? "success" : "warn",
+  })
+
+  // 5. Preview — component live vs fallback shell.
+  const previewMode =
+    artifact.previewMode ?? (artifact.bundleResult ? "component" : "fallback")
+  if (previewMode === "fallback") {
+    out.push({
+      kind: "preview",
+      summary: "Preview: fallback shell (component bundle skipped)",
+      tone: "warn",
+    })
+  } else {
+    out.push({
+      kind: "preview",
+      summary: "Preview: ready",
+    })
+  }
+
+  // 6. Terminal status line — replaces the wall-of-text "Done. Review the
+  // preview…" bubble so the action stream itself closes the loop.
+  out.push({
+    kind: "status",
+    summary: "Done. Review the preview. Create a PR when you're ready.",
+  })
+
+  return out
+}
+
+/** Format bytes as a short label ("1.2 KB", "8.6 KB", "320 B"). */
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`
+  const kb = n / 1024
+  if (kb < 1024) return `${kb >= 10 ? kb.toFixed(0) : kb.toFixed(1)} KB`
+  const mb = kb / 1024
+  return `${mb >= 10 ? mb.toFixed(0) : mb.toFixed(1)} MB`
+}
+
+/**
+ * Count `+` / `-` lines in a unified-diff body. Header lines (`+++`, `---`,
+ * `@@`) are excluded so the totals match `git diff --stat` semantics.
+ */
+function countDiffLoc(patch: string): { added: number; removed: number } {
+  let added = 0
+  let removed = 0
+  for (const raw of patch.split(/\r?\n/)) {
+    if (raw.startsWith("+++") || raw.startsWith("---")) continue
+    if (raw.startsWith("+")) added++
+    else if (raw.startsWith("-")) removed++
+  }
+  return { added, removed }
+}
+
+/** Best-effort one-line summary for a ValidationError. Shape varies. */
+function describeValidationError(err: unknown): string {
+  if (typeof err === "string") return err
+  if (err && typeof err === "object") {
+    const anyErr = err as Record<string, unknown>
+    const msg = anyErr.message ?? anyErr.detail ?? anyErr.rule ?? anyErr.code
+    if (typeof msg === "string") return msg
+    try {
+      return JSON.stringify(err)
+    } catch {
+      return String(err)
+    }
+  }
+  return String(err)
 }
 
 /** Friendly label for the rejected-patches panel. Mirrors

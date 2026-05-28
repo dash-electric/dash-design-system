@@ -164,8 +164,52 @@ export const DASHBOARD_JS = `
       ws.onmessage = function (ev) {
         try {
           var msg = JSON.parse(ev.data);
+          // Big Bug 4 (2026-05-28) — AOP action stream. Each envelope is
+          // translated into a single action chat line so the user sees a
+          // live, scannable build log instead of a wall of console text.
+          // No-op when the broadcaster hasn't fired any AOP events yet
+          // (Agent Q wires the orchestrator-side emit() calls).
+          if (msg.event === "aop" && msg.data) {
+            handleAopEvent(msg.data);
+            // AOP frames don't carry a top-level msg.event we want toasted;
+            // skip the switch + the refresh paths below.
+            return;
+          }
           if (msg.event === "prompts:changed" || msg.event === "auth:changed") {
             refreshDashboard();
+          }
+          // Bug 2 fix (2026-05-28): forward component:updated to the Sandpack
+          // mount as a dash-build:preview-refresh CustomEvent. preview-mount.js
+          // installs a per-target listener (bindRefreshListener) that swaps the
+          // Sandpack files when the event fires. Without this bridge the
+          // orchestrator's broadcast lands on the WS but never reaches the
+          // iframe, so patch-mode + iteration-mode preview both stay blank.
+          if (msg.event === "component:updated") {
+            try {
+              var detail = {
+                runId: msg.runId,
+                componentId: msg.componentId,
+                componentSource: msg.componentSource,
+                contextMap: msg.contextMap,
+              };
+              var mounts = document.querySelectorAll(
+                "[data-component-id]"
+              );
+              for (var mi = 0; mi < mounts.length; mi++) {
+                var m = mounts[mi];
+                // Scope dispatch to mounts whose component id matches the
+                // payload (avoids cross-talk between A/B variant mounts).
+                var mid = m.getAttribute("data-component-id") || "";
+                if (mid && msg.componentId && mid !== msg.componentId) continue;
+                // Fresh CustomEvent per dispatch so each listener sees a
+                // pristine event object (cheap; payload is small).
+                m.dispatchEvent(
+                  new CustomEvent("dash-build:preview-refresh", {
+                    detail: detail,
+                  })
+                );
+              }
+            } catch (e) { /* defensive */ }
           }
           // Tier 4 #16: dev-only HMR signal. The daemon's DevWatcher fires
           // this when a CSS / template source changes. We swap the
@@ -377,6 +421,174 @@ export const DASHBOARD_JS = `
     var scroll = document.getElementById("db-chat-scroll");
     if (scroll) scroll.scrollTop = scroll.scrollHeight;
   }
+
+  // ---------- AOP action stream (Big Bug 4, 2026-05-28) ----------
+  // Map AOP envelope → ChatAction-shaped DOM. The server-rendered chat
+  // thread (chat-thread.ts) owns the canonical markup for fresh page loads;
+  // here we mirror it byte-equivalent for live AOP frames so a refresh +
+  // SSR replay produces the same DOM.
+  //
+  // Each AOP runId maps 1:1 to a promptId; we look up the builder bubble
+  // for that promptId and append the action node next to it (or into the
+  // shared action container, creating one on first event). Unknown runId →
+  // append at thread bottom as a fallback.
+  var AOP_KIND_TO_ACTION = {
+    "scan": { kind: "scan", icon: "✓", tone: "success" },
+    "thinking": { kind: "thinking", icon: "✦", tone: "info" },
+    "cost": { kind: "cost", icon: "✓", tone: "info" },
+    "artifact-create": { kind: "generate", icon: "✓", tone: "success" },
+    "artifact-edit": { kind: "edit", icon: "✓", tone: "success" },
+    "artifact-delete": { kind: "edit", icon: "✗", tone: "warn" },
+    "validate": { kind: "validate", icon: "✓", tone: "success" },
+    "error": { kind: "error", icon: "✗", tone: "error" },
+    "decision": { kind: "thinking", icon: "→", tone: "info" },
+    "run.start": { kind: "thinking", icon: "▶", tone: "info" },
+    "run.end": { kind: "status", icon: "✓", tone: "success" },
+  };
+  function summariseAop(envelope) {
+    var t = envelope && envelope.type;
+    var p = (envelope && envelope.payload) || {};
+    switch (t) {
+      case "run.start":
+        return { spec: AOP_KIND_TO_ACTION["run.start"], summary: "Run started", detail: null };
+      case "scan": {
+        var n = (p.paths || []).length;
+        var label = (p.kind === "registry") ? "Analyzed repo" : "Read " + n + " " + (n === 1 ? "file" : "files");
+        var detail = (p.paths || []).join("\\n");
+        return { spec: AOP_KIND_TO_ACTION["scan"], summary: label, detail: detail || null };
+      }
+      case "thinking":
+        return {
+          spec: AOP_KIND_TO_ACTION["thinking"],
+          summary: p.kind === "hypothesis" ? "Composing prompt" : (p.kind === "risk" ? "Considering risk" : "Reasoning"),
+          detail: typeof p.md === "string" ? p.md : null,
+        };
+      case "cost": {
+        var inTok = p.tokens_in || 0;
+        var outTok = p.tokens_out || 0;
+        var hasUsage = inTok || outTok;
+        return {
+          spec: AOP_KIND_TO_ACTION["cost"],
+          summary: hasUsage
+            ? "LLM response · " + (inTok + outTok) + " tokens (~$" + (p.usd || 0).toFixed(4) + ")"
+            : "Asking " + (p.provider || "model") + "…",
+          detail: null,
+        };
+      }
+      case "artifact": {
+        var spec = p.op === "edit"
+          ? AOP_KIND_TO_ACTION["artifact-edit"]
+          : (p.op === "delete" ? AOP_KIND_TO_ACTION["artifact-delete"] : AOP_KIND_TO_ACTION["artifact-create"]);
+        var added = (p.loc && p.loc.added) || 0;
+        var removed = (p.loc && p.loc.removed) || 0;
+        var summary = (p.op === "edit"
+          ? "Edited "
+          : (p.op === "delete" ? "Deleted " : "Generated "))
+          + (p.path || "file");
+        if (p.op === "edit") summary += " · +" + added + " / -" + removed;
+        return { spec: spec, summary: summary, detail: p.diff || null };
+      }
+      case "validate": {
+        var pass = (p.overall === "pass");
+        var checks = (p.checks || []);
+        var summary = "Validation " + (pass ? "passed" : (p.overall === "warn" ? "warning" : "failed"))
+          + " (" + checks.filter(function (c) { return c.status === "pass"; }).length
+          + "/" + checks.length + " checks)";
+        var detail = checks.map(function (c) {
+          return c.name + ": " + c.status + (c.output ? "  — " + c.output : "");
+        }).join("\\n");
+        var spec = pass ? AOP_KIND_TO_ACTION["validate"] : { kind: "validate", icon: "⚠", tone: "warn" };
+        return { spec: spec, summary: summary, detail: detail || null };
+      }
+      case "error":
+        return {
+          spec: AOP_KIND_TO_ACTION["error"],
+          summary: "Error · " + (p.code || "unknown") + (p.message ? " — " + p.message : ""),
+          detail: p.stack || null,
+        };
+      case "run.end":
+        return {
+          spec: AOP_KIND_TO_ACTION["run.end"],
+          summary: p.status === "success" ? "Done" : ("Run " + (p.status || "ended")),
+          detail: null,
+        };
+      case "decision": {
+        var picked = p.picked || (p.candidates && p.candidates[0] && p.candidates[0].name) || "option";
+        return { spec: AOP_KIND_TO_ACTION["decision"], summary: "Picked " + picked, detail: p.rationale || null };
+      }
+      default:
+        return null;
+    }
+  }
+  function buildActionNode(spec, summary, detail) {
+    var hasDetail = !!(detail && String(detail).length > 0);
+    var rowHtml =
+      '<span class="db-chat-action-icon" aria-hidden="true">' + escapeHtml(spec.icon) + '</span>' +
+      '<span class="db-chat-action-summary">' + escapeHtml(summary) + '</span>' +
+      (hasDetail ? '<span class="db-chat-action-toggle" aria-hidden="true">▶</span>' : '');
+    var wrapper;
+    if (hasDetail) {
+      wrapper = document.createElement("details");
+      wrapper.className = "db-chat-action";
+      wrapper.setAttribute("data-kind", spec.kind);
+      wrapper.setAttribute("data-tone", spec.tone);
+      wrapper.innerHTML =
+        '<summary class="db-chat-action-row">' + rowHtml + '</summary>' +
+        '<div class="db-chat-action-detail"><pre class="db-chat-action-pre db-mono">' + escapeHtml(detail) + '</pre></div>';
+    } else {
+      wrapper = document.createElement("div");
+      wrapper.className = "db-chat-action";
+      wrapper.setAttribute("data-kind", spec.kind);
+      wrapper.setAttribute("data-tone", spec.tone);
+      wrapper.innerHTML = '<div class="db-chat-action-row">' + rowHtml + '</div>';
+    }
+    return wrapper;
+  }
+  // Active runs keep their action container around so consecutive AOP
+  // frames append to the same group instead of fragmenting the stream.
+  var actionContainers = Object.create(null);
+  function findRunMessage(runId) {
+    // Best-effort: AOP runId is derived from promptId via toULID() on the
+    // server. We don't have the inverse map here, so we look for the most
+    // recent in-flight builder bubble. Falls back to thread bottom.
+    var nodes = document.querySelectorAll(".db-chat-msg[data-role='builder']");
+    if (nodes.length === 0) return null;
+    return nodes[nodes.length - 1];
+  }
+  function ensureActionsContainer(runId) {
+    if (actionContainers[runId] && document.contains(actionContainers[runId])) {
+      return actionContainers[runId];
+    }
+    var li = findRunMessage(runId);
+    if (!li) return null;
+    var existing = li.querySelector(".db-chat-actions");
+    if (existing) {
+      actionContainers[runId] = existing;
+      return existing;
+    }
+    var container = document.createElement("div");
+    container.className = "db-chat-actions";
+    container.setAttribute("role", "list");
+    container.setAttribute("aria-label", "Build actions");
+    li.appendChild(container);
+    actionContainers[runId] = container;
+    return container;
+  }
+  function handleAopEvent(envelope) {
+    if (!envelope || typeof envelope !== "object" || !envelope.type) return;
+    var translated = summariseAop(envelope);
+    if (!translated) return;
+    var container = ensureActionsContainer(envelope.runId);
+    if (!container) return;
+    var node = buildActionNode(translated.spec, translated.summary, translated.detail);
+    container.appendChild(node);
+    // run.end → drop the container reference so the next run starts fresh.
+    if (envelope.type === "run.end") {
+      delete actionContainers[envelope.runId];
+    }
+    scrollChatToBottom();
+  }
+
   function appendChatMessage(role, content, status) {
     var thread = document.getElementById("db-chat-thread");
     if (!thread) return;
@@ -616,6 +828,20 @@ export const DASHBOARD_JS = `
         try { input.setAttribute("data-attached-docs", "[]"); } catch (e) {}
         if (pendingBuilder && resp && resp.id) {
           pendingBuilder.setAttribute("data-prompt-id", resp.id);
+        }
+        // Bug 1 fix (2026-05-28): on workspace pages, iteration submit must
+        // NOT swap the chat thread out from under us (refreshDashboard fetches
+        // /dashboard?legacy=1 and rewrites db-chat-thread, blowing away the
+        // optimistic bubble). Instead, navigate to the newly minted run so the
+        // workspace re-renders with SSE + Sandpack bound to the new artifact.
+        // On legacy /dashboard pages keep the soft refresh path.
+        var onWorkspace =
+          (location.pathname || "").indexOf("/workspace") === 0;
+        if (onWorkspace) {
+          if (resp && resp.id) {
+            navigateTo("/workspace/" + encodeURIComponent(resp.id));
+            return;
+          }
         }
         // WS push will refresh; do an immediate refresh too as belt-and-braces
         refreshDashboard();
@@ -1898,14 +2124,74 @@ export const DASHBOARD_JS = `
     var form = document.getElementById("db-home-prompt-form");
     if (!form) return;
     var textarea = form.querySelector("#db-prompt-input");
+    var submitBtn = document.getElementById("db-home-prompt-submit");
+
     function submit(ev) {
       if (ev && ev.preventDefault) ev.preventDefault();
       var raw = textarea && textarea.value ? textarea.value.trim() : "";
-      // Always navigate to workspace — the workspace's composer will hand
-      // the prompt to the existing /api/prompt flow. Carry the seed prompt
-      // through the URL hash so the workspace can pre-fill its composer.
-      var hash = raw ? "#prompt=" + encodeURIComponent(raw) : "";
-      navigateTo("/workspace/" + hash);
+      // Empty prompt → just open a fresh workspace shell so the user can
+      // start from the in-workspace composer (preserves "new project" UX).
+      if (!raw) {
+        navigateTo("/workspace/");
+        return;
+      }
+
+      // Bug 1 fix (2026-05-28): home composer used to redirect to
+      // /workspace/<no-id>#prompt=… and rely on the workspace re-submitting,
+      // which left the URL stuck at /workspace/ with no runId attached. We
+      // now POST /api/prompt up-front, capture the orchestrator's runId, and
+      // navigate to /workspace/<runId> so the page mounts with SSE + Sandpack
+      // bound to the actual run. The home composer is the entry point — keep
+      // it server-authoritative.
+      if (submitBtn) {
+        submitBtn.setAttribute("disabled", "true");
+        var origLabel = submitBtn.querySelector(".db-button-label");
+        if (origLabel) origLabel.textContent = "Starting…";
+      }
+
+      // Carry any attached doc ids from the textarea over the wire so the
+      // orchestrator can hydrate referenced doc bodies into the prompt.
+      var payload = { text: raw };
+      try {
+        var attached = JSON.parse(
+          (textarea && textarea.getAttribute("data-attached-docs")) || "[]"
+        );
+        if (Array.isArray(attached) && attached.length > 0) {
+          payload.attachedDocs = attached;
+        }
+      } catch (e) { /* defensive */ }
+
+      fetch("/api/prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then(function (r) {
+          if (!r.ok) throw new Error("submit_failed_" + r.status);
+          return r.json();
+        })
+        .then(function (resp) {
+          if (!resp || !resp.id) throw new Error("no_run_id_in_response");
+          // Navigate to the freshly minted workspace. SSE + initial-preview
+          // load will pick up the run as it transitions through generating
+          // → awaiting_approval.
+          navigateTo("/workspace/" + encodeURIComponent(resp.id));
+        })
+        .catch(function (err) {
+          if (submitBtn) {
+            submitBtn.removeAttribute("disabled");
+            var label = submitBtn.querySelector(".db-button-label");
+            if (label) label.textContent = "Start building";
+          }
+          if (typeof showToast === "function") {
+            showToast({
+              message:
+                "Could not start workspace — " +
+                ((err && err.message) || "please retry"),
+              kind: "error",
+            });
+          }
+        });
     }
     form.addEventListener("submit", submit);
   }

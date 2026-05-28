@@ -6,7 +6,68 @@ import { escapeHtml } from "../layout.js"
  *
  * The dashboard hydrates server-rendered messages on first paint, then the
  * client JS appends new bubbles as the WS `prompt:event` stream fires.
+ *
+ * 2026-05-28 — Big Bug 4 (Agent R): added structured action messages
+ * (`ChatAction`) so the thread reads like a Claude Code / Lovable action
+ * stream — concise one-line summaries with `<details>` expandable detail
+ * instead of a wall of patch text. The legacy `review` + `files` slots
+ * stay typed but are no longer rendered for new awaiting_approval messages
+ * (replaced by `actions`); they survive in the type for back-compat with
+ * any test fixture or external caller still constructing the old shape.
  */
+
+/**
+ * Action stream kinds — one per visible pipeline step in the chat thread.
+ *
+ * Mapping to AOP event taxonomy (`@dash/aop-schema`):
+ *   - `scan`     ← AOP `scan`        (read files / catalogs)
+ *   - `thinking` ← AOP `thinking`    (reason / hypothesis / risk)
+ *   - `cost`     ← AOP `cost`        (LLM request + tokens)
+ *   - `generate` ← AOP `artifact op:create`
+ *   - `edit`     ← AOP `artifact op:edit`  (carries +X / -Y line counts)
+ *   - `validate` ← AOP `validate`    (foundation / banned-imports / qa)
+ *   - `preview`  ← `generation:complete` (preview pane swap)
+ *   - `pr`       ← `pr:created`
+ *   - `error`    ← AOP `error`
+ *   - `status`   ← terminal info line (no AOP source; emitted by orchestrator
+ *                  state-machine — e.g. "Done. Review the preview.")
+ */
+export type ChatActionKind =
+  | "scan"
+  | "thinking"
+  | "cost"
+  | "generate"
+  | "edit"
+  | "validate"
+  | "preview"
+  | "pr"
+  | "error"
+  | "status"
+
+export type ChatActionTone = "success" | "warn" | "error" | "info" | "pending"
+
+export interface ChatAction {
+  /** Action kind — drives icon + default tone. */
+  kind: ChatActionKind
+  /** Single-line summary. Always rendered (truncated visually if long). */
+  summary: string
+  /** Optional rich-text or HTML detail. Rendered inside `<details>` body. */
+  detail?: string
+  /** Set to true when `detail` is raw HTML (e.g. highlight.js output). */
+  detailIsHtml?: boolean
+  /** Override the default tone for the action kind. */
+  tone?: ChatActionTone
+  /** Override the default icon glyph for the action kind. */
+  icon?: string
+  /**
+   * Optional anchor — when present, rendered as a `<a>` next to the
+   * summary. Used for `pr` actions (link to GitHub PR) + `preview`
+   * actions (link to the preview pane, scrolls into view).
+   */
+  href?: string
+  /** Anchor label (defaults to "Open"). */
+  hrefLabel?: string
+}
 
 export interface ChatMessage {
   role: "user" | "builder"
@@ -29,6 +90,12 @@ export interface ChatMessage {
     summary: string
     hint?: string
   }>
+  /**
+   * Big Bug 4 (2026-05-28) — Claude Code-style action stream. When present,
+   * rendered in place of the legacy `review` + `files` slots so the user
+   * sees a scannable, status-iconed sequence instead of a wall of text.
+   */
+  actions?: ChatAction[]
   /** Optional prompt id so client-side updates can target this bubble. */
   promptId?: string
 }
@@ -98,6 +165,83 @@ function renderReview(review: NonNullable<ChatMessage["review"]>): string {
   </section>`
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// Action stream — Claude Code paradigm (Big Bug 4, 2026-05-28)
+// ─────────────────────────────────────────────────────────────────────────
+
+/** Default icon glyph per action kind. ASCII / single emoji per design spec. */
+const ACTION_ICON: Record<ChatActionKind, string> = {
+  scan: "✓",
+  thinking: "✦",
+  cost: "✓",
+  generate: "✓",
+  edit: "✓",
+  validate: "✓",
+  preview: "🎨",
+  pr: "📤",
+  error: "✗",
+  status: "→",
+}
+
+/** Default tone per action kind. */
+const ACTION_DEFAULT_TONE: Record<ChatActionKind, ChatActionTone> = {
+  scan: "success",
+  thinking: "info",
+  cost: "info",
+  generate: "success",
+  edit: "success",
+  validate: "success",
+  preview: "info",
+  pr: "success",
+  error: "error",
+  status: "info",
+}
+
+export function renderChatAction(action: ChatAction): string {
+  const tone = action.tone ?? ACTION_DEFAULT_TONE[action.kind]
+  const icon = action.icon ?? ACTION_ICON[action.kind]
+  const hasDetail = typeof action.detail === "string" && action.detail.length > 0
+
+  // Anchor (PR link / preview link) rendered next to the summary.
+  const anchor = action.href
+    ? `<a class="db-chat-action-link" href="${escapeHtml(action.href)}" target="_blank" rel="noopener">${escapeHtml(action.hrefLabel ?? "Open")} →</a>`
+    : ""
+
+  // Summary row — same DOM in both expandable + non-expandable cases so the
+  // CSS only needs one rule.
+  const summaryRow = `
+    <span class="db-chat-action-icon" aria-hidden="true">${escapeHtml(icon)}</span>
+    <span class="db-chat-action-summary">${escapeHtml(action.summary)}</span>
+    ${anchor}
+    ${hasDetail ? '<span class="db-chat-action-toggle" aria-hidden="true">▶</span>' : ""}
+  `
+
+  const dataAttrs = [
+    `data-kind="${escapeHtml(action.kind)}"`,
+    `data-tone="${escapeHtml(tone)}"`,
+  ].join(" ")
+
+  if (hasDetail) {
+    const detailBody = action.detailIsHtml
+      ? action.detail!
+      : `<pre class="db-chat-action-pre db-mono">${escapeHtml(action.detail!)}</pre>`
+    return `<details class="db-chat-action" ${dataAttrs}>
+      <summary class="db-chat-action-row">${summaryRow}</summary>
+      <div class="db-chat-action-detail">${detailBody}</div>
+    </details>`
+  }
+
+  return `<div class="db-chat-action" ${dataAttrs}>
+    <div class="db-chat-action-row">${summaryRow}</div>
+  </div>`
+}
+
+function renderActions(actions: ChatAction[]): string {
+  if (actions.length === 0) return ""
+  const items = actions.map((a) => renderChatAction(a)).join("")
+  return `<div class="db-chat-actions" role="list" aria-label="Build actions">${items}</div>`
+}
+
 export function renderChatMessage(msg: ChatMessage): string {
   const role = msg.role
   const status = msg.status ?? (role === "user" ? "ok" : "ok")
@@ -119,21 +263,35 @@ export function renderChatMessage(msg: ChatMessage): string {
         </span>`
       : escapeHtml(msg.content)
 
+  // Big Bug 4 — when an action stream is present, prefer it over the legacy
+  // `review` + `files` slots. The review/files renderers stay for fixtures
+  // that haven't migrated, but new awaiting_approval messages built by
+  // dashboard.ts emit `actions` exclusively.
+  const hasActions = !!msg.actions && msg.actions.length > 0
+  const actionsBlock = hasActions ? renderActions(msg.actions!) : ""
   const filesBlock =
-    msg.files && msg.files.length > 0
+    !hasActions && msg.files && msg.files.length > 0
       ? `<div class="db-chat-files">${msg.files.map((f) => fileChip(f.path, f.size)).join("")}</div>`
       : ""
-  const reviewBlock = msg.review ? renderReview(msg.review) : ""
+  const reviewBlock = !hasActions && msg.review ? renderReview(msg.review) : ""
   const rejectedBlock = msg.rejectedPatches?.length
     ? renderRejectedPatches(msg.rejectedPatches)
     : ""
 
+  // When the bubble would be empty (no body text, but actions present) we
+  // skip the bubble entirely so the action stream isn't preceded by an
+  // empty paper rectangle. This is the Claude Code feel — no "ok done"
+  // bubble cluttering the action log.
+  const bubbleBlock =
+    status === "running" || msg.content.trim().length > 0 || !hasActions
+      ? `<div class="db-chat-bubble">${bubbleInner}</div>`
+      : ""
+
   const timeLabel = formatTime(msg.timestamp)
 
   return `<li class="db-chat-msg" ${dataAttrs}>
-    <div class="db-chat-bubble">
-      ${bubbleInner}
-    </div>
+    ${bubbleBlock}
+    ${actionsBlock}
     ${reviewBlock}
     ${rejectedBlock}
     ${filesBlock}
