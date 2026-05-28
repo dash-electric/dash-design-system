@@ -1,49 +1,89 @@
 /*
  * Dash Dashboard — global styles.
  *
- * Tokens mirror the canonical Layer 0 ramp from
- * apps/docs/registry/dash/foundation/tokens/colors.css.
+ * Sourced from Layer 0 Foundation tokens (canonical):
+ *   apps/docs/registry/dash/foundation/tokens/{colors,spacing}.css
  *
  * Per design.md: hairline borders, no decorative gradients,
  * 8px radius on cards, operational density.
- * Light mode only for MVP.
+ *
+ * Light + dark mode supported via `.dark` class on <html>.
+ *
+ * NOTE: foundation tokens are imported via relative path. The dashboard package
+ * sits at packages/dashboard/ and foundation at apps/docs/registry/dash/...
+ * Next.js resolves CSS @import at build time, so this works in both dev + build.
  */
+@import "../../../apps/docs/registry/dash/foundation/tokens/colors.css";
+@import "../../../apps/docs/registry/dash/foundation/tokens/spacing.css";
 
 :root {
-  /* Brand */
-  --dash-purple: #5e2aac;
-  --dash-purple-600: #4d2392;
-  --dash-purple-100: #ece5f7;
+  /* ------ Dashboard local aliases — back onto canonical foundation tokens.
+     These names are referenced throughout the dashboard components; we keep
+     them as a thin semantic layer so refactors of the consumer don't have to
+     touch every style block. ------ */
 
-  /* Neutrals (slate ramp) */
-  --bg-app: #f5f7fa;
-  --bg-surface: #ffffff;
-  --bg-subtle: #f2f5f8;
+  /* Brand (Dash Purple) */
+  --dash-purple: var(--dash-purple-500);
+  --dash-purple-600-alias: var(--dash-purple-600);
+  --dash-purple-100-alias: var(--dash-purple-100);
 
-  --text-strong: #181b25;
-  --text-body: #2b303b;
-  --text-sub: #525866;
-  --text-soft: #717784;
-  --text-disabled: #99a0ae;
+  /* Surface */
+  --bg-app: var(--dash-slate-50);
+  --bg-surface: var(--dash-slate-0);
+  --bg-subtle: var(--dash-slate-100);
 
-  --border-soft: #e1e4ea;
-  --border-stronger: #cacfd8;
+  /* Text */
+  --text-strong: var(--dash-slate-900);
+  --text-body: var(--dash-slate-700);
+  --text-sub: var(--dash-slate-600);
+  --text-soft: var(--dash-slate-500);
+  --text-disabled: var(--dash-slate-400);
 
-  /* State (semantic) */
-  --state-ok-fg: #1f8a4c;
-  --state-ok-bg: #e6f5ec;
-  --state-warn-fg: #b06a00;
-  --state-warn-bg: #fff3eb;
-  --state-down-fg: #d02533;
-  --state-down-bg: #ffebec;
+  /* Stroke */
+  --border-soft: var(--dash-slate-200);
+  --border-stronger: var(--dash-slate-300);
 
-  /* Radius / shadow */
-  --radius-card: 8px;
-  --radius-pill: 999px;
+  /* State semantic — backed by Layer 0 state tokens, light mode */
+  --state-ok-fg: var(--dash-green-700);
+  --state-ok-bg: var(--dash-green-50);
+  --state-warn-fg: var(--dash-orange-700);
+  --state-warn-bg: var(--dash-orange-50);
+  --state-down-fg: var(--dash-red-700);
+  --state-down-bg: var(--dash-red-50);
 
-  /* Type scale */
+  /* Radius (back local alias onto foundation scale) */
+  --radius-card: var(--radius-8);
+  --radius-pill: var(--radius-full);
+
+  /* Type scale (Plus Jakarta Sans per Dash voice) */
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.dark {
+  /* Dark mode overrides — keep token names stable, swap values.
+     Foundation colors.css already swaps the semantic surface tokens for .dark;
+     here we re-point the dashboard local aliases to dark-appropriate slate
+     stops + lift state foregrounds for contrast. */
+  --bg-app: var(--dash-slate-950);
+  --bg-surface: var(--dash-slate-900);
+  --bg-subtle: var(--dash-slate-800);
+
+  --text-strong: var(--dash-slate-0);
+  --text-body: var(--dash-slate-200);
+  --text-sub: var(--dash-slate-300);
+  --text-soft: var(--dash-slate-400);
+  --text-disabled: var(--dash-slate-600);
+
+  --border-soft: var(--dash-slate-800);
+  --border-stronger: var(--dash-slate-700);
+
+  --state-ok-fg: var(--dash-green-400);
+  --state-ok-bg: var(--dash-green-alpha-16);
+  --state-warn-fg: var(--dash-orange-400);
+  --state-warn-bg: var(--dash-orange-alpha-16);
+  --state-down-fg: var(--dash-red-400);
+  --state-down-bg: var(--dash-red-alpha-16);
 }
 
 * {
@@ -57,6 +97,8 @@ body {
   background: var(--bg-app);
   color: var(--text-body);
   font-family: var(--font-sans);
+  /* 14px = base body type — matches Dash type ramp (NOT on spacing grid;
+     type scale is a separate scale per Layer 0). */
   font-size: 14px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;

@@ -56,9 +56,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <div
                 aria-hidden
                 style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 5,
+                  width: 24,
+                  height: 24,
+                  borderRadius: 4,
                   background: "var(--dash-purple)",
                 }}
               />
@@ -74,6 +74,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </strong>
               <span
                 style={{
+                  /* 11px = micro type per Dash type ramp (not on spacing grid). */
                   fontSize: 11,
                   color: "var(--text-soft)",
                   padding: "2px 6px",
@@ -89,7 +90,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               Control tower · v0.1.0
             </div>
           </header>
-          <main style={{ flex: 1, padding: "20px 24px" }}>{children}</main>
+          <main style={{ flex: 1, padding: "24px 24px" }}>{children}</main>
         </div>
       </body>
     </html>

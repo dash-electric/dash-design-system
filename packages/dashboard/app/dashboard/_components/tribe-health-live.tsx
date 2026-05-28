@@ -89,6 +89,7 @@ export function TribeHealthLive({ initial }: TribeHealthLiveProps) {
       role="list"
       style={{
         display: "grid",
+        /* INTENTIONAL: 180px = tribe-card min-width breakpoint (layout dim, not spacing grid). */
         gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
         gap: 8,
       }}

@@ -38,6 +38,7 @@ export default function DashboardPage() {
       <div
         style={{
           display: "grid",
+          /* INTENTIONAL: 320px = widget min-width breakpoint (layout dim, not spacing grid). */
           gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
           gap: 16,
         }}

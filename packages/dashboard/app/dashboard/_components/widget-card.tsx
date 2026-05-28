@@ -27,6 +27,8 @@ export function WidgetCard({ title, meta, children, accessory }: WidgetCardProps
         display: "flex",
         flexDirection: "column",
         gap: 12,
+        /* INTENTIONAL: 200px widget min-height — operational dashboard target,
+           not a spacing-scale value. */
         minHeight: 200,
       }}
     >
