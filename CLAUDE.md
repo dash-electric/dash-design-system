@@ -27,7 +27,7 @@ Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showca
 ## Cardinal rules
 
 1. **Existing Dash production code is NEVER modified.** This repo is purely ADDITIVE. Generate new patterns + components here; consumer repos pull via CLI.
-2. **No external form libraries.** No `react-hook-form`, `zod`, `@hookform/resolvers`, `@tanstack/react-query`, `swr`. Use `useState` + hand-rolled validation. See `apps/docs/registry/rules/dash-ai-rules.md` § "Banned Imports".
+2. **No external form / data-fetch libraries in UI / consumer code.** Banned: `react-hook-form`, `@hookform/resolvers`, `@tanstack/react-query`, `swr`, plus `zod` in UI consumer code. Use `useState` + hand-rolled validation in components. **Carve-out:** `packages/registry-schema/**` MAY use `zod` for runtime registry-JSON validation (this is a trust-boundary validator at a consumer-package edge, not a UI form library). The audit gate (`dash audit`) excepts this path. See `apps/docs/registry/rules/dash-ai-rules.md` § "Banned Imports".
 3. **Audit trail mandatory** for user-editable fields carrying legal/financial weight (image proof, payment, signature, KYC). Log original + edited + editor + reason. See rules § "Audit Trail".
 4. **Dash Purple canonical hex:** `#5e2aac`. Do not introduce `#7C4FC4` or any other purple variant.
 5. **Mitra-facing UI voice = formal "Anda"**, not casual "kamu". Per Dash voice rule.

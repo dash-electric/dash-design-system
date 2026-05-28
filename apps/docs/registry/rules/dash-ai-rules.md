@@ -965,7 +965,7 @@ Once a wrapper proves stable in one repo, it gets promoted to the DS registry as
 ### Banned categories (refuse on sight)
 
 - **Form libraries**: react-hook-form, Formik, Final Form, react-final-form (see Anti-pattern #1)
-- **Validation libraries**: zod, joi (FE-side), yup, ajv, valibot (see Anti-pattern #2)
+- **Validation libraries (UI / consumer code)**: zod, joi (FE-side), yup, ajv, valibot (see Anti-pattern #2). **Carve-out:** `packages/registry-schema/**` MAY use `zod` for runtime registry-JSON validation — this is a trust-boundary validator at the consumer-package edge, not a form-validation library. `dash audit` excepts this single path.
 - **Data-fetch libraries**: TanStack Query, SWR, react-query, Apollo Client (see Anti-pattern #3)
 - **Component libraries in greenfield**: MUI, antd, Chakra, Mantine, Radix-themes (backoffice tolerates legacy MUI+antd per Anti-pattern #8; do not add to new repos)
 

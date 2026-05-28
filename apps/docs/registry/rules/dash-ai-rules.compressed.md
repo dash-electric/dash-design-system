@@ -257,7 +257,7 @@ Wrapper pattern: feature code imports `@/lib-wrappers/<thing>`, NEVER the lib di
 
 Banned (refuse on sight):
 - Form libs: react-hook-form, Formik, Final Form, react-final-form.
-- Validation: zod, joi (FE), yup, ajv, valibot.
+- Validation (UI / consumer code): zod, joi (FE), yup, ajv, valibot. **Carve-out:** `packages/registry-schema/**` MAY use zod for runtime registry-JSON validation (trust-boundary, not form-validation). `dash audit` excepts this path.
 - Data-fetch: TanStack Query, SWR, react-query, Apollo Client.
 - Component libs in greenfield: MUI, antd, Chakra, Mantine, Radix-themes (backoffice tolerates legacy MUI+antd).
 

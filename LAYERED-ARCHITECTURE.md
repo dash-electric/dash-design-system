@@ -209,7 +209,7 @@ Compare to the alternative — forking the DS — which would burn 2–3 weeks b
 
 **Hard rules carried over from `CLAUDE.md`:**
 
-- No external form libraries (no RHF / zod / @hookform / @tanstack/react-query / swr)
+- No external form / data-fetch libraries in UI / consumer code (no RHF / @hookform / @tanstack/react-query / swr / zod). Carve-out: `packages/registry-schema/**` MAY use `zod` for runtime registry-JSON validation at the consumer trust boundary.
 - Audit trail mandatory for legal/financial editable fields
 - Mitra-facing voice = formal "Anda"
 - Dash Purple canonical = `#5e2aac` (no `#7C4FC4`)
