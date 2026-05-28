@@ -41,6 +41,7 @@
 - State `text-state-{success,warning,error,info}-{base,light,dark}`
 - Brand `bg-primary-{base,light,dark}`, `text-primary-{base,…}` — Dash Purple `#5e2aac`
 - Shadow `shadow-{xs,sm,md,lg,xl}`. Radii `rounded-{xs,sm,md,lg,xl,full}`.
+- Per-surface radius (Figma canonical): Card 16px (`rounded-2xl`); Modal/Drawer/Sheet/AlertDialog 20px; Popover/Dropdown/Menu/Toast 16px; inline table-row cards & chips 6-8px or full.
 
 ## Workflow conventions
 

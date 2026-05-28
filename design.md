@@ -34,8 +34,12 @@ The design system must keep the same product character across:
   marketing layouts.
 - Do not place cards inside cards. Cards are for repeated items, modals, and
   genuinely framed tools.
-- Keep card radius at 8px or less unless the target repo already has a stricter
-  tokenized radius rule.
+- Radius defaults (sourced from Figma canonical):
+  - Card (default content block, repeated row, list item): 16px (`rounded-2xl`).
+  - Modal / Drawer / Sheet / Alert Dialog: 20px.
+  - Popover / Dropdown / Menu / Toast: 16px.
+  - Inline chips, pills, dense table-row cards: 6-8px or full.
+  Override only when the target repo has a stricter tokenized radius rule.
 - Use familiar controls: icon buttons for tools, tabs for views, segmented
   controls for modes, switches for binary settings, and menus for option sets.
 - Every async workflow needs a visible loading, empty, error, and success state.
@@ -86,9 +90,13 @@ Use these density defaults unless the target repo already has tighter tokens:
 - Chat/task bubble line-height: 1.35-1.45.
 - Chat/task thread gap: 8-10px.
 - Composer textarea minimum height: 56-64px for normal prompts.
-- Workflow surface radius: 10-14px. Avoid 20px+ radii for operational shells.
-- Cards in dense tools: radius 6-8px, shallow shadow or border, not both unless
-  the component is floating above the workspace.
+- Workflow surface radius: 10-14px for app shell chrome and inline workspace
+  containers. Larger 16-20px radii are reserved for floating surfaces (Modal,
+  Drawer, Sheet, Alert Dialog) per the Non-Negotiable radius defaults.
+- Cards in dense tools (inline table-row cards, list-item cards): radius 6-8px,
+  shallow shadow or border, not both unless the component is floating above the
+  workspace. Standard Card primitive (widget, content block) follows the 16px
+  default from Figma source.
 - Use hairline borders and spacing changes before large shadows, blur, or
   oversized rounded containers.
 

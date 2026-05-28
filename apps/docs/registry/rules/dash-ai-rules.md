@@ -226,6 +226,12 @@ Avoid raw colors. Always reach for semantic tokens:
 
 ### Radii
 - `rounded-md` (8) / `rounded-lg` (12) / `rounded-xl` (16) / `rounded-2xl` (20-24)
+- **Per-surface defaults (Figma canonical):**
+  - Card (default widget / content block): `rounded-2xl` (16px)
+  - Modal / Drawer / Sheet / Alert Dialog: `rounded-[20px]`
+  - Popover / Dropdown / Menu / Toast: `rounded-2xl` (16px)
+  - Inline table-row cards, chips, dense list rows: `rounded-md`/`rounded-lg` (6-8px) or full
+- Dense table-row cards may go tighter (6-8px). The 16px floor applies to standalone widget / content Cards.
 
 ## Workflow conventions
 
