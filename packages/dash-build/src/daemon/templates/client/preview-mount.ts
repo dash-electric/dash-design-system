@@ -28,6 +28,7 @@ export const PREVIEW_MOUNT_JS = `
 
   var SANDPACK_CDN = "https://esm.sh/@codesandbox/sandpack-react@2.19.10";
   var REACT_CDN = "https://esm.sh/react@18.3.1";
+  var REACT_DOM_CLIENT_CDN = "https://esm.sh/react-dom@18.3.1/client";
 
   function bootstrap() {
     var mount = document.getElementById("db-preview-sandpack");
@@ -110,7 +111,7 @@ export const PREVIEW_MOUNT_JS = `
       if (window.__DASH_SANDPACK_PROMISE) return window.__DASH_SANDPACK_PROMISE;
       window.__DASH_SANDPACK_PROMISE = Promise.all([
         import(REACT_CDN),
-        import(REACT_CDN + "/dom/client"),
+        import(REACT_DOM_CLIENT_CDN),
         import(SANDPACK_CDN),
       ]).then(function (mods) {
         return {
