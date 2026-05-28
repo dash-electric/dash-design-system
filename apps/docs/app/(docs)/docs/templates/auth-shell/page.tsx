@@ -202,7 +202,7 @@ export default function AuthShellDocsPage() {
           dont={{
             preview: (
               <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden relative">
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,#7C4FC4,#FF6B9D)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,var(--dash-purple-500),#FF6B9D)]" />
                 <div className="absolute inset-4 rounded bg-bg-white-0 p-2 space-y-1"><div className="h-4 rounded bg-bg-soft-200 w-16" /><div className="h-5 rounded border border-stroke-soft-200" /></div>
               </div>
             ),

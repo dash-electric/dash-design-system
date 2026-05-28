@@ -243,6 +243,8 @@ export function ThemeToggle() {
             caption: "Dark surface paired with high-contrast text passes WCAG-AAA. Numbers, status badges, axis labels all readable.",
           }}
           dont={{
+            // INTENTIONAL deprecated hex below — this is a "Don't" example showing
+            // why brand purple as dark-mode body text fails WCAG-AA. Do not replace.
             preview: (
               <div className="rounded-lg p-3 text-xs space-y-1" style={{background: "#1A1422", color: "#7C4FC4"}}>
                 <p className="font-semibold">Mitra aktif</p>

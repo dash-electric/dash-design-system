@@ -73,7 +73,7 @@ export default function MyCardsStackDocsPage() {
         <DocsDoDont
           do={{
             preview: (
-              <div className="w-64 aspect-[1.586/1] rounded-xl bg-[linear-gradient(135deg,#7C4FC4,#5A3596)] text-static-white p-4 flex flex-col justify-between">
+              <div className="w-64 aspect-[1.586/1] rounded-xl bg-[linear-gradient(135deg,var(--dash-purple-500),var(--dash-purple-700))] text-static-white p-4 flex flex-col justify-between">
                 <div className="flex items-start justify-between"><div className="size-6 rounded bg-static-white/30" /><span className="text-[10px] font-medium">VISA</span></div>
                 <div className="space-y-1"><p className="font-mono text-sm tracking-widest">•••• 4218</p><p className="text-[10px] opacity-80">BUDI ADITYA</p></div>
               </div>
@@ -99,7 +99,7 @@ export default function MyCardsStackDocsPage() {
           do={{
             preview: (
               <div className="relative w-64 h-40">
-                <div className="absolute inset-x-0 top-8 h-32 rounded-xl bg-[linear-gradient(135deg,#7C4FC4,#5A3596)] shadow-md" />
+                <div className="absolute inset-x-0 top-8 h-32 rounded-xl bg-[linear-gradient(135deg,var(--dash-purple-500),var(--dash-purple-700))] shadow-md" />
                 <div className="absolute inset-x-2 top-4 h-32 rounded-xl bg-[linear-gradient(135deg,#FF6B9D,#C7457D)] shadow-md" />
                 <div className="absolute inset-x-4 top-0 h-32 rounded-xl bg-[linear-gradient(135deg,#335CFF,#1E3FB5)] shadow-lg ring-2 ring-primary-base" />
               </div>
