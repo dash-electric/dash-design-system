@@ -125,6 +125,117 @@ const UPDATE_VERBS = [
   "polish",
 ]
 
+/**
+ * "New addition" keywords — phrases that strongly signal the user wants a NEW
+ * surface (page/tab/section/module/dashboard) rather than to modify existing
+ * code. When detected, we bias AWAY from `update_existing` and toward
+ * `new_product` (nothing existing) or `extend_fe_be` (BE endpoint/table
+ * exists for the noun → new FE + extend BE).
+ *
+ * Lexicon mixes EN + ID since prompts come from a bilingual team. Multi-word
+ * phrases are matched as substrings; single tokens use word-boundary.
+ */
+const NEW_ADDITION_KEYWORDS = [
+  // English — new surface
+  "new page",
+  "new dashboard",
+  "new tab",
+  "new section",
+  "new module",
+  "new feature",
+  "new screen",
+  "new view",
+  "add page",
+  "add a page",
+  "add dashboard",
+  "add a dashboard",
+  "add a new",
+  "add new",
+  "create page",
+  "create a page",
+  "create dashboard",
+  "create a dashboard",
+  // Indonesian — new surface
+  "halaman baru",
+  "dashboard baru",
+  "tab baru",
+  "section baru",
+  "modul baru",
+  "module baru",
+  "fitur baru",
+  "buat halaman",
+  "buat dashboard",
+  "tambahin halaman",
+  "tambahin dashboard",
+  "tambahin tab",
+  "tambahin section",
+  "tambahin modul",
+  "tambahin module",
+  "tambahin fitur",
+  "tambah halaman",
+  "tambah dashboard",
+  "tambah tab",
+  "tambah section",
+  "tambah modul",
+  "tambah fitur",
+  "bikin halaman",
+  "bikin dashboard",
+]
+
+/**
+ * Bare nouns that hint "new surface" when paired with an add/tambahin verb
+ * even without the explicit "baru/new" qualifier. E.g. "tambahin dashboard
+ * mitra performance" — the noun "dashboard" alone signals new addition.
+ */
+const NEW_ADDITION_BARE_NOUNS = [
+  "dashboard",
+  "halaman",
+  "page",
+]
+
+const ID_ADD_VERBS = ["tambahin", "tambah", "bikin", "buat"]
+const EN_ADD_VERBS = ["add", "create", "build"]
+
+/**
+ * Detect bare noun + add-verb pattern: e.g. "tambahin dashboard …" or
+ * "add a dashboard for …". Returns the matched phrase, or null.
+ */
+function detectBareAddNoun(lower: string): string | null {
+  for (const noun of NEW_ADDITION_BARE_NOUNS) {
+    for (const v of ID_ADD_VERBS) {
+      const re = new RegExp(`\\b${v}\\b[^.\\n]{0,40}\\b${noun}\\b`, "i")
+      if (re.test(lower)) return `${v} ${noun}`
+    }
+    for (const v of EN_ADD_VERBS) {
+      const re = new RegExp(`\\b${v}\\b\\s+(?:a\\s+|an\\s+|the\\s+)?${noun}\\b`, "i")
+      if (re.test(lower)) return `${v} ${noun}`
+    }
+  }
+  return null
+}
+
+/**
+ * Existing-page hints — multi-word path-like or known-section tokens. When the
+ * prompt mentions "settings page" / "/mitra/list" / a route-shaped string AND
+ * a new-addition keyword (e.g. "tab baru di settings"), we treat the change
+ * as `extend_fe_be` (extend an existing surface with a new piece) rather than
+ * a from-scratch `new_product`. Heuristic — caller can override later.
+ */
+function detectExistingSurfaceHint(
+  prompt: string,
+  existingFiles: string[],
+): boolean {
+  if (/\b(?:di|at|in|on|inside|within)\s+\w/.test(prompt.toLowerCase())) {
+    // "di settings", "in dashboard", "at /mitra/list"
+    return true
+  }
+  if (/\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_[\]:]+)+/.test(prompt)) {
+    // path-shaped token like "/mitra/list" or "/api/foo"
+    return true
+  }
+  return existingFiles.length > 0
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -216,6 +327,9 @@ export async function classifyPrompt(
   const dbHits = containsAny(lower, DB_KEYWORDS)
   const greenHits = containsAny(lower, GREENFIELD_KEYWORDS)
   const updateHits = containsAny(lower, UPDATE_VERBS)
+  const newAdditionHits = containsAny(lower, NEW_ADDITION_KEYWORDS)
+  const bareAddNoun = detectBareAddNoun(lower)
+  const newAddSignal = newAdditionHits.length > 0 || bareAddNoun !== null
 
   const matchedEndpoints = findMatchingEndpoints(prompt, context.beCatalog)
   const matchedTables = findMatchingTables(prompt, context.dbCatalog)
@@ -224,6 +338,46 @@ export async function classifyPrompt(
     fe: [] as string[],
     be: matchedEndpoints.map((e) => e.filePath),
     db: matchedTables.map((t) => t.table.filePath),
+  }
+
+  // ── 0. NEW-ADDITION bias ─────────────────────────────────────────────────
+  //     User wants a NEW page / dashboard / tab / section / module / feature.
+  //     This MUST short-circuit before the BE-keyword branch otherwise we'd
+  //     classify "tambahin dashboard mitra performance" as update_existing
+  //     (matches table `mitra`) and the chain emits patch-mode output
+  //     instead of new-file mode. Bias rules:
+  //       - DB keyword still wins (schema change is a stronger commitment).
+  //       - Existing endpoint OR existing-surface hint → extend_fe_be
+  //         (new FE on top of existing BE / inside existing surface).
+  //       - Otherwise → new_product.
+  if (newAddSignal && dbHits.length === 0) {
+    const trigger = bareAddNoun ?? newAdditionHits[0]!
+    const hasExistingBe = matchedEndpoints.length > 0
+    const hasExistingSurface = detectExistingSurfaceHint(
+      prompt,
+      context.existingFiles,
+    )
+    if (hasExistingBe || hasExistingSurface) {
+      return {
+        scenario: "extend_fe_be",
+        confidence: 0.72,
+        reasoning:
+          `New-addition keyword detected ("${trigger}") and existing ` +
+          (hasExistingBe
+            ? `endpoint(s) ${matchedEndpoints.map((e) => `${e.method} ${e.path}`).join(", ")}`
+            : "surface/files in scope") +
+          " — treat as a new FE attached to existing BE / surface (extend_fe_be).",
+        affectedFiles,
+      }
+    }
+    return {
+      scenario: "new_product",
+      confidence: 0.72,
+      reasoning:
+        `New-addition keyword detected ("${trigger}") and no existing ` +
+        "endpoint/surface matches — treat as a new product surface.",
+      affectedFiles,
+    }
   }
 
   // ── 1. DB-touching signal ────────────────────────────────────────────────

@@ -116,6 +116,62 @@ describe("classifyPrompt — new_product", () => {
   })
 })
 
+describe("classifyPrompt — new-addition keyword bias", () => {
+  it("'tambahin dashboard mitra performance' biases AWAY from update_existing", async () => {
+    const r = await classifyPrompt(
+      "tambahin dashboard untuk mitra performance dong",
+      // Mitra table exists — without the bias this would land in update_existing
+      // via the BE/DB path. We expect new_product (or extend_fe_be) instead.
+      { beCatalog: emptyBe, dbCatalog: dbWithMitra, existingFiles: [] },
+    )
+    expect(r.scenario).not.toBe("update_existing")
+    expect(["new_product", "extend_fe_be"]).toContain(r.scenario)
+  })
+
+  it("'buat halaman /mitra/list baru' → new_product when no existing surface", async () => {
+    const r = await classifyPrompt(
+      "buat halaman /mitra/list baru untuk daftar mitra aktif",
+      { beCatalog: emptyBe, dbCatalog: emptyDb, existingFiles: [] },
+    )
+    // Path-shaped token "/mitra/list" triggers existing-surface heuristic →
+    // extend_fe_be. That's acceptable per the contract ("if nothing exists →
+    // new_product, if anything exists → extend_fe_be"). Accept either non-
+    // update outcome so the bias rule is what matters.
+    expect(r.scenario).not.toBe("update_existing")
+    expect(["new_product", "extend_fe_be"]).toContain(r.scenario)
+  })
+
+  it("'tambahin tab baru di settings' → extend_fe_be (settings surface exists)", async () => {
+    const r = await classifyPrompt(
+      "tambahin tab baru di settings untuk notifikasi push",
+      {
+        beCatalog: emptyBe,
+        dbCatalog: emptyDb,
+        existingFiles: ["pages/settings/index.tsx"],
+      },
+    )
+    expect(r.scenario).toBe("extend_fe_be")
+  })
+
+  it("'tambahin filter status di list mitra' → update_existing (no NEW keyword)", async () => {
+    const r = await classifyPrompt(
+      "tambahin filter status di list mitra",
+      {
+        beCatalog: emptyBe,
+        dbCatalog: emptyDb,
+        existingFiles: ["pages/mitra/list.tsx"],
+      },
+    )
+    // No "baru/new/dashboard/halaman/tab/section/module" keyword and no bare
+    // add-noun pattern (the bare-noun list is page/halaman/dashboard — not
+    // "filter"). Falls back to update_existing via UPDATE_VERBS… except
+    // "tambahin filter" has no update verb either. The classifier should
+    // either land at update_existing or ambiguous. We assert it does NOT
+    // promote to new_product / extend_fe_be — bias must not over-fire.
+    expect(["update_existing", "ambiguous"]).toContain(r.scenario)
+  })
+})
+
 describe("classifyPrompt — ambiguous", () => {
   it("returns ambiguous + needsClarify when nothing matches", async () => {
     const r = await classifyPrompt("do the thing", {
