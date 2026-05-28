@@ -91,7 +91,10 @@ import {
   type DbCatalog,
 } from "../intake/index.js"
 import type { IntakeContext } from "../skills/types.js"
-import { detectDashDsImports } from "../services/component-preview.js"
+import {
+  applyUnifiedDiff,
+  detectDashDsImports,
+} from "../services/component-preview.js"
 
 export interface OrchestratorOptions {
   store: Store
@@ -1087,23 +1090,82 @@ export class Orchestrator {
    * Emit the `component:updated` SSE event consumed by
    * `daemon/templates/client/preview-mount.ts`. The browser script picks the
    * source out of `detail.componentSource` and re-mounts the Sandpack iframe.
+   *
+   * For new-file artifacts we pass the generated source straight through. For
+   * patch-only artifacts (mode=patch) we read the target file from the
+   * sandbox clone, apply the unified diff in-memory, and emit the RESULTING
+   * source — so the browser preview shows the post-patch component visually
+   * instead of dumping the raw diff.
+   *
+   * Best-effort: any failure (no clone, file missing, diff malformed, …)
+   * skips the broadcast silently. Patch-mode preview is additive; the diff
+   * tab still works regardless.
    */
   private emitComponentUpdated(
     prompt: PromptRecord,
     artifact: GenerationArtifact,
     intake: IntakeContext | null,
   ): void {
-    const candidate = pickComponentSource(artifact)
-    if (!candidate) return
-    const targetPath = candidate.path
-    const componentSource = candidate.content
+    const newFileCandidate = pickComponentSource(artifact)
+    if (newFileCandidate) {
+      const componentSource = newFileCandidate.content
+      this.broadcaster.broadcast("component:updated", {
+        runId: prompt.id,
+        componentId: prompt.id,
+        componentSource,
+        contextMap: {
+          landsAt: newFileCandidate.path,
+          uses: detectDashDsImports(componentSource),
+          be: intake?.classification.affectedFiles?.be ?? [],
+          audit: intake?.auditTrail.required ? intake.auditTrail.reason : null,
+        },
+      })
+      return
+    }
 
+    // Patch-mode fallback — find the first .tsx/.jsx patch and try to apply
+    // it against the workspace clone so we can preview the visual result.
+    const patchCandidate = pickPatchComponentSource(artifact)
+    if (!patchCandidate) return
+
+    const clonePath = this.workspace?.clonePath
+    if (!clonePath) {
+      this.logger.info("preview: skipping patch-mode broadcast (no clone)", {
+        id: prompt.id,
+        path: patchCandidate.path,
+      })
+      return
+    }
+
+    let originalSource: string
+    try {
+      originalSource = readFileSync(join(clonePath, patchCandidate.path), "utf8")
+    } catch (err) {
+      this.logger.warn("preview: failed to read patch target", {
+        id: prompt.id,
+        path: patchCandidate.path,
+        err: (err as Error).message,
+      })
+      return
+    }
+
+    const applied = applyUnifiedDiff(originalSource, patchCandidate.patchContent)
+    if (!applied.ok) {
+      this.logger.warn("preview: in-memory diff apply failed", {
+        id: prompt.id,
+        path: patchCandidate.path,
+        reason: applied.reason,
+      })
+      return
+    }
+
+    const componentSource = applied.result
     this.broadcaster.broadcast("component:updated", {
       runId: prompt.id,
       componentId: prompt.id,
       componentSource,
       contextMap: {
-        landsAt: targetPath,
+        landsAt: patchCandidate.path,
         uses: detectDashDsImports(componentSource),
         be: intake?.classification.affectedFiles?.be ?? [],
         audit: intake?.auditTrail.required ? intake.auditTrail.reason : null,
@@ -1416,6 +1478,24 @@ function pickComponentSource(
 
   const first = tsxLike[0]!
   return { path: first.path, content: first.content }
+}
+
+/**
+ * Pick the "main" patch to render for the SSE preview event when the
+ * generation has NO new files (patch-only output). Mirrors the .tsx/.jsx
+ * preference of `pickComponentSource` so the preview tracks the same kind
+ * of component file.
+ *
+ * Returns null when no patch targets a UI file — caller skips broadcast.
+ */
+function pickPatchComponentSource(
+  artifact: GenerationArtifact,
+): { path: string; patchContent: string } | null {
+  const patches = artifact.patches ?? []
+  if (patches.length === 0) return null
+  const uiPatch = patches.find((p) => /\.(tsx|jsx)$/.test(p.path))
+  if (uiPatch) return { path: uiPatch.path, patchContent: uiPatch.patchContent }
+  return null
 }
 
 function detectLanguage(filePath: string): string {
