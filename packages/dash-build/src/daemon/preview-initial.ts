@@ -114,12 +114,45 @@ function pickComponentFile(files: DiscoveredFile[]): DiscoveredFile | null {
  *
  * `root` override exists for tests; production callers should omit it.
  */
+/**
+ * Resolve a possibly-truncated runId to an actual on-disk run dir. The display
+ * badge shows ~8 chars (`prm_20cb`) but the persisted dir uses the full
+ * 12-char slice (`prm_20cb094a-ac2`). When users copy the badge into the URL
+ * bar we need to walk the runs root and find the unique prefix match.
+ *
+ * Returns the canonical runId when:
+ *   - Exact dir exists → returns input as-is
+ *   - Exactly one dir starts with the prefix → returns that dir name
+ * Returns null when:
+ *   - No dir matches → unknown / not-yet-persisted run
+ *   - Multiple dirs match → ambiguous, refuse to guess
+ */
+async function resolveRunIdPrefix(
+  runId: string,
+  root: string,
+): Promise<string | null> {
+  const exact = resolveRunDir(runId, root)
+  if (existsSync(exact)) return runId
+  if (!existsSync(root)) return null
+  let entries: string[]
+  try {
+    entries = await readdir(root)
+  } catch {
+    return null
+  }
+  const matches = entries.filter((name) => name.startsWith(runId))
+  if (matches.length === 1) return matches[0]!
+  return null
+}
+
 export async function loadInitialPreview(
   runId: string | null | undefined,
   root: string = DEFAULT_RUNS_ROOT,
 ): Promise<PreviewInitialBlob | null> {
   if (!runId) return null
-  const runDir = resolveRunDir(runId, root)
+  const resolvedId = await resolveRunIdPrefix(runId, root)
+  if (!resolvedId) return null
+  const runDir = resolveRunDir(resolvedId, root)
   if (!existsSync(runDir)) return null
 
   const files = await readUiFiles(join(runDir, "files"))
@@ -132,7 +165,7 @@ export async function loadInitialPreview(
   if (detectBannedImports(picked.content).length > 0) return null
 
   return {
-    componentId: runId,
+    componentId: resolvedId,
     componentSource: picked.content,
     contextMap: {
       landsAt: picked.path,

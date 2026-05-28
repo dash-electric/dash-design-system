@@ -119,19 +119,19 @@ export function renderWorkspace(
 
   const sidebar = renderSidebar({ active: null, recents, collapsed: true })
 
-  // Map run id (placeholder for now). Agent B / the orchestrator will mount
-  // the real preview via this id.
-  const componentId = opts.runId ?? ""
+  // Map run id. If a cold-load preview blob came back from disk, prefer its
+  // canonical id — the URL may carry a truncated badge id (e.g. `prm_20cb`)
+  // while disk holds the full slice (`prm_20cb094a-ac2`). Using the blob's
+  // id keeps DOM data-component-id and __DASH_PREVIEW_INIT.componentId in
+  // sync so preview-mount.js mounts on first paint.
+  const initialBlob = opts.initialPreview ?? null
+  const componentId = initialBlob?.componentId ?? opts.runId ?? ""
 
   // Component preview chrome — 5 tabpanels (Component live, Diff/BE/Audit/Files
   // placeholder), Sandpack mount inside Component tabpanel, context-map footer.
   // The tab strip lives on the workspace shell below, not on the panel itself
   // (see preview-panel.ts header note). Sandpack auto-bootstraps via
   // /static/preview-mount.js (loaded from layout).
-  const initialBlob =
-    opts.initialPreview && opts.initialPreview.componentId === componentId
-      ? opts.initialPreview
-      : null
   const previewPanel = renderPreviewPanel({
     componentId,
     promptId: opts.runId ?? null,

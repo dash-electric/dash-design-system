@@ -114,6 +114,40 @@ describe("loadInitialPreview", () => {
     const blob = await loadInitialPreview("run-banned", join(root, "runs"))
     expect(blob).toBeNull()
   })
+
+  it("resolves a truncated runId prefix to the full on-disk id", async () => {
+    // Real bug: URL `/workspace/prm_20cb` carried the truncated display badge
+    // id; disk dir was `prm_20cb094a-ac2`. loadInitialPreview must walk the
+    // runs root and resolve the unique prefix match, returning the canonical
+    // id in the blob so the workspace template can sync DOM attributes.
+    await seedArtifact("prm_20cb094a-ac2", [
+      {
+        path: "Component.tsx",
+        content: "export default function C() { return <div>x</div> }",
+      },
+    ])
+    const blob = await loadInitialPreview("prm_20cb", join(root, "runs"))
+    expect(blob).not.toBeNull()
+    expect(blob!.componentId).toBe("prm_20cb094a-ac2")
+  })
+
+  it("returns null when a runId prefix is ambiguous", async () => {
+    await seedArtifact("prm_ambi0001-aaa", [
+      {
+        path: "A.tsx",
+        content: "export default function A() { return null }",
+      },
+    ])
+    await seedArtifact("prm_ambi0002-bbb", [
+      {
+        path: "B.tsx",
+        content: "export default function B() { return null }",
+      },
+    ])
+    // Two dirs share `prm_ambi` — refuse to guess.
+    const blob = await loadInitialPreview("prm_ambi", join(root, "runs"))
+    expect(blob).toBeNull()
+  })
 })
 
 describe("renderInitialPreviewScript", () => {
@@ -175,15 +209,21 @@ describe("renderWorkspace embeds the init script when given a blob", () => {
     expect(html).toContain('id="db-preview-sandpack"')
   })
 
-  it("ignores a mismatched-id blob (defensive)", () => {
+  it("uses the blob's canonical componentId when URL runId is a truncated prefix", () => {
+    // Real scenario: URL `/workspace/prm_20cb` carries the display badge id,
+    // disk holds `prm_20cb094a-ac2`. loadInitialPreview resolves to the full
+    // id; the workspace must trust the blob so the DOM data-component-id and
+    // the injected __DASH_PREVIEW_INIT.componentId line up.
     const html = renderWorkspace(store, {
-      runId: "run-a",
+      runId: "prm_20cb",
       initialPreview: {
-        componentId: "run-b",
+        componentId: "prm_20cb094a-ac2",
         componentSource: "export default () => null",
         contextMap: { landsAt: null, uses: [], be: [], audit: null },
       },
     })
-    expect(html).not.toContain("window.__DASH_PREVIEW_INIT")
+    expect(html).toContain("window.__DASH_PREVIEW_INIT")
+    expect(html).toContain("prm_20cb094a-ac2")
+    expect(html).toContain('data-component-id="prm_20cb094a-ac2"')
   })
 })
