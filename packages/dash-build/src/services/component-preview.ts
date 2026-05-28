@@ -39,6 +39,31 @@ export interface ComponentPreviewRequest {
   promptId?: string
 }
 
+/**
+ * Patch-mode preview request. Instead of receiving a finished component source,
+ * the service reads `targetFilePath` from `repoPath`, applies the unified-diff
+ * `diff` body in-memory, and renders the RESULTING source via Sandpack.
+ *
+ * Either `originalSource` (already in memory) or `repoPath` must be present.
+ * When both are absent the request fails with `original_source_required`.
+ */
+export interface ComponentPreviewPatchRequest {
+  mode: "patch"
+  /** Path inside the repo the patch applies to (e.g. "src/foo.tsx"). */
+  targetFilePath: string
+  /** Unified-diff body. May or may not include the `--- a/` / `+++ b/` header. */
+  diff: string
+  /** Sandbox clone root. When set, originalSource is read from
+   *  `<repoPath>/<targetFilePath>`. Prefer this for the orchestrator path. */
+  repoPath?: string
+  /** Pre-loaded original file contents — bypasses disk read. Set by tests
+   *  and the SSE emitter when source is already in hand. */
+  originalSource?: string
+  dependencies?: string[]
+  mockData?: Record<string, unknown>
+  promptId?: string
+}
+
 export interface SandpackFile {
   code: string
   hidden?: boolean
@@ -74,6 +99,9 @@ export interface ComponentPreviewError {
     | "banned_import"
     | "payload_too_large"
     | "template_read_failed"
+    | "original_source_required"
+    | "patch_apply_failed"
+    | "target_file_read_failed"
   message: string
   details?: BannedImportFinding[]
 }
@@ -359,6 +387,215 @@ function resolveDependencyVersions(
     out[pkg] = VERSION_MAP[pkg] ?? "latest"
   }
   return out
+}
+
+// ---------------------------------------------------------------------------
+// Patch-mode preview
+// ---------------------------------------------------------------------------
+
+/**
+ * Apply a unified-diff body against an in-memory source string.
+ *
+ * Hand-rolled to avoid pulling `diff` / `parse-diff` into the daemon bundle.
+ * Supports the unified-diff subset the model actually emits:
+ *   - Standard `@@ -<a>,<b> +<c>,<d> @@` hunk headers
+ *   - `+` / `-` / ` ` line markers
+ *   - Optional `--- a/<path>` / `+++ b/<path>` preamble (ignored)
+ *   - `\ No newline at end of file` trailing markers (ignored)
+ *
+ * NOT supported:
+ *   - Multi-file diffs (only the first/single file is consumed)
+ *   - Binary patches
+ *   - Fuzz / context drift recovery — caller must hand us a clean diff
+ *
+ * Returns `{ ok: true, result }` or `{ ok: false, reason }`. Caller wraps the
+ * failure into the `patch_apply_failed` preview error.
+ */
+export function applyUnifiedDiff(
+  original: string,
+  diff: string,
+): { ok: true; result: string } | { ok: false; reason: string } {
+  if (typeof original !== "string") {
+    return { ok: false, reason: "original source is not a string" }
+  }
+  if (typeof diff !== "string" || diff.trim().length === 0) {
+    return { ok: false, reason: "diff body is empty" }
+  }
+
+  // Preserve trailing newline behaviour — split on \n but remember whether
+  // the original ended with one so we can re-attach correctly.
+  const originalHadTrailingNewline = original.endsWith("\n")
+  const originalLines = originalHadTrailingNewline
+    ? original.slice(0, -1).split("\n")
+    : original.split("\n")
+
+  // Output is mutable copy we splice into per hunk.
+  const out = [...originalLines]
+  // Cumulative offset between original and out indices (positive = out longer).
+  let offset = 0
+
+  const diffLines = diff.split(/\r?\n/)
+  const hunkHeaderRe = /^@@\s+-(\d+)(?:,(\d+))?\s+\+(\d+)(?:,(\d+))?\s+@@/
+  let i = 0
+  let appliedAnyHunk = false
+
+  while (i < diffLines.length) {
+    const headerMatch = hunkHeaderRe.exec(diffLines[i]!)
+    if (!headerMatch) {
+      i += 1
+      continue
+    }
+    const oldStart = parseInt(headerMatch[1]!, 10)
+    const oldCount = headerMatch[2] !== undefined ? parseInt(headerMatch[2], 10) : 1
+    // Note: newStart / newCount are part of the spec but we don't need them —
+    // we splice based on oldStart + offset and let the +/- markers drive
+    // additions/deletions.
+    i += 1
+
+    // Collect hunk body — lines starting with ' ', '+', '-' until next '@@'
+    // or EOF or a non-conforming line.
+    const hunk: string[] = []
+    while (i < diffLines.length) {
+      const line = diffLines[i]!
+      if (line.startsWith("@@")) break
+      if (line.startsWith("\\")) {
+        // "\ No newline at end of file" — skip silently.
+        i += 1
+        continue
+      }
+      if (
+        line.startsWith(" ") ||
+        line.startsWith("+") ||
+        line.startsWith("-")
+      ) {
+        hunk.push(line)
+        i += 1
+        continue
+      }
+      if (line.length === 0) {
+        // Trailing blank line from split — skip silently (not a context line).
+        // A real empty context line would be encoded as a single space (" ").
+        i += 1
+        continue
+      }
+      // Unexpected leading char — stop collecting and let the outer loop
+      // resync on the next `@@`.
+      break
+    }
+
+    // Apply this hunk. `cursor` walks the out array starting at the
+    // (1-indexed) oldStart + offset → 0-indexed splice position.
+    let cursor = oldStart - 1 + offset
+    if (cursor < 0 || cursor > out.length) {
+      return {
+        ok: false,
+        reason: `hunk cursor out of bounds at line ${oldStart} (offset ${offset}, out.length ${out.length})`,
+      }
+    }
+
+    for (const hl of hunk) {
+      const marker = hl.charAt(0)
+      const content = hl.slice(1)
+      if (marker === " ") {
+        // Context line — must match the existing line at cursor.
+        const expected = content
+        if (out[cursor] !== expected) {
+          return {
+            ok: false,
+            reason:
+              `context mismatch at line ${cursor + 1}: ` +
+              `expected ${JSON.stringify(expected)}, got ${JSON.stringify(out[cursor] ?? null)}`,
+          }
+        }
+        cursor += 1
+      } else if (marker === "-") {
+        if (out[cursor] !== content) {
+          return {
+            ok: false,
+            reason:
+              `deletion mismatch at line ${cursor + 1}: ` +
+              `expected ${JSON.stringify(content)}, got ${JSON.stringify(out[cursor] ?? null)}`,
+          }
+        }
+        out.splice(cursor, 1)
+        offset -= 1
+        // cursor stays — the next iteration looks at the shifted line.
+      } else if (marker === "+") {
+        out.splice(cursor, 0, content)
+        offset += 1
+        cursor += 1
+      }
+    }
+    void oldCount // silence unused — present for spec adherence
+    appliedAnyHunk = true
+  }
+
+  if (!appliedAnyHunk) {
+    return { ok: false, reason: "diff contained no recognizable @@ hunks" }
+  }
+
+  const joined = out.join("\n")
+  return {
+    ok: true,
+    result: originalHadTrailingNewline && !joined.endsWith("\n") ? joined + "\n" : joined,
+  }
+}
+
+/**
+ * Render a patch-mode preview. Reads the original file, applies the diff,
+ * then routes through `renderComponentPreview` so banned-import gating /
+ * dependency resolution / Sandpack scaffolding all reuse the same code path.
+ *
+ * Errors:
+ *   - `original_source_required`   — neither originalSource nor repoPath given
+ *   - `target_file_read_failed`    — repoPath provided but disk read failed
+ *   - `patch_apply_failed`         — diff body was malformed / context drift
+ *   - downstream errors (banned_import / payload_too_large) pass through.
+ */
+export async function renderComponentPreviewFromPatch(
+  req: ComponentPreviewPatchRequest,
+): Promise<ComponentPreviewResponse | ComponentPreviewError> {
+  let originalSource = req.originalSource
+  if (originalSource === undefined && req.repoPath) {
+    try {
+      originalSource = await fs.readFile(
+        join(req.repoPath, req.targetFilePath),
+        "utf8",
+      )
+    } catch (err) {
+      return {
+        ok: false,
+        error: "target_file_read_failed",
+        message:
+          `Could not read ${req.targetFilePath} from ${req.repoPath}: ` +
+          (err as Error).message,
+      }
+    }
+  }
+  if (originalSource === undefined) {
+    return {
+      ok: false,
+      error: "original_source_required",
+      message:
+        "renderComponentPreviewFromPatch requires either `originalSource` or `repoPath`.",
+    }
+  }
+
+  const applied = applyUnifiedDiff(originalSource, req.diff)
+  if (!applied.ok) {
+    return {
+      ok: false,
+      error: "patch_apply_failed",
+      message: `Failed to apply diff to ${req.targetFilePath}: ${applied.reason}`,
+    }
+  }
+
+  return renderComponentPreview({
+    componentSource: applied.result,
+    dependencies: req.dependencies,
+    mockData: req.mockData,
+    promptId: req.promptId,
+  })
 }
 
 // ---------------------------------------------------------------------------

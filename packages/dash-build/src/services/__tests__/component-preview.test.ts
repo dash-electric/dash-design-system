@@ -1,11 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest"
+import { mkdtemp, rm, writeFile, mkdir } from "node:fs/promises"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import {
   BANNED_PREVIEW_IMPORTS,
   MAX_SOURCE_BYTES,
   __clearTemplateCacheForTests,
+  applyUnifiedDiff,
   detectBannedImports,
   detectDashDsImports,
   renderComponentPreview,
+  renderComponentPreviewFromPatch,
 } from "../component-preview.js"
 
 const VALID_COMPONENT = `import * as React from "react"
@@ -232,5 +237,136 @@ import { schema } from "@dash/registry-schema"`
   it("does not flag non-@dash imports", () => {
     const src = `import clsx from "clsx"\nimport * as React from "react"`
     expect(detectDashDsImports(src)).toEqual([])
+  })
+})
+
+describe("applyUnifiedDiff", () => {
+  it("applies a simple addition hunk", () => {
+    const original = "line a\nline b\nline c\n"
+    const diff = `@@ -1,3 +1,4 @@
+ line a
+ line b
++line b.5
+ line c
+`
+    const r = applyUnifiedDiff(original, diff)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.result).toBe("line a\nline b\nline b.5\nline c\n")
+  })
+
+  it("applies a deletion + addition (replace) hunk", () => {
+    const original = "alpha\nbeta\ngamma\n"
+    const diff = `@@ -1,3 +1,3 @@
+ alpha
+-beta
++BETA
+ gamma
+`
+    const r = applyUnifiedDiff(original, diff)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.result).toBe("alpha\nBETA\ngamma\n")
+  })
+
+  it("fails cleanly on context mismatch", () => {
+    const original = "x\ny\nz\n"
+    const diff = `@@ -1,3 +1,3 @@
+ NOT-X
+-y
++Y
+ z
+`
+    const r = applyUnifiedDiff(original, diff)
+    expect(r.ok).toBe(false)
+    if (r.ok) return
+    expect(r.reason).toMatch(/context mismatch/i)
+  })
+})
+
+describe("renderComponentPreviewFromPatch", () => {
+  beforeEach(() => {
+    __clearTemplateCacheForTests()
+  })
+
+  it("applies an in-memory diff and renders the patched source via Sandpack", async () => {
+    const original = `import * as React from "react"
+export default function Mitra() {
+  return <div>old title</div>
+}
+`
+    const diff = `@@ -1,4 +1,4 @@
+ import * as React from "react"
+ export default function Mitra() {
+-  return <div>old title</div>
++  return <div>new title</div>
+ }
+`
+    const res = await renderComponentPreviewFromPatch({
+      mode: "patch",
+      targetFilePath: "src/Mitra.tsx",
+      diff,
+      originalSource: original,
+      promptId: "pr_patch_1",
+    })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    expect(res.sandpack.files["/Component.tsx"]?.code).toContain("new title")
+    expect(res.sandpack.files["/Component.tsx"]?.code).not.toContain("old title")
+    expect(res.sandpack.template).toBe("react-ts")
+  })
+
+  it("reads originalSource from repoPath when not supplied inline", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "dash-build-preview-patch-"))
+    try {
+      const filePath = "src/Greeting.tsx"
+      const full = join(dir, filePath)
+      await mkdir(join(dir, "src"), { recursive: true })
+      const original = `import * as React from "react"
+export default function Greeting() {
+  return <p>Hello</p>
+}
+`
+      await writeFile(full, original, "utf8")
+      const diff = `@@ -1,4 +1,4 @@
+ import * as React from "react"
+ export default function Greeting() {
+-  return <p>Hello</p>
++  return <p>Halo</p>
+ }
+`
+      const res = await renderComponentPreviewFromPatch({
+        mode: "patch",
+        targetFilePath: filePath,
+        diff,
+        repoPath: dir,
+      })
+      expect(res.ok).toBe(true)
+      if (!res.ok) return
+      expect(res.sandpack.files["/Component.tsx"]?.code).toContain("Halo")
+    } finally {
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it("returns patch_apply_failed when the diff cannot be applied", async () => {
+    const original = `import * as React from "react"
+export default function X() { return <span>a</span> }
+`
+    const badDiff = `@@ -1,2 +1,2 @@
+ import * as React from "react"
+-export default function Y() { return <span>a</span> }
++export default function Y() { return <span>b</span> }
+`
+    const res = await renderComponentPreviewFromPatch({
+      mode: "patch",
+      targetFilePath: "x.tsx",
+      diff: badDiff,
+      originalSource: original,
+    })
+    expect(res.ok).toBe(false)
+    if (res.ok) return
+    expect(res.error).toBe("patch_apply_failed")
+    expect(res.message).toContain("x.tsx")
   })
 })
