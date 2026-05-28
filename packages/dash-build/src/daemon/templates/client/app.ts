@@ -1492,12 +1492,38 @@ export const DASHBOARD_JS = `
     });
   }
 
+  // Workspace boot: read seed prompt from URL hash (passed by home page)
+  // and pre-fill the composer textarea. Fixes Agent A handoff TODO #1.
+  function hookWorkspaceHashHandoff() {
+    var path = location.pathname || "";
+    if (path.indexOf("/workspace") !== 0) return;
+    var hash = (location.hash || "").replace(/^#/, "");
+    if (!hash) return;
+    var params = new URLSearchParams(hash);
+    var seed = params.get("prompt");
+    if (!seed) return;
+    var textarea = document.getElementById("db-prompt-input");
+    if (!textarea) return;
+    try {
+      textarea.value = decodeURIComponent(seed);
+      // Trigger input event so any character counter / autosize fires.
+      var ev = new Event("input", { bubbles: true });
+      textarea.dispatchEvent(ev);
+      textarea.focus();
+      // Clear hash so refresh doesn't re-seed.
+      history.replaceState(null, "", path);
+    } catch (e) {
+      // Silently ignore decode errors.
+    }
+  }
+
   function bootLovableShell() {
     hookHomePrompt();
     hookHomeTabs();
     hookSidebarToggle();
     hookNewProjectButton();
     hookTemplateCards();
+    hookWorkspaceHashHandoff();
   }
   bootLovableShell();
 
