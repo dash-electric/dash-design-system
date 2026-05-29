@@ -235,6 +235,21 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
  * shutdown on SIGTERM/SIGINT.
  */
 async function main(): Promise<void> {
+  // MCP-boundary Phase 4 — flip the design-contract reads to the MCP path by
+  // default for the real daemon. The loaders read DASH_DS_MCP_URL at call
+  // time; when unset we point at the local registry/docs server (the same
+  // origin the mcp-server reads). FS fallback stays the safety net, and an
+  // explicit env value always wins. NOT set in startDaemon() — tests import
+  // that directly and must stay hermetic (no network), so the flip lives only
+  // on the direct-invocation runner.
+  if (!process.env.DASH_DS_MCP_URL) {
+    const fallbackMcp = process.env.DASH_REGISTRY_URL ?? "http://localhost:3000"
+    process.env.DASH_DS_MCP_URL = fallbackMcp
+    console.log(
+      `[dash-build daemon] DASH_DS_MCP_URL defaulted → ${fallbackMcp} (MCP boundary live; FS fallback retained)`,
+    )
+  }
+
   const daemon = await startDaemon()
   // Use stdout for the banner so launchDaemon (when run attached) sees it.
   console.log(`✓ Daemon listening on http://${daemon.host}:${daemon.port}`)
