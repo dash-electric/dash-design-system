@@ -216,6 +216,15 @@ export interface SkillChainRunner {
      * default model temperature.
      */
     temperature?: number
+    /**
+     * Milestone 3 — orchestrator run id (prm_*). Threaded so run-scoped
+     * artifacts (prd.json) land in the canonical run dir instead of the
+     * chain's internal random promptId. Optional for legacy stubs.
+     */
+    runId?: string
+    /** Milestone 3 — suppress the chain's clarify gates on a post-clarify
+     *  resume pass (answered/skipped). Optional. */
+    suppressClarify?: boolean
   }): Promise<GenerateResult>
 }
 

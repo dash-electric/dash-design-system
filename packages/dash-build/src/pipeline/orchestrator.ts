@@ -276,6 +276,10 @@ export class Orchestrator {
    * committing an artifact. Cleaned up when the run settles.
    */
   private readonly runAborters: Map<string, AbortController> = new Map()
+  /** Run ids whose clarify round-trip is resolved (answered/skipped). The
+   *  chain's clarify gate is suppressed for these on the resume pass so a
+   *  skip (no folded answers) doesn't re-trigger the same clarify forever. */
+  private readonly clarifyResolved: Set<string> = new Set()
 
   constructor(opts: OrchestratorOptions) {
     this.store = opts.store
@@ -371,6 +375,7 @@ export class Orchestrator {
 
   private forgetRunEmitter(promptId: string): void {
     this.runEmitters.delete(promptId)
+    this.clarifyResolved.delete(promptId)
     this.aopEmitter.forget(promptId)
   }
 
@@ -1123,6 +1128,8 @@ export class Orchestrator {
             selectedRepo: prompt.repo,
             anthropic: sdk,
             intake,
+            runId: prompt.id,
+            suppressClarify: this.clarifyResolved.has(prompt.id),
             variantId: "a",
             temperature: 0.7,
           }),
@@ -1132,6 +1139,8 @@ export class Orchestrator {
             selectedRepo: prompt.repo,
             anthropic: sdk,
             intake,
+            runId: prompt.id,
+            suppressClarify: this.clarifyResolved.has(prompt.id),
             variantId: "b",
             temperature: 0.9,
           }),
@@ -1177,6 +1186,8 @@ export class Orchestrator {
           selectedRepo: prompt.repo,
           anthropic: sdk,
           intake,
+          runId: prompt.id,
+          suppressClarify: this.clarifyResolved.has(prompt.id),
         })
       }
     } catch (err) {
@@ -1910,7 +1921,10 @@ export class Orchestrator {
    * required questions. Merges answers into the original prompt and
    * restarts processPrompt.
    */
-  async resumeAfterClarification(promptId: string): Promise<void> {
+  async resumeAfterClarification(
+    promptId: string,
+    outcome: "answered" | "skipped" = "answered",
+  ): Promise<void> {
     const prompt = this.store.getPrompt(promptId)
     if (!prompt) return
     if (prompt.status !== "clarifying") {
@@ -1921,25 +1935,31 @@ export class Orchestrator {
       return
     }
 
+    // Mark this run as clarify-resolved so the chain's clarify gate does NOT
+    // re-fire on the resume pass (on skip there are no answers folded in, so
+    // the same ambiguity would otherwise re-trigger an infinite clarify loop).
+    this.clarifyResolved.add(promptId)
+
+    if (outcome === "skipped") {
+      // User opted out — generate with the ORIGINAL prompt, no answers folded.
+      // (The session store has no "skipped" status; the route signals it via
+      // the onComplete outcome, so we trust that rather than re-reading.)
+      await this.setStatus(prompt, "generating")
+      return this.processPrompt(promptId)
+    }
+
     const resolved = await this.clarification.resolved(promptId)
     if (!resolved || resolved.status !== "answered") {
       this.logger.warn("resume: no answered session yet", { id: promptId })
+      this.clarifyResolved.delete(promptId)
       return
     }
 
-    // Persist merged prompt text. We don't have setText on the store, so
-    // we use a small in-place mutation via snapshot+addPrompt? No — the
-    // store API mutates records in place via updatePromptStatus. We store
-    // the merged prompt in `error` to surface it, then transition.
-    //
-    // Cleaner: we replace prompt.text by direct mutation via the
-    // PromptRecord reference returned by getPrompt — see store.ts which
-    // mutates `prompt.status` directly. Same pattern works for text.
+    // Direct in-place mutation of the PromptRecord (same pattern the store
+    // uses for status) to carry the merged prompt forward.
     prompt.text = resolved.mergedPrompt
 
     await this.setStatus(prompt, "generating")
-    // Re-run skill chain with the merged prompt (no longer triggers clarify
-    // path because answers fold the missing surface/scope in).
     return this.processPrompt(promptId)
   }
 
@@ -2687,6 +2707,8 @@ export function defaultSkillChainRunner(): SkillChainRunner {
           repoPath: input.repoPath,
           selectedRepo: input.selectedRepo ?? null,
           intake: input.intake,
+          runId: input.runId,
+          suppressClarify: input.suppressClarify,
         },
         { anthropic: input.anthropic },
       )

@@ -411,6 +411,21 @@ export interface GenerateInput {
    * `synthesizePrd` so the spec reflects the clarify reasoning. Optional.
    */
   prdSeed?: PrdSeed
+  /**
+   * Orchestrator run id (e.g. "prm_66eafb93-795"). Threaded so run-scoped
+   * artifacts (prd.json) persist into the CANONICAL run dir, not the chain's
+   * internal random promptId. Without this, writePrdSnapshot wrote prd.json to
+   * runs/<random-uuid>/ — orphaned from the real run. Optional: falls back to
+   * the chain's promptId for legacy/direct callers.
+   */
+  runId?: string
+  /**
+   * Milestone 3 — when true, the chain SKIPS its clarify gates (mode + scenario
+   * + PRD). Set on the resume pass after a clarify round-trip resolved
+   * (answered or skipped) so a skip — which folds no answers in — doesn't
+   * re-trigger the same clarify forever. Optional; defaults to false.
+   */
+  suppressClarify?: boolean
 }
 
 export type GenerateResult =

@@ -135,7 +135,7 @@ export async function startDaemon(opts: DaemonServerOptions = {}): Promise<Runni
     outcome: "answered" | "skipped",
   ) => {
     if ((outcome === "answered" || outcome === "skipped") && orchestrator) {
-      await orchestrator.resumeAfterClarification(promptId).catch(() => {})
+      await orchestrator.resumeAfterClarification(promptId, outcome).catch(() => {})
     }
   }
 

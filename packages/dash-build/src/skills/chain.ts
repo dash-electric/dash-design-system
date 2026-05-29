@@ -163,7 +163,9 @@ export async function generateWithSkillChain(
   // `needsClarification` — re-asking what the skill-seeded reviewer already
   // cleared is the double-ask the spec (§B / vision §1.3) warns against.
   let modelClarifyCleared = false
-  if (deps.anthropic && !deps.evaluatePRD) {
+  // suppressClarify (resume pass after answered/skipped) → skip the model-
+  // backed clarify entirely; we already round-tripped the user once.
+  if (deps.anthropic && !deps.evaluatePRD && !input.suppressClarify) {
     const [ceoSkill, ohSkill] = await Promise.all([
       readGstackSkill("plan-ceo-review").catch(() => null),
       readGstackSkill("office-hours").catch(() => null),
@@ -224,7 +226,7 @@ export async function generateWithSkillChain(
     return { kind: "error", reason: "prd-evaluator failed", details: err }
   }
 
-  if (prdEval.needsClarification && !modelClarifyCleared) {
+  if (prdEval.needsClarification && !modelClarifyCleared && !input.suppressClarify) {
     return {
       kind: "clarify",
       questions: prdEval.questions,
@@ -250,6 +252,7 @@ export async function generateWithSkillChain(
   const surfaceResolved =
     repoContext.repoSlug && repoContext.repoSlug !== "unknown"
   if (
+    !input.suppressClarify &&
     !surfaceResolved &&
     input.intake?.mode &&
     input.intake.mode.mode === "ambiguous" &&
@@ -399,8 +402,11 @@ export async function generateWithSkillChain(
       anthropic: synthAnthropic,
       model: modelForStep("prd"),
     })
-    // Persist best-effort — a write failure must NEVER block generation.
-    await writePrdSnapshot(promptId, dashPrd).catch(() => undefined)
+    // Persist best-effort to the CANONICAL run dir — use the orchestrator's
+    // runId when threaded, NOT the chain's internal random promptId (which
+    // would orphan prd.json under runs/<random-uuid>/). Falls back to promptId
+    // for direct/legacy callers that don't pass runId.
+    await writePrdSnapshot(input.runId ?? promptId, dashPrd).catch(() => undefined)
   } catch {
     // synthesizePrd never throws, but guard the await chain defensively so a
     // persistence/IO edge case degrades to "no PRD block" rather than erroring.
