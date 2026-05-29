@@ -467,8 +467,22 @@ export async function renderComponentPreview(
   //    package name appearing there.
   const dashDsImports = detectDashDsImports(req.componentSource)
   const declaredDeps = new Set([...(req.dependencies ?? []), ...dashDsImports])
-  const dependencies = resolveDependencyVersions(declaredDeps)
   const dashUiBundle = loadDashUiBundle()
+
+  // ICON-SANDPACK-FIX (2026-05-29): the @dash/ui source bundle we ship into the
+  // iframe contains 22 atoms (Badge, Alert, Button, …) that import icons from
+  // `@remixicon/react`. That specifier is NOT a `@dash/*` package, so it never
+  // appeared in the resolved deps → Sandpack couldn't fetch it → every DS icon
+  // rendered as a broken box ("belang"). Whenever the @dash/ui bundle is
+  // present (or the component imports remixicon directly), force the icon
+  // package into the dependency map so esm.sh resolves it in-iframe.
+  const usesRemixIcon =
+    dashUiBundle.available ||
+    dashDsImports.includes("@dash/ui") ||
+    /@remixicon\/react/.test(req.componentSource)
+  if (usesRemixIcon) declaredDeps.add("@remixicon/react")
+
+  const dependencies = resolveDependencyVersions(declaredDeps)
 
   // 6. Build Sandpack files map. `/index.tsx` and `/App.tsx` are template-
   //    owned and read-only to prevent the user clobbering them. `/Component.tsx`
@@ -571,6 +585,12 @@ const VERSION_MAP: Record<string, string> = {
   "tailwind-merge": "^2.5.0",
   "@dash/ui": "latest",
   "@dash/registry-schema": "latest",
+  // Icon set. Pinned to the version apps/docs depends on so Sandpack's esm.sh
+  // resolve matches what the @dash/ui atoms were authored against. Without this
+  // entry the iframe couldn't resolve the icons imported transitively by 22
+  // @dash/ui atoms (Badge, Alert, Button, …) → glyphs rendered as broken boxes
+  // ("belang"). See ICON-SANDPACK-FIX note below.
+  "@remixicon/react": "^4.9.0",
 }
 
 /** Packages that look like Dash DS imports but won't resolve on npm yet.

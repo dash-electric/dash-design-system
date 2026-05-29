@@ -202,7 +202,7 @@ describe("renderChatMessage — actions vs legacy review block", () => {
     const msg: ChatMessage = {
       ...baseMsg,
       status: "ok",
-      content: "Clarification needed — answer the card on the right.",
+      content: "Clarification needed — answer the questions below.",
     }
     const html = renderChatMessage(msg)
     expect(html).toContain("Clarification needed")

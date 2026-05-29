@@ -42,7 +42,20 @@ export interface CodexCliRunnerOptions {
   defaultArgs?: string[]
 }
 
-const DEFAULT_TIMEOUT_MS = Number(process.env.DASH_BUILD_CODEX_TIMEOUT_MS ?? 600_000)
+// Default Codex CLI wall-clock budget. Lowered from 600s → 240s on 2026-05-29:
+// a single `codex exec` that hasn't produced output in 4 minutes is almost
+// always a stalled login / cold binary / runaway reasoning loop, not healthy
+// progress — and a 10-minute hang reads as a frozen UI to the user. Override
+// with DASH_BUILD_CODEX_TIMEOUT_MS for slow networks or huge prompts.
+const DEFAULT_TIMEOUT_MS = Number(process.env.DASH_BUILD_CODEX_TIMEOUT_MS ?? 240_000)
+
+/**
+ * Soft prompt-size budget (chars). Past this, the composed system prompt is
+ * large enough that Codex latency climbs sharply and timeout risk spikes. We
+ * don't truncate (that would corrupt context) — we emit a single stderr warn
+ * so operators can see "prompt was XXL" in logs when a timeout follows.
+ */
+const PROMPT_SIZE_WARN_CHARS = 60_000
 
 export class CodexCliRunner {
   private readonly binary: string
@@ -79,6 +92,16 @@ export class CodexCliRunner {
   ): Promise<CodexCliCompletionResponse> {
     const timeoutMs = req.timeoutMs ?? DEFAULT_TIMEOUT_MS
     const startedAt = performance.now()
+
+    if (req.prompt.length > PROMPT_SIZE_WARN_CHARS) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[codex-cli] large prompt: ${req.prompt.length} chars ` +
+          `(>${PROMPT_SIZE_WARN_CHARS}). Latency + timeout risk elevated. ` +
+          `If this run times out, trim context (introspection / existing files / ` +
+          `DS catalog) or raise DASH_BUILD_CODEX_TIMEOUT_MS.`,
+      )
+    }
     const outFile = path.join(
       tmpdir(),
       `dash-build-codex-${Date.now()}-${Math.random().toString(16).slice(2)}.txt`,

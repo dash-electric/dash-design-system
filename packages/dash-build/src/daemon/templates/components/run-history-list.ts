@@ -1,4 +1,5 @@
 import { escapeHtml } from "../layout.js"
+import { icon } from "./icon.js"
 import type { Run } from "../../state/types.js"
 
 /**
@@ -123,7 +124,7 @@ export function renderRunHistoryList(opts: RunHistoryListOptions): string {
     return `<section class="db-rail-history-list" aria-label="Run history">
       ${header}
       <div class="db-rail-history-list-empty">
-        <span class="db-rail-history-list-empty-mark" aria-hidden="true">🕒</span>
+        <span class="db-rail-history-list-empty-mark" aria-hidden="true">${icon("list", { size: "lg" })}</span>
         <p class="db-rail-history-list-empty-body">No runs yet — start by typing a prompt below.</p>
       </div>
     </section>`

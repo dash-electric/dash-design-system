@@ -53,13 +53,13 @@ describe("evaluatePrompt", () => {
     expect(ids).not.toContain("data-source")
   })
 
-  it("asks voice-rule when mitra is mentioned", () => {
+  it("NEVER asks voice-rule (removed 2026-05-29 — web is never mitra-facing)", () => {
+    // The mitra/voice question was removed: every web repo is internal-ops or
+    // client-facing, never a driver/courier surface (that's the mobile app).
+    // Voice now derives deterministically from the repo, so it's never asked.
     const out = evaluatePrompt(input("build screen about mitra payouts"))
     const ids = out.questions.map((q) => q.id)
-    expect(ids).toContain("voice-rule")
-    const voice = out.questions.find((q) => q.id === "voice-rule")!
-    expect(voice.type).toBe("yes-no")
-    expect(voice.required).toBe(true)
+    expect(ids).not.toContain("voice-rule")
   })
 
   it("does NOT ask voice-rule when selected repo infers internal backoffice audience", () => {
@@ -86,7 +86,9 @@ describe("evaluatePrompt", () => {
     expect(ids).not.toContain("voice-rule")
   })
 
-  it("flags contradiction when merged clarification conflicts with explicit audience", () => {
+  it("no longer raises visibility-conflict (voice gate removed 2026-05-29)", () => {
+    // The visibility-conflict gate was part of the removed mitra/voice flow.
+    // With voice derived from the repo, there's no contradiction to flag.
     const out = evaluatePrompt(
       input(
         [
@@ -98,7 +100,7 @@ describe("evaluatePrompt", () => {
       ),
     )
     const ids = out.questions.map((q) => q.id)
-    expect(ids).toContain("visibility-conflict")
+    expect(ids).not.toContain("visibility-conflict")
   })
 
   it("does NOT repeat questions already answered in merged clarification context", () => {

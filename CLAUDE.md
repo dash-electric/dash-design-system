@@ -30,7 +30,7 @@ Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showca
 2. **No external form / data-fetch libraries in UI / consumer code.** Banned: `react-hook-form`, `@hookform/resolvers`, `@tanstack/react-query`, `swr`, plus `zod` in UI consumer code. Use `useState` + hand-rolled validation in components. **Carve-out:** `packages/registry-schema/**` MAY use `zod` for runtime registry-JSON validation (this is a trust-boundary validator at a consumer-package edge, not a UI form library). The audit gate (`dash audit`) excepts this path. See `apps/docs/registry/rules/dash-ai-rules.md` § "Banned Imports".
 3. **Audit trail mandatory** for user-editable fields carrying legal/financial weight (image proof, payment, signature, KYC). Log original + edited + editor + reason. See rules § "Audit Trail".
 4. **Dash Purple canonical hex:** `#5e2aac`. Do not introduce `#7C4FC4` or any other purple variant.
-5. **Mitra-facing UI voice = formal "Anda"**, not casual "kamu". Per Dash voice rule.
+5. **Voice register is per-surface — follow each repo's existing convention, do not globalise.** portal-v2 mitra-facing default = informal **"kamu"**; **"Anda"** is a per-feature override for formal/compliance surfaces (e.g. Auto Suspend). Internal ops / backoffice / admin = formal **"Anda"**. Canonical per-repo rule: `apps/docs/registry/rules/dash-ai-rules.md` § refuse-list item 6. When in doubt, match the strings already in the target repo.
 
 ## Where to look for context
 
@@ -76,7 +76,7 @@ dash-build
 - 9router-style multi-interface menu (Web UI / Terminal / Tray / Exit)
 - Skill chain: dash-prd → `design.md` → Layer 0 rules → Skill v4 → OpenAI/Codex
 - AI clarification gate (multi-turn questions when uncertain)
-- Sandboxed iframe preview (esbuild peer dep)
+- Component preview via Sandpack (browser-resident; mounts the generated component inside a Dash-DS-tokened template with mock fixtures). NOTE: the legacy full-app iframe path (esbuild + clone dev-server) is superseded by the 2026-05-28 Sandpack pivot and now lives behind the "Activate clone preview" button only — see `packages/dash-build/docs/specs/component-preview-architecture-2026-05-28.md`.
 - Foundation match score (0-100)
 - GitHub PR creation via Dash Build App
 - Lovable-style split dashboard + toast notifications + skeleton states

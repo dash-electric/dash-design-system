@@ -3,17 +3,44 @@
  * integration code.
  */
 
-export { generateWithSkillChain, DEFAULT_MODEL_ID } from "./chain.js"
+export {
+  generateWithSkillChain,
+  DEFAULT_MODEL_ID,
+  MODEL_TIERS,
+  modelForStep,
+} from "./chain.js"
+export {
+  readGstackSkill,
+  type SkillReadResult,
+  type GstackSkillName,
+  type ReadGstackSkillOptions,
+} from "./skill-reader.js"
+export {
+  clarifyWithSkill,
+  type LlmClarifyInput,
+  type LlmClarifyOutput,
+  type CeoMode,
+} from "./clarify-llm.js"
 export { evaluatePromptScope, countPrdSectionsTouched } from "./prd-evaluator.js"
 export { loadDesignContext, findRepoRoot } from "./design-loader.js"
 export { loadSkillContext } from "./skill-loader.js"
 export {
   composeSystemPrompt,
   inferRepoContextPack,
+  renderPrd,
   BANNED_IMPORTS,
   DS_FIRST_DIRECTIVE_BLOCK,
   VOICE_REGISTER_BLOCK,
 } from "./prompt-composer.js"
+export {
+  synthesizePrd,
+  writePrdSnapshot,
+  fallbackPrd,
+  detectLang,
+  extractFirstJsonObject,
+  type SynthesizePrdInput,
+  type SynthesizePrdClassification,
+} from "./prd-synthesizer.js"
 export {
   loadDSContext,
   parseRegistry,
@@ -40,6 +67,8 @@ export type {
   AnthropicLike,
   PRDEval,
   PRDEvalInput,
+  DashPRD,
+  PrdSeed,
   DesignContext,
   FoundationManifest,
   SkillContext,

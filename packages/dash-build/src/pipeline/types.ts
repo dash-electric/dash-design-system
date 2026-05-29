@@ -63,6 +63,14 @@ export interface ApprovePRInput {
   prTitle?: string
   /** Override the default PR body (default = generated summary). */
   prBody?: string
+  /**
+   * P5 — explicit override to open a PR for an artifact whose validation
+   * FAILED (e.g. a CR-3 audit-log rejection). Without this flag, approvePR
+   * refuses to publish a `validation.passed === false` artifact — the
+   * client-side "merge button hidden" guard is not a real gate. Setting
+   * `force: true` is logged + broadcast so the override leaves an audit trail.
+   */
+  force?: boolean
 }
 
 export interface ApprovePRResult {

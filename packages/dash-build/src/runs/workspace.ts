@@ -49,11 +49,17 @@ export const SYNC_STALENESS_MS = 60 * 60 * 1000
  * server is considered stuck and we reject; the orchestrator broadcasts
  * `sandbox:dev_server_failed` so the dashboard can offer a retry.
  *
- * 60s mirrors the orchestrator's own watchdog in `runDevServerStartCascade`.
- * We resolve as soon as TCP can connect — Next.js' "Ready in …" log lags a
- * few hundred ms behind socket bind so we don't wait for HTTP 200.
+ * Raised 60s → 420s on 2026-05-29. The 60s deadline was the pivot doc's
+ * "scheduler silent fail": a cold `next dev` first-compile on the heavy
+ * backoffice app takes 5-7 min, far past 60s, so the watchdog gave up and the
+ * iframe fell back to staging while the dev server was in fact still booting.
+ * 420s (7 min) covers a cold backoffice compile; warm boots resolve in
+ * seconds (we resolve on TCP connect, not HTTP 200). Override with
+ * DASH_BUILD_DEV_SERVER_TIMEOUT_MS for slower machines / pre-warmed clones.
  */
-export const DEV_SERVER_READY_TIMEOUT_MS = 60 * 1000
+export const DEV_SERVER_READY_TIMEOUT_MS = Number(
+  process.env.DASH_BUILD_DEV_SERVER_TIMEOUT_MS ?? 420 * 1000,
+)
 
 /**
  * F1 — when the requested port is occupied, we probe upward this many ports
@@ -469,6 +475,13 @@ export class Workspace {
       // Mitigates Next.js noisy console + watchdog; harmless when the script
       // ignores them.
       FORCE_COLOR: "0",
+      // Baseline-preview flag. The preview-shim's axios interceptor only
+      // returns mock fixtures (instead of hitting a real/absent API and 401-ing
+      // every request) when this is "true". Without it, the auth-strip still
+      // works (firebase/AuthContext stubs are unconditional) but data calls
+      // fail — leaving the cloned backoffice rendering empty tables. Setting it
+      // here means the booted clone shows populated mock data out of the box.
+      NEXT_PUBLIC_DASH_BUILD_PREVIEW: "true",
     }
     const child = this.devServerSpawn({
       cwd: this.clonePath,

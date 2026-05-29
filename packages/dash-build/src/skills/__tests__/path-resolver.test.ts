@@ -6,6 +6,7 @@ import {
   PathResolver,
   createPathResolverForRepo,
   extractRouteTokens,
+  NAV_REGISTRY_REASON_MARKER,
 } from "../path-resolver.js"
 import type { RepoContextPack } from "../types.js"
 
@@ -37,6 +38,20 @@ function scaffoldBackoffice(root: string) {
   writeFile(
     path.join(fe, "src", "pages", "payroll.js"),
     "export default function PayrollPage(){return null}",
+  )
+  // Nav/sidebar registry — the files a new tab must be registered in.
+  writeFile(
+    path.join(fe, "src", "components", "sidebar", "Sidebar.jsx"),
+    "export const Sidebar = () => null",
+  )
+  writeFile(
+    path.join(fe, "src", "components", "sidebar", "CollapseableSidebar.jsx"),
+    "export const CollapseableSidebar = () => null",
+  )
+  // A non-nav sibling in the sidebar dir that must NOT be surfaced.
+  writeFile(
+    path.join(fe, "src", "components", "sidebar", "Avatar.jsx"),
+    "export const Avatar = () => null",
   )
   return fe
 }
@@ -162,6 +177,46 @@ describe("PathResolver — backoffice (Pages Router + JS)", () => {
         p.includes(path.join("provider", "components", "FilterBar")),
       ),
     ).toBe(true)
+  })
+
+  it("surfaces nav/sidebar registry files as patch targets when requiresNavOrRoute is set", async () => {
+    const feRoot = scaffoldBackoffice(dashRoot)
+    const resolver = new PathResolver("backoffice", feRoot)
+    const out = await resolver.resolveFromPrompt(
+      "tambah tab baru Suspensi di /provider",
+      { ...baseContext, requiresNavOrRoute: true },
+    )
+    const navResolutions = out.filter((r) =>
+      r.reason.includes(NAV_REGISTRY_REASON_MARKER),
+    )
+    const navPaths = navResolutions.map((r) => r.filePath)
+    expect(
+      navPaths.some((p) =>
+        p.endsWith(path.join("components", "sidebar", "Sidebar.jsx")),
+      ),
+    ).toBe(true)
+    expect(
+      navPaths.some((p) =>
+        p.endsWith(path.join("components", "sidebar", "CollapseableSidebar.jsx")),
+      ),
+    ).toBe(true)
+    // Non-nav sibling in the same dir must NOT be surfaced.
+    expect(navPaths.some((p) => p.endsWith("Avatar.jsx"))).toBe(false)
+    // Nav resolutions are lower-confidence than route hits.
+    for (const r of navResolutions) expect(r.confidence).toBeLessThan(0.5)
+  })
+
+  it("does NOT surface nav/sidebar registry files when requiresNavOrRoute is false", async () => {
+    const feRoot = scaffoldBackoffice(dashRoot)
+    const resolver = new PathResolver("backoffice", feRoot)
+    const out = await resolver.resolveFromPrompt(
+      "tambah filter di /provider",
+      { ...baseContext, requiresNavOrRoute: false },
+    )
+    expect(
+      out.some((r) => r.reason.includes(NAV_REGISTRY_REASON_MARKER)),
+    ).toBe(false)
+    expect(out.some((r) => r.filePath.includes("sidebar"))).toBe(false)
   })
 
   it("falls back to contextPack.targetRoute when prompt has no route mention", async () => {

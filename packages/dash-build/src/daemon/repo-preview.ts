@@ -358,8 +358,17 @@ export function resolveRepoPreviewConfig(
 ): RepoPreviewConfig | null {
   const manifest = resolveRepoManifest(repo)
   if (!manifest) return null
+  // Local checkout dir. Reuse resolveTargetRepoPath so the clone source picks
+  // up the same lookup chain the intake scanners use: explicit env →
+  // DASH_BUILD_DASH_ROOT/~Dash → DASH_BUILD_WORK_ROOT → sibling-of-dash-ds.
+  // Previously this only honored the env override or ~/Dash, so a dev whose
+  // repos live in ~/Work/dash/ (no ~/Dash) silently got a missing dir and
+  // bootstrap was skipped. Falling back to the resolver fixes local-first use.
   const dashRoot = process.env.DASH_BUILD_DASH_ROOT ?? path.join(homedir(), "Dash")
-  const dir = process.env[manifest.localDirEnv] ?? path.join(dashRoot, manifest.localDirName)
+  const dir =
+    process.env[manifest.localDirEnv] ??
+    resolveTargetRepoPath(manifest.id) ??
+    path.join(dashRoot, manifest.localDirName)
   const port = Number(process.env[manifest.portEnv] ?? manifest.defaultPort)
 
   // Resolution priority (highest → lowest):

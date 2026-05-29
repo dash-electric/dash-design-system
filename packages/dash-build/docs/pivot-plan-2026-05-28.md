@@ -29,8 +29,8 @@
 |---|--------|------|
 | **0F** | 2hr | Intake `runIntake()` scan target repo benar (`/Users/.../Work/dash/next-backoffice-web/`), BUKAN dash-build's scratch clone. Surface ID → repo root mapping. |
 | **0H** | 1hr | Persist intake snapshot ke `runs/<runId>/intake.json` { beEndpoints[], dbSchema{}, fePatterns[], audit }. Cold-load read → context map keisi proper. |
-| **0I** | 30min | Classifier upgrade — "tambahin dashboard di backoffice" → `extend_fe_be`, BUKAN `new_product`. |
-| **0G** sub | 30min | Read sibling components di target dir (list `.tsx` files), bagian Phase C nanti lebih lengkap. |
+| **0I** | 30min | ✅ DONE 2026-05-29 — `reconcileScenario()` in `skills/chain.ts` demotes false `new_product` → `extend_fe_be` once the chain resolves real existing FE files (runIntake classifies blind with existingFiles:[]). Regression test `__tests__/reconcile-scenario.test.ts` (4 cases). |
+| **0G** sub | 30min | ✅ DONE 2026-05-29 — `fePatterns` from `readFePatterns()` were being destructured in `chain.ts` but **never passed** to `composeSystemPrompt()`. Wired the arg through (+ validator/meta now use the reconciled intake). LLM now sees reference FE component bodies. |
 | **0M** | 1hr | Audit-trail ENFORCEMENT bukan surface — CR-3 reject output dengan payment/KYC/signature/image-proof field tanpa audit log code. |
 
 ### Phase B — AI Quality DS-first (~5.5hr)
@@ -159,6 +159,33 @@ Tier 4 (background, defer)
 **MVP-grade total:** ~28.5hr serial atau ~18hr paralel agent.
 
 ---
+
+## 2026-05-29 FOLLOW-UP (trust-issue dig)
+
+User flagged generated preview looked "like a brand-new component" — no
+backoffice nav, no existing mitra-detail tabs. Root-caused to 3 bugs, all fixed:
+
+1. **fePatterns dropped** — `chain.ts` destructured `readFePatterns()` output but
+   never passed it to `composeSystemPrompt()`. LLM never saw existing FE style.
+   → wired through (Tier 0G).
+2. **Classifier blind** — `orchestrator.runIntake()` classifies with
+   `existingFiles:[]`, so "tambahin tab di detail mitra" with no `/api` match
+   fell through to `new_product` (= "scaffold from scratch" prompt mode). Real
+   intake.json from run `prm_67503bcf-4eb` confirmed `scenario:"new_product"`,
+   `fePatterns:[]`. → `reconcileScenario()` corrects post-resolve (Tier 0I).
+3. **Codex 600s timeout** — the run in the screenshot actually FAILED ("Codex
+   CLI timed out after 600000ms"); the preview shown was a stale earlier run.
+   → default lowered 600s→240s + large-prompt stderr warn. Env override kept.
+
+**Clarified scope (NOT bugs — by-design / deferred):**
+- Sandpack mounts a single component, not the full backoffice shell. Seeing the
+  real nav + existing tabs around the change requires **Baseline Preview**
+  (product-model.md layer 1) which needs **Hermes clone + auth-strip** — that's
+  P1/P2 infra, deliberately deferred. Today's fix makes the *generated code*
+  respect FE/BE so it's correct when it lands in the branch; the *preview
+  fidelity* upgrade is a separate track.
+- Merge-to-main flows through **S3 Owner Dashboard merge queue** (master-plan
+  §4), not direct GitHub. S3 is P2 — until then merge is manual GitHub review.
 
 ## COMMIT HISTORY (this session)
 

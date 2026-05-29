@@ -16,11 +16,14 @@
  */
 
 import type { Store } from "../state/store.js"
+import { isRealProject } from "../state/store.js"
 import type { Project, Thread } from "../state/types.js"
 import { escapeHtml, renderLayout } from "./layout.js"
 import { renderSidebar, projectsToRecents } from "./sidebar.js"
 import { renderPromptInput } from "./components/prompt-input.js"
-import { renderChatThread } from "./components/chat-thread.js"
+import { icon } from "./components/icon.js"
+import { renderChatThread, type ChatMessage } from "./components/chat-thread.js"
+import { promptToChatMessages } from "./dashboard.js"
 import { renderPreviewPanel } from "./components/preview-panel.js"
 import {
   renderInitialPreviewScript,
@@ -74,12 +77,30 @@ function pickProject(
       ) ?? null
     )
   }
-  return projects[0] ?? null
+  // P21 (2026-05-29) — empty /workspace/ fallback. Bare prompts auto-create a
+  // repo-less "Unassigned" phantom project (see store.isRealProject). Returning
+  // projects[0] blindly surfaced that phantom as the workspace project, so an
+  // empty workspace showed a ghost "Unassigned" card the user never made.
+  // Filter the fallback to real (repo-backed) projects; when none exist we
+  // return null so renderWorkspace falls through to the clean empty/new state.
+  return projects.find(isRealProject) ?? null
 }
 
 function pickThread(store: Store, project: Project | null): Thread | null {
   if (!project) return null
   return store.getThreads(project.id)[0] ?? null
+}
+
+/**
+ * Bug 1+2 (2026-05-29) — resolve the Project that owns a given runId. The run
+ * id equals the PromptRecord id (store re-uses it as the run id), and each Run
+ * carries its `projectId`. Returns null when the run isn't found so the caller
+ * falls back to the legacy active-repo / first-project pick.
+ */
+function resolveProjectForRun(store: Store, runId: string): Project | null {
+  const run = store.getRun(runId)
+  if (!run) return null
+  return store.getProject(run.projectId)
 }
 
 /**
@@ -143,7 +164,22 @@ export function renderWorkspace(
   store: Store,
   opts: WorkspaceOptions = {},
 ): string {
-  const project = pickProject(store, opts.projectId ?? null)
+  // Bug 1+2 (2026-05-29) — resolve the active prompt for this runId FIRST so we
+  // can (a) anchor the project/thread to the run the user just submitted and
+  // (b) seed the chat thread with the submitted prompt bubble + its in-flight
+  // builder state. Previously the workspace mounted with `messages: []` and
+  // relied on an SSE prompts:changed event firing AFTER the page loaded to
+  // populate chat via refreshDashboard — but the event commonly fired during
+  // the home→workspace navigation gap and was missed, leaving the user staring
+  // at the empty composer ("What do you want to build today?") and forcing a
+  // re-type. Server-rendering the bubble closes that gap.
+  const activePrompt = opts.runId ? store.getPrompt(opts.runId) : null
+  const runProject =
+    activePrompt && opts.runId
+      ? resolveProjectForRun(store, opts.runId)
+      : null
+
+  const project = runProject ?? pickProject(store, opts.projectId ?? null)
   const thread = pickThread(store, project)
   const recents = projectsToRecents(store.getProjects(), 8)
 
@@ -210,8 +246,19 @@ export function renderWorkspace(
   })
   const initialPreviewScript = renderInitialPreviewScript(initialBlob)
 
+  // Bug 1+2 (2026-05-29) — seed the chat with the active run's prompt bubble +
+  // in-flight builder state so the workspace mounts already showing what the
+  // user submitted (instead of the empty "What do you want to build today?"
+  // state). Artifact-derived action streams aren't available here (no
+  // orchestrator in the render path) so awaiting_approval falls back to the
+  // plain "Done. Review the preview." body — the client's refreshDashboard()
+  // upgrades it to the full action stream once SSE fires. The important fix is
+  // that the bubble + generating spinner are present on first paint.
+  const seededMessages: ChatMessage[] = activePrompt
+    ? promptToChatMessages(activePrompt)
+    : []
   const chatThread = renderChatThread({
-    messages: [],
+    messages: seededMessages,
     emptyHint:
       "Describe the change you want to make. Dash Build keeps the thread anchored to this workspace.",
     quickReplay: pickQuickReplay(store, project, 3),
@@ -235,7 +282,7 @@ export function renderWorkspace(
         aria-label="Send prompt to builder"
       >
         <span class="db-button-label">Build</span>
-        <span class="db-button-arrow" aria-hidden="true">↑</span>
+        <span class="db-button-arrow">${icon("arrow-up", { size: "sm" })}</span>
       </button>
     </div>
   </div>`
@@ -306,7 +353,7 @@ export function renderWorkspace(
             aria-label="Export deck for this run"
             ${exportDisabled ? 'aria-disabled="true" tabindex="-1"' : 'download="dash-build-deck.html"'}
           >
-            <span aria-hidden="true">⎙</span>
+            ${icon("upload", { size: "sm" })}
             <span>Export PPT</span>
           </a>
           <button
@@ -314,7 +361,7 @@ export function renderWorkspace(
             class="db-button db-button-ghost db-button-compact"
             data-workspace-action="share"
           >
-            <span aria-hidden="true">↑</span>
+            ${icon("share", { size: "sm" })}
             <span>Share</span>
           </button>
           <button
@@ -323,7 +370,7 @@ export function renderWorkspace(
             data-workspace-action="run"
             aria-label="Run latest build"
           >
-            <span aria-hidden="true">⚡</span>
+            ${icon("run", { size: "sm" })}
             <span>Run</span>
           </button>
         </div>
@@ -333,6 +380,18 @@ export function renderWorkspace(
         <aside class="db-workspace-chat" aria-label="Conversation">
           <div class="db-workspace-chat-scroll" id="db-chat-scroll">
             ${chatThread}
+            <!-- Clarification mount. When the active run is clarifying, the
+                 client's hydrateInlineClarifications() fetches the questions
+                 and renders the inline form here. Workspace previously lacked
+                 this slot, so the "answer the questions below" message had
+                 no card to populate → questions never appeared. (Copy was
+                 reworded from "card on the right" in P23 since this layout
+                 renders the clarify card in the LEFT chat column.) -->
+            <div
+              class="db-workspace-clarify"
+              data-clarify-mount="${escapeHtml(runId)}"
+              data-clarify-active="${runId ? "true" : "false"}"
+            ></div>
           </div>
           ${composer}
         </aside>

@@ -91,6 +91,15 @@ export class Store {
     return JSON.parse(JSON.stringify(this.state)) as DaemonState
   }
 
+  /**
+   * Await any in-flight persists (including fire-and-forget ones from
+   * addPrompt/ensureProject/openThread). Lets callers — notably tests tearing
+   * down a temp dir — guarantee no tmp-write + rename lands after they move on.
+   */
+  async flush(): Promise<void> {
+    await this.persistChain
+  }
+
   /** Atomic persist — write to .tmp then rename. Serialized via persistChain. */
   async persist(): Promise<void> {
     const next = this.persistChain.then(async () => {
@@ -229,6 +238,16 @@ export class Store {
 
   getWorkspace() {
     return this.state.workspace
+  }
+
+  /**
+   * P7 (2026-05-29) — last-used target repo, used by the Home composer to
+   * default its repo picker. Returns the persisted `workspace.activeRepo`
+   * (set by `setActiveRepo` / `recordPrompt`), or null when none has been
+   * chosen yet so the template can fall back to the default repo.
+   */
+  getActiveRepo(): string | null {
+    return this.state.workspace.activeRepo ?? null
   }
 
   getStartedAt(): string {
@@ -462,6 +481,23 @@ export class Store {
 
 function projectKey(repo: string | null | undefined): string {
   return repo ?? "__unassigned__"
+}
+
+/**
+ * Bug 3+4 (2026-05-29) — a project is "real" (user-facing) only once it has a
+ * concrete repo backing it. `addPrompt` auto-creates a Project for EVERY
+ * prompt via `ensureProjectInternal`, including bare prompts with no repo
+ * (→ name "Unassigned", repoFullName null). Those phantom projects must not
+ * surface on the home "My projects" grid or the sidebar Recents — they confuse
+ * the user with cards they never created. We keep the data model intact (the
+ * project still exists so threads/runs resolve) but filter the phantoms out of
+ * the two list surfaces. A repo-backed project (the user picked a repo) stays
+ * visible exactly as before.
+ *
+ * Exported so home.ts + sidebar.ts share one definition of "phantom".
+ */
+export function isRealProject(p: Project): boolean {
+  return typeof p.repoFullName === "string" && p.repoFullName.trim().length > 0
 }
 
 function deriveProjectName(repo: string | null | undefined): string {

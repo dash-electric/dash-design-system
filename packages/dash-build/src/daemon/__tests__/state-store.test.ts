@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { Store } from "../state/store.js"
+import { Store, isRealProject } from "../state/store.js"
 
 let dir: string
 let file: string
@@ -147,6 +147,31 @@ describe("Store", () => {
     const runs = store.getRuns(threads[0]!.id)
     expect(runs.map((r) => r.id).sort()).toEqual([a.id, b.id].sort())
     expect(threads[0]!.activeRunId).toBe(b.id)
+  })
+
+  it("Bug 3+4: bare prompt auto-creates an Unassigned phantom project that isRealProject rejects", async () => {
+    const store = await loadStore()
+    // No repo → store.ensureProjectInternal makes an "Unassigned" phantom.
+    store.addPrompt({ text: "just a bare prompt, no repo" })
+    const projects = store.getProjects()
+    expect(projects).toHaveLength(1)
+    const phantom = projects[0]!
+    expect(phantom.name).toBe("Unassigned")
+    expect(phantom.repoFullName).toBeNull()
+    // The phantom must be filtered out of any user-facing list.
+    expect(isRealProject(phantom)).toBe(false)
+  })
+
+  it("Bug 3+4: repo-backed project is a real project", async () => {
+    const store = await loadStore()
+    store.addPrompt({ text: "build dashboard", repo: "dash/backoffice" })
+    const real = store.getProjects()[0]!
+    expect(isRealProject(real)).toBe(true)
+    // Mixed: only the repo-backed one survives the filter.
+    store.addPrompt({ text: "bare" })
+    const surviving = store.getProjects().filter(isRealProject)
+    expect(surviving).toHaveLength(1)
+    expect(surviving[0]!.repoFullName).toBe("dash/backoffice")
   })
 
   it("updatePromptStatus mirrors into Run + Thread", async () => {

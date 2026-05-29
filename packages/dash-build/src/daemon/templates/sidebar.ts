@@ -17,8 +17,10 @@
  */
 
 import { escapeHtml } from "./layout.js"
+import { isRealProject } from "../state/store.js"
 import type { Project } from "../state/types.js"
 import { buildSurfaceDocsUrl, getDashDocsUrl } from "../../constants/docs.js"
+import { icon, type IconName } from "./components/icon.js"
 
 export interface SidebarRecent {
   /** Project id. */
@@ -60,27 +62,27 @@ export interface SidebarOptions {
 interface NavItem {
   id: Exclude<SidebarSection, null>
   label: string
-  icon: string
+  icon: IconName
   href: string
 }
 
 const PRIMARY_NAV: NavItem[] = [
-  { id: "home", label: "Home", icon: "⌂", href: "/" },
+  { id: "home", label: "Home", icon: "home", href: "/" },
   // Search is a modal toggle, not a route. The href stays so middle-click /
   // right-click "open in new tab" surface a sane fallback (the home page).
   // The client intercepts left-clicks via [data-search-modal-open] and shows
   // the command-K dialog instead — keeps the icon discoverable for users
   // who don't know the Cmd/Ctrl+K shortcut.
-  { id: "search", label: "Search", icon: "🔍", href: "/?nav=search" },
-  { id: "resources", label: "Resources", icon: "◇", href: "/?nav=resources" },
-  { id: "connectors", label: "Connectors", icon: "🔗", href: "/?nav=connectors" },
+  { id: "search", label: "Search", icon: "search", href: "/?nav=search" },
+  { id: "resources", label: "Resources", icon: "list", href: "/?nav=resources" },
+  { id: "connectors", label: "Connectors", icon: "link", href: "/?nav=connectors" },
 ]
 
 const PROJECT_NAV: NavItem[] = [
-  { id: "projects-all", label: "All projects", icon: "▦", href: "/?projects=all" },
-  { id: "projects-starred", label: "Starred", icon: "★", href: "/?projects=starred" },
-  { id: "projects-mine", label: "Created by me", icon: "◇", href: "/?projects=mine" },
-  { id: "projects-shared", label: "Shared with me", icon: "⇄", href: "/?projects=shared" },
+  { id: "projects-all", label: "All projects", icon: "grid", href: "/?projects=all" },
+  { id: "projects-starred", label: "Starred", icon: "star", href: "/?projects=starred" },
+  { id: "projects-mine", label: "Created by me", icon: "file", href: "/?projects=mine" },
+  { id: "projects-shared", label: "Shared with me", icon: "share", href: "/?projects=shared" },
 ]
 
 function renderNavList(
@@ -108,7 +110,7 @@ function renderNavList(
       // We keep the href + native anchor for keyboard / middle-click users.
       const extra = item.id === "search" ? ' data-search-modal-open="true"' : ""
       return `<a class="${cls}" href="${escapeHtml(item.href)}"${aria}${extra} title="${label}" aria-label="${label}">
-        <span class="db-sidebar-nav-icon" aria-hidden="true">${escapeHtml(item.icon)}</span>
+        <span class="db-sidebar-nav-icon" aria-hidden="true">${icon(item.icon, { size: "md" })}</span>
         <span class="db-sidebar-nav-label">${label}</span>
       </a>`
     })
@@ -198,12 +200,8 @@ export function renderSidebar(opts: SidebarOptions = {}): string {
         title="Open Dash DS docs"
         aria-label="Open Dash DS docs in a new tab"
       >
-        <span class="db-sidebar-docs-icon" aria-hidden="true">📖</span>
+        <span class="db-sidebar-docs-icon" aria-hidden="true">${icon("book", { size: "md" })}</span>
         <span class="db-sidebar-docs-label">Open docs</span>
-      </a>
-      <a class="db-sidebar-upgrade" href="/?upgrade=plan">
-        <span class="db-sidebar-upgrade-title">Upgrade</span>
-        <span class="db-sidebar-upgrade-sub">Unlock private workspaces</span>
       </a>
     </footer>
   </aside>`
@@ -217,9 +215,16 @@ export function projectsToRecents(
   projects: Project[],
   limit = 8,
 ): SidebarRecent[] {
-  return projects.slice(0, limit).map((p) => ({
-    id: p.id,
-    label: p.name,
-    hint: p.theme || (p.repoFullName ?? undefined),
-  }))
+  // Bug 3+4 (2026-05-29) — drop phantom/Unassigned (repo-less) projects so the
+  // sidebar Recents only lists projects the user actually created against a
+  // repo. Mirrors the home-grid filter; one definition of "phantom" lives in
+  // store.isRealProject.
+  return projects
+    .filter(isRealProject)
+    .slice(0, limit)
+    .map((p) => ({
+      id: p.id,
+      label: p.name,
+      hint: p.theme || (p.repoFullName ?? undefined),
+    }))
 }

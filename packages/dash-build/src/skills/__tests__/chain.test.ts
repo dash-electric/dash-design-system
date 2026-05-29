@@ -413,4 +413,61 @@ describe("generateWithSkillChain", () => {
       expect(r.kind).toBe("generated")
     })
   })
+
+  describe("mode clarify gate (Stage 1a)", () => {
+    function ambiguousModeIntake() {
+      return {
+        beCatalog: { endpoints: [], framework: "none" as const, totalEndpoints: 0 },
+        dbCatalog: { tables: [], source: "none" as const },
+        classification: {
+          scenario: "fe_only" as const,
+          confidence: 0.85,
+          reasoning: "ok",
+          affectedFiles: { fe: [], be: [], db: [] },
+        },
+        auditTrail: {
+          required: false,
+          reason: "n/a",
+          pattern: "inline-edit-with-audit" as const,
+          fieldsToLog: [],
+        },
+        mode: {
+          mode: "ambiguous" as const,
+          confidence: 0.3,
+          reasoning: "no repo selected, no strong signal",
+          needsClarify: "Is this an existing repo, a new product, or design exploration?",
+          clarifyOptions: ["Existing repo", "New product", "Design system"],
+        },
+      }
+    }
+
+    it("returns clarify (single-choice + options) when mode is ambiguous", async () => {
+      const deps = passingDeps()
+      const r = await generateWithSkillChain(
+        { prompt: "bikin sesuatu", repoPath: process.cwd(), intake: ambiguousModeIntake() },
+        deps,
+      )
+      expect(r.kind).toBe("clarify")
+      if (r.kind !== "clarify") throw new Error("expected clarify")
+      expect(r.questions[0].id).toBe("intake-mode")
+      expect(r.questions[0].type).toBe("single-choice")
+      expect(r.questions[0].options).toEqual(["Existing repo", "New product", "Design system"])
+      // Mode gate fires BEFORE any LLM call.
+      expect(deps.anthropic!.messages.create).not.toHaveBeenCalled()
+    })
+
+    it("does NOT fire when mode is decided (existing-repo) — proceeds to generate", async () => {
+      const intake = ambiguousModeIntake()
+      intake.mode = {
+        mode: "existing-repo",
+        confidence: 0.95,
+        reasoning: "user picked backoffice",
+      } as never
+      const r = await generateWithSkillChain(
+        { prompt: RICH_PROMPT, repoPath: process.cwd(), intake },
+        passingDeps(),
+      )
+      expect(r.kind).toBe("generated")
+    })
+  })
 })

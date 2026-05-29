@@ -2,9 +2,49 @@ import { describe, expect, it } from "vitest"
 import {
   extractText,
   isSafePath,
+  normalizeModelPath,
   parseFenceHeader,
   parseResponse,
 } from "../response-parser.js"
+
+describe("patch-mode collapse fix (2026-05-29)", () => {
+  // Real failing output from run prm_7ae39854: LLM correctly patched the repo
+  // file but used an ABSOLUTE path containing a Next.js [slug] segment. The old
+  // regex broke on the first `]` and isSafePath dropped the absolute path →
+  // "no parseable file blocks" → empty preview. Both must now survive.
+  const PATCH = [
+    "```mode=patch [/Users/x/next-backoffice-web/src/pages/driver/[slug]/components/DetailCard.jsx]",
+    "@@ -1,2 +1,3 @@",
+    " const a = 1",
+    "+const b = 2",
+    " const c = 3",
+    "```",
+  ].join("\n")
+
+  it("parses an absolute, [slug]-bracketed patch into a relative path", () => {
+    const r = parseResponse(PATCH)
+    expect(r.patches.length).toBe(1)
+    expect(r.patches[0].path).toBe(
+      "src/pages/driver/[slug]/components/DetailCard.jsx",
+    )
+    expect(r.patches[0].kind).toBe("patch")
+  })
+
+  it("normalizeModelPath strips absolute prefix down to the src/ anchor", () => {
+    expect(
+      normalizeModelPath("/Users/x/next-backoffice-web/src/pages/foo/Bar.tsx"),
+    ).toBe("src/pages/foo/Bar.tsx")
+    expect(normalizeModelPath("src/components/x.tsx")).toBe("src/components/x.tsx")
+    expect(normalizeModelPath("components/[id]/Card.jsx")).toBe(
+      "components/[id]/Card.jsx",
+    )
+  })
+
+  it("normalized path passes isSafePath (the gate that used to drop it)", () => {
+    const r = parseResponse(PATCH)
+    expect(isSafePath(r.patches[0].path)).toBe(true)
+  })
+})
 
 describe("isSafePath", () => {
   it("accepts relative POSIX paths", () => {

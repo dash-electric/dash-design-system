@@ -23,6 +23,7 @@ import { readFileSync, readdirSync, statSync, existsSync } from "node:fs"
 import { join, relative, dirname, sep } from "node:path"
 import { fileURLToPath } from "node:url"
 import { BANNED_IMPORTS } from "./prompt-composer.js"
+import { NAV_REGISTRY_REASON_MARKER } from "./path-resolver.js"
 import { looksLikeUnifiedDiff } from "../runs/patch-applier.js"
 import type {
   DesignContext,
@@ -40,8 +41,31 @@ import type {
 const HEX_RE = /#[0-9a-fA-F]{3,8}\b/g
 const DASH_TOKEN_RE =
   /bg-(primary|bg-white|bg-weak|bg-strong|bg-surface|bg-soft|bg-sub)-|text-text-(strong|sub|disabled|white|soft)-|border-(stroke|error|state)-/
+// Voice register is PER-SURFACE (CLAUDE.md cardinal rule 5 + dash-ai-rules.md
+// refuse-list #6). portal-v2 mitra-facing DEFAULT is informal "kamu"; "Anda" is
+// a per-feature override only. backoffice / basecamp / react-fleet / other
+// internal surfaces stay formal "Anda". So we split the casual lexicon:
+//
+//   SLANG_PARTICLE_RE  — never acceptable on ANY Dash surface (slang/jokey).
+//   INFORMAL_PRONOUN_RE — acceptable on portal-v2 (the informal-default repo),
+//                         flagged everywhere else.
+//
+// CASUAL_VOICE_RE = the union, used as the formal-surface gate (kamu flagged).
+const SLANG_PARTICLE_RE = /\b(yaa|lewatin|bakal|udah|yuk|ayo|dong|deh|sih|kok|plis|banget|nih)\b/i
+const INFORMAL_PRONOUN_RE = /\b(kamu|kalian|km|lo|lu)\b/i
 const CASUAL_VOICE_RE = /\b(kamu|yaa|lewatin|bakal|udah|yuk|ayo|dong|deh|sih|kok|plis|kalian|km)\b/i
 const MITRA_KEYWORD_RE = /\b(mitra|driver|kurir|pengemudi)\b/i
+
+/**
+ * Repos whose mitra-facing default register is INFORMAL "kamu". Today only
+ * portal-v2 (per CLAUDE.md cardinal rule 5). For these, casual pronouns are
+ * CORRECT and must not be penalized — only true slang particles are flagged.
+ * Every other surface (backoffice, basecamp, react-fleet, unknown, …) keeps
+ * the formal-"Anda" enforcement.
+ */
+function isInformalDefaultRepo(repoSlug: RepoSurface | null | undefined): boolean {
+  return repoSlug === "portal-v2"
+}
 
 // ---------------------------------------------------------------------------
 // Phase B (Tier 0C / 0J / 0K) — DS coverage + stack mandate + voice helpers.
@@ -603,16 +627,27 @@ export function validateOutput(
       score -= Math.min(20, 5 * hexHits.length)
     }
 
-    // Casual voice on UI files — medium severity
-    if (isUIFile(file) && CASUAL_VOICE_RE.test(file.content)) {
-      const isMitra = MITRA_KEYWORD_RE.test(file.content)
-      errors.push({
-        severity: isMitra ? "medium" : "low",
-        message: `Casual voice particle detected — Dash voice rule requires formal "Anda" mitra-facing`,
-        file: file.path,
-        ruleId: "CR-4",
-      })
-      score -= isMitra ? 10 : 3
+    // Casual voice on UI files — PER-SURFACE register (CLAUDE.md cardinal rule
+    // 5). portal-v2 mitra-facing default is informal "kamu"; flagging it there
+    // contradicts the canonical rule. So on the informal-default repo we only
+    // catch true slang particles (yuk/dong/sih/banget…); everywhere else we
+    // keep the full formal-"Anda" gate (kamu included).
+    if (isUIFile(file)) {
+      const informalRepo = isInformalDefaultRepo(opts.repoContext?.repoSlug)
+      const voiceRe = informalRepo ? SLANG_PARTICLE_RE : CASUAL_VOICE_RE
+      if (voiceRe.test(file.content)) {
+        const isMitra = MITRA_KEYWORD_RE.test(file.content)
+        const message = informalRepo
+          ? `Slang particle detected — portal-v2 mitra voice is informal "kamu" but slang (yuk/dong/sih/banget) is still off-register`
+          : `Casual voice particle detected — formal "Anda" register required on this surface`
+        errors.push({
+          severity: isMitra ? "medium" : "low",
+          message,
+          file: file.path,
+          ruleId: "CR-4",
+        })
+        score -= isMitra ? 10 : 3
+      }
     }
 
     // TODO / FIXME smell — low severity warning, no score deduction
@@ -640,6 +675,14 @@ export function validateOutput(
     const knownPaths = new Set(
       (opts.existingFiles?.files ?? []).map((f) => f.filePath),
     )
+    // Nav/sidebar registry files surfaced by PathResolver (requiresNavOrRoute)
+    // are valid additive patch targets even when the reader's top-N budget
+    // skipped reading them. Registering a new tab in the real sidebar is how a
+    // generated feature ships REACHABLE — accept the additive nav diff here and
+    // let the additive patch-validator gate enforce the real safety contract.
+    for (const r of opts.existingFiles?.resolutions ?? []) {
+      if (isNavRegistryResolution(r)) knownPaths.add(r.filePath)
+    }
     for (const patch of patches) {
       const patchErrors = validatePatch(patch, knownPaths, opts.existingFiles ?? null)
       for (const e of patchErrors) {
@@ -910,6 +953,17 @@ function validatePatch(
   }
 
   return errors
+}
+
+/**
+ * True when a PathResolution points at the repo's nav/sidebar registry (set by
+ * PathResolver under requiresNavOrRoute). Such files are valid additive patch
+ * targets — registering a new tab there is how a generated feature ships
+ * reachable — so they count as known even if the reader's top-N budget skipped
+ * reading their content into existingFiles.files.
+ */
+function isNavRegistryResolution(r: { reason?: string }): boolean {
+  return typeof r.reason === "string" && r.reason.includes(NAV_REGISTRY_REASON_MARKER)
 }
 
 function isKnownExistingPath(target: string, known: Set<string>): boolean {

@@ -191,6 +191,44 @@ describe("HTTP routes", () => {
     expect(body.status).toBe("queued")
   })
 
+  it("Bug 6: POST /api/prompts/:id/cancel marks the prompt cancelled", async () => {
+    const created = await fetch(`${baseUrl}/api/prompt`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: "cancel me please" }),
+    })
+    const { id } = await created.json()
+    const r = await fetch(`${baseUrl}/api/prompts/${id}/cancel`, {
+      method: "POST",
+    })
+    expect(r.status).toBe(200)
+    const body = await r.json()
+    expect(body.ok).toBe(true)
+    expect(body.id).toBe(id)
+    expect(body.status).toBe("cancelled")
+    expect(daemon.store.getPrompt(id)?.status).toBe("cancelled")
+  })
+
+  it("Bug 6: POST /api/prompts/:id/cancel 404s for an unknown id", async () => {
+    const r = await fetch(`${baseUrl}/api/prompts/prm_unknown/cancel`, {
+      method: "POST",
+    })
+    expect(r.status).toBe(404)
+  })
+
+  it("Bug 6: GET /api/prompts/:id/cancel is method-not-allowed", async () => {
+    const created = await fetch(`${baseUrl}/api/prompt`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: "cancel route method check" }),
+    })
+    const { id } = await created.json()
+    const r = await fetch(`${baseUrl}/api/prompts/${id}/cancel`, {
+      method: "GET",
+    })
+    expect(r.status).toBe(405)
+  })
+
   it("POST /api/prompt without text returns 400", async () => {
     const r = await fetch(`${baseUrl}/api/prompt`, {
       method: "POST",

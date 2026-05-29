@@ -25,6 +25,21 @@ export const DASHBOARD_JS = `
   }
 
   // ---------- Toast system ----------
+  // Inline Remix Icon paths (24x24, fill=currentColor) — same glyphs the
+  // server-side icon() helper embeds, kept in sync here for the one icon per
+  // toast kind. Matches the DS Toast look (semantic icon + message).
+  var TOAST_ICON_PATHS = {
+    success: "M12 21C7.0293 21 3 16.9707 3 12C3 7.0293 7.0293 3 12 3C16.9707 3 21 7.0293 21 12C21 16.9707 16.9707 21 12 21ZM12 19.2C13.9096 19.2 15.7409 18.4414 17.0912 17.0912C18.4414 15.7409 19.2 13.9096 19.2 12C19.2 10.0904 18.4414 8.25909 17.0912 6.90883C15.7409 5.55857 13.9096 4.8 12 4.8C10.0904 4.8 8.25909 5.55857 6.90883 6.90883C5.55857 8.25909 4.8 10.0904 4.8 12C4.8 13.9096 5.55857 15.7409 6.90883 17.0912C8.25909 18.4414 10.0904 19.2 12 19.2ZM11.1027 15.6L7.2837 11.781L8.5572 10.5075L11.1027 13.053L16.1928 7.962L17.4681 9.2355L11.1027 15.6Z",
+    error: "M12 21C7.0293 21 3 16.9707 3 12C3 7.0293 7.0293 3 12 3C16.9707 3 21 7.0293 21 12C21 16.9707 16.9707 21 12 21ZM12 19.2C13.9096 19.2 15.7409 18.4414 17.0912 17.0912C18.4414 15.7409 19.2 13.9096 19.2 12C19.2 10.0904 18.4414 8.25909 17.0912 6.90883C15.7409 5.55857 13.9096 4.8 12 4.8C10.0904 4.8 8.25909 5.55857 6.90883 6.90883C5.55857 8.25909 4.8 10.0904 4.8 12C4.8 13.9096 5.55857 15.7409 6.90883 17.0912C8.25909 18.4414 10.0904 19.2 12 19.2ZM12 10.7274L14.5452 8.1813L15.8187 9.4548L13.2726 12L15.8187 14.5452L14.5452 15.8187L12 13.2726L9.4548 15.8187L8.1813 14.5452L10.7274 12L8.1813 9.4548L9.4548 8.1813L12 10.7274Z",
+    warn: "M12 21C7.0293 21 3 16.9707 3 12C3 7.0293 7.0293 3 12 3C16.9707 3 21 7.0293 21 12C21 16.9707 16.9707 21 12 21ZM12 19.2C13.9096 19.2 15.7409 18.4414 17.0912 17.0912C18.4414 15.7409 19.2 13.9096 19.2 12C19.2 10.0904 18.4414 8.25909 17.0912 6.90883C15.7409 5.55857 13.9096 4.8 12 4.8C10.0904 4.8 8.25909 5.55857 6.90883 6.90883C5.55857 8.25909 4.8 10.0904 4.8 12C4.8 13.9096 5.55857 15.7409 6.90883 17.0912C8.25909 18.4414 10.0904 19.2 12 19.2ZM11.1 14.7H12.9V16.5H11.1V14.7ZM11.1 7.5H12.9V12.9H11.1V7.5Z",
+    info: "M12 21C7.0293 21 3 16.9707 3 12C3 7.0293 7.0293 3 12 3C16.9707 3 21 7.0293 21 12C21 16.9707 16.9707 21 12 21ZM12 19.2C13.9096 19.2 15.7409 18.4414 17.0912 17.0912C18.4414 15.7409 19.2 13.9096 19.2 12C19.2 10.0904 18.4414 8.25909 17.0912 6.90883C15.7409 5.55857 13.9096 4.8 12 4.8C10.0904 4.8 8.25909 5.55857 6.90883 6.90883C5.55857 8.25909 4.8 10.0904 4.8 12C4.8 13.9096 5.55857 15.7409 6.90883 17.0912C8.25909 18.4414 10.0904 19.2 12 19.2ZM11.1 7.5H12.9V9.3H11.1V7.5ZM11.1 11.1H12.9V16.5H11.1V11.1Z"
+  };
+  var TOAST_ICON_NAME = { success: "check-circle", error: "close-circle", warn: "warning", info: "info" };
+  function toastIcon(kind) {
+    var d = TOAST_ICON_PATHS[kind] || TOAST_ICON_PATHS.info;
+    var name = TOAST_ICON_NAME[kind] || "info";
+    return '<svg class="db-icon db-toast-icon" data-icon="' + name + '" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" focusable="false" aria-hidden="true"><path d="' + d + '"/></svg>';
+  }
   function showToast(opts) {
     if (!opts || !opts.message) return;
     var container = document.getElementById("db-toasts");
@@ -34,10 +49,11 @@ export const DASHBOARD_JS = `
     var toast = document.createElement("div");
     toast.className = "db-toast " + kind;
     toast.setAttribute("role", kind === "error" ? "alert" : "status");
-    var html = '<div class="db-toast-msg">' + escapeHtml(opts.message) + '</div>';
+    var body = '<div class="db-toast-msg">' + escapeHtml(opts.message) + '</div>';
     if (opts.action && opts.action.label && opts.action.href) {
-      html += '<a class="db-toast-action" href="' + escapeHtml(opts.action.href) + '" target="_blank" rel="noopener">' + escapeHtml(opts.action.label) + '</a>';
+      body += '<a class="db-toast-action" href="' + escapeHtml(opts.action.href) + '" target="_blank" rel="noopener">' + escapeHtml(opts.action.label) + '</a>';
     }
+    var html = toastIcon(kind) + '<div class="db-toast-body">' + body + '</div>';
     toast.innerHTML = html;
     container.appendChild(toast);
     requestAnimationFrame(function () { toast.classList.add("show"); });
@@ -230,7 +246,7 @@ export const DASHBOARD_JS = `
               showToast({
                 message: "PR opened" + (msg.prNumber ? ": #" + msg.prNumber : ""),
                 kind: "success",
-                action: msg.prUrl ? { label: "View on GitHub →", href: msg.prUrl } : undefined,
+                action: msg.prUrl ? { label: "View on GitHub", href: msg.prUrl } : undefined,
               });
               break;
             case "generation:complete":
@@ -244,10 +260,43 @@ export const DASHBOARD_JS = `
                 message: "I need a few clarifications before generating",
                 kind: "info",
               });
+              // Point the clarify mount at the prompt that actually needs
+              // answers, then hydrate. Workspace renders the mount with a
+              // stale/empty runId (the run that needs clarifying is created
+              // fresh on submit), so without this re-target the inline
+              // question form never appears — the chat just says "answer the
+              // card on the right" with no card. msg.data carries promptId.
+              (function () {
+                var d = msg.data || msg;
+                var pid = d && d.promptId;
+                if (!pid) return;
+                var mount = document.querySelector("[data-clarify-mount]");
+                if (mount) {
+                  mount.setAttribute("data-clarify-mount", pid);
+                  mount.setAttribute("data-clarify-active", "true");
+                  mount.innerHTML = "";
+                }
+                hydrateInlineClarifications();
+              })();
               break;
             case "prompts:changed":
               if (msg.status === "failed") {
                 showToast({ message: "Prompt failed", kind: "error" });
+              }
+              // Bug 6 — a run reaching any terminal/settled status means the
+              // composer Stop button should revert to Build. Clears even when
+              // the status arrives via SSE for a run we didn't submit in this
+              // tab (e.g. cancelled from elsewhere).
+              if (
+                msg.status === "failed" ||
+                msg.status === "cancelled" ||
+                msg.status === "awaiting_approval" ||
+                msg.status === "completed" ||
+                msg.status === "pr_created"
+              ) {
+                if (typeof clearComposerStopMode === "function") {
+                  clearComposerStopMode();
+                }
               }
               break;
             case "sandbox:state_changed":
@@ -279,9 +328,11 @@ export const DASHBOARD_JS = `
               // state; toast is informational only.
               refreshDashboard();
               showToast({
-                message: "Starting dev server" +
-                  (msg.port ? " on :" + msg.port : "") + "…",
+                message: "Booting baseline preview" +
+                  (msg.port ? " on :" + msg.port : "") +
+                  " — first cold build can take a few minutes, hang tight…",
                 kind: "info",
+                duration: 8000,
               });
               break;
             case "sandbox:dev_server_ready":
@@ -458,16 +509,29 @@ export const DASHBOARD_JS = `
         return { spec: AOP_KIND_TO_ACTION["run.start"], summary: "Run started", detail: null };
       case "scan": {
         var n = (p.paths || []).length;
-        var label = (p.kind === "registry") ? "Analyzed repo" : "Read " + n + " " + (n === 1 ? "file" : "files");
+        // Live narration (orchestrator) ships a human string in snippet.
+        // Prefer it verbatim; fall back to the generic label otherwise.
+        var label = (typeof p.snippet === "string" && p.snippet.length > 0)
+          ? p.snippet
+          : ((p.kind === "registry") ? "Analyzed repo" : "Read " + n + " " + (n === 1 ? "file" : "files"));
         var detail = (p.paths || []).join("\\n");
         return { spec: AOP_KIND_TO_ACTION["scan"], summary: label, detail: detail || null };
       }
-      case "thinking":
-        return {
-          spec: AOP_KIND_TO_ACTION["thinking"],
-          summary: p.kind === "hypothesis" ? "Composing prompt" : (p.kind === "risk" ? "Considering risk" : "Reasoning"),
-          detail: typeof p.md === "string" ? p.md : null,
-        };
+      case "thinking": {
+        // Live narration ships the full present-tense line in md
+        // ("Generating component...", "Plan: ...", "Need to clarify: ...",
+        // warning issues). Use it as the headline summary; pick a tone
+        // off the leading glyph so warnings read yellow.
+        var md = typeof p.md === "string" ? p.md : "";
+        var thinkingSpec = AOP_KIND_TO_ACTION["thinking"];
+        if (md.indexOf("⚠") === 0 || p.kind === "risk") {
+          thinkingSpec = { kind: "thinking", icon: "⚠", tone: "warn" };
+        }
+        var thinkingSummary = md.length > 0
+          ? md
+          : (p.kind === "hypothesis" ? "Composing prompt" : (p.kind === "risk" ? "Considering risk" : "Reasoning"));
+        return { spec: thinkingSpec, summary: thinkingSummary, detail: null };
+      }
       case "cost": {
         var inTok = p.tokens_in || 0;
         var outTok = p.tokens_out || 0;
@@ -496,27 +560,41 @@ export const DASHBOARD_JS = `
       case "validate": {
         var pass = (p.overall === "pass");
         var checks = (p.checks || []);
-        var summary = "Validation " + (pass ? "passed" : (p.overall === "warn" ? "warning" : "failed"))
-          + " (" + checks.filter(function (c) { return c.status === "pass"; }).length
-          + "/" + checks.length + " checks)";
+        // Live narration ships "Validating against Dash DS — score N/100" in
+        // target. Prefer it; otherwise synthesise the check-count summary.
+        var summary = (typeof p.target === "string" && p.target.length > 0)
+          ? p.target
+          : ("Validation " + (pass ? "passed" : (p.overall === "warn" ? "warning" : "failed"))
+            + " (" + checks.filter(function (c) { return c.status === "pass"; }).length
+            + "/" + checks.length + " checks)");
         var detail = checks.map(function (c) {
           return c.name + ": " + c.status + (c.output ? "  — " + c.output : "");
         }).join("\\n");
-        var spec = pass ? AOP_KIND_TO_ACTION["validate"] : { kind: "validate", icon: "⚠", tone: "warn" };
+        var spec = pass
+          ? AOP_KIND_TO_ACTION["validate"]
+          : { kind: "validate", icon: (p.overall === "fail" ? "✗" : "⚠"), tone: (p.overall === "fail" ? "error" : "warn") };
         return { spec: spec, summary: summary, detail: detail || null };
       }
       case "error":
+        // Live narration ships "Failed: <reason>" in message; use it as the
+        // headline. Fall back to the code-prefixed form for legacy events.
         return {
           spec: AOP_KIND_TO_ACTION["error"],
-          summary: "Error · " + (p.code || "unknown") + (p.message ? " — " + p.message : ""),
+          summary: (typeof p.message === "string" && p.message.indexOf("Failed:") === 0)
+            ? p.message
+            : ("Error · " + (p.code || "unknown") + (p.message ? " — " + p.message : "")),
           detail: p.stack || null,
         };
-      case "run.end":
-        return {
-          spec: AOP_KIND_TO_ACTION["run.end"],
-          summary: p.status === "success" ? "Done" : ("Run " + (p.status || "ended")),
-          detail: null,
-        };
+      case "run.end": {
+        // Live narration ships "Done — N files, score X" in reason.
+        var endSummary = (typeof p.reason === "string" && p.reason.length > 0)
+          ? p.reason
+          : (p.status === "success" ? "Done" : ("Run " + (p.status || "ended")));
+        var endSpec = p.status === "success"
+          ? AOP_KIND_TO_ACTION["run.end"]
+          : { kind: "status", icon: "✗", tone: "error" };
+        return { spec: endSpec, summary: endSummary, detail: null };
+      }
       case "decision": {
         var picked = p.picked || (p.candidates && p.candidates[0] && p.candidates[0].name) || "option";
         return { spec: AOP_KIND_TO_ACTION["decision"], summary: "Picked " + picked, detail: p.rationale || null };
@@ -525,10 +603,14 @@ export const DASHBOARD_JS = `
         return null;
     }
   }
-  function buildActionNode(spec, summary, detail) {
+  function buildActionNode(spec, summary, detail, pending) {
     var hasDetail = !!(detail && String(detail).length > 0);
+    // In-flight line → spinner glyph + pending tone so the latest step reads
+    // as "working on this now". Resolves to spec.icon/tone when superseded.
+    var icon = pending ? "◌" : spec.icon;
+    var tone = pending ? "pending" : spec.tone;
     var rowHtml =
-      '<span class="db-chat-action-icon" aria-hidden="true">' + escapeHtml(spec.icon) + '</span>' +
+      '<span class="db-chat-action-icon" aria-hidden="true">' + escapeHtml(icon) + '</span>' +
       '<span class="db-chat-action-summary">' + escapeHtml(summary) + '</span>' +
       (hasDetail ? '<span class="db-chat-action-toggle" aria-hidden="true">▶</span>' : '');
     var wrapper;
@@ -536,7 +618,7 @@ export const DASHBOARD_JS = `
       wrapper = document.createElement("details");
       wrapper.className = "db-chat-action";
       wrapper.setAttribute("data-kind", spec.kind);
-      wrapper.setAttribute("data-tone", spec.tone);
+      wrapper.setAttribute("data-tone", tone);
       wrapper.innerHTML =
         '<summary class="db-chat-action-row">' + rowHtml + '</summary>' +
         '<div class="db-chat-action-detail"><pre class="db-chat-action-pre db-mono">' + escapeHtml(detail) + '</pre></div>';
@@ -544,10 +626,22 @@ export const DASHBOARD_JS = `
       wrapper = document.createElement("div");
       wrapper.className = "db-chat-action";
       wrapper.setAttribute("data-kind", spec.kind);
-      wrapper.setAttribute("data-tone", spec.tone);
+      wrapper.setAttribute("data-tone", tone);
       wrapper.innerHTML = '<div class="db-chat-action-row">' + rowHtml + '</div>';
     }
+    // Stash the resolved icon/tone so a later event can settle this line.
+    wrapper.setAttribute("data-resolved-icon", spec.icon);
+    wrapper.setAttribute("data-resolved-tone", spec.tone);
     return wrapper;
+  }
+  // Resolve a previously-pending action line into its final icon + tone.
+  function settlePendingAction(node) {
+    if (!node || node.getAttribute("data-tone") !== "pending") return;
+    var icon = node.getAttribute("data-resolved-icon") || "✓";
+    var tone = node.getAttribute("data-resolved-tone") || "success";
+    node.setAttribute("data-tone", tone);
+    var iconEl = node.querySelector(".db-chat-action-icon");
+    if (iconEl) iconEl.textContent = icon;
   }
   // Active runs keep their action container around so consecutive AOP
   // frames append to the same group instead of fragmenting the stream.
@@ -585,7 +679,14 @@ export const DASHBOARD_JS = `
     if (!translated) return;
     var container = ensureActionsContainer(envelope.runId);
     if (!container) return;
-    var node = buildActionNode(translated.spec, translated.summary, translated.detail);
+    // A new event means the previous in-flight step finished — settle it to a
+    // check (or its resolved tone) before appending the next line.
+    var prevPending = container.querySelector('.db-chat-action[data-tone="pending"]');
+    if (prevPending) settlePendingAction(prevPending);
+    // Terminal events (run.end / error) are themselves the resolution — never
+    // leave them spinning. Every other line shows the spinner until superseded.
+    var isTerminal = (envelope.type === "run.end" || envelope.type === "error");
+    var node = buildActionNode(translated.spec, translated.summary, translated.detail, !isTerminal);
     container.appendChild(node);
     // run.end → drop the container reference so the next run starts fresh.
     if (envelope.type === "run.end") {
@@ -659,38 +760,64 @@ export const DASHBOARD_JS = `
     return null;
   }
   function renderInlineQuestion(session) {
+    // Claude-style numbered option cards: each choice is a big clickable row
+    // with a number badge (1..9) + label; single-/multi-choice add an "Other"
+    // row with a free-text input; free-text questions render a textarea. The
+    // hidden radio/checkbox keeps readInlineAnswers + form semantics intact.
     var count = (session.questions || []).length;
     var html = '<form class="db-inline-question" data-inline-clarification="' + escapeHtml(session.promptId) + '">' +
       '<div class="db-inline-question-head">' +
       '<div><p class="db-inline-question-title">Quick context check</p>' +
-      '<p class="db-inline-question-sub">Answer here; Dash Build continues without opening a new page.</p></div>' +
-      '<span class="db-inline-question-pill">' + count + ' question' + (count === 1 ? '' : 's') + '</span>' +
+      '<p class="db-inline-question-sub">Jawab di sini; Dash Build lanjut tanpa buka halaman baru.</p></div>' +
+      '<span class="db-inline-question-pill">' + count + ' pertanyaan</span>' +
       '</div>';
+    var globalIdx = 0;
     (session.questions || []).forEach(function (q) {
       html += '<div class="db-inline-q" data-q-id="' + escapeHtml(q.id) + '" data-q-type="' + escapeHtml(q.type) + '" data-required="' + (q.required ? 'true' : 'false') + '">' +
-        '<div class="db-inline-q-label">' + escapeHtml(q.text) + (q.required ? ' <span aria-label="required">*</span>' : '') + '</div>' +
+        '<div class="db-inline-q-label">' + escapeHtml(q.text) + (q.required ? ' <span class="db-inline-q-req" aria-label="wajib">*</span>' : '') + '</div>' +
         (q.rationale ? '<p class="db-inline-q-help">' + escapeHtml(q.rationale) + '</p>' : '');
+
       if (q.type === "single-choice" || q.type === "multi-choice") {
         var inputType = q.type === "multi-choice" ? "checkbox" : "radio";
         html += '<div class="db-inline-options">';
         (q.options || []).forEach(function (opt) {
-          html += '<label class="db-inline-option"><input type="' + inputType + '" name="' + escapeHtml(q.id) + '" value="' + escapeHtml(opt) + '"><span>' + escapeHtml(opt) + '</span></label>';
+          globalIdx += 1;
+          var n = globalIdx <= 9 ? String(globalIdx) : "";
+          html += '<label class="db-inline-option" data-opt-key="' + escapeHtml(n) + '">' +
+            '<input type="' + inputType + '" name="' + escapeHtml(q.id) + '" value="' + escapeHtml(opt) + '">' +
+            '<span class="db-inline-option-body">' + escapeHtml(opt) + '</span>' +
+            (n ? '<span class="db-inline-option-key" aria-hidden="true">' + n + '</span>' : '') +
+            '</label>';
         });
+        // "Other" free-text row — only for single-choice (multi keeps it simple).
+        if (q.type === "single-choice") {
+          globalIdx += 1;
+          var on = globalIdx <= 9 ? String(globalIdx) : "";
+          html += '<div class="db-inline-option db-inline-option--other" data-opt-other="true">' +
+            '<label class="db-inline-option-body">Lainnya</label>' +
+            (on ? '<span class="db-inline-option-key" aria-hidden="true">' + on + '</span>' : '') +
+            '<input type="text" class="db-inline-other-input" data-other-for="' + escapeHtml(q.id) + '" placeholder="Ketik jawaban lu sendiri…">' +
+            '</div>';
+        }
         html += '</div>';
       } else if (q.type === "yes-no") {
+        globalIdx += 1; var yn = String(globalIdx <= 9 ? globalIdx : "");
+        globalIdx += 1; var nn = String(globalIdx <= 9 ? globalIdx : "");
         html += '<div class="db-inline-options">' +
-          '<label class="db-inline-option"><input type="radio" name="' + escapeHtml(q.id) + '" value="true"><span>Yes</span></label>' +
-          '<label class="db-inline-option"><input type="radio" name="' + escapeHtml(q.id) + '" value="false"><span>No</span></label>' +
+          '<label class="db-inline-option" data-opt-key="' + yn + '"><input type="radio" name="' + escapeHtml(q.id) + '" value="true"><span class="db-inline-option-body">Ya</span>' + (yn ? '<span class="db-inline-option-key" aria-hidden="true">' + yn + '</span>' : '') + '</label>' +
+          '<label class="db-inline-option" data-opt-key="' + nn + '"><input type="radio" name="' + escapeHtml(q.id) + '" value="false"><span class="db-inline-option-body">Tidak</span>' + (nn ? '<span class="db-inline-option-key" aria-hidden="true">' + nn + '</span>' : '') + '</label>' +
           '</div>';
       } else {
-        html += '<textarea class="db-inline-textarea" name="' + escapeHtml(q.id) + '" placeholder="Type the missing context…"></textarea>';
+        html += '<textarea class="db-inline-textarea" name="' + escapeHtml(q.id) + '" placeholder="Ketik konteks yang kurang…"></textarea>';
       }
       html += '</div>';
     });
     html += '<div class="db-inline-question-foot">' +
-      '<span class="db-inline-question-msg" aria-live="polite">This updates PRD and design context.</span>' +
-      '<button type="submit" class="db-inline-question-submit">Continue →</button>' +
-      '</div></form>';
+      '<span class="db-inline-question-msg" aria-live="polite">Update PRD + konteks desain.</span>' +
+      '<div class="db-inline-question-actions">' +
+      '<button type="button" class="db-inline-question-skip" data-clarify-skip="' + escapeHtml(session.promptId) + '">Skip</button>' +
+      '<button type="submit" class="db-inline-question-submit">Submit ↵</button>' +
+      '</div></div></form>';
     return html;
   }
   function readInlineAnswers(form) {
@@ -702,8 +829,11 @@ export const DASHBOARD_JS = `
       var required = row.getAttribute("data-required") === "true";
       var answer;
       if (type === "single-choice" || type === "yes-no") {
-        var checked = row.querySelector("input:checked");
+        var checked = row.querySelector("input[type=radio]:checked");
         if (checked) answer = type === "yes-no" ? checked.value === "true" : checked.value;
+        // "Other" free-text wins when filled (single-choice only).
+        var other = row.querySelector(".db-inline-other-input");
+        if (other && other.value.trim()) answer = other.value.trim();
       } else if (type === "multi-choice") {
         answer = Array.prototype.slice.call(row.querySelectorAll("input:checked")).map(function (el) { return el.value; });
       } else {
@@ -719,6 +849,43 @@ export const DASHBOARD_JS = `
   function wireInlineQuestion(form) {
     if (!form || form.getAttribute("data-wired") === "true") return;
     form.setAttribute("data-wired", "true");
+
+    // Claude-style: number keys (1..9) select the matching option, typing in an
+    // "Other" field selects its row + clears sibling radios, and a Skip button
+    // dismisses the card. Keep it scoped to this form so multiple cards don't
+    // cross-fire.
+    form.addEventListener("keydown", function (ev) {
+      if (ev.target && /^(INPUT|TEXTAREA)$/.test(ev.target.tagName)) return;
+      var n = parseInt(ev.key, 10);
+      if (!n || n < 1 || n > 9) return;
+      var opt = form.querySelector('[data-opt-key="' + n + '"]');
+      if (!opt) return;
+      ev.preventDefault();
+      var radio = opt.querySelector("input[type=radio],input[type=checkbox]");
+      if (radio) { radio.checked = true; radio.dispatchEvent(new Event("change", { bubbles: true })); }
+      var otherInput = opt.querySelector(".db-inline-other-input");
+      if (otherInput) otherInput.focus();
+    });
+    // Typing in an "Other" box deselects sibling radios in the same question.
+    form.querySelectorAll(".db-inline-other-input").forEach(function (inp) {
+      inp.addEventListener("input", function () {
+        if (!inp.value.trim()) return;
+        var q = inp.closest(".db-inline-q");
+        if (q) q.querySelectorAll("input[type=radio]:checked").forEach(function (r) { r.checked = false; });
+      });
+    });
+    var skip = form.querySelector("[data-clarify-skip]");
+    if (skip) {
+      skip.addEventListener("click", function () {
+        var promptId = skip.getAttribute("data-clarify-skip");
+        var card = form.closest("[data-clarify-mount]");
+        fetch("/api/clarification/" + encodeURIComponent(promptId) + "/skip", { method: "POST" }).catch(function () {});
+        if (form.parentNode) form.parentNode.removeChild(form);
+        if (card) card.setAttribute("data-clarify-active", "false");
+        refreshDashboard();
+      });
+    }
+
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       var promptId = form.getAttribute("data-inline-clarification");
@@ -742,11 +909,27 @@ export const DASHBOARD_JS = `
           });
         });
       }, Promise.resolve()).then(function () {
-        if (msg) msg.textContent = "Saved. Continuing generation…";
+        // #5 fix (2026-05-29): collapse the answered form so it doesn't linger
+        // (the old code left the full question card + a "Saving…" line stacked
+        // above the next question). Replace the card body with a compact
+        // "answered" confirmation, and clear the mount's active flag so a fresh
+        // question (next clarify round) hydrates cleanly instead of appending
+        // below the stale one.
+        var card = form.closest("[data-clarify-mount]") || form.parentNode;
+        var answered =
+          '<div class="db-inline-question-done" data-clarify-answered="true">' +
+          '<span class="db-inline-question-done-icon" aria-hidden="true">✓</span>' +
+          " Jawaban tersimpan — lanjut generate…</div>";
+        if (form.parentNode) {
+          form.insertAdjacentHTML("afterend", answered);
+          form.parentNode.removeChild(form);
+        }
+        var mount = document.querySelector("[data-clarify-mount]");
+        if (mount) mount.setAttribute("data-clarify-active", "false");
         refreshDashboard();
       }).catch(function () {
         if (submit) submit.disabled = false;
-        if (msg) msg.textContent = "Could not save answer. Try again.";
+        if (msg) msg.textContent = "Gagal menyimpan jawaban. Coba lagi.";
       });
     });
   }
@@ -797,10 +980,9 @@ export const DASHBOARD_JS = `
       fetch("/api/prompts/" + encodeURIComponent(runId), { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (data) {
-          var status = data && data.status;
+          var status = data && data.prompt && data.prompt.status;
           var ready =
             status === "awaiting_approval" ||
-            status === "approved" ||
             status === "failed";
           if (!ready) {
             if (attempts < maxAttempts) setTimeout(poll, 500);
@@ -834,19 +1016,32 @@ export const DASHBOARD_JS = `
   var input = document.getElementById("db-prompt-input");
   var repoSelect = document.getElementById("db-repo-select");
   var branchInput = document.getElementById("db-branch-input");
+  // Bug 5 (2026-05-29) — dedicated in-flight latch. The old guard leaned only
+  // on submitBtn.disabled, which other code paths (refreshDashboard swap,
+  // label restore, browser autofill) could reset out from under us — letting a
+  // second click/Cmd+Enter slip through and POST /api/prompt twice (two
+  // identical user bubbles + two runs). This boolean is owned solely by
+  // submitPrompt() so it cannot be cleared by a DOM re-render.
+  var promptSubmitInFlight = false;
+  // Bug 6 (2026-05-29) — the run id of the prompt currently generating, if any.
+  // Set on a successful submit, cleared on a terminal status. Drives the Stop
+  // button affordance.
+  var activeSubmitRunId = null;
 
   function submitPrompt() {
     if (!submitBtn || !input) return;
     // Double-submit guard: ignore re-fires while a previous submit is still
-    // in-flight. Cmd+Enter spam previously appended N optimistic bubbles
-    // because the button-disabled check was wired in but the keydown
-    // handler bypassed it (submitPrompt() called directly).
-    if (submitBtn.disabled) return;
+    // in-flight. Both the in-flight latch AND the button-disabled flag are
+    // checked so neither a stale disabled-reset nor a missed latch can let a
+    // duplicate through. Cmd+Enter spam previously appended N optimistic
+    // bubbles because the keydown handler bypassed the disabled check.
+    if (promptSubmitInFlight || submitBtn.disabled) return;
     var text = input.value.trim();
     if (!text) {
       input.focus();
       return;
     }
+    promptSubmitInFlight = true;
     submitBtn.disabled = true;
     var origLabel = submitBtn.querySelector(".db-button-label");
     var origText = origLabel ? origLabel.textContent : "";
@@ -883,6 +1078,12 @@ export const DASHBOARD_JS = `
         try { input.setAttribute("data-attached-docs", "[]"); } catch (e) {}
         if (pendingBuilder && resp && resp.id) {
           pendingBuilder.setAttribute("data-prompt-id", resp.id);
+        }
+        // Bug 6 — remember the run that's now generating + flip the composer
+        // button into Stop mode so the user can abort it.
+        if (resp && resp.id) {
+          activeSubmitRunId = resp.id;
+          setComposerStopMode(true);
         }
         // Glitch fix (2026-05-28): full-page navigateTo() on iteration
         // destroyed the just-appended optimistic bubbles (flash white →
@@ -929,17 +1130,77 @@ export const DASHBOARD_JS = `
         }
       })
       .finally(function () {
+        promptSubmitInFlight = false;
         submitBtn.disabled = false;
         if (origLabel) origLabel.textContent = origText;
       });
   }
 
-  if (submitBtn) submitBtn.addEventListener("click", submitPrompt);
+  // ---------- Bug 6: cancel / stop a running generation ----------
+  // While a run is generating the composer button becomes a Stop control.
+  // Clicking it POSTs /api/prompts/:id/cancel which marks the prompt cancelled
+  // and aborts the in-flight model call (best-effort). On a terminal status
+  // (cancelled/failed/awaiting_approval/pr_created/completed) the button flips
+  // back to Build via clearComposerStopMode().
+  function setComposerStopMode(on) {
+    if (!submitBtn) return;
+    var label = submitBtn.querySelector(".db-button-label");
+    if (on) {
+      submitBtn.setAttribute("data-stop-mode", "true");
+      submitBtn.setAttribute("aria-label", "Stop the running generation");
+      if (label) label.textContent = "Stop";
+    } else {
+      submitBtn.removeAttribute("data-stop-mode");
+      submitBtn.setAttribute("aria-label", "Send prompt to builder");
+      if (label) label.textContent = "Build";
+    }
+  }
+  function clearComposerStopMode() {
+    activeSubmitRunId = null;
+    setComposerStopMode(false);
+  }
+  function cancelActiveRun() {
+    if (!activeSubmitRunId) return;
+    var runId = activeSubmitRunId;
+    // Optimistic: flip back immediately so a second click can't re-fire.
+    setComposerStopMode(false);
+    fetch("/api/prompts/" + encodeURIComponent(runId) + "/cancel", {
+      method: "POST",
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error("cancel_failed");
+        showToast({ message: "Generation stopped", kind: "info" });
+        activeSubmitRunId = null;
+        refreshDashboard();
+      })
+      .catch(function () {
+        // Re-arm the Stop button if cancel didn't land so the user can retry.
+        if (activeSubmitRunId === runId) setComposerStopMode(true);
+        showToast({ message: "Could not stop — please retry", kind: "error" });
+      });
+  }
+
+  // The composer button is dual-purpose: Stop when a run is in flight,
+  // otherwise Submit. One listener so we never double-bind.
+  function onComposerButtonClick() {
+    if (submitBtn && submitBtn.getAttribute("data-stop-mode") === "true") {
+      cancelActiveRun();
+      return;
+    }
+    submitPrompt();
+  }
+
+  if (submitBtn) submitBtn.addEventListener("click", onComposerButtonClick);
   if (input) {
     input.addEventListener("keydown", function (ev) {
       if ((ev.metaKey || ev.ctrlKey) && ev.key === "Enter") {
         ev.preventDefault();
-        submitPrompt();
+        // P22 (2026-05-29) — route Cmd/Ctrl+Enter through the same dispatcher
+        // as the composer button so Stop-mode is honoured (Cmd+Enter cancels
+        // an in-flight run instead of POSTing a second prompt) and the
+        // promptSubmitInFlight latch inside submitPrompt() is respected.
+        // Calling submitPrompt() directly here bypassed both.
+        onComposerButtonClick();
         return;
       }
       // Esc inside composer: clear textarea content. Lets the user abort an
@@ -1950,8 +2211,31 @@ export const DASHBOARD_JS = `
       // Let the browser follow the href via the download attribute.
       return;
     }
-    // "reset" + other actions are still handled by their own dedicated
-    // listeners (see composer / dashboard wiring above).
+    // P19 (2026-05-29) — workspace composer Reset. The button only carried
+    // data-workspace-action="reset" with no handler, so clicks did nothing
+    // (the old comment falsely claimed a "dedicated listener" covered it;
+    // the only reset listener is db-local-run-reset, a different button on
+    // the legacy dashboard). Clear the composer input + local draft state
+    // (textarea value, attached-docs, any inline error styling) so the user
+    // gets a clean slate, mirroring what a successful submit clears.
+    if (action === "reset") {
+      ev.preventDefault();
+      var composerInput = document.getElementById("db-prompt-input");
+      if (composerInput) {
+        composerInput.value = "";
+        try { composerInput.setAttribute("data-attached-docs", "[]"); } catch (e) {}
+        composerInput.classList.remove("db-textarea-error");
+        // Fire an input event so any draft-derived UI (doc-attach dropdown,
+        // char counter) re-syncs against the now-empty value.
+        try {
+          composerInput.dispatchEvent(new Event("input", { bubbles: true }));
+        } catch (e) { /* legacy browser no-op */ }
+        try { composerInput.focus(); } catch (e) { /* defensive */ }
+      }
+      return;
+    }
+    // Other workspace actions are handled by their own dedicated listeners
+    // (see composer / dashboard wiring above).
   });
 
   // ---------- Tier 6: Layer 2 theme runtime switcher ----------
@@ -2223,9 +2507,21 @@ export const DASHBOARD_JS = `
         if (origLabel) origLabel.textContent = "Starting…";
       }
 
+      // P7 (2026-05-29) — carry the selected target repo so the orchestrator
+      // sets shouldClone=true and runs intake + fePatterns + BE reach against
+      // a REAL repo. Without this, the bare-prompt path scanned dash-build's
+      // own dir → greenfield generation (the Lovable-clone failure). Empty
+      // value = "No repo (new product)" omits repo so the greenfield path
+      // stays available on demand.
+      var payload = { text: raw };
+      var repoSelect = document.getElementById("db-home-repo-select");
+      var selectedRepo =
+        repoSelect && repoSelect.value ? String(repoSelect.value).trim() : "";
+      if (selectedRepo) {
+        payload.repo = selectedRepo;
+      }
       // Carry any attached doc ids from the textarea over the wire so the
       // orchestrator can hydrate referenced doc bodies into the prompt.
-      var payload = { text: raw };
       try {
         var attached = JSON.parse(
           (textarea && textarea.getAttribute("data-attached-docs")) || "[]"

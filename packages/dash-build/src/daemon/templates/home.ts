@@ -11,10 +11,61 @@
  */
 
 import type { Store } from "../state/store.js"
+import { isRealProject } from "../state/store.js"
 import type { Project } from "../state/types.js"
 import { escapeHtml, renderLayout } from "./layout.js"
 import { renderSidebar, projectsToRecents } from "./sidebar.js"
 import { renderPromptInput } from "./components/prompt-input.js"
+import { icon, type IconName } from "./components/icon.js"
+import { listRepoPreviewManifests } from "../repo-preview.js"
+
+/**
+ * P7 (2026-05-29) — default target repo for the Home composer's repo picker.
+ *
+ * THE BUG this fixes: the hero "Start building" flow used to POST `{ text }`
+ * with NO repo, so the orchestrator's `shouldClone` was false and intake
+ * scanned dash-build's OWN dir → greenfield/standalone generation (the
+ * Lovable-clone failure the product rejects). The verified "respect existing
+ * + fePatterns + BE reach" wins only fire when a real repo is selected, so
+ * the DEFAULT must be a real repo, not blank.
+ */
+const DEFAULT_HOME_REPO = "dash/backoffice"
+
+/**
+ * Render the repo `<select>` for the home composer. Options are sourced from
+ * the preview manifest (`backoffice`, `portal-v2`, …) plus a blank "No repo
+ * (new product)" escape hatch for genuine greenfield work. Defaults to the
+ * last-used repo (`store.getActiveRepo()`) when it is a known manifest id,
+ * else `DEFAULT_HOME_REPO`. The selected value is read by `hookHomePrompt`
+ * and carried in the POST /api/prompt body as `{ repo }`.
+ */
+function renderRepoPicker(activeRepo: string | null): string {
+  const manifests = listRepoPreviewManifests()
+  const known = manifests.some((m) => m.id === activeRepo)
+  const selected = known && activeRepo ? activeRepo : DEFAULT_HOME_REPO
+  const options = manifests
+    .map((m) => {
+      const sel = m.id === selected ? " selected" : ""
+      return `<option value="${escapeHtml(m.id)}"${sel}>${escapeHtml(m.label)}</option>`
+    })
+    .join("")
+  // Blank-product escape hatch — empty value means "no repo", which
+  // hookHomePrompt omits from the payload so the orchestrator keeps the
+  // greenfield path available on demand.
+  const blankOption = `<option value="">No repo (new product)</option>`
+  return `<label class="db-home-repo-picker" for="db-home-repo-select">
+    <span class="db-home-repo-picker-label">Target repo</span>
+    <select
+      class="db-home-repo-select"
+      id="db-home-repo-select"
+      name="repo"
+      aria-label="Target repo for generation"
+    >
+      ${options}
+      ${blankOption}
+    </select>
+  </label>`
+}
 
 export interface HomeOptions {
   /** Display name for the greeting. Falls back to a friendly default. */
@@ -41,39 +92,39 @@ interface TemplateCard {
  */
 interface ExamplePrompt {
   id: string
-  icon: string
+  icon: IconName
   text: string
 }
 
 const EXAMPLE_PROMPTS: ExamplePrompt[] = [
   {
     id: "ex-dashboard",
-    icon: "📊",
+    icon: "grid",
     text: "Dashboard mitra performance dengan SLA tracking",
   },
   {
     id: "ex-form-kyc",
-    icon: "📝",
+    icon: "file",
     text: "Form pendaftaran mitra baru dengan KYC + audit log",
   },
   {
     id: "ex-banner-suspend",
-    icon: "🚨",
+    icon: "alarm",
     text: "Banner notifikasi suspension dengan reason + reactivate CTA",
   },
   {
     id: "ex-table-orders",
-    icon: "📋",
+    icon: "list",
     text: "Tabel order list dengan filter status + pagination",
   },
   {
     id: "ex-modal-delete",
-    icon: "🔔",
+    icon: "bell",
     text: "Modal konfirmasi delete dengan undo grace period",
   },
   {
     id: "ex-settings",
-    icon: "⚙️",
+    icon: "settings",
     text: "Settings page mitra dengan tabs Profile/Payment/Notification",
   },
 ]
@@ -156,7 +207,7 @@ function renderExamplePromptCard(ex: ExamplePrompt): string {
     data-example-id="${escapeHtml(ex.id)}"
     aria-label="Use example prompt: ${escapeHtml(ex.text)}"
   >
-    <span class="db-home-example-icon" aria-hidden="true">${escapeHtml(ex.icon)}</span>
+    <span class="db-home-example-icon" aria-hidden="true">${icon(ex.icon, { size: "sm" })}</span>
     <span class="db-home-example-text">${escapeHtml(ex.text)}</span>
   </button>`
 }
@@ -178,8 +229,13 @@ function renderEmptyProjects(): string {
 }
 
 export function renderHome(store: Store, opts: HomeOptions = {}): string {
-  const projects = store.getProjects()
+  // Bug 3+4 (2026-05-29) — only surface repo-backed projects on the home grid.
+  // Bare-prompt runs auto-create an "Unassigned" phantom project (store
+  // `ensureProjectInternal`); filtering here keeps the grid + count honest
+  // without touching the underlying data model.
+  const projects = store.getProjects().filter(isRealProject)
   const recents = projectsToRecents(projects, 8)
+  const activeRepo = store.getActiveRepo()
   const userName = (opts.userName ?? "").trim() || "irfan"
   const connectorHint =
     opts.connectorHint ??
@@ -222,6 +278,7 @@ export function renderHome(store: Store, opts: HomeOptions = {}): string {
         <form class="db-home-prompt" id="db-home-prompt-form" autocomplete="off" novalidate>
           ${renderPromptInput({ hideFooter: true, placeholder: "Build a payroll dashboard for backoffice…" })}
           <div class="db-home-prompt-actions">
+            ${renderRepoPicker(activeRepo)}
             <span class="db-home-prompt-hint" aria-hidden="true">⌘↵ to launch workspace</span>
             <button
               type="submit"
@@ -230,7 +287,7 @@ export function renderHome(store: Store, opts: HomeOptions = {}): string {
               aria-label="Create new workspace from prompt"
             >
               <span class="db-button-label">Start building</span>
-              <span class="db-button-arrow" aria-hidden="true">→</span>
+              <span class="db-button-arrow" aria-hidden="true">${icon("arrow-right", { size: "sm" })}</span>
             </button>
           </div>
         </form>

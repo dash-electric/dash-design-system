@@ -69,6 +69,7 @@ export const PREVIEW_MOUNT_JS = `
       setState(mount, "idle");
       bindRefreshListener(mount, function (cs) {
         source = cs;
+        mountSandpack(mount, cs, promptId);
         return source;
       });
       return;

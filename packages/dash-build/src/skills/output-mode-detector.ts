@@ -140,13 +140,33 @@ export function detectOutputMode(input: DetectInput): OutputMode {
   )
   const hasAnyFile = files.length > 0
 
+  // Surfaced index/page for the target surface → strong bias toward patching
+  // that index instead of spawning a parallel route. This is deterministic:
+  // resolvePlacement re-derives a total order over the surfaced set.
+  const placement = resolvePlacement(input.existingFiles)
+  const hasConfidentIndexPage =
+    placement.patchTarget != null &&
+    resolutions.some(
+      (r) =>
+        r.filePath === placement.patchTarget &&
+        r.confidence >= PATH_CONFIDENCE_THRESHOLD,
+    )
+
   // Strong patch signal: edit intent + a real existing file was read.
   if (editIntent && hasAnyFile) {
     // If the prompt also screams "new" loudly, drop to mixed so the model
-    // can split — e.g. "edit /provider and create a new modal".
-    if (createIntent && !hasExistingHint(prompt)) {
+    // can split — e.g. "edit /provider and create a new modal". But if a
+    // confident index/page already exists for this surface, keep PATCH so the
+    // change lands on the existing route rather than a parallel file.
+    if (createIntent && !hasExistingHint(prompt) && !hasConfidentIndexPage) {
       return "mixed"
     }
+    return "patch"
+  }
+
+  // Pure create intent but a confident index/page already exists for this
+  // surface → bias to patch-that-index rather than spawning a parallel route.
+  if (createIntent && hasConfidentIndexPage) {
     return "patch"
   }
 
@@ -192,6 +212,99 @@ export function shouldEditExisting(
   if (basename && promptLc.includes(basename)) return true
   // Otherwise rely on the global edit intent.
   return true
+}
+
+/** Strip a trailing filename to get the containing directory. */
+function dirOf(filePath: string): string {
+  const norm = filePath.replace(/\\/g, "/")
+  const idx = norm.lastIndexOf("/")
+  return idx >= 0 ? norm.slice(0, idx) : ""
+}
+
+/** True when a path looks like a route index/page entry (index.* or page.*). */
+function isIndexOrPage(filePath: string): boolean {
+  const base = filePath.replace(/\\/g, "/").split("/").pop() ?? ""
+  return /^(index|page)\.[a-z]+$/i.test(base)
+}
+
+export interface PlacementGuidance {
+  /** Canonical directory new files should land in. null when none surfaced. */
+  directory: string | null
+  /** Index/page file that already exists for this surface and should be
+   *  patched rather than paralleled. null when none surfaced. */
+  patchTarget: string | null
+  /** Stable, de-duped list of directories that surfaced (for guidance text). */
+  directories: string[]
+}
+
+/**
+ * Reconcile the existing-files context into DETERMINISTIC placement guidance.
+ *
+ * Goal (P14): kill non-deterministic topology. The same prompt + same
+ * existingFiles must always yield the SAME "place new files here / patch this
+ * index" instruction — so a feature lands in `src/pages/provider` every run,
+ * never sometimes `src/components/provider`.
+ *
+ * Determinism contract:
+ *   - Resolutions are considered FIRST, in descending confidence; ties broken
+ *     by filePath string order. (Caller sorts by confidence, but we re-derive
+ *     a total order so identical inputs never depend on array stability.)
+ *   - `directory` = the directory of the single highest-ranked resolution
+ *     (fallback: highest-ranked read file). This is the canonical landing dir.
+ *   - `patchTarget` = the highest-ranked index/page file in the surfaced set —
+ *     the file the model must PATCH instead of creating a parallel route.
+ *
+ * Pure — no I/O.
+ */
+export function resolvePlacement(
+  existingFiles?: ExistingFilesContext | null,
+): PlacementGuidance {
+  const resolutions = [...(existingFiles?.resolutions ?? [])].sort((a, b) => {
+    if (b.confidence !== a.confidence) return b.confidence - a.confidence
+    return a.filePath.localeCompare(b.filePath)
+  })
+  const files = [...(existingFiles?.files ?? [])].sort((a, b) =>
+    a.filePath.localeCompare(b.filePath),
+  )
+
+  // Ranked candidate paths: confident resolutions first, then read files.
+  // De-dupe while preserving the deterministic order.
+  const rankedPaths: string[] = []
+  const seen = new Set<string>()
+  for (const r of resolutions) {
+    if (r.confidence >= PATH_CONFIDENCE_THRESHOLD && !seen.has(r.filePath)) {
+      seen.add(r.filePath)
+      rankedPaths.push(r.filePath)
+    }
+  }
+  for (const r of resolutions) {
+    if (!seen.has(r.filePath)) {
+      seen.add(r.filePath)
+      rankedPaths.push(r.filePath)
+    }
+  }
+  for (const f of files) {
+    if (!seen.has(f.filePath)) {
+      seen.add(f.filePath)
+      rankedPaths.push(f.filePath)
+    }
+  }
+
+  const directory = rankedPaths.length > 0 ? dirOf(rankedPaths[0]!) : null
+  const patchTarget = rankedPaths.find(isIndexOrPage) ?? null
+
+  // Stable, de-duped directory list (insertion order = rank order).
+  const directories: string[] = []
+  const dirSeen = new Set<string>()
+  for (const p of rankedPaths) {
+    const d = dirOf(p)
+    if (d && !dirSeen.has(d)) {
+      dirSeen.add(d)
+      directories.push(d)
+    }
+  }
+
+  return { directory, patchTarget, directories }
 }
 
 /**

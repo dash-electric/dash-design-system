@@ -239,10 +239,10 @@ export function evaluatePrompt(input: EvaluatorInput): EvaluatorOutput {
   // Heuristic 1: vague verb without explicit surface and no detected repo
   const targetSurfaceQuestion: ClarificationQuestion = {
     id: "target-surface",
-    text: "Where should this feature live?",
+    text: "Fitur ini mau ditaruh di repo mana?",
     type: "single-choice",
     options: ["backoffice", "portal-v2", "basecamp", "react-fleet"],
-    rationale: "Surface determines stack + voice rule",
+    rationale: "Repo menentukan stack + aturan voice",
     required: true,
   }
   if (
@@ -257,16 +257,16 @@ export function evaluatePrompt(input: EvaluatorInput): EvaluatorOutput {
   // Heuristic 2: data verb but no source
   const dataSourceQuestion: ClarificationQuestion = {
     id: "data-source",
-    text: "Data comes from?",
+    text: "Datanya dari mana?",
     type: "single-choice",
     options: [
       "GET /api/<endpoint>",
-      "Postgres direct",
+      "Postgres langsung",
       "GraphQL",
-      "Hard-coded mock",
-      "Skip — I'll wire later",
+      "Mock hard-coded",
+      "Skip — nanti gua wire sendiri",
     ],
-    rationale: "API contract drives fetch pattern",
+    rationale: "Kontrak API menentukan pola fetch",
     required: false,
   }
   if (
@@ -278,44 +278,23 @@ export function evaluatePrompt(input: EvaluatorInput): EvaluatorOutput {
     questions.push(dataSourceQuestion)
   }
 
-  // Heuristic 3: mitra mention → voice rule confirm
-  const voiceRuleQuestion: ClarificationQuestion = {
-    id: "voice-rule",
-    text: "Is this UI seen by mitra (drivers/couriers)?",
-    type: "yes-no",
-    rationale: "Mitra-facing requires formal 'Anda' voice per Dash rule",
-    required: true,
-  }
-  const voiceAnswer = clarificationBooleanAnswer(prompt, voiceRuleQuestion)
-  const nonMitraFacing = explicitlyNonMitraFacing(prompt)
-  if (nonMitraFacing && voiceAnswer === true) {
-    questions.push({
-      id: "visibility-conflict",
-      text: "Prompt says this is not mitra-facing, but the answer says mitra can see it. Which is correct?",
-      type: "single-choice",
-      options: [
-        "Internal only — HR/admin/backoffice",
-        "Mitra-facing — drivers/couriers can see it",
-      ],
-      rationale: "Audience controls tone, permissions, and exposed data",
-      required: true,
-    })
-  } else if (
-    mentionsMitra(prompt) &&
-    !nonMitraFacing &&
-    !hasRepoInferredAudience(prompt, detectedRepo) &&
-    !explicitlyMitraFacing(prompt) &&
-    !hasClarificationAnswer(prompt, voiceRuleQuestion)
-  ) {
-    questions.push(voiceRuleQuestion)
-  }
+  // Heuristic 3 — REMOVED 2026-05-29 (per product owner). The old
+  // "Is this UI seen by mitra (drivers/couriers)?" voice question is NOT
+  // relevant for web targets: every web repo (backoffice / portal-v2 / …) is
+  // internal-ops or client-facing, never a mitra (driver/courier) surface.
+  // Mitra-facing UI is the mobile app — a separate target we don't build here
+  // yet. The voice register therefore derives DETERMINISTICALLY from the repo
+  // (backoffice → formal internal voice) and must NOT be asked. See
+  // dash-ai-rules.md § voice (per-surface) + the per-repo voice mapping in the
+  // prompt composer. When mobile/mitra targets land, reintroduce this gate
+  // scoped to those targets only.
 
   // Heuristic 4: legal / financial field
   const auditTrailQuestion: ClarificationQuestion = {
     id: "audit-trail",
-    text: "Does this edit a legal/financial field?",
+    text: "Apakah ini mengedit field legal/finansial?",
     type: "yes-no",
-    rationale: "Audit trail mandatory per Dash cardinal rule #3",
+    rationale: "Audit trail wajib per cardinal rule #3 Dash",
     required: true,
   }
   if (
@@ -328,9 +307,9 @@ export function evaluatePrompt(input: EvaluatorInput): EvaluatorOutput {
   // Heuristic 5: scope blast
   const scopeConfirmQuestion: ClarificationQuestion = {
     id: "scope-confirm",
-    text: "This looks like 3+ days of work. Break into smaller features?",
+    text: "Ini kelihatannya 3+ hari kerja. Pecah jadi fitur lebih kecil?",
     type: "yes-no",
-    rationale: "Smaller iterations ship faster, easier to review",
+    rationale: "Iterasi kecil lebih cepat ship + gampang di-review",
     required: false,
   }
   if (isLargeScope(prompt) && !hasClarificationAnswer(prompt, scopeConfirmQuestion)) {

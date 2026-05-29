@@ -226,6 +226,12 @@ describe("Orchestrator + intake wiring", () => {
     })
     await orchestrator.processPrompt(submitted.promptId)
 
+    // The component:updated emit happens at the tail of finalize; under heavy
+    // parallel-worker load the assertion could run before that async tail
+    // flushes (flake). Poll for it instead of assuming it's already buffered.
+    await vi.waitFor(() =>
+      expect(events.find((e) => e.event === "component:updated")).toBeDefined(),
+    )
     const updated = events.find((e) => e.event === "component:updated")
     expect(updated).toBeDefined()
     const data = updated!.data as {

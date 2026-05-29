@@ -223,7 +223,7 @@ export function renderSandboxBadge(
 // Chat ↔ prompt-record adaptation
 // ─────────────────────────────────────────────────────────────────────────
 
-function promptToChatMessages(
+export function promptToChatMessages(
   prompt: PromptRecord,
   resolveArtifact?: (id: string) => GenerationArtifact | undefined,
 ): ChatMessage[] {
@@ -247,7 +247,7 @@ function promptToChatMessages(
       break
     case "clarifying":
       status = "ok"
-      body = "Clarification needed — answer the card on the right."
+      body = "Clarification needed — answer the questions below."
       break
     case "generating":
       status = "running"
@@ -804,9 +804,13 @@ export function renderChatDashboard(
       return null
     }
   })()
-  // F3 — adaptive bootstrap button. State machine drives label so users
-  // can re-enter the bootstrap at the next missing step instead of seeing
-  // a flat "Activate clone preview" forever:
+  // F3 — adaptive bootstrap button. LEGACY/DEBUG ONLY: as of 2026-05-29 clone
+  // is auto-kicked on first prompt for existing-repo mode (see
+  // orchestrator.submitPrompt), so the canonical home `/` + workspace surfaces
+  // render no clone button. This button survives only on the internal
+  // `/dashboard?legacy=1` page as a manual re-trigger / retry escape hatch.
+  // State machine drives the label so a manual re-entry resumes at the next
+  // missing step instead of showing a flat "Activate clone preview" forever:
   //   null               → "▶ Activate clone preview"   (initial)
   //   cloned             → "▶ Continue setup (install + dev server)"
   //   shim_applied       → "▶ Continue setup (install + dev server)"

@@ -101,6 +101,7 @@ import {
 import {
   checkAuditTrailRequired,
   classifyPrompt,
+  detectMode,
   readDbSchema,
   scanBeCatalog,
   type BeCatalog,
@@ -117,6 +118,10 @@ import {
   normaliseProvider,
   type RunEmitter,
 } from "../observability/aop-emitter.js"
+import type {
+  AOPEventType,
+  AOPEventByType,
+} from "@dash/aop-schema"
 
 export interface OrchestratorOptions {
   store: Store
@@ -263,6 +268,15 @@ export class Orchestrator {
    *  call. Cleared on terminal transition via forgetRunEmitter. */
   private readonly variantCounts: Map<string, number> = new Map()
 
+  /**
+   * Bug 6 (2026-05-29) — per-run AbortController so an in-flight generation can
+   * be cancelled. `submitPrompt` registers one before kicking `processPrompt`;
+   * `cancelPrompt` aborts it (the codex runner accepts an AbortSignal) and
+   * `processPrompt` checks `signal.aborted` at each checkpoint to bail before
+   * committing an artifact. Cleaned up when the run settles.
+   */
+  private readonly runAborters: Map<string, AbortController> = new Map()
+
   constructor(opts: OrchestratorOptions) {
     this.store = opts.store
     this.broadcaster = opts.broadcaster
@@ -360,6 +374,31 @@ export class Orchestrator {
     this.aopEmitter.forget(promptId)
   }
 
+  /**
+   * Claude-Code-style live narration. Each pipeline milestone calls this with
+   * a human-readable string the dashboard renders verbatim as an action line.
+   * Fully guarded: a failure building or emitting an event must NEVER break the
+   * pipeline (emitter is already fire-and-forget; we also swallow payload-build
+   * throws here). Lazily builds the payload via `make()` so callers can compute
+   * the narration inline without worrying about exceptions bubbling.
+   */
+  private narrate<T extends AOPEventType>(
+    promptId: string,
+    type: T,
+    make: () => AOPEventByType[T]["payload"],
+  ): void {
+    try {
+      const payload = make()
+      this.aop(promptId).emit(type, payload)
+    } catch (err) {
+      this.logger.warn("aop narration failed (continuing)", {
+        id: promptId,
+        type,
+        err: (err as Error).message,
+      })
+    }
+  }
+
   // ── Public surface ───────────────────────────────────────────────────────
 
   /**
@@ -376,7 +415,23 @@ export class Orchestrator {
     // fails (offline, repo path missing, etc.) the prompt still flows through
     // the legacy path. We cap our wait at 5s so a slow first clone never
     // blocks the user — the bootstrap keeps running in the background after.
-    if (input.repo) {
+    //
+    // Mode-aware gate (2026-05-29): clone ONLY for existing-repo work. A blank-
+    // product or design-system prompt has no real repo to clone — booting a
+    // dev server there is wasted minutes + a confusing "cloning…" status. We
+    // run the (pure, sync) mode detector here to decide. selectedRepo + known
+    // manifest → existing-repo at 0.95, so the common "user picked backoffice"
+    // path still clones exactly as before. See mode-aware-intake spec.
+    const submitMode = detectMode({
+      prompt: input.text,
+      selectedRepo: input.repo ?? null,
+      repoIsKnownDashRepo: input.repo
+        ? resolveTargetRepoPath(input.repo) !== null
+        : false,
+      resolvedExistingFiles: [],
+    })
+    const shouldClone = input.repo != null && submitMode.mode === "existing-repo"
+    if (shouldClone && input.repo) {
       const kicked = this.ensureWorkspaceBootstrap(input.repo)
       try {
         await Promise.race([
@@ -404,6 +459,19 @@ export class Orchestrator {
       this.variantCounts.set(prompt.id, 2)
     }
     const queuedStatus = prompt.status
+    // AOP run.start — first live narration line ("Starting…"). The dashboard
+    // opens a fresh action stream off this event.
+    this.narrate(prompt.id, "run.start", () => ({
+      prompt: prompt.text,
+      targetRepo: {
+        url: prompt.repo ?? "dash-build",
+        branch: prompt.branch ?? "main",
+        commit: "HEAD",
+      },
+      model: { provider: "openai", name: "dash-build" },
+      budget: { maxUsd: 0, maxDurationMs: 0, maxTokens: 0 },
+      initiator: "api",
+    }))
     this.broadcaster.broadcast("prompts:changed", {
       id: prompt.id,
       status: queuedStatus,
@@ -412,6 +480,9 @@ export class Orchestrator {
       id: prompt.id,
       status: queuedStatus,
     })
+    // Bug 6 — register an aborter for this run so cancelPrompt can interrupt
+    // the in-flight model call + downstream checkpoints.
+    this.runAborters.set(prompt.id, new AbortController())
     // Fire-and-forget — errors surface via prompts:changed.
     // Defer one microtask so callers can await the return value before
     // the worker observes the queued prompt.
@@ -424,6 +495,55 @@ export class Orchestrator {
       })
     })
     return { promptId: prompt.id, status: queuedStatus }
+  }
+
+  /**
+   * Bug 6 (2026-05-29) — cancel an in-flight generation. Best-effort:
+   *   1. Mark the prompt `cancelled` in the store (a terminal status, so
+   *      `processPrompt`'s `isTerminal` checkpoints bail before committing).
+   *   2. Abort the run's AbortController so the codex runner's child process
+   *      (which accepts `signal`) is killed and any awaiting checkpoint throws.
+   *   3. Broadcast prompts:changed / runs:changed so the UI flips out of the
+   *      generating state.
+   *
+   * Returns the resulting status. A no-op (returns the current status) when the
+   * prompt is unknown or already terminal — cancelling a finished run is safe.
+   */
+  async cancelPrompt(promptId: string): Promise<{ status: PromptStatus }> {
+    const prompt = this.store.getPrompt(promptId)
+    if (!prompt) {
+      throw new Error("prompt not found")
+    }
+    if (isTerminal(prompt.status)) {
+      return { status: prompt.status }
+    }
+    // Abort the in-flight model call first so the runner stops burning tokens.
+    const aborter = this.runAborters.get(promptId)
+    if (aborter && !aborter.signal.aborted) {
+      try {
+        aborter.abort()
+      } catch {
+        /* AbortController.abort never throws in practice — defensive */
+      }
+    }
+    this.variantCounts.delete(promptId)
+    const updated = await this.store.updatePromptStatus(promptId, "cancelled")
+    this.runAborters.delete(promptId)
+    this.broadcaster.broadcast("prompts:changed", {
+      id: promptId,
+      status: "cancelled",
+    })
+    this.broadcaster.broadcast("runs:changed", {
+      id: promptId,
+      status: "cancelled",
+    })
+    this.narrate(promptId, "error", () => ({
+      code: "cancelled",
+      message: "Cancelled by user.",
+      recoverable: false,
+      severity: "warn" as const,
+    }))
+    return { status: updated?.status ?? "cancelled" }
   }
 
   /**
@@ -543,8 +663,20 @@ export class Orchestrator {
       return
     }
 
+    // Clone source precedence:
+    //   1. explicit DASH_BUILD_GIT_ORIGIN_URL
+    //   2. DASH_BUILD_CLONE_FROM_LOCAL=1 → the local checkout dir itself
+    //      (git clone <localdir> — no network, no auth). This is the
+    //      local-first / first-run-test path: the dev already has the repo
+    //      checked out, and the GitHub remote would need credentials the
+    //      local daemon doesn't have (that's what made bootstrap silently
+    //      reach state=failed). Filesystem clone is also far faster.
+    //   3. the checkout's GitHub origin (production / fresh-machine path)
+    //   4. the local dir as a last resort
+    const cloneFromLocal = process.env.DASH_BUILD_CLONE_FROM_LOCAL === "1"
     const originUrl =
       process.env.DASH_BUILD_GIT_ORIGIN_URL?.trim() ||
+      (cloneFromLocal ? config.dir : null) ||
       (await detectOriginUrl(config.dir)) ||
       config.dir
     const clonePath = defaultClonePathFor(repo)
@@ -656,7 +788,13 @@ export class Orchestrator {
       port: port ?? null,
     })
 
-    const startupTimeoutMs = 60_000
+    // Match Workspace.DEV_SERVER_READY_TIMEOUT_MS (raised 60s → 420s on
+    // 2026-05-29). A cold `next dev` first-compile on backoffice takes 5-7 min;
+    // the old 60s cap was the "scheduler silent fail" that dropped the iframe
+    // to staging mid-boot. Same env override as the Workspace constant.
+    const startupTimeoutMs = Number(
+      process.env.DASH_BUILD_DEV_SERVER_TIMEOUT_MS ?? 420_000,
+    )
     try {
       await Promise.race([
         Promise.resolve(startDev.call(workspace, { port })),
@@ -835,6 +973,12 @@ export class Orchestrator {
       return
     }
 
+    // P11 — capture wall-clock start so run.end + the cost ledger carry a
+    // real durationMs instead of the hardcoded 0. The codex runner doesn't
+    // surface its own duration through GenerateResult.meta yet (would be a
+    // SkillChainRunner interface change), so we measure end-to-end here.
+    const startedAt = Date.now()
+
     await this.setStatus(prompt, "generating")
 
     // 1. Auth check
@@ -859,7 +1003,45 @@ export class Orchestrator {
     const repoPath = this.repoPathResolver(prompt.repo)
     let intake: IntakeContext | undefined
     if (this.intakeEnabled) {
-      intake = await this.runIntake(prompt.text, repoPath)
+      const repoLabel = prompt.repo ?? "workspace"
+      // AOP scan (begin) — "Reading <repo> context…"
+      this.narrate(prompt.id, "scan", () => ({
+        kind: "registry",
+        paths: [repoLabel],
+        snippet: `Reading ${repoLabel} context…`,
+        bytesRead: 0,
+      }))
+      intake = await this.runIntake(prompt.text, repoPath, prompt.repo)
+
+      // AOP scan (done) — "Found N endpoints, M tables" + mode + scenario.
+      this.narrate(prompt.id, "scan", () => {
+        const nEndpoints = intake!.beCatalog.totalEndpoints ?? 0
+        const nTables = intake!.dbCatalog.tables.length
+        const scenario = intake!.classification.scenario
+        const modeName = intake!.mode?.mode
+        const summary =
+          `Found ${nEndpoints} API endpoint${nEndpoints === 1 ? "" : "s"}, ` +
+          `${nTables} matching table${nTables === 1 ? "" : "s"}` +
+          (modeName ? ` · mode ${modeName}` : "") +
+          ` · scenario ${scenario}`
+        return {
+          kind: "registry",
+          paths: [repoLabel],
+          snippet: summary,
+          bytesRead: 0,
+        }
+      })
+
+      // AOP plan — "Plan: <scenario> in <repo>" / "New standalone component".
+      this.narrate(prompt.id, "thinking", () => {
+        const scenario = intake!.classification.scenario
+        const modeName = intake!.mode?.mode
+        const planText =
+          modeName === "blank-product" || modeName === "design-system"
+            ? "Plan: new standalone component"
+            : `Plan: ${scenario.replace(/_/g, " ")} in ${repoLabel}`
+        return { kind: "hypothesis", md: planText }
+      })
 
       // Persist the intake snapshot to <runDir>/intake.json so the workspace
       // cold-load (`loadInitialPreview`) can surface BE endpoints / DB tables /
@@ -885,6 +1067,11 @@ export class Orchestrator {
       ) {
         const question = intake.classification.needsClarify ??
           "We couldn't classify this prompt — is it a visual change, a new BE endpoint, or a DB-schema change?"
+        // AOP thinking — "Need to clarify: <question>"
+        this.narrate(prompt.id, "thinking", () => ({
+          kind: "risk",
+          md: `Need to clarify: ${question}`,
+        }))
         return this.beginClarification(
           prompt,
           [
@@ -918,6 +1105,14 @@ export class Orchestrator {
       result: GenerateResult
     }> = []
     const variantCount = this.variantCounts.get(prompt.id) ?? 1
+    // AOP thinking — "Generating component…" (chain dispatch).
+    this.narrate(prompt.id, "thinking", () => ({
+      kind: "reason",
+      md:
+        variantCount === 2
+          ? "Generating component… (2 variants)"
+          : "Generating component…",
+    }))
     try {
       const sdk = await this.anthropic.buildSdkClient()
       if (variantCount === 2) {
@@ -989,9 +1184,28 @@ export class Orchestrator {
       return this.failPrompt(prompt, err)
     }
 
+    // Bug 6 — cancellation checkpoint. If the user hit Stop while the chain was
+    // running, the prompt is already `cancelled` (terminal). Bail before we
+    // commit any artifact or advance to awaiting_approval so a stopped run
+    // doesn't silently finish.
+    if (this.wasCancelled(prompt.id)) {
+      this.variantCounts.delete(prompt.id)
+      this.runAborters.delete(prompt.id)
+      this.logger.info("processPrompt: cancelled after chain, bailing", {
+        id: prompt.id,
+      })
+      return
+    }
+
     // 4. Branch on chain result
     if (result.kind === "clarify") {
       this.variantCounts.delete(prompt.id)
+      const q = result.questions[0]?.text ?? result.summary ?? "more detail"
+      // AOP thinking — "Need to clarify: <question>"
+      this.narrate(prompt.id, "thinking", () => ({
+        kind: "risk",
+        md: `Need to clarify: ${q}`,
+      }))
       return this.beginClarification(prompt, result.questions, prompt.text)
     }
     if (result.kind === "error") {
@@ -1014,13 +1228,63 @@ export class Orchestrator {
       ...(intake ? { intake } : {}),
     }
 
+    // AOP validate — "Validating against Dash DS…" then pass/warn/fail + score.
+    {
+      const v = result.validation
+      const overall = v.passed ? "pass" : v.errors.length > 0 ? "fail" : "warn"
+      const topError = v.errors[0]
+      this.narrate(prompt.id, "validate", () => ({
+        scope: "package" as const,
+        overall: overall as "pass" | "fail" | "warn",
+        target: `Validating against Dash DS — score ${v.score}/100`,
+        checks: [
+          {
+            name: "Dash DS foundation match",
+            status: overall as "pass" | "fail" | "warn",
+            durationMs: 0,
+            output: `score ${v.score}/100`,
+          },
+        ],
+      }))
+      // Second beat — narrate the top issue + whether we revise / accept, to
+      // mimic Claude's "found a bug, here's why" moment. Only when not a clean
+      // pass.
+      if (!v.passed && topError) {
+        this.narrate(prompt.id, "thinking", () => ({
+          kind: "risk" as const,
+          md:
+            `⚠ Found issue: ${topError.message}` +
+            (topError.file ? ` (${topError.file})` : "") +
+            ` — ${v.errors.length > 0 ? "revising" : "acceptable, continuing"}`,
+        }))
+      }
+    }
+
+    // AOP artifact — one line per generated file ("Wrote <path> (<size>)").
+    for (const file of artifact.files) {
+      this.narrate(prompt.id, "artifact", () => {
+        const lines = file.content ? file.content.split("\n").length : 0
+        const bytes = file.content ? Buffer.byteLength(file.content, "utf8") : 0
+        return {
+          path: file.path,
+          op: "create" as const,
+          diff: `Wrote ${file.path} (${bytes} bytes)`,
+          loc: { added: lines, removed: 0 },
+          ...(file.language ? { language: file.language } : {}),
+        }
+      })
+    }
+
     // 5a. CR-3 OUTPUT enforcement — independent of intake.auditTrail.
     //     When the generated artifact ships a sensitive field name (payment /
     //     KYC / signature / image-proof) WITHOUT an audit-log call, mark the
     //     validation failed + push a high-severity error onto the artifact so
     //     the UI surfaces a rejection. We do NOT short-circuit to failed status
     //     — keeping awaiting_approval lets the user inspect the artifact and
-    //     re-prompt; the dashboard hides the merge button while passed=false.
+    //     re-prompt. The dashboard hides the merge button while passed=false,
+    //     and approvePR() ALSO refuses to open a PR for a passed=false artifact
+    //     server-side (see P5 gate) unless an explicit force flag is passed —
+    //     so the client guard is defence-in-depth, not the only check.
     const auditEnforcement = enforceAuditLogCall(result.response)
     if (!auditEnforcement.ok && auditEnforcement.sensitiveField) {
       const focusFile = auditEnforcement.files[0] ?? "(unknown)"
@@ -1114,6 +1378,18 @@ export class Orchestrator {
       })
       artifact.bundleResult = await writeFallbackPreviewBundle(prompt.id, artifact, err)
       artifact.previewMode = "fallback"
+    }
+
+    // Bug 6 — second cancellation checkpoint. Bundling can take a beat; if the
+    // user stopped during it, drop the artifact instead of advancing to
+    // awaiting_approval.
+    if (this.wasCancelled(prompt.id)) {
+      this.variantCounts.delete(prompt.id)
+      this.runAborters.delete(prompt.id)
+      this.logger.info("processPrompt: cancelled before commit, bailing", {
+        id: prompt.id,
+      })
+      return
     }
 
     this.artifacts.set(prompt.id, artifact)
@@ -1231,6 +1507,47 @@ export class Orchestrator {
           }
           safePatches.push(patch)
         }
+
+        // P4 — additive-only gate for NEW FILES (mode=new-file, the DEFAULT
+        // path). Previously only `artifact.patches` were policed; new files at
+        // protected paths (middleware, .env*, auth/**, payment/**) were
+        // committed with ZERO policy check. Two rejection shapes:
+        //   1. protected path → reuses patch-validator's protectedFilePatterns
+        //      so the rule set stays single-sourced.
+        //   2. overwrite of an existing trunk file → a "new file" whose path
+        //      already exists in the clone is a covert modification (violates
+        //      cardinal rule #1, additive-only).
+        // Best-effort: existence probes are wrapped so an FS error degrades to
+        // "treat as new" rather than crashing the pipeline.
+        const safeFiles: typeof artifact.files = []
+        for (const file of artifact.files) {
+          if (matchesProtectedPath(file.path)) {
+            rejectedPatches.push({
+              path: file.path,
+              reason: "touches-protected-path",
+              details: `New file ${file.path} lands at a protected path (auth/payment/middleware/env). New files here are forbidden — escalate to a human reviewer.`,
+            })
+            this.logger.warn("new-file rejected: protected path", {
+              id: prompt.id,
+              path: file.path,
+            })
+            continue
+          }
+          if (this.fileExistsInClone(this.workspace.clonePath, file.path)) {
+            rejectedPatches.push({
+              path: file.path,
+              reason: "modifies-existing-logic",
+              details: `New file ${file.path} would overwrite an existing trunk file — that is a covert modification, not an additive change. Emit a mode=patch fragment or a new path instead.`,
+            })
+            this.logger.warn("new-file rejected: overwrites existing trunk file", {
+              id: prompt.id,
+              path: file.path,
+            })
+            continue
+          }
+          safeFiles.push(file)
+        }
+
         if (rejectedPatches.length > 0) {
           artifact.rejectedPatches = rejectedPatches
           this.broadcaster.broadcast("patches:rejected", {
@@ -1274,12 +1591,13 @@ export class Orchestrator {
           }
         }
 
-        // New files (mode=new-file) — write + commit in a single shot. Empty
-        // file list is OK if we only had patches; in that case stage the
-        // patch deltas via a dummy commit so extractGeneratedOnly has a
-        // single commit to format-patch over.
-        if (artifact.files.length > 0) {
-          await this.branchManager.writeGeneratedFiles(branchName, artifact.files, {
+        // New files (mode=new-file) — write + commit in a single shot. Only
+        // the P4-gated `safeFiles` are committed; protected-path / overwrite
+        // attempts were dropped above. Empty file list is OK if we only had
+        // patches; in that case stage the patch deltas via a dummy commit so
+        // extractGeneratedOnly has a single commit to format-patch over.
+        if (safeFiles.length > 0) {
+          await this.branchManager.writeGeneratedFiles(branchName, safeFiles, {
             commitMessage:
               this.buildCommitMessage(prompt) + ` [run ${prompt.id}]`,
           })
@@ -1306,6 +1624,51 @@ export class Orchestrator {
         })
       }
     }
+
+    // P11 — write the per-run cost ledger with REAL numbers. durationMs is
+    // wall-clock from startedAt. Tokens are still estimated (the SDK layer
+    // throws away the API `usage` block — see cost-ledger.ts HONESTY NOTE), so
+    // we mark `estimated: true` and derive them from the prompt + completion
+    // text rather than fabricating a count. Best-effort: a writeCost failure
+    // must never wedge the pipeline (writeCost already swallows FS errors).
+    const durationMs = Date.now() - startedAt
+    const completionText =
+      artifact.files.map((f) => f.content).join("\n") +
+      (artifact.explanation ?? "")
+    const usage = estimateUsage(prompt.text, completionText)
+    const modelId =
+      result.kind === "generated" ? result.meta.modelId : "codex-default"
+    const costRecord = await writeCost({
+      runId: prompt.id,
+      model: modelId,
+      usage,
+      estimated: true,
+    }).catch((err) => {
+      this.logger.warn("cost ledger write failed (continuing)", {
+        id: prompt.id,
+        err: (err as Error).message,
+      })
+      return null
+    })
+
+    // AOP run.end — "Done — N files, score X". Closes the live action stream.
+    this.narrate(prompt.id, "run.end", () => {
+      const v = result.validation
+      const nFiles = artifact.files.length
+      return {
+        status: "success" as const,
+        durationMs,
+        reason: `Done — ${nFiles} file${nFiles === 1 ? "" : "s"}, score ${v.score}/100`,
+        summary: {
+          artifacts: nFiles,
+          decisions: 0,
+          validations: { pass: v.passed ? 1 : 0, fail: v.passed ? 0 : 1 },
+          totalUsd: costRecord?.costUsd ?? 0,
+          totalTokens: costRecord?.totalTokens ?? usage.promptTokens + usage.completionTokens,
+        },
+      }
+    })
+    this.forgetRunEmitter(prompt.id)
 
     await this.setStatus(prompt, "awaiting_approval")
     this.broadcaster.broadcast("generation:complete", {
@@ -1334,7 +1697,11 @@ export class Orchestrator {
    * enforcer). Returns an IntakeContext even on partial failure — empty
    * catalogs + an "ambiguous" classification is a valid baseline.
    */
-  private async runIntake(promptText: string, repoPath: string): Promise<IntakeContext> {
+  private async runIntake(
+    promptText: string,
+    repoPath: string,
+    selectedRepo?: string | null,
+  ): Promise<IntakeContext> {
     // Defensive: if the resolved target path doesn't exist, log + scan anyway
     // (scanners return empty catalogs gracefully). This surfaces config drift
     // — e.g. DASH_BUILD_DASH_ROOT pointing at a stale ~/Dash folder.
@@ -1370,6 +1737,11 @@ export class Orchestrator {
         // reader); the classifier only needs a flat list of paths to detect
         // "greenfield vs update". We pass [] here and rely on BE/DB keywords
         // + catalog hits for the strong signals.
+        //
+        // Tier 0I caveat: this [] means a "tambahin tab di detail mitra"-style
+        // prompt with no matching /api endpoint mis-routes to `new_product`.
+        // `reconcileScenario()` in skills/chain.ts corrects that downstream,
+        // once the path resolver has surfaced the real on-disk FE files.
         existingFiles: [],
       })
     } catch (err) {
@@ -1400,7 +1772,29 @@ export class Orchestrator {
       }
     }
 
-    return { beCatalog, dbCatalog, classification, auditTrail }
+    // PROJECT MODE detection (2026-05-29) — sits above the scenario classifier.
+    // Drives clone/preview behavior downstream. Heuristic-only, never throws.
+    // selectedRepo present + resolvable → existing-repo (strongest signal, no
+    // clarify). resolveTargetRepoPath returns a path for any manifest-known
+    // repo, so a non-null result === known Dash repo. existingFiles arrive
+    // later in the chain; runIntake passes [] here (same blind-spot the
+    // scenario reconcile handles), so mode leans on selectedRepo + keywords.
+    let mode
+    try {
+      mode = detectMode({
+        prompt: promptText,
+        selectedRepo: selectedRepo ?? null,
+        repoIsKnownDashRepo: selectedRepo
+          ? resolveTargetRepoPath(selectedRepo) !== null
+          : false,
+        resolvedExistingFiles: [],
+      })
+    } catch (err) {
+      this.logger.warn("intake.detectMode failed", { err: (err as Error).message })
+      mode = undefined
+    }
+
+    return { beCatalog, dbCatalog, classification, auditTrail, mode }
   }
 
   /**
@@ -1568,6 +1962,49 @@ export class Orchestrator {
       throw new Error(`Prompt ${input.promptId} has no repo set`)
     }
 
+    // P5 — SERVER-SIDE validation gate. The dashboard hides the merge button
+    // when validation.passed === false (e.g. a CR-3 audit-log rejection on a
+    // payment/KYC field), but that guard is client-only — a direct POST
+    // /approve could still ship an unvalidated artifact. Refuse here unless the
+    // caller passes an explicit `force: true`, which we log + broadcast so the
+    // override is auditable.
+    if (artifact.validation.passed === false) {
+      if (!input.force) {
+        const topError = artifact.validation.errors[0]
+        this.logger.warn("approvePR refused: validation failed", {
+          id: input.promptId,
+          score: artifact.validation.score,
+          errorCount: artifact.validation.errors.length,
+          topRule: topError?.ruleId,
+        })
+        this.broadcaster.broadcast("validation:rejected", {
+          promptId: input.promptId,
+          ruleId: topError?.ruleId ?? "validation-failed",
+          file: topError?.file ?? null,
+          message:
+            "PR approval refused — generated artifact failed validation. " +
+            "Re-prompt to fix the flagged issue, or pass force=true to override.",
+        })
+        throw new PipelineError(
+          "validation-failed",
+          `Cannot open PR for prompt ${input.promptId}: artifact failed validation ` +
+            `(score ${artifact.validation.score}/100, ${artifact.validation.errors.length} error(s)` +
+            (topError ? `, first: ${topError.ruleId ?? topError.message}` : "") +
+            "). Re-prompt to fix, or pass force=true to override.",
+        )
+      }
+      this.logger.warn("approvePR FORCED past failed validation", {
+        id: input.promptId,
+        score: artifact.validation.score,
+        errorCount: artifact.validation.errors.length,
+      })
+      this.broadcaster.broadcast("validation:forced", {
+        promptId: input.promptId,
+        score: artifact.validation.score,
+        errorCount: artifact.validation.errors.length,
+      })
+    }
+
     if (!(await this.github.isConnected())) {
       const err = new PipelineError(
         "auth-missing-github",
@@ -1724,12 +2161,55 @@ export class Orchestrator {
 
   // ── Internals ────────────────────────────────────────────────────────────
 
+  /**
+   * Bug 6 — true when the run has been cancelled out from under processPrompt
+   * (status flipped to `cancelled`, or the AbortController fired). Read at each
+   * pipeline checkpoint so a Stop click takes effect at the next safe boundary.
+   */
+  private wasCancelled(promptId: string): boolean {
+    const current = this.store.getPrompt(promptId)
+    if (current?.status === "cancelled") return true
+    const aborter = this.runAborters.get(promptId)
+    return aborter?.signal.aborted ?? false
+  }
+
+  /**
+   * P4 — true when a NEW-file path already exists inside the sandbox clone,
+   * i.e. committing it as a "new file" would silently overwrite trunk code.
+   * Best-effort: any FS / path error resolves to `false` (treat as a genuine
+   * new file) so the gate never crashes the pipeline. Path traversal is
+   * contained by resolving against the clone root and requiring the result to
+   * stay under it — a `../` escape resolves outside and is treated as new.
+   */
+  private fileExistsInClone(clonePath: string, relPath: string): boolean {
+    if (!clonePath || !relPath) return false
+    try {
+      const base = resolvePath(clonePath)
+      const target = resolvePath(join(clonePath, relPath))
+      if (target !== base && !target.startsWith(base + pathSep)) return false
+      return existsSync(target)
+    } catch {
+      return false
+    }
+  }
+
   private async setStatus(prompt: PromptRecord, to: PromptStatus): Promise<void> {
     const target = nextStatus(prompt.status, to)
     if (target === prompt.status) return
     await this.store.updatePromptStatus(prompt.id, target)
     this.broadcaster.broadcast("prompts:changed", { id: prompt.id, status: target })
     this.broadcaster.broadcast("runs:changed", { id: prompt.id, status: target })
+    // Bug 6 — once a run settles into a terminal/awaiting state, its aborter is
+    // no longer useful; drop it so the map doesn't grow unbounded.
+    if (
+      target === "awaiting_approval" ||
+      target === "completed" ||
+      target === "failed" ||
+      target === "cancelled" ||
+      target === "pr_created"
+    ) {
+      this.runAborters.delete(prompt.id)
+    }
   }
 
   private async persistRunArtifact(
@@ -1787,6 +2267,27 @@ export class Orchestrator {
       kind: classified.kind,
       message: classified.message,
     })
+    // AOP error — "Failed: <reason>" — then a terminal run.end so the live
+    // stream resolves the in-flight spinner into a failure state.
+    this.narrate(prompt.id, "error", () => ({
+      code: classified.kind ?? "pipeline-error",
+      message: `Failed: ${classified.message ?? summary}`,
+      recoverable: false,
+      severity: "error" as const,
+    }))
+    this.narrate(prompt.id, "run.end", () => ({
+      status: "failed" as const,
+      durationMs: 0,
+      reason: classified.message ?? summary,
+      summary: {
+        artifacts: 0,
+        decisions: 0,
+        validations: { pass: 0, fail: 1 },
+        totalUsd: 0,
+        totalTokens: 0,
+      },
+    }))
+    this.forgetRunEmitter(prompt.id)
     await this.store.updatePromptStatus(prompt.id, "failed", { error: summary })
     this.broadcaster.broadcast("prompts:changed", {
       id: prompt.id,
@@ -1931,6 +2432,15 @@ function pickPatchComponentSource(
   const uiPatch = patches.find((p) => /\.(tsx|jsx)$/.test(p.path))
   if (uiPatch) return { path: uiPatch.path, patchContent: uiPatch.patchContent }
   return null
+}
+
+/**
+ * P4 — does this path land at a protected location (auth/payment/middleware/
+ * env)? Single-sourced from the patch-validator's `protectedFilePatterns` so
+ * the new-file gate and the patch gate enforce exactly the same rule set.
+ */
+function matchesProtectedPath(path: string): boolean {
+  return DEFAULT_PATCH_ALLOWLIST.protectedFilePatterns.some((re) => re.test(path))
 }
 
 function detectLanguage(filePath: string): string {

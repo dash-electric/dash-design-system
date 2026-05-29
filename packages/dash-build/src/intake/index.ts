@@ -48,3 +48,10 @@ export {
   type ReadFePatternsInput,
   type ReadFePatternsOptions,
 } from "./read-fe-patterns.js"
+
+export {
+  detectMode,
+  type ProjectMode,
+  type ModeDetectionInput,
+  type ModeDetectionResult,
+} from "./mode-detector.js"

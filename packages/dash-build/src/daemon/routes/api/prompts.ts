@@ -152,15 +152,40 @@ export async function handlePromptsRoute(
     })
   }
 
-  // /api/prompts/:id[/approve|/rerun]
+  // /api/prompts/:id[/approve|/rerun|/cancel]
   const match = pathname.match(
-    /^\/api\/prompts\/([A-Za-z0-9_-]+)(\/approve|\/rerun)?$/,
+    /^\/api\/prompts\/([A-Za-z0-9_-]+)(\/approve|\/rerun|\/cancel)?$/,
   )
   if (!match) return notFound(res)
 
   const id = match[1]!
   const approveRoute = match[2] === "/approve"
   const rerunRoute = match[2] === "/rerun"
+  const cancelRoute = match[2] === "/cancel"
+
+  // Bug 6 (2026-05-29) — POST /api/prompts/:id/cancel — abort an in-flight run.
+  // Marks the prompt cancelled + aborts the in-flight model call (best-effort)
+  // via the orchestrator. Falls back to a plain store status flip when the
+  // orchestrator isn't wired (legacy/test path) so the UI still settles.
+  if (cancelRoute) {
+    if (req.method !== "POST") return methodNotAllowed(res)
+    const prompt = store.getPrompt(id)
+    if (!prompt) return notFound(res)
+    if (orchestrator) {
+      try {
+        const result = await orchestrator.cancelPrompt(id)
+        return sendJson(res, 200, { ok: true, id, status: result.status })
+      } catch (err) {
+        return badRequest(res, (err as Error).message)
+      }
+    }
+    const updated = await store.updatePromptStatus(id, "cancelled")
+    broadcaster.broadcast("prompts:changed", {
+      id,
+      status: updated?.status ?? "cancelled",
+    })
+    return sendJson(res, 200, { ok: true, id, status: updated?.status ?? "cancelled" })
+  }
 
   if (rerunRoute) {
     if (req.method !== "POST") return methodNotAllowed(res)

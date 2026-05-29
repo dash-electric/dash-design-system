@@ -1,5 +1,6 @@
 import { escapeHtml } from "../layout.js"
 import { renderDocAttachDropdown } from "./doc-attach-dropdown.js"
+import { icon } from "./icon.js"
 
 export interface PromptInputOptions {
   value?: string
@@ -30,7 +31,7 @@ export function renderPromptInput(opts: PromptInputOptions = {}): string {
     ? ""
     : `<div class="db-prompt-input-footer">
       <span class="db-prompt-hint" aria-hidden="true">
-        <span class="db-prompt-hint-icon">⚡</span>
+        <span class="db-prompt-hint-icon">${icon("run", { size: "sm" })}</span>
         Skill chain auto-evaluates scope before generation
       </span>
       <span class="db-prompt-actions">

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-05-28T15:10:56.352Z",
-  "includedCount": 49,
+  "generatedAt": "2026-05-29T13:35:23.138Z",
+  "includedCount": 51,
   "skippedCount": 46,
   "included": [
     {
@@ -41,6 +41,13 @@
       "externals": [
         "react",
         "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "brand-logo",
+      "externals": [
+        "react"
       ],
       "siblingDeps": []
     },
@@ -162,6 +169,13 @@
         "react",
         "class-variance-authority",
         "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "flag",
+      "externals": [
+        "react"
       ],
       "siblingDeps": []
     },

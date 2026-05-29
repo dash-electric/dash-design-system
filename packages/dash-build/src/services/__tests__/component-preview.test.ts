@@ -176,6 +176,33 @@ export default function F(){return <Badge>x</Badge>}`
     expect(v).not.toMatch(/^workspace:/)
   })
 
+  it("resolves @remixicon/react when @dash/ui is imported (icon-belang fix 2026-05-29)", async () => {
+    // @dash/ui atoms (Badge, Alert, …) import icons from @remixicon/react
+    // transitively. If that package isn't in the Sandpack dependency map the
+    // iframe can't fetch it and every DS icon renders as a broken box. Any
+    // component pulling in @dash/ui must therefore force-resolve the icon pkg.
+    const src = `import { Badge } from "@dash/ui/badge"
+import * as React from "react"
+export default function F(){return <Badge>x</Badge>}`
+    const res = await renderComponentPreview({ componentSource: src })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    const v = res.sandpack.dependencies["@remixicon/react"]
+    expect(v).toBeDefined()
+    expect(v).not.toBe("latest") // pinned, not floating
+    expect(v).not.toMatch(/^workspace:/)
+  })
+
+  it("resolves @remixicon/react when the component imports it directly", async () => {
+    const src = `import { RiMailLine } from "@remixicon/react"
+import * as React from "react"
+export default function F(){return <RiMailLine />}`
+    const res = await renderComponentPreview({ componentSource: src })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    expect(res.sandpack.dependencies["@remixicon/react"]).toBeDefined()
+  })
+
   it("does NOT warn for @dash/ui when the local source bundle is shipped (Tier 0 Phase C)", async () => {
     // The prebuild script copies a curated subset of `@dash/ui` atoms into
     // preview-template/dash-ui/. When present, Sandpack resolves the import

@@ -9,8 +9,9 @@
  */
 
 import { describe, expect, it } from "vitest"
-import { artifactToActions } from "../dashboard.js"
+import { artifactToActions, promptToChatMessages } from "../dashboard.js"
 import type { GenerationArtifact } from "../../../pipeline/types.js"
+import type { PromptRecord } from "../../state/types.js"
 
 function makeArtifact(
   overrides: Partial<GenerationArtifact> = {},
@@ -178,5 +179,32 @@ describe("artifactToActions — context + validation states", () => {
     })
     const preview = artifactToActions(artifact).find((a) => a.kind === "preview")!
     expect(preview.summary).toBe("Preview: ready")
+  })
+})
+
+describe("P23 — clarify copy is layout-agnostic", () => {
+  it("uses 'answer the questions below' (not 'card on the right') for a clarifying prompt", () => {
+    // The clarify card renders in the LEFT chat column on the workspace
+    // layout, so 'card on the right' was wrong. The shared copy must point
+    // 'below' so it reads correctly on both legacy-right + workspace-left.
+    const prompt: PromptRecord = {
+      id: "prm_clarify",
+      text: "build a thing",
+      repo: null,
+      branch: null,
+      status: "clarifying",
+      createdAt: "2026-05-29T00:00:00.000Z",
+      updatedAt: "2026-05-29T00:00:00.000Z",
+      prUrl: null,
+      error: null,
+    }
+    const messages = promptToChatMessages(prompt)
+    const clarify = messages.find((m) =>
+      m.content.includes("Clarification needed"),
+    )!
+    expect(clarify.content).toBe(
+      "Clarification needed — answer the questions below.",
+    )
+    expect(clarify.content).not.toContain("card on the right")
   })
 })

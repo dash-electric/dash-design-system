@@ -84,17 +84,19 @@ describe("Bug 2 — client bridges WS component:updated to Sandpack refresh", ()
   it("scopes dispatch to mounts whose data-component-id matches the payload", () => {
     // A/B variant mounts share the page; the bridge must skip mounts whose
     // component-id doesn't match so a variant-A update doesn't blow away
-    // variant-B's iframe.
+    // variant-B's iframe. NOTE: the broadcaster wraps the event as
+    // { event, data, ts }, so the handler reads from `payload = msg.data`,
+    // not `msg` root (the earlier msg-root shape dispatched empty details).
     expect(DASHBOARD_JS).toContain("data-component-id")
-    expect(DASHBOARD_JS).toMatch(/mid !== msg\.componentId/)
+    expect(DASHBOARD_JS).toMatch(/mid !== payload\.componentId/)
   })
 
   it("passes componentSource + contextMap through the event detail", () => {
     // preview-mount.js reads detail.componentSource directly; the bridge
-    // must forward the full payload so patch-mode preview hydrates with the
-    // post-diff source, not just the raw diff body.
-    expect(DASHBOARD_JS).toMatch(/componentSource:\s*msg\.componentSource/)
-    expect(DASHBOARD_JS).toMatch(/contextMap:\s*msg\.contextMap/)
+    // must forward the full payload (sourced from msg.data) so patch-mode
+    // preview hydrates with the post-diff source, not just the raw diff body.
+    expect(DASHBOARD_JS).toMatch(/componentSource:\s*payload\.componentSource/)
+    expect(DASHBOARD_JS).toMatch(/contextMap:\s*payload\.contextMap/)
   })
 })
 
@@ -111,5 +113,96 @@ describe("Bug 3 — workspace hashchange listener (carry-over regression)", () =
     // Wired via a data-attribute marker on <html> so repeat module loads
     // (Tier 4 #16 dev refresh, HMR) do not pile up duplicate handlers.
     expect(DASHBOARD_JS).toContain("data-workspace-hash-wired")
+  })
+})
+
+describe("Bug 5 — workspace composer submits exactly once", () => {
+  it("declares a dedicated in-flight latch independent of submitBtn.disabled", () => {
+    // The old guard leaned only on submitBtn.disabled, which DOM re-renders
+    // could reset — letting a second click/Cmd+Enter POST /api/prompt twice
+    // (two identical bubbles + two runs). A dedicated boolean owned by
+    // submitPrompt() closes that gap.
+    expect(DASHBOARD_JS).toContain("var promptSubmitInFlight = false")
+    expect(DASHBOARD_JS).toMatch(
+      /if \(promptSubmitInFlight \|\| submitBtn\.disabled\) return/
+    )
+    // The latch is set before the fetch + cleared only in .finally so a
+    // re-entrant submit during the in-flight window is ignored.
+    expect(DASHBOARD_JS).toContain("promptSubmitInFlight = true")
+    expect(DASHBOARD_JS).toContain("promptSubmitInFlight = false")
+  })
+
+  it("binds the composer button click through a single dual-purpose handler", () => {
+    // One listener (onComposerButtonClick) routes to submit OR cancel so we
+    // never double-bind submit on the same button.
+    expect(DASHBOARD_JS).toContain("function onComposerButtonClick")
+    expect(DASHBOARD_JS).toContain(
+      'submitBtn.addEventListener("click", onComposerButtonClick)'
+    )
+    // Exactly one click binding for the composer button.
+    const clickBindings =
+      DASHBOARD_JS.match(/submitBtn\.addEventListener\("click"/g) ?? []
+    expect(clickBindings.length).toBe(1)
+  })
+})
+
+describe("Bug 6 — workspace composer can stop a running generation", () => {
+  it("posts to /api/prompts/:id/cancel and flips the button into Stop mode", () => {
+    expect(DASHBOARD_JS).toContain("function cancelActiveRun")
+    expect(DASHBOARD_JS).toContain('"/cancel"')
+    expect(DASHBOARD_JS).toContain("function setComposerStopMode")
+    // The dual-purpose button cancels when in stop-mode, else submits.
+    expect(DASHBOARD_JS).toMatch(
+      /data-stop-mode["']\) === ["']true["']/
+    )
+  })
+
+  it("reverts the Stop button to Build when the run reaches a terminal status", () => {
+    expect(DASHBOARD_JS).toContain("clearComposerStopMode")
+    expect(DASHBOARD_JS).toMatch(/msg\.status === ["']cancelled["']/)
+  })
+})
+
+describe("P19 — workspace composer Reset button is wired", () => {
+  it("handles the reset action in the workspace-action dispatch", () => {
+    // The Reset button (data-workspace-action=\"reset\") had no handler — the
+    // dispatch only knew share/run/export-pptx. Add an action === \"reset\"
+    // branch so clicks actually clear the composer.
+    expect(DASHBOARD_JS).toContain('if (action === "reset")')
+  })
+
+  it("clears the composer input + local draft state on reset", () => {
+    // Reset wipes the textarea value and the attached-docs draft attribute,
+    // mirroring what a successful submit clears.
+    expect(DASHBOARD_JS).toMatch(/composerInput\.value = ""/)
+    expect(DASHBOARD_JS).toMatch(/data-attached-docs["'],\s*["']\[\]["']/)
+  })
+
+  it("no longer claims a dedicated listener already handles reset", () => {
+    // The old false comment said reset was \"handled by their own dedicated
+    // listeners\". The only reset listener is db-local-run-reset (a different
+    // button). That claim must be gone.
+    expect(DASHBOARD_JS).not.toContain(
+      '"reset" + other actions are still handled by their own dedicated'
+    )
+  })
+})
+
+describe("P22 — Cmd+Enter routes through the dual-purpose composer handler", () => {
+  it("calls onComposerButtonClick (not submitPrompt directly) on Cmd/Ctrl+Enter", () => {
+    // Cmd+Enter previously called submitPrompt() directly, bypassing Stop-mode
+    // routing + the in-flight latch guard inside onComposerButtonClick. The
+    // keydown branch must now go through onComposerButtonClick so Stop-mode is
+    // honoured and double-submit is prevented.
+    // The workspace composer keydown branch opens with the Cmd/Ctrl+Enter
+    // guard; within ~600 chars its call must be onComposerButtonClick() (the
+    // dual-purpose dispatcher), not a bare submitPrompt(). Slice from the
+    // metaKey guard so the assertion is anchored to that exact branch.
+    const guardIdx = DASHBOARD_JS.indexOf(
+      '(ev.metaKey || ev.ctrlKey) && ev.key === "Enter"'
+    )
+    expect(guardIdx).toBeGreaterThan(-1)
+    const keydownBlock = DASHBOARD_JS.slice(guardIdx, guardIdx + 700)
+    expect(keydownBlock).toContain("onComposerButtonClick()")
   })
 })

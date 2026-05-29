@@ -1,4 +1,5 @@
 import { escapeHtml } from "../layout.js"
+import { icon } from "./icon.js"
 
 /**
  * EmptyState — reusable empty-state block. Used when no repos connected, no
@@ -21,7 +22,7 @@ export function renderEmptyState(opts: EmptyStateOptions): string {
     <p class="db-empty-body">${escapeHtml(opts.body)}</p>
     <a class="db-button db-button-${variant === "primary" ? "primary" : "ghost"}" href="${escapeHtml(opts.ctaHref)}">
       <span class="db-button-label">${escapeHtml(opts.ctaLabel)}</span>
-      <span class="db-button-arrow" aria-hidden="true">→</span>
+      <span class="db-button-arrow" aria-hidden="true">${icon("arrow-right", { size: "sm" })}</span>
     </a>
   </div>`
 }

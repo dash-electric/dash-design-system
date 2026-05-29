@@ -3,6 +3,7 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { validateOutput } from "../validator.js"
+import { NAV_REGISTRY_REASON_MARKER } from "../path-resolver.js"
 import type {
   DesignContext,
   ExistingFilesContext,
@@ -435,6 +436,87 @@ describe("validateOutput", () => {
       ).toBe(true)
     })
 
+    it("does NOT reject an additive nav diff targeting a real sidebar file (P3 — nav registry)", () => {
+      // P3 bug: the model wrote a correct additive diff to the real backoffice
+      // nav file to register a new tab, but PathResolver only surfaced it as a
+      // nav-registry RESOLUTION (the reader's top-N budget didn't read its
+      // content into existingFiles.files). The patch must still be accepted so
+      // the feature ships REACHABLE instead of being hard-rejected.
+      const navPath =
+        "/repo/next-backoffice-web/src/components/sidebar/CollapseableSidebar.jsx"
+      const patch: ParsedPatch = {
+        kind: "patch",
+        path: navPath,
+        language: "diff",
+        patchContent: [
+          "@@ -10,2 +10,3 @@",
+          " const items = [",
+          "   { label: 'Mitra', href: '/provider' },",
+          "+  { label: 'Suspensi', href: '/suspension' },",
+          " ]",
+        ].join("\n"),
+      }
+      // Nav file present ONLY as a resolution (not read into .files), exactly
+      // like the live pipeline when route files outrank nav files in top-N.
+      const ctx: ExistingFilesContext = {
+        resolutions: [
+          {
+            filePath: navPath,
+            route: "/suspension",
+            confidence: 0.4,
+            reason: `${NAV_REGISTRY_REASON_MARKER} Nav/sidebar registry file`,
+          },
+        ],
+        files: [
+          {
+            filePath: "/repo/next-backoffice-web/src/pages/suspension/index.js",
+            language: "js",
+            content: "export default function SuspensionPage(){return null}",
+            truncated: false,
+            fullSize: 40,
+          },
+        ],
+      }
+      const r = validateOutput(patchResponse([patch]), EMPTY_DESIGN, {
+        existingFiles: ctx,
+      })
+      expect(r.errors.some((e) => e.ruleId === "PATCH-UNKNOWN-TARGET")).toBe(false)
+    })
+
+    it("still flags a non-nav unknown path even when a nav resolution is present", () => {
+      const navPath =
+        "/repo/next-backoffice-web/src/components/sidebar/CollapseableSidebar.jsx"
+      const patch: ParsedPatch = {
+        kind: "patch",
+        path: "/repo/next-backoffice-web/src/components/random/NotNav.jsx",
+        language: "diff",
+        patchContent: ["@@ -1,1 +1,2 @@", " x", "+y"].join("\n"),
+      }
+      const ctx: ExistingFilesContext = {
+        resolutions: [
+          {
+            filePath: navPath,
+            route: "/suspension",
+            confidence: 0.4,
+            reason: `${NAV_REGISTRY_REASON_MARKER} Nav/sidebar registry file`,
+          },
+        ],
+        files: [
+          {
+            filePath: navPath,
+            language: "jsx",
+            content: "export const Sidebar = () => null",
+            truncated: false,
+            fullSize: 30,
+          },
+        ],
+      }
+      const r = validateOutput(patchResponse([patch]), EMPTY_DESIGN, {
+        existingFiles: ctx,
+      })
+      expect(r.errors.some((e) => e.ruleId === "PATCH-UNKNOWN-TARGET")).toBe(true)
+    })
+
     it("skips PATCH-UNKNOWN-TARGET when no existingFiles context is provided", () => {
       // Backward compat path — when caller doesn't pass existingFiles we
       // can't verify the target, but we still validate the diff shape.
@@ -723,6 +805,78 @@ describe("validateOutput", () => {
         EMPTY_DESIGN,
       )
       expect(r.errors.find((e) => e.ruleId === "CR-4")).toBeUndefined()
+    })
+  })
+
+  // ── P10 — per-surface voice register (CLAUDE.md cardinal rule 5) ────────
+  // portal-v2 mitra-facing DEFAULT is informal "kamu"; flagging it there
+  // contradicts the canonical rule. Internal surfaces stay formal "Anda".
+  describe("Per-surface voice register (P10)", () => {
+    function repoCtx(repoSlug: string) {
+      return {
+        selectedRepo: `dash/${repoSlug}`,
+        repoSlug: repoSlug as never,
+        theme: "ride" as const,
+        audience: "x",
+        surface: repoSlug,
+        existingShell: true,
+        requiresNavOrRoute: false,
+        defaultRoute: null,
+        targetRoute: null,
+        targetNavLabel: null,
+        existingNavItems: [],
+        routeRequirement: null,
+        integrationContract: "",
+        dataPolicy: "mock-data-only" as const,
+        ambiguity: null,
+      }
+    }
+
+    const kamuMitra = parsed([
+      {
+        path: "src/mitra.tsx",
+        content:
+          'export const M = () => <div className="bg-primary-500 text-text-strong-950">Lengkapi data kamu, mitra Dash.</div>',
+      },
+    ])
+
+    it("does NOT flag informal 'kamu' on portal-v2 (informal-default surface)", () => {
+      const r = validateOutput(kamuMitra, EMPTY_DESIGN, {
+        repoContext: repoCtx("portal-v2"),
+      })
+      expect(r.errors.find((e) => e.ruleId === "CR-4")).toBeUndefined()
+    })
+
+    it("DOES flag 'kamu' on backoffice (formal-Anda surface)", () => {
+      const r = validateOutput(kamuMitra, EMPTY_DESIGN, {
+        repoContext: repoCtx("backoffice"),
+      })
+      const cr4 = r.errors.find((e) => e.ruleId === "CR-4")
+      expect(cr4).toBeDefined()
+      expect(cr4?.severity).toBe("medium")
+      expect(cr4?.message).toMatch(/formal "Anda"/)
+    })
+
+    it("STILL flags slang particle 'yuk' on portal-v2 (informal != slang)", () => {
+      const r = validateOutput(
+        parsed([
+          {
+            path: "src/mitra.tsx",
+            content:
+              'export const M = () => <div className="bg-primary-500 text-text-strong-950">Yuk lengkapi data kamu, mitra Dash!</div>',
+          },
+        ]),
+        EMPTY_DESIGN,
+        { repoContext: repoCtx("portal-v2") },
+      )
+      const cr4 = r.errors.find((e) => e.ruleId === "CR-4")
+      expect(cr4).toBeDefined()
+      expect(cr4?.message).toMatch(/[Ss]lang/)
+    })
+
+    it("defaults to formal enforcement when repoContext is absent (kamu flagged)", () => {
+      const r = validateOutput(kamuMitra, EMPTY_DESIGN)
+      expect(r.errors.find((e) => e.ruleId === "CR-4")).toBeDefined()
     })
   })
 })

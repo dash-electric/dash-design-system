@@ -7,6 +7,7 @@
  */
 
 import type {
+  DashPRD,
   DashTheme,
   DesignContext,
   DSContext,
@@ -22,7 +23,11 @@ import type {
 import type { EndpointEntry } from "../intake/be-endpoint-catalog.js"
 import type { TableSchema } from "../intake/db-schema-reader.js"
 import type { FePattern } from "../intake/read-fe-patterns.js"
-import { describeOutputMode, type OutputMode } from "./output-mode-detector.js"
+import {
+  describeOutputMode,
+  resolvePlacement,
+  type OutputMode,
+} from "./output-mode-detector.js"
 import { renderDSCatalogBlock } from "./ds-catalog-loader.js"
 
 export interface ComposeInput {
@@ -61,6 +66,13 @@ export interface ComposeInput {
    *  The orchestrator computes these before invoking the skill chain.
    *  Absent / empty = no section is rendered (no-op for legacy callers). */
   fePatterns?: FePattern[] | null
+  /** Milestone 3 — authoritative synthesized PRD. When present, the composer
+   *  emits a `## PRD` block (problem / users / scope / non-goals / acceptance
+   *  criteria / surfaces / data) so code-gen builds from the spec rather than
+   *  the legacy one-line `prd.summary`. Absent = legacy callers — no PRD block
+   *  is rendered (no-op). Named `dashPrd` to avoid colliding with the existing
+   *  `prd: PRDEval` scope-eval field. */
+  dashPrd?: DashPRD | null
 }
 
 /** Top-level banned imports embedded verbatim in the system prompt. */
@@ -389,6 +401,42 @@ function renderExistingFile(file: ExistingFileContent): string {
   ].join("\n")
 }
 
+/**
+ * Deterministic folder-placement directive (P14).
+ *
+ * Non-determinism bug: the same prompt sometimes patched an existing index and
+ * sometimes spawned a brand-new parallel route (src/pages/provider vs
+ * src/components/provider). The fix is to tell the model EXPLICITLY where new
+ * files go — anchored to the ACTUAL resolved-file directories, not a guess —
+ * and to patch a surfaced index/page rather than create a parallel file.
+ *
+ * `resolvePlacement` derives a total order over the surfaced set, so identical
+ * inputs always produce the identical directive text.
+ */
+function renderPlacementRules(ctx: ExistingFilesContext): string[] {
+  const placement = resolvePlacement(ctx)
+  if (!placement.directory && !placement.patchTarget) return []
+  const lines: string[] = ["FILE PLACEMENT (deterministic — follow exactly):"]
+  if (placement.directory) {
+    lines.push(
+      `- Place any NEW file you create in the SAME directory as the reference files above: \`${placement.directory}/\`. Do NOT invent a parallel directory (e.g. a \`components/\` sibling) for the same surface.`,
+    )
+  }
+  if (placement.directories.length > 1) {
+    lines.push(
+      `- Surfaced directories for this surface (use these, do not branch elsewhere): ${placement.directories
+        .map((d) => `\`${d}/\``)
+        .join(", ")}.`,
+    )
+  }
+  if (placement.patchTarget) {
+    lines.push(
+      `- An index/page already exists for this surface: \`${placement.patchTarget}\`. PATCH it (mode=patch) to add the requested change — do NOT create a new parallel route or a second index/page file.`,
+    )
+  }
+  return lines
+}
+
 function renderExistingFiles(ctx: ExistingFilesContext): string {
   const lines: string[] = []
   lines.push(
@@ -400,6 +448,10 @@ function renderExistingFiles(ctx: ExistingFilesContext): string {
     "- Do NOT rewrite or recreate these files from scratch — that loses unrelated code.",
     "",
   )
+  const placementRules = renderPlacementRules(ctx)
+  if (placementRules.length > 0) {
+    lines.push(...placementRules, "")
+  }
   if (ctx.resolutions.length > 0) {
     lines.push("Path resolutions (sorted by confidence):")
     for (const r of ctx.resolutions.slice(0, 10)) {
@@ -607,6 +659,25 @@ function renderOutputFormatSection(
     "- If a file does NOT appear in CURRENT FILE STATE, default to mode=new-file unless the user explicitly says to edit it.",
     "- Legacy ```<lang> [path]``` fences without `mode=` are still accepted and treated as NEW-FILE for backward compatibility.",
     "",
+  )
+  // Deterministic placement directive — when existing files surfaced, repeat
+  // the resolved landing directory + index-patch rule here so it sits right
+  // next to the routing rules the model acts on. Same inputs → same text.
+  if (hasExisting && ctx.existingFiles) {
+    const placement = resolvePlacement(ctx.existingFiles)
+    if (placement.directory) {
+      lines.push(
+        `- Co-locate any NEW file in the resolved surface directory \`${placement.directory}/\` shown in CURRENT FILE STATE. Do NOT create a parallel directory for the same surface (run-to-run topology MUST be stable).`,
+      )
+    }
+    if (placement.patchTarget) {
+      lines.push(
+        `- The surface's existing index/page \`${placement.patchTarget}\` MUST be patched (mode=patch) rather than duplicated by a new parallel route.`,
+      )
+    }
+    lines.push("")
+  }
+  lines.push(
     describeOutputMode(outputMode),
     "",
   )
@@ -732,15 +803,28 @@ function renderStackMandateBlock(repoContext: RepoContextPack, skill: SkillConte
 }
 
 /**
- * Voice register enforcement block (Tier 0K).
+ * Voice register enforcement block (Tier 0K) — PER-SURFACE.
  *
- * Per `feedback_dash_mobile_voice_formal.md` — every mitra-facing surface uses
- * formal "Anda". Casual particles (kamu / kalian / km / yuk / dong / yaa /
- * lewatin / bakal) are rejected by the validator. This block ensures the
- * model has explicit guidance even when the design-loader's voiceRules block
- * is empty.
+ * Voice is NOT global (CLAUDE.md cardinal rule 5 + dash-ai-rules.md refuse-list
+ * #6). portal-v2 mitra-facing DEFAULT is informal "kamu"; "Anda" is a
+ * per-feature override for formal/compliance surfaces (e.g. Auto Suspend).
+ * Internal ops / backoffice / basecamp / admin = formal "Anda". The previous
+ * unconditional "ALWAYS Anda / NEVER kamu" block contradicted the canonical
+ * rule and penalized portal-v2's correct register, so we gate on repoSlug.
  */
-export const VOICE_REGISTER_BLOCK = `VOICE REGISTER (Tier 0K — mitra-facing surfaces):
+const VOICE_REGISTER_BLOCK_INFORMAL = `VOICE REGISTER (Tier 0K — portal-v2 mitra-facing):
+- DEFAULT to informal "kamu" — this is portal-v2's canonical mitra voice.
+- "Anda" is a per-feature override only (formal / legal / compliance flows such
+  as Auto Suspend). Use it when the feature is explicitly formal; otherwise stay
+  with "kamu".
+- NEVER use slang / jokey particles ("yuk", "ayo", "dong", "deh", "sih", "kok",
+  "yaa", "lewatin", "bakal", "udah", "plis", "banget", "nih") — informal is not
+  the same as slang; copy stays clean and dignified.
+- All visible copy (button labels, headings, helper text, empty states, error
+  messages, toasts) MUST satisfy this register.
+- When in doubt, match the strings already in the target repo.`
+
+const VOICE_REGISTER_BLOCK_FORMAL = `VOICE REGISTER (Tier 0K — internal / formal surfaces):
 - ALWAYS use formal "Anda" pronoun.
 - NEVER use casual "kamu", "kalian", "km", "lo", "lu", or slang particles
   ("yuk", "ayo", "dong", "deh", "sih", "kok", "yaa", "lewatin", "bakal",
@@ -748,6 +832,26 @@ export const VOICE_REGISTER_BLOCK = `VOICE REGISTER (Tier 0K — mitra-facing su
 - All visible copy (button labels, headings, helper text, empty states, error
   messages, toasts) MUST satisfy the formal register.
 - Internal-only / debug strings may break the rule but must be marked TODO.`
+
+/**
+ * Repos whose mitra-facing default register is INFORMAL "kamu". Today only
+ * portal-v2. Keep in sync with `isInformalDefaultRepo` in validator.ts.
+ */
+function usesInformalVoice(repoSlug: RepoSurface): boolean {
+  return repoSlug === "portal-v2"
+}
+
+/** Resolve the voice-register block for a target surface. */
+export function voiceRegisterBlock(repoSlug: RepoSurface): string {
+  return usesInformalVoice(repoSlug) ? VOICE_REGISTER_BLOCK_INFORMAL : VOICE_REGISTER_BLOCK_FORMAL
+}
+
+/**
+ * Back-compat export. Defaults to the FORMAL block (the safe internal-surface
+ * register) for callers that don't yet thread a repoSlug. New code should call
+ * `voiceRegisterBlock(repoSlug)`.
+ */
+export const VOICE_REGISTER_BLOCK = VOICE_REGISTER_BLOCK_FORMAL
 
 // ---------------------------------------------------------------------------
 // Phase C / Tier 0G — Existing FE pattern transfer.
@@ -807,16 +911,75 @@ function renderDSCatalogSection(dsContext: DSContext): string {
   return lines.join("\n")
 }
 
+// ---------------------------------------------------------------------------
+// Milestone 3 — `## PRD` block renderer.
+//
+// Renders the authoritative synthesized PRD into the system prompt so code-gen
+// builds from an explicit spec (problem / users / scope / non-goals / AC /
+// surfaces / data) instead of a single summary sentence. Pure + standalone —
+// does not touch the FE-patterns / voice / BE renderers.
+// ---------------------------------------------------------------------------
+
+function bulletList(items: string[], emptyLabel: string): string {
+  const cleaned = items.map((i) => i.trim()).filter((i) => i.length > 0)
+  if (cleaned.length === 0) return `  - (${emptyLabel})`
+  return cleaned.map((i) => `  - ${i}`).join("\n")
+}
+
+export function renderPrd(prd: DashPRD): string {
+  const lines: string[] = []
+  lines.push(`Language: ${prd.lang}. CEO framing mode: ${prd.ceoMode}.`)
+  lines.push("")
+  lines.push(`Problem:\n  ${prd.problem.trim() || "(not stated)"}`)
+  lines.push("")
+  lines.push("Users:")
+  lines.push(bulletList(prd.users, "no personas identified"))
+  lines.push("")
+  lines.push("Scope (in-scope this change):")
+  lines.push(bulletList(prd.scope, "scope inferred from prompt"))
+  lines.push("")
+  lines.push("Non-goals (do NOT build):")
+  lines.push(bulletList(prd.nonGoals, "none stated"))
+  lines.push("")
+  lines.push("Acceptance criteria (the change MUST satisfy):")
+  lines.push(bulletList(prd.acceptanceCriteria, "none stated"))
+  lines.push("")
+  lines.push("Surfaces:")
+  if (prd.surfaces.length === 0) {
+    lines.push("  - (none resolved)")
+  } else {
+    for (const s of prd.surfaces) {
+      lines.push(`  - ${s.kind}: ${s.route} (repo ${s.repo})`)
+    }
+  }
+  lines.push("")
+  const entities = prd.data.entities.length > 0 ? prd.data.entities.join(", ") : "(none)"
+  lines.push(
+    `Data: source=${prd.data.source}, entities=${entities}.${prd.data.notes.trim() ? ` ${prd.data.notes.trim()}` : ""}`,
+  )
+  lines.push("")
+  lines.push(
+    "This PRD is AUTHORITATIVE — generate exactly the scope above, honor the non-goals, and satisfy every acceptance criterion. If the prompt and this PRD conflict, follow the PRD and note the conflict in your explanation.",
+  )
+  return lines.join("\n")
+}
+
 export function composeSystemPrompt(ctx: ComposeInput): string {
+  const informalVoice = usesInformalVoice(ctx.repoContext.repoSlug)
+  const cr4Label = informalVoice
+    ? `CR-4 Voice informal "kamu" (portal-v2 default; "Anda" per-feature override)`
+    : `CR-4 Voice formal Anda`
   const cardinalBlock =
     ctx.design.cardinalRules.trim() ||
     `CR-1 Additive only · CR-2 Audit trail · CR-3 Banned libs (${BANNED_IMPORTS.join(
       ", ",
-    )}) · CR-4 Voice formal Anda · CR-5 Tokens not hex · CR-6 Use registry · CR-7 dash sync · CR-8 Audit UI`
+    )}) · ${cr4Label} · CR-5 Tokens not hex · CR-6 Use registry · CR-7 dash sync · CR-8 Audit UI`
 
   const voiceBlock =
     ctx.design.voiceRules.trim() ||
-    `Default mitra-facing voice = formal "Anda". No slang, no -in/-nya/-dong/-sih particles. Legal/financial flows MUST stay formal.`
+    (informalVoice
+      ? `Default mitra-facing voice = informal "kamu" (portal-v2 canonical). "Anda" is a per-feature override for formal/legal/compliance flows. No slang particles (yuk/dong/sih/banget).`
+      : `Default voice = formal "Anda". No slang, no -in/-nya/-dong/-sih particles. Legal/financial flows MUST stay formal.`)
 
   const skillBlock =
     ctx.skill.systemAppend.trim() ||
@@ -859,7 +1022,7 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     "",
     voiceBlock,
     "",
-    VOICE_REGISTER_BLOCK,
+    voiceRegisterBlock(ctx.repoContext.repoSlug),
     "",
     "## 4. Layered Architecture Decision Tree",
     "",
@@ -935,6 +1098,16 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
         "",
       )
     }
+  }
+
+  // ── Milestone 3 — authoritative synthesized PRD block ──────────────────
+  if (ctx.dashPrd) {
+    out.push(
+      `## ${sectionNum()}. PRD (authoritative spec)`,
+      "",
+      renderPrd(ctx.dashPrd),
+      "",
+    )
   }
 
   out.push(

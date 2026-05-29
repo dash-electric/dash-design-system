@@ -9,7 +9,7 @@
  * points are dependency-injected so unit tests stay hermetic.
  */
 
-import type { ClarificationQuestion } from "../clarification/types.js"
+import type { ClarificationAnswer, ClarificationQuestion } from "../clarification/types.js"
 import type { RepoIntrospection } from "./repo-introspector.js"
 import type {
   AuditTrailRequirement,
@@ -39,6 +39,15 @@ export interface IntakeContext {
   dbCatalog: DbCatalog
   classification: ClassificationResult
   auditTrail: AuditTrailRequirement
+  /**
+   * Tier 0 (2026-05-29) — PROJECT MODE detected before the scenario
+   * classifier. Drives clone/preview behavior: "existing-repo" → clone +
+   * baseline iframe; "blank-product" / "design-system" → Sandpack standalone;
+   * "ambiguous" → clarify gate. Optional so legacy callers (tests, direct
+   * chain invocation) that never ran the mode detector keep working.
+   * See docs/specs/mode-aware-intake-2026-05-29.md.
+   */
+  mode?: import("../intake/mode-detector.js").ModeDetectionResult
 }
 
 // ---------------------------------------------------------------------------
@@ -63,6 +72,67 @@ export interface PRDEval {
   sectionsTouched: number
   /** 0-100 confidence the prompt is ready to generate. */
   confidence: number
+}
+
+// ---------------------------------------------------------------------------
+// Milestone 3 — PRD synthesis (skill-seeded intake brain)
+//
+// `PrdSeed` is the lightweight scaffold the model-backed clarify stage emits
+// (clarify-llm.ts, owned by the chain-wiring group) and stashes on the chain
+// context when no further clarification is needed. It is the bridge between
+// the CLARIFY stage and the SYNTHESIS stage: synthesizePrd() seeds the full
+// `DashPRD` from it (plus answers + design contract + glossary).
+//
+// `DashPRD` is the authoritative spec persisted to `<runDir>/prd.json` and
+// rendered into the `## PRD` block of the generation system prompt, so code-gen
+// builds from a real spec instead of a single summary line.
+// ---------------------------------------------------------------------------
+
+export interface PrdSeed {
+  /** The core problem in one sentence ("what hurts today"). */
+  problem: string
+  /** The actual human this is for (office-hours Q3 — desperate specificity). */
+  user: string
+  /** The narrowest wedge — smallest version that gets greenlit (office-hours Q4). */
+  wedge: string
+  /** Surfaces / routes / screens the change touches. */
+  surfaces: string[]
+  /** Known risks / open questions surfaced during clarify. */
+  risks: string[]
+}
+
+export interface DashPRD {
+  version: 1
+  /** Prompt/run id this PRD belongs to. */
+  promptId: string
+  /** The problem statement. */
+  problem: string
+  /** Personas / the actual humans this serves (office-hours Q3). */
+  users: string[]
+  /** In-scope bullets. */
+  scope: string[]
+  /** Explicit non-goals (what we are NOT building this milestone). */
+  nonGoals: string[]
+  /** Acceptance criteria the generated change must satisfy. */
+  acceptanceCriteria: string[]
+  /** Concrete surfaces the change introduces or edits. */
+  surfaces: Array<{
+    route: string
+    repo: string
+    kind: "page" | "modal" | "component" | "endpoint"
+  }>
+  /** Data shape + source policy for the change. */
+  data: {
+    entities: string[]
+    source: "api" | "mock" | "postgres" | "none"
+    notes: string
+  }
+  /** CEO-review framing mode carried from clarify ("EXPANSION" | … | string). */
+  ceoMode: string
+  /** Language the spec is written in (mirrors the prompt). */
+  lang: "id" | "en"
+  /** Which inputs fed synthesis (prompt, prdSeed, design.md, glossary, model). */
+  sources: string[]
 }
 
 // ---------------------------------------------------------------------------
@@ -328,6 +398,19 @@ export interface GenerateInput {
    * Optional so legacy callers (CLI smoke / direct chain tests) still work.
    */
   intake?: IntakeContext
+  /**
+   * Milestone 3 — clarification answers keyed by question id. Folded into the
+   * PRD synthesis seed when a generation resumes after a clarify round-trip.
+   * Optional — most callers fold answers into the prompt upstream
+   * (mergeAnswers), so this is purely additive context for PRD synthesis.
+   */
+  answers?: Record<string, ClarificationAnswer>
+  /**
+   * Milestone 3 — PRD scaffold carried over from a prior model-backed clarify
+   * round-trip (the `prdSeed` returned in the clarify result). Seeds
+   * `synthesizePrd` so the spec reflects the clarify reasoning. Optional.
+   */
+  prdSeed?: PrdSeed
 }
 
 export type GenerateResult =
@@ -336,6 +419,15 @@ export type GenerateResult =
       questions: ClarificationQuestion[]
       summary: string
       confidence: number
+      /** Milestone 3 — additive. CEO-review framing mode picked by the
+       *  model-backed clarify stage ("EXPANSION" | "SELECTIVE" | "HOLD" |
+       *  "REDUCTION"). Metadata only; FE renders the framing. Absent on the
+       *  deterministic regex-fallback path. */
+      ceoMode?: string
+      /** Milestone 3 — additive. Lightweight PRD scaffold the model emitted
+       *  alongside its clarify questions. Stashed so a follow-up generate
+       *  (after answers) can seed `synthesizePrd`. Absent on the fallback path. */
+      prdSeed?: PrdSeed
     }
   | {
       kind: "generated"

@@ -2,6 +2,7 @@ import type { PromptRecord } from "../../state/types.js"
 import { escapeHtml } from "../layout.js"
 import { renderStatusPill } from "./status-pill.js"
 import { renderPreviewPane } from "./preview-pane.js"
+import { icon } from "./icon.js"
 import type { GenerationArtifact } from "../../../pipeline/types.js"
 
 /** Resolver the dashboard route passes in so the prompt-card can attach a
@@ -26,7 +27,7 @@ function actionFor(prompt: PromptRecord): string {
         type="button"
         data-clarification-focus="${escapeHtml(prompt.id)}"
         aria-label="Answer clarification questions">
-      Answer questions →
+      <span>Answer questions</span>${icon("arrow-right", { size: "sm" })}
     </button>`
   }
   if (prompt.status === "awaiting_approval") {
@@ -35,7 +36,7 @@ function actionFor(prompt: PromptRecord): string {
         type="button"
         data-prompt-approve="${escapeHtml(prompt.id)}"
         aria-label="Approve and submit PR">
-      Review &amp; approve →
+      <span>Review &amp; approve</span>${icon("arrow-right", { size: "sm" })}
     </button>`
   }
   if (prompt.status === "pr_created" && prompt.prUrl) {
@@ -44,7 +45,7 @@ function actionFor(prompt: PromptRecord): string {
         target="_blank"
         rel="noreferrer"
         aria-label="Open pull request on GitHub">
-      View on GitHub ↗
+      <span>View on GitHub</span>${icon("external-link", { size: "sm" })}
     </a>`
   }
   if (prompt.status === "generating") {
@@ -102,7 +103,7 @@ export function renderPromptList(
 ): string {
   if (prompts.length === 0) {
     return `<div class="db-empty-state db-empty-prompts">
-      <span class="db-empty-icon" aria-hidden="true">✦</span>
+      <span class="db-empty-icon" aria-hidden="true">${icon("sparkle", { size: "lg" })}</span>
       <h3 class="db-empty-title">Build your first feature</h3>
       <p class="db-empty-body">Describe what you want — Dash Build evaluates scope, asks clarifying questions, then opens a PR. Try:</p>
       <ul class="db-empty-examples">

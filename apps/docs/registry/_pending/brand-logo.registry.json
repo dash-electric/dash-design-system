@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ds.dash.com/schema/registry-item.json",
+  "name": "brand-logo",
+  "type": "registry:ui",
+  "title": "Brand Logo",
+  "description": "333 third-party brand / product / crypto logos, full-color static SVG (not tintable). Use <BrandLogo name=\"github\" /> or <BrandLogo name=\"adobe\" variant=\"white\" />. Full set ships via public/brand/.",
+  "categories": ["component", "media"],
+  "registryDependencies": ["utils"],
+  "files": [
+    {
+      "path": "registry/dash/ui/brand-logo.tsx",
+      "type": "registry:ui",
+      "target": "components/ui/brand-logo.tsx"
+    },
+    {
+      "path": "public/brand/github.svg",
+      "type": "registry:file",
+      "target": "public/brand/github.svg"
+    },
+    {
+      "path": "public/brand/manifest.json",
+      "type": "registry:file",
+      "target": "public/brand/manifest.json"
+    }
+  ]
+}

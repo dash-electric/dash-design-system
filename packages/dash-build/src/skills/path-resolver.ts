@@ -49,6 +49,29 @@ const IGNORED_DIRS = new Set<string>([
 const INTENT_FILTER = /\b(filter|filters|search|column|columns|sort|table|list|date.?range|kolom|cari|saring)\b/i
 const INTENT_DETAIL = /\b(detail|detail page|edit|view|info|profile)\b/i
 
+// Cap on how many nav-registry files we surface as patch targets per repo.
+const MAX_NAV_REGISTRY_FILES = 6
+
+/**
+ * Stable marker embedded in a nav-registry PathResolution.reason. Downstream
+ * consumers (validator) match on this to recognise a nav-registry resolution
+ * as a valid additive patch target without depending on prose wording.
+ */
+export const NAV_REGISTRY_REASON_MARKER = "[nav-registry]"
+
+// Best-effort nav/sidebar registry dir candidates for repos without a hand-coded
+// layout. Relative to repoRoot. Walked only when requiresNavOrRoute is set.
+const NAV_REGISTRY_CANDIDATE_DIRS: string[][] = [
+  ["src", "components", "sidebar"],
+  ["src", "components", "navigation"],
+  ["components", "sidebar"],
+  ["components", "navigation"],
+]
+
+// A file looks like a nav/sidebar registry when its name carries a nav/menu
+// signal. Keeps us from surfacing every component in the sidebar dir.
+const NAV_FILE_NAME_RE = /(sidebar|nav|navigation|menu|route)/i
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -140,6 +163,27 @@ export class PathResolver {
       }
     }
 
+    // 4. Nav / sidebar registry surfacing.
+    //    When the prompt asks for a page/tab/route surface (requiresNavOrRoute),
+    //    the generated feature must be REGISTERED in the repo's sidebar so it
+    //    ships REACHABLE. Surface those nav-registry files as valid (lower-
+    //    confidence) patch targets so a correct additive nav diff isn't hard-
+    //    rejected by the validator's PATCH-UNKNOWN-TARGET rule. The additive
+    //    patch-validator gate still enforces additive-only safety.
+    if (contextPack.requiresNavOrRoute) {
+      const navFiles = await listNavRegistryFiles(layout)
+      for (const navPath of navFiles.slice(0, MAX_NAV_REGISTRY_FILES)) {
+        if (seenPaths.has(navPath)) continue
+        seenPaths.add(navPath)
+        out.push({
+          filePath: navPath,
+          route: contextPack.targetRoute ?? contextPack.defaultRoute ?? "(nav)",
+          confidence: 0.4,
+          reason: `${NAV_REGISTRY_REASON_MARKER} Nav/sidebar registry file — register the new tab here so the feature is reachable (requiresNavOrRoute)`,
+        })
+      }
+    }
+
     out.sort((a, b) => b.confidence - a.confidence)
     return out.slice(0, MAX_RESOLUTIONS)
   }
@@ -209,6 +253,14 @@ interface RepoLayout {
   pageRoots: string[]
   /** When true, App Router and a [locale] segment is expected for route shaping. */
   localePrefixed: boolean
+  /**
+   * Directories that hold the repo's nav / sidebar registry — the files a new
+   * tab/page must be registered in to be REACHABLE. Surfaced as lower-confidence
+   * patch targets only when contextPack.requiresNavOrRoute is set, so a correct
+   * additive nav diff is not rejected as PATCH-UNKNOWN-TARGET. Empty = repo has
+   * no known nav registry (resolver stays route-only, prior behaviour).
+   */
+  navRegistryDirs: string[]
 }
 
 function detectRepoLayout(
@@ -224,6 +276,9 @@ function detectRepoLayout(
         router: "pages-router-js",
         pageRoots: [path.join(repoRoot, "src", "pages")],
         localePrefixed: false,
+        // Backoffice registers nav tabs in src/components/sidebar/*.jsx
+        // (Sidebar.jsx / CollapseableSidebar.jsx / DeliverySidebar.jsx).
+        navRegistryDirs: [path.join(repoRoot, "src", "components", "sidebar")],
       }
     case "portal-v2":
       return {
@@ -232,6 +287,9 @@ function detectRepoLayout(
         router: "app-router-ts",
         pageRoots: [path.join(repoRoot, "app")],
         localePrefixed: true,
+        navRegistryDirs: NAV_REGISTRY_CANDIDATE_DIRS.map((d) =>
+          path.join(repoRoot, ...d),
+        ),
       }
     default:
       // Best-effort fallback — try both common shapes.
@@ -245,6 +303,9 @@ function detectRepoLayout(
           path.join(repoRoot, "src", "app"),
         ],
         localePrefixed: false,
+        navRegistryDirs: NAV_REGISTRY_CANDIDATE_DIRS.map((d) =>
+          path.join(repoRoot, ...d),
+        ),
       }
   }
 }
@@ -302,6 +363,7 @@ interface RouteFileCandidate {
     | "app-page"
     | "app-dynamic"
     | "best-effort"
+    | "nav-registry"
 }
 
 async function locateRouteFiles(
@@ -543,6 +605,33 @@ async function findAppRouterRouteDir(
     }
   }
   return out
+}
+
+// ── Nav / sidebar registry surfacing (requiresNavOrRoute) ─────────────────
+
+/**
+ * List the repo's nav/sidebar registry files — the files a new tab must be
+ * registered in to be reachable. Walks each known nav-registry dir and keeps
+ * only files whose name carries a nav/menu signal (sidebar/nav/menu/route),
+ * so we surface Sidebar.jsx / CollapseableSidebar.jsx but not every unrelated
+ * component that happens to live alongside them.
+ *
+ * Best-effort, never throws. Returns absolute paths, de-duped.
+ */
+async function listNavRegistryFiles(layout: RepoLayout): Promise<string[]> {
+  const collected: string[] = []
+  for (const dir of layout.navRegistryDirs) {
+    if (!(await dirExists(dir))) continue
+    const entries = await safeReadDir(dir)
+    for (const entry of entries) {
+      if (IGNORED_DIRS.has(entry)) continue
+      if (!/\.(jsx?|tsx?)$/.test(entry)) continue
+      if (/^_/.test(entry)) continue
+      if (!NAV_FILE_NAME_RE.test(entry)) continue
+      collected.push(path.join(dir, entry))
+    }
+  }
+  return Array.from(new Set(collected))
 }
 
 async function safeListComponentLikeFiles(dir: string): Promise<string[]> {

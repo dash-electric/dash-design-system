@@ -46,7 +46,12 @@ import type {
  * Group 2 = bracketed path.
  * Group 3 = inner content.
  */
-const FILE_BLOCK_RE = /```([a-zA-Z0-9_=+:.-]*)\s+\[([^\]\n]+)\]\s*\n([\s\S]*?)```/g
+// Header path is wrapped in [ … ]. The path itself may contain brackets
+// (Next.js dynamic segments like `driver/[slug]/components/Foo.jsx`), so we
+// greedily match up to the LAST `]` before the end-of-line, not the first.
+// `[^\n]+` + greedy `\]` lets inner `[slug]` brackets survive while the final
+// `]` on the line closes the wrapper.
+const FILE_BLOCK_RE = /```([a-zA-Z0-9_=+:.-]*)\s+\[([^\n]+)\]\s*\n([\s\S]*?)```/g
 
 interface HeaderInfo {
   mode: "new-file" | "patch"
@@ -90,7 +95,7 @@ export function parseResponse(rawText: string): ParsedResponse {
   FILE_BLOCK_RE.lastIndex = 0
   while ((m = FILE_BLOCK_RE.exec(rawText)) !== null) {
     const rawHeader = m[1]
-    const rawPath = m[2].trim()
+    const rawPath = normalizeModelPath(m[2].trim())
     const content = m[3].replace(/^\n+|\n+$/g, "")
     if (!isSafePath(rawPath)) continue
     const { mode, language } = parseFenceHeader(rawHeader)
@@ -122,6 +127,34 @@ export function parseResponse(rawText: string): ParsedResponse {
  * Reject path traversal + absolute paths. We only allow forward-slash-separated
  * relative paths so callers can safely `path.join(repoRoot, file.path)`.
  */
+/**
+ * Normalize a model-emitted path to a repo-relative form.
+ *
+ * The model is given CURRENT FILE STATE with ABSOLUTE paths (e.g.
+ * `/Users/…/next-backoffice-web/src/pages/driver/[slug]/components/Foo.jsx`),
+ * so it faithfully echoes them back in the patch header. But `isSafePath`
+ * rejects absolute paths (they'd break `path.join(repoRoot, …)`), which
+ * silently dropped every patch → "no parseable file blocks" → empty preview.
+ *
+ * We strip everything up to and including a recognised repo-root segment so
+ * the path becomes relative (e.g. `src/pages/driver/[slug]/components/Foo.jsx`).
+ * Falls back to the basename-anchored `src/…` slice, else the trimmed input.
+ */
+export function normalizeModelPath(p: string): string {
+  if (!p) return p
+  let s = p.trim().replace(/\\/g, "/")
+  // Absolute or repo-prefixed → keep from the first `src/` (or app/pages/lib).
+  const anchor = s.match(/(?:^|\/)((?:src|app|pages|components|lib|public)\/.+)$/)
+  if (anchor) return anchor[1]
+  // Absolute path without a known anchor → take the last 3 segments so it
+  // stays relative + safe rather than being dropped wholesale.
+  if (s.startsWith("/")) {
+    const parts = s.split("/").filter(Boolean)
+    s = parts.slice(-3).join("/")
+  }
+  return s
+}
+
 export function isSafePath(p: string): boolean {
   if (!p || p.length > 512) return false
   if (p.startsWith("/") || p.startsWith("\\")) return false

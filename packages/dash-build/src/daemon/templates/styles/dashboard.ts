@@ -50,6 +50,14 @@ const DAEMON_OVERRIDES_CSS = `
   --info: #2563eb;
   --info-soft: #e0e7ff;
 
+  /* Icon color slots — mirror the DS Icons foundation (--icon-strong / sub /
+   * soft / disabled). Inline Remix Icon SVGs render with fill:currentColor, so
+   * an element gets its glyph color from text color or these tokens. */
+  --icon-strong: var(--ink);
+  --icon-sub: var(--mute);
+  --icon-soft: #9a9a96;
+  --icon-disabled: #c4c4c0;
+
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -520,7 +528,7 @@ button { font-family: inherit; }
 }
 .db-button-ghost:hover { background: var(--paper); }
 .db-button-compact { padding: 10px 12px; }
-.db-button-arrow { transform: translateX(0); transition: transform 120ms ease; }
+.db-button-arrow { display: inline-flex; transform: translateX(0); transition: transform 120ms ease; }
 .db-button:hover .db-button-arrow { transform: translateX(2px); }
 
 /* ----- Status pill ----- */
@@ -629,8 +637,7 @@ button { font-family: inherit; }
 }
 .db-empty-primary { background: var(--primary-card); border-color: var(--primary-soft); }
 .db-empty-icon {
-  display: inline-block;
-  font-size: var(--text-title-md);
+  display: inline-flex;
   color: var(--primary);
   margin-bottom: 8px;
 }
@@ -692,6 +699,29 @@ button { font-family: inherit; }
 }
 :focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 6px; }
 
+/* ----- Icons (inline Remix Icon SVG) -----
+ * One icon system end-to-end — no emoji, no mixed unicode arrows. Glyphs use
+ * fill:currentColor so color is inherited from the surrounding element. Default
+ * tone is --icon-sub; place inside a colored element or add a tone class to
+ * override. Mirrors the DS Icons foundation page. */
+.db-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  fill: currentColor;
+  color: var(--icon-sub);
+}
+.db-icon--strong { color: var(--icon-strong); }
+.db-icon--soft { color: var(--icon-soft); }
+.db-icon--primary { color: var(--primary); }
+.db-icon--success { color: var(--success); }
+.db-icon--warn { color: var(--warn); }
+.db-icon--danger { color: var(--danger); }
+.db-icon--info { color: var(--info); }
+/* When an icon sits inside a button/link/label, inherit that element's color
+ * so it tracks hover + active states automatically. */
+button .db-icon, a .db-icon, .db-label .db-icon { color: inherit; }
+
 /* Theme-toggle CSS removed (May 2026) — dashboard is light-only. */
 
 /* ----- Toast notifications ----- */
@@ -721,14 +751,22 @@ button { font-family: inherit; }
   opacity: 0;
   transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
 }
 .db-toast.show { transform: translateX(0); opacity: 1; }
 .db-toast.success { border-left-color: var(--success); }
 .db-toast.error { border-left-color: var(--danger); }
 .db-toast.warn { border-left-color: var(--warn); }
 .db-toast.info { border-left-color: var(--primary); }
+/* Leading semantic icon — tone tracks the toast kind via the border color. */
+.db-toast-icon { margin-top: 1px; color: var(--primary); }
+.db-toast.success .db-toast-icon { color: var(--success); }
+.db-toast.error .db-toast-icon { color: var(--danger); }
+.db-toast.warn .db-toast-icon { color: var(--warn); }
+.db-toast.info .db-toast-icon { color: var(--info); }
+.db-toast-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1; }
 .db-toast-msg { line-height: 1.4; }
 .db-toast-action {
   align-self: flex-start;
@@ -1620,6 +1658,18 @@ details.db-chat-action[open] > summary > .db-chat-action-toggle {
 @keyframes db-chat-action-pulse {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.45; }
+}
+/* Live action stream (AOP narration) — the latest in-flight step shows a
+   spinning ◌ glyph until the next event arrives + settles it to a check.
+   Mirrors Claude Code's "current step" cue. */
+.db-chat-action[data-tone="pending"] .db-chat-action-icon {
+  display: inline-block;
+  animation: db-spin 1.1s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .db-chat-action[data-tone="pending"] .db-chat-action-icon {
+    animation: db-chat-action-pulse 1.4s ease-in-out infinite;
+  }
 }
 
 /* Sprint 2C — rejected patches panel. Shown when the additive-only
@@ -2946,33 +2996,126 @@ details.db-chat-action[open] > summary > .db-chat-action-toggle {
   line-height: 1.4;
   color: var(--mute);
 }
+/* Claude-style numbered option cards — full-width stacked rows, each with a
+   number badge on the right, a hover/selected state, and an "Other" free-text
+   row. Mirrors the AskUserQuestion card pattern. */
 .db-inline-options {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 6px;
 }
 .db-inline-option {
-  display: inline-flex;
+  position: relative;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  min-height: 32px;
-  padding: 6px 8px;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 12px;
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--paper-2);
   color: var(--ink);
-  font-size: 12px;
-  font-weight: 650;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
 }
-.db-inline-option input {
+.db-inline-option:hover {
+  border-color: var(--primary-ring);
+  background: var(--primary-soft);
+}
+.db-inline-option input[type="radio"],
+.db-inline-option input[type="checkbox"] {
   margin: 0;
   accent-color: var(--primary);
+  flex: 0 0 auto;
+}
+.db-inline-option-body {
+  flex: 1 1 auto;
+  cursor: pointer;
+}
+.db-inline-option-key {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--paper-3, rgba(0,0,0,0.05));
+  color: var(--mute);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 .db-inline-option:has(input:checked) {
   border-color: var(--primary-ring);
   background: var(--primary-soft);
   color: var(--primary-strong);
+}
+.db-inline-option:has(input:checked) .db-inline-option-key {
+  background: var(--primary);
+  color: #fff;
+}
+.db-inline-option--other {
+  flex-wrap: wrap;
+}
+.db-inline-other-input {
+  flex: 1 1 100%;
+  margin-top: 4px;
+  padding: 7px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+}
+.db-inline-other-input:focus {
+  outline: none;
+  border-color: var(--primary-ring);
+}
+.db-inline-question-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.db-inline-question-skip {
+  padding: 7px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.db-inline-question-skip:hover { color: var(--ink); border-color: var(--ink); }
+.db-inline-q-req { color: var(--danger, #e5484d); }
+.db-inline-question-done {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  font-size: 12px;
+  font-weight: 650;
+}
+.db-inline-question-done-icon { font-weight: 800; }
+.db-inline-textarea {
+  width: 100%;
+  min-height: 64px;
+  resize: vertical;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
 }
 .db-inline-textarea {
   width: 100%;
@@ -5808,9 +5951,9 @@ body[data-shell="lovable"] .db-topbar-bootstrap-btn {
   box-shadow: var(--shadow-focus);
 }
 .db-home-example-icon {
+  display: inline-flex;
   flex-shrink: 0;
-  font-size: 16px;
-  line-height: 1;
+  color: var(--icon-sub);
 }
 .db-home-example-text {
   min-width: 0;

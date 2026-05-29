@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ds.dash.com/schema/registry-item.json",
+  "name": "flag",
+  "type": "registry:ui",
+  "title": "Flag",
+  "description": "262 region flags, full-color circular static SVG (not tintable). Use <Flag code=\"indonesia\" />. Keys listed in public/flags/manifest.json. Full set ships via public/flags/.",
+  "categories": ["component", "media"],
+  "registryDependencies": ["utils"],
+  "files": [
+    {
+      "path": "registry/dash/ui/flag.tsx",
+      "type": "registry:ui",
+      "target": "components/ui/flag.tsx"
+    },
+    {
+      "path": "public/flags/manifest.json",
+      "type": "registry:file",
+      "target": "public/flags/manifest.json"
+    }
+  ]
+}
