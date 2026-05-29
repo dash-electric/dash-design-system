@@ -83,7 +83,7 @@ export default function NotificationFeedDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add notification-feed`} />
+        <DocsCode language="bash" code={`dashkit add notification-feed`} />
       </DocsSection>
 
       <DocsSection title="Item content types">

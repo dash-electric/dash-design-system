@@ -58,7 +58,7 @@ body:
       label: Steps to reproduce
       description: Minimal steps. Number them.
       placeholder: |
-        1. Run `dash add button`
+        1. Run `dashkit add button`
         2. Open `apps/web/components/ui/button.tsx`
         3. ...
     validations:

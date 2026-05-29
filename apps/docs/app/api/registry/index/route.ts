@@ -24,7 +24,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     body = await fs.readFile(REGISTRY_INDEX, "utf-8")
   } catch {
     return NextResponse.json(
-      { error: "Index not built", hint: "Run `pnpm dash build`." },
+      { error: "Index not built", hint: "Run `pnpm dashkit build`." },
       { status: 404 },
     )
   }

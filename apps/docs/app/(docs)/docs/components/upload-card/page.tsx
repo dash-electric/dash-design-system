@@ -37,7 +37,7 @@ export default function UploadCardDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add upload-card`} />
+        <DocsCode language="bash" code={`dashkit add upload-card`} />
       </DocsSection>
 
       <DocsSection title="Usage">

@@ -24,7 +24,7 @@ export default function LabelDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add label`} />
+        <DocsCode language="bash" code={`dashkit add label`} />
       </DocsSection>
 
       <DocsSection title="Usage">

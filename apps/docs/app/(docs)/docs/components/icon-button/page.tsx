@@ -24,7 +24,7 @@ export default function IconButtonDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add icon-button`} />
+        <DocsCode language="bash" code={`dashkit add icon-button`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

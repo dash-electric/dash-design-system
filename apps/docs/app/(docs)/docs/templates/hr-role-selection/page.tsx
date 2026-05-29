@@ -20,7 +20,7 @@ export default function HrRoleSelectionDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-role-selection`} />
+        <DocsCode language="bash" code={`dashkit add hr-role-selection`} />
       </DocsSection>
 
       <DocsSection title="Examples">

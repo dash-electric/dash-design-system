@@ -81,7 +81,7 @@ export function buildPrBody(input: PrInput): string {
     "",
     "### Install",
     "```",
-    `dash add ${blockName}`,
+    `dashkit add ${blockName}`,
     "```",
     "",
     input.draft

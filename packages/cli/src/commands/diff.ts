@@ -1,5 +1,5 @@
 /**
- * `dash diff <name>` — compare installed files vs latest registry version.
+ * `dashkit diff <name>` — compare installed files vs latest registry version.
  */
 import fs from "node:fs"
 import kleur from "kleur"

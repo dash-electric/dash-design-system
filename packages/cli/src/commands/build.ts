@@ -1,5 +1,5 @@
 /**
- * `dash build` — build registry from source. Runs inside Dash DS repo.
+ * `dashkit build` — build registry from source. Runs inside Dash DS repo.
  * Mirrors logic from scripts/build-registry.ts.
  */
 import fs from "node:fs"

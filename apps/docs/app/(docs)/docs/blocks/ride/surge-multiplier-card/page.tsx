@@ -26,7 +26,7 @@ export default function SurgeMultiplierCardDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add surge-multiplier-card`} />
+        <DocsCode language="bash" code={`dashkit add surge-multiplier-card`} />
       </DocsSection>
 
       <DocsSection title="Preview (High surge — Sudirman 2.0×)">

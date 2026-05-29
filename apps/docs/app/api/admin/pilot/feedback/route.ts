@@ -6,7 +6,7 @@ import { isAuthorized, unauthorized } from "@/app/api/registry/_auth"
 /**
  * POST /api/admin/pilot/feedback
  *
- * Bearer-gated ingest endpoint for `dash feedback sync`. Appends each
+ * Bearer-gated ingest endpoint for `dashkit feedback sync`. Appends each
  * incoming entry as one JSONL line to `pilot-feedback.jsonl`. Idempotent
  * on `id` — entries already present are skipped.
  *

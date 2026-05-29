@@ -22,7 +22,7 @@ export default function HaloDash3PaneDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add halo-dash-3pane`} />
+        <DocsCode language="bash" code={`dashkit add halo-dash-3pane`} />
       </DocsSection>
 
       <DocsSection title="Examples">

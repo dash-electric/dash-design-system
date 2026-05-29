@@ -67,9 +67,9 @@ export type LoadDashSkillOpts = {
    */
   dsRoot?: string
   /**
-   * v4-only: bypass cache + force a fresh `dash info --json` scan. Default
+   * v4-only: bypass cache + force a fresh `dashkit info --json` scan. Default
    * `false` — cache is consulted first, re-scanning on fingerprint change or
-   * TTL expiry. Pass `true` for `dash skill refresh` or when integrating
+   * TTL expiry. Pass `true` for `dashkit skill refresh` or when integrating
    * tooling that wants every call to reflect on-disk state.
    */
   forceRefresh?: boolean

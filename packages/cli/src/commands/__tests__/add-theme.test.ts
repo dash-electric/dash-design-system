@@ -50,7 +50,7 @@ const ITEM: RegistryItem = {
   meta: { version: "1.0.0" },
 }
 
-describe("dash add — theme integration", () => {
+describe("dashkit add — theme integration", () => {
   let tmp: string
   let restore: () => void
 

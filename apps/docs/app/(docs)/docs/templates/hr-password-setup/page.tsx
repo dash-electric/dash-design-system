@@ -20,7 +20,7 @@ export default function HrPasswordSetupDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-password-setup`} />
+        <DocsCode language="bash" code={`dashkit add hr-password-setup`} />
       </DocsSection>
 
       <DocsSection title="Examples">

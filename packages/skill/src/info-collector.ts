@@ -1,5 +1,5 @@
 /**
- * Calls `dash info --json` via execSync to capture project snapshot.
+ * Calls `dashkit info --json` via execSync to capture project snapshot.
  *
  * v1: shells out to the Dash CLI and parses its JSON output.
  * v4: layered fingerprint + cache. `collectDashInfo` is cache-first by default;
@@ -155,7 +155,7 @@ function isSnapshotShape(v: unknown): v is DashInfoSnapshot {
  * Behavior:
  *   1. Compute repo fingerprint (~10ms)
  *   2. Read cache; if fresh (fingerprint match + TTL OK) → return cached
- *   3. Else shell out to `dash info --json`, persist, return fresh
+ *   3. Else shell out to `dashkit info --json`, persist, return fresh
  *
  * Backward compat: `collectDashInfo(cwd)` and `collectDashInfo(cwd, deps)`
  * still work — opts is a NEW third parameter that defaults to {} so v3 callers
@@ -245,13 +245,13 @@ export async function collectDashInfo(
 }
 
 /**
- * Run `dash info --json` in the given cwd. Returns a discriminated union so
+ * Run `dashkit info --json` in the given cwd. Returns a discriminated union so
  * callers can degrade gracefully when the CLI isn't on PATH or the project
  * isn't a Dash repo.
  *
  * v4: extracted from `collectDashInfo` so the cache-aware wrapper can call
  * this internally. Exported for tests + callers that explicitly want zero
- * caching (e.g. `dash skill refresh`).
+ * caching (e.g. `dashkit skill refresh`).
  */
 export async function scanDashInfo(
   cwd: string = process.cwd(),
@@ -260,7 +260,7 @@ export async function scanDashInfo(
   const exec = deps.exec ?? execSync
   let raw: string
   try {
-    const out = exec("dash info --json", {
+    const out = exec("dashkit info --json", {
       cwd,
       encoding: "utf8",
       timeout: 5000,
@@ -269,7 +269,7 @@ export async function scanDashInfo(
     raw = typeof out === "string" ? out : out.toString("utf8")
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    return { ok: false, reason: `dash info failed: ${msg}` }
+    return { ok: false, reason: `dashkit info failed: ${msg}` }
   }
 
   let parsed: unknown
@@ -277,13 +277,13 @@ export async function scanDashInfo(
     parsed = JSON.parse(raw)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    return { ok: false, reason: `dash info JSON parse failed: ${msg}` }
+    return { ok: false, reason: `dashkit info JSON parse failed: ${msg}` }
   }
 
   if (!isSnapshotShape(parsed)) {
     return {
       ok: false,
-      reason: "dash info output missing required keys (projectRoot / installedItems)",
+      reason: "dashkit info output missing required keys (projectRoot / installedItems)",
     }
   }
 

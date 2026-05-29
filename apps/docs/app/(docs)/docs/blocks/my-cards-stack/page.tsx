@@ -21,7 +21,7 @@ export default function MyCardsStackDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add my-cards-stack`} />
+        <DocsCode language="bash" code={`dashkit add my-cards-stack`} />
       </DocsSection>
 
       <DocsSection title="Preview">

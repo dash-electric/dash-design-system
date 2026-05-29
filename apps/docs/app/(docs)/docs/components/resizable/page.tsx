@@ -27,7 +27,7 @@ export default function ResizableDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add resizable`} />
+        <DocsCode language="bash" code={`dashkit add resizable`} />
       </DocsSection>
 
       <DocsSection title="Examples">

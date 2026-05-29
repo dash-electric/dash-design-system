@@ -20,7 +20,7 @@ export default function SectionHeaderDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add section-header`} />
+        <DocsCode language="bash" code={`dashkit add section-header`} />
       </DocsSection>
 
       <DocsSection title="Examples">

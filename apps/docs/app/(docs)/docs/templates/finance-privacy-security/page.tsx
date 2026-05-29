@@ -20,7 +20,7 @@ export default function FinancePrivacySecurityDocsPage() {
         description="Settings shell + Change Password / Backup Codes / 2FA / Active Sessions action rows + Sessions table with Browser/Location/Last activity/IP columns. Ported from AlignUI Pro Figma frame 'Privacy & Security [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-privacy-security`} />
+        <DocsCode language="bash" code={`dashkit add finance-privacy-security`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

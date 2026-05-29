@@ -389,7 +389,7 @@ function summarizeBlocks(
     lines.push(`- ${b.name} [${b.theme}]${desc}`)
   }
   if (blocks.length > max) {
-    lines.push(`- …+${blocks.length - max} more (use \`dash list --theme <id>\`)`)
+    lines.push(`- …+${blocks.length - max} more (use \`dashkit list --theme <id>\`)`)
   }
   return lines
 }

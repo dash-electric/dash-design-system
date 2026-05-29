@@ -46,9 +46,9 @@ export default function OnboardingPage() {
           { label: "Pre-flight", sub: "5 min — read & confirm scope" },
           { label: "Install CLI", sub: "10 min — pnpm + login" },
           { label: "Wire AI editor", sub: "10 min — Claude / Cursor MCP" },
-          { label: "First component", sub: "15 min — dash add button" },
+          { label: "First component", sub: "15 min — dashkit add button" },
           { label: "Vibe-code mode", sub: "15 min — describe a screen" },
-          { label: "Report gaps", sub: "ongoing — dash gap report" },
+          { label: "Report gaps", sub: "ongoing — dashkit gap report" },
         ]}
       />
 
@@ -72,7 +72,7 @@ export default function OnboardingPage() {
             },
             {
               title: "What you can do after",
-              body: "Install components via dash add, prompt your editor to build Dash-themed screens that respect tokens + voice + audit-trail rules, and report gaps when DS doesn't cover what you need.",
+              body: "Install components via dashkit add, prompt your editor to build Dash-themed screens that respect tokens + voice + audit-trail rules, and report gaps when DS doesn't cover what you need.",
             },
           ]}
         />
@@ -114,26 +114,26 @@ Registry: https://ds.dash.com/r/`}
           <DocsStep
             number={3}
             title="Log in"
-            description="Writes the token to ~/.config/dash/auth.json. dash add will read it for every install."
-            code={`dash login --token <paste-from-1password>`}
+            description="Writes the token to ~/.config/dash/auth.json. dashkit add will read it for every install."
+            code={`dashkit login --token <paste-from-1password>`}
             output={`✔ Token validated
 ✔ Saved to ~/.config/dash/auth.json
-ℹ You can now run dash add inside any Dash repo.`}
-            imagePlaceholder="Screenshot pending — dash login success output with green checkmarks."
+ℹ You can now run dashkit add inside any Dash repo.`}
+            imagePlaceholder="Screenshot pending — dashkit login success output with green checkmarks."
             imageHeight="sm"
           />
 
           <DocsStep
             number={4}
-            title="Run dash doctor"
+            title="Run dashkit doctor"
             description="Sanity check — confirms Node version, pnpm, token validity, network reachability to the registry, and MCP capability."
-            code={`dash doctor`}
+            code={`dashkit doctor`}
             output={`✔ Node 20.11.0
 ✔ pnpm 9.x
 ✔ Bearer token valid (registry reachable)
 ✔ MCP server installable via npx
 ℹ All green — you're ready to add components.`}
-            imagePlaceholder="Screenshot pending — dash doctor full output, all green."
+            imagePlaceholder="Screenshot pending — dashkit doctor full output, all green."
             imageHeight="sm"
           />
 
@@ -152,12 +152,12 @@ Registry: https://ds.dash.com/r/`}
                 with the correct user (avoid <code className="text-xs">sudo</code>).
               </li>
               <li>
-                <strong>401 Unauthorized on dash login</strong> — token typo on
+                <strong>401 Unauthorized on dashkit login</strong> — token typo on
                 paste (leading/trailing space is the usual culprit). Re-copy
                 from 1Password.
               </li>
               <li>
-                <strong>dash doctor: MCP probe failed</strong> — usually means
+                <strong>dashkit doctor: MCP probe failed</strong> — usually means
                 npx can&apos;t reach the registry. Check VPN / corporate proxy.
                 Retry; if it persists, ping the channel with the full output.
               </li>
@@ -233,7 +233,7 @@ Registry: https://ds.dash.com/r/`}
 detail page?`}
             output={`Expected: short list referencing the @dash registry —
 e.g. Button, Input, DataTable, FilterBar, EmptyState, plus
-a suggestion to scaffold via dash add.
+a suggestion to scaffold via dashkit add.
 
 If you get a generic answer or "I don't have access to your
 DS" — MCP didn't connect. Recheck step 1 or 2.`}
@@ -270,12 +270,12 @@ DS" — MCP didn't connect. Recheck step 1 or 2.`}
             number={3}
             title="Add Button to your repo"
             description="The CLI writes button.tsx to src/components/ui/ (or the equivalent path detected from your components.json)."
-            code={`dash add button`}
+            code={`dashkit add button`}
             output={`✔ Resolved button (4 deps)
 ✔ Wrote src/components/ui/button.tsx
 ✔ Wrote src/lib/utils.ts (already up to date)
 ℹ Import: import { Button } from "@/components/ui/button"`}
-            imagePlaceholder="Screenshot pending — dash add button success output."
+            imagePlaceholder="Screenshot pending — dashkit add button success output."
             imageHeight="sm"
           />
 
@@ -301,7 +301,7 @@ export default function MitraDetailPage() {
           <DocsStep
             number={5}
             title="Commit + push"
-            description="Branch + commit + open a PR. The auto-attached dash audit will check tokens + anatomy + voice."
+            description="Branch + commit + open a PR. The auto-attached dashkit audit will check tokens + anatomy + voice."
             code={`git checkout -b pilot/wave5-first-button
 git add -A
 git commit -m "chore: pilot wave5 — add Dash Button"
@@ -375,12 +375,12 @@ Pelanggaran), text area catatan opsional, dan audit trail
           <DocsStep
             number={1}
             title="Log a gap locally"
-            description="Run dash gap report with a one-line description. Quick form — name, repo, what you were trying to build, what was missing."
-            code={`dash gap report "no Dash component for inline OTP \
+            description="Run dashkit gap report with a one-line description. Quick form — name, repo, what you were trying to build, what was missing."
+            code={`dashkit gap report "no Dash component for inline OTP \
 input with 6 boxes — needed in mitra phone re-verify flow"`}
             output={`✔ Logged to ~/.config/dash/gaps.local.json
-ℹ Run \`dash gap sync\` to push to the CEO dashboard.`}
-            imagePlaceholder="Screenshot pending — dash gap report output."
+ℹ Run \`dashkit gap sync\` to push to the CEO dashboard.`}
+            imagePlaceholder="Screenshot pending — dashkit gap report output."
             imageHeight="sm"
           />
 
@@ -388,7 +388,7 @@ input with 6 boxes — needed in mitra phone re-verify flow"`}
             number={2}
             title="Sync to the dashboard"
             description="When you're online and ready, push your queue. Each gap becomes a card on the CEO triage view."
-            code={`dash gap sync`}
+            code={`dashkit gap sync`}
             output={`✔ Synced 1 gap to ds.dash.com/admin/gaps
 ℹ You'll get a Slack ping when triage happens.`}
             imagePlaceholder="Screenshot pending — admin gap board with new card in Triage column."
@@ -469,7 +469,7 @@ input with 6 boxes — needed in mitra phone re-verify flow"`}
             leaks.
           </li>
           <li>
-            <strong>Don&apos;t bypass dash add.</strong> No copy-pasting
+            <strong>Don&apos;t bypass dashkit add.</strong> No copy-pasting
             components from other Dash repos. The CLI keeps deps + audit gates
             consistent.
           </li>

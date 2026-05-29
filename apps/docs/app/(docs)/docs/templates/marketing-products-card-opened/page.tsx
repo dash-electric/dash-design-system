@@ -21,7 +21,7 @@ export default function MarketingProductsCardOpenedDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-products-card-opened`} />
+        <DocsCode language="bash" code={`dashkit add marketing-products-card-opened`} />
       </DocsSection>
 
       <DocsSection title="Examples">

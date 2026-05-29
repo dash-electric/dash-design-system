@@ -41,7 +41,7 @@ Every component page MUST render these sections in this exact order. Sections ma
 
 1. **Header** (required) — `<DocsHeader>` with `category` (from `meta.group`), `title`, `status` (from `meta.status`), and a 1–2 line description.
 2. **Preview** (required) — `<DocsPreview>` with the canonical live demo. One representative use, not a kitchen-sink.
-3. **Install** (required) — `<DocsSection title="Install">` containing `<DocsCode language="bash" code={`dash add <component>`} />`.
+3. **Install** (required) — `<DocsSection title="Install">` containing `<DocsCode language="bash" code={`dashkit add <component>`} />`.
 4. **Usage** (required) — `<DocsSection title="Usage">` with the minimum copy-pastable snippet plus a one-paragraph "when to reach for this" intro.
 5. **Anatomy** (if applicable) — `<DocsSection title="Anatomy">` with a labeled visual breakdown. Required for compound components (Card, Modal, Tabs, Form, DataTable, FileUpload, etc.). Skip for true single-element atoms (Badge, Kbd, Divider).
 6. **Variants** (if applicable) — `<DocsVariantTable>` for tone / size / style matrices. Use when the component has ≥2 enum-style props.

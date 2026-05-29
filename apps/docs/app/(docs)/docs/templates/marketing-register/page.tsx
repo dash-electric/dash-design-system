@@ -21,7 +21,7 @@ export default function MarketingRegisterDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-register`} />
+        <DocsCode language="bash" code={`dashkit add marketing-register`} />
       </DocsSection>
 
       <DocsSection title="Examples">

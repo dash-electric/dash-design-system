@@ -20,7 +20,7 @@ export default function HrProfileSettingsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-profile-settings`} />
+        <DocsCode language="bash" code={`dashkit add hr-profile-settings`} />
       </DocsSection>
 
       <DocsSection title="Examples">

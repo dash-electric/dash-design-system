@@ -133,7 +133,7 @@ Recommended pilot strategy:
 3. **Week 4+:** relax to `85` and treat the worker as production.
 
 Vercel cron is NOT viable — Hermes needs writable fs + subprocess access for
-validate gates (`pnpm typecheck`, `dash audit`).
+validate gates (`pnpm typecheck`, `dashkit audit`).
 
 ## Operational runbook
 

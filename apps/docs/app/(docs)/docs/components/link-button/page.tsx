@@ -24,7 +24,7 @@ export default function LinkButtonDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add link-button`} />
+        <DocsCode language="bash" code={`dashkit add link-button`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

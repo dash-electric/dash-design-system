@@ -32,7 +32,7 @@ export function buildSlackPayload(
       `repo: ${outcome.gap.repo ?? "(unknown)"}`,
       `score: ${outcome.score}/100`,
       outcome.pr.url ? `PR: ${outcome.pr.url}` : "PR: (stubbed)",
-      blockName ? `install: dash add ${blockName}` : "",
+      blockName ? `install: dashkit add ${blockName}` : "",
     ].filter(Boolean)
     return { text: lines.join("\n") }
   }

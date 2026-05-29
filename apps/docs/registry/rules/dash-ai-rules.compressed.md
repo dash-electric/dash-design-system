@@ -8,7 +8,7 @@
 ## Always
 
 1. Query Dash registry FIRST for UI primitives. Lives at `@dash` (111 items).
-2. `dash add <name>` to install. Never copy-paste; never invent.
+2. `dashkit add <name>` to install. Never copy-paste; never invent.
 3. Never raw hex / rgb. Always semantic tokens (`bg-bg-white-0`, `text-text-strong-950`, `border-stroke-soft-200`).
 4. Forms: `@dash/form` + `@dash/field` + zod via `@hookform/resolvers` (DS canon — see Adaptation Layer for per-repo overrides).
 5. Page layouts: pick from `@dash/templates/*` first.
@@ -240,7 +240,7 @@ Criteria (ALL must hold):
 4. No DS duplication.
 5. Wrappable under `src/lib-wrappers/`.
 
-Wrapper pattern: feature code imports `@/lib-wrappers/<thing>`, NEVER the lib directly. Once stable, promote to DS block via `dash add`.
+Wrapper pattern: feature code imports `@/lib-wrappers/<thing>`, NEVER the lib directly. Once stable, promote to DS block via `dashkit add`.
 
 Banned (refuse on sight):
 - Form libs: react-hook-form, Formik, Final Form, react-final-form.

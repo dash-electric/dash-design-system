@@ -1,5 +1,5 @@
 /**
- * `dash search <query>` — full-text search registry items.
+ * `dashkit search <query>` — full-text search registry items.
  */
 import kleur from "kleur"
 import { DEFAULT_REGISTRY_URL, readComponentsJson } from "../lib/components-json.js"

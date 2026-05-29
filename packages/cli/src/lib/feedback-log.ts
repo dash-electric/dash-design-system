@@ -1,5 +1,5 @@
 /**
- * Local feedback log for `dash feedback log` — captures Wave 5 pilot signal
+ * Local feedback log for `dashkit feedback log` — captures Wave 5 pilot signal
  * (bugs, UX issues, missing pieces, praise, drift sightings) from users while
  * they're working. Written as JSONL to `~/.dash/feedback-log.jsonl` so
  * appends are cheap, atomic-enough, and the file streams nicely to the

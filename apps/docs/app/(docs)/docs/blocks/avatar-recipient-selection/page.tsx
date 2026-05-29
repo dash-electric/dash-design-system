@@ -20,7 +20,7 @@ export default function AvatarRecipientSelectionDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add avatar-recipient-selection`} />
+        <DocsCode language="bash" code={`dashkit add avatar-recipient-selection`} />
       </DocsSection>
 
       <DocsSection title="Examples">

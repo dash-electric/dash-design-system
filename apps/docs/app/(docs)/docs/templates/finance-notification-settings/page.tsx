@@ -19,7 +19,7 @@ export default function FinanceNotificationSettingsDocsPage() {
         description="Settings shell + General Notifications toggle stack + Notification Method toggle stack + Theme Options radio cards (Light/Dark/System). Ported from AlignUI Pro Figma frame 'Notification Settings [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-notification-settings`} />
+        <DocsCode language="bash" code={`dashkit add finance-notification-settings`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

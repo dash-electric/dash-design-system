@@ -20,7 +20,7 @@ export default function ForgotPasswordBlock01DocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add forgot-password-01`} />
+        <DocsCode language="bash" code={`dashkit add forgot-password-01`} />
       </DocsSection>
 
       <DocsSection title="Preview">

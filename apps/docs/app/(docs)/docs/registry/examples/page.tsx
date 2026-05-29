@@ -41,7 +41,7 @@ export default function RegistryExamplesPage() {
 }`}
         />
         <p className="text-sm text-text-sub-600 mt-3">
-          <code className="text-xs">dash add utils</code> installs the two npm deps and
+          <code className="text-xs">dashkit add utils</code> installs the two npm deps and
           writes one TS file. Zero registry dependencies — this is a leaf.
         </p>
       </DocsSection>
@@ -72,7 +72,7 @@ export default function RegistryExamplesPage() {
 }`}
         />
         <p className="text-sm text-text-sub-600 mt-3">
-          When you run <code className="text-xs">dash add badge</code>:
+          When you run <code className="text-xs">dashkit add badge</code>:
         </p>
         <ol className="text-sm text-text-sub-600 list-decimal pl-5 space-y-1 mt-2">
           <li>CLI fetches <code className="text-xs">/r/badge.json</code>.</li>
@@ -85,7 +85,7 @@ export default function RegistryExamplesPage() {
 
       <DocsSection
         title="Example 3 — registry:theme (base-theme)"
-        description="A pure-CSS item. files=[], all the value is in cssVars. Always installed by dash init."
+        description="A pure-CSS item. files=[], all the value is in cssVars. Always installed by dashkit init."
       >
         <DocsCode
           language="json"
@@ -151,7 +151,7 @@ export default function RegistryExamplesPage() {
 }`}
         />
         <p className="text-sm text-text-sub-600 mt-3">
-          Then: <code className="text-xs">dash add @halo-dash/ticket-detail-pane</code>.
+          Then: <code className="text-xs">dashkit add @halo-dash/ticket-detail-pane</code>.
           Bare names like <code className="text-xs">button</code> still resolve against the
           first configured registry (@dash).
         </p>

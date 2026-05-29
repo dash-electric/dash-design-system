@@ -111,7 +111,7 @@ export default function RoutePlannerDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add route-planner`} />
+        <DocsCode language="bash" code={`dashkit add route-planner`} />
       </DocsSection>
 
       <DocsSection title="Preview">

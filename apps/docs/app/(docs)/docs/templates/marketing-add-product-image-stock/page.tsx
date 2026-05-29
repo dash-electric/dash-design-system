@@ -21,7 +21,7 @@ export default function MarketingAddProductImageStockDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-add-product-image-stock`} />
+        <DocsCode language="bash" code={`dashkit add marketing-add-product-image-stock`} />
       </DocsSection>
 
       <DocsSection title="Examples">

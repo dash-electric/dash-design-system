@@ -33,7 +33,7 @@ export default function AnnouncementBarDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add announcement-bar`} />
+        <DocsCode language="bash" code={`dashkit add announcement-bar`} />
       </DocsSection>
 
       <DocsSection title="Usage">

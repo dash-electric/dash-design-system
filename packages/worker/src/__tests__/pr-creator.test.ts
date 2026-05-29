@@ -61,7 +61,7 @@ describe("buildBranchName / buildPrTitle / buildPrBody", () => {
       draft: false,
     })
     expect(body).toContain("92 / 100")
-    expect(body).toContain("dash add image-editor-with-audit")
+    expect(body).toContain("dashkit add image-editor-with-audit")
     expect(body).toContain("dash-primitives")
   })
 

@@ -19,7 +19,7 @@ export default function AuthRegisterAuroraDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add auth-register-aurora`} />
+        <DocsCode language="bash" code={`dashkit add auth-register-aurora`} />
       </DocsSection>
 
       <DocsSection title="Preview">

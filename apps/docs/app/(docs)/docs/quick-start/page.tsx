@@ -44,11 +44,11 @@ export default function QuickStartPage() {
       <DocsWorkflowDiagram
         steps={[
           { label: "Install CLI", sub: "pnpm i -g dash" },
-          { label: "Initialize repo", sub: "dash init" },
-          { label: "Add component", sub: "dash add button" },
+          { label: "Initialize repo", sub: "dashkit init" },
+          { label: "Add component", sub: "dashkit add button" },
           { label: "Use in code", sub: "<Button />" },
-          { label: "Wire MCP", sub: "dash mcp init" },
-          { label: "Install skill", sub: "dash skill add" },
+          { label: "Wire MCP", sub: "dashkit mcp init" },
+          { label: "Install skill", sub: "dashkit skill add" },
           { label: "Ask Claude", sub: "Build me a page" },
           { label: "Ship PR", sub: "Verify + merge" },
         ]}
@@ -62,7 +62,7 @@ export default function QuickStartPage() {
           items={[
             {
               title: "AI-first by default",
-              body: "You should be writing prompts more than TSX. Claude / Cursor / Codex query Dash DS through MCP and rules files, then call dash add — you review the diff.",
+              body: "You should be writing prompts more than TSX. Claude / Cursor / Codex query Dash DS through MCP and rules files, then call dashkit add — you review the diff.",
             },
             {
               title: "Registry, not npm",
@@ -84,7 +84,7 @@ export default function QuickStartPage() {
           <DocsStep
             number={1}
             title="Install the dash CLI"
-            description="One-time machine setup. Installs the dash binary globally so every Dash repo can call dash init / dash add."
+            description="One-time machine setup. Installs the dash binary globally so every Dash repo can call dashkit init / dashkit add."
             code={`# Once published to npm
 pnpm i -g dash
 
@@ -93,7 +93,7 @@ dash --version
 # → dash@1.x.x`}
             output={`✔ Installed dash@1.0.0 to /usr/local/bin/dash
 ✔ Registry: https://ds.dash.com/r/
-ℹ Run \`dash init\` inside any Dash repo to wire it up.`}
+ℹ Run \`dashkit init\` inside any Dash repo to wire it up.`}
             imagePlaceholder="Terminal showing successful global install of dash CLI and version output."
           />
 
@@ -102,7 +102,7 @@ dash --version
             title="Initialize the repo"
             description="One-time per Dash repo. Writes components.json, .env.local, AGENTS.md, and merges the @dash tailwind preset. Idempotent — safe to re-run."
             code={`cd ~/halo-dash
-dash init --token sk-dash-xxxx`}
+dashkit init --token sk-dash-xxxx`}
             output={`✔ Detected Next.js 15 (App Router) + Tailwind v4
 ✔ Wrote components.json
 ✔ Wrote .env.local (DASH_REGISTRY_TOKEN)
@@ -110,21 +110,21 @@ dash init --token sk-dash-xxxx`}
 ✔ Wrote .cursorrules (re-exports AGENTS.md)
 ✔ Imported @dash/tokens into app/globals.css
 ✔ Extended tailwind.config.ts with @dash preset
-ℹ Next: dash add button`}
-            imagePlaceholder="Terminal after dash init — six green checkmarks confirming the scaffold, plus the next-step hint."
+ℹ Next: dashkit add button`}
+            imagePlaceholder="Terminal after dashkit init — six green checkmarks confirming the scaffold, plus the next-step hint."
           />
 
           <DocsStep
             number={3}
             title="Install your first component"
             description="Pulls the button source into registry/dash/ui/button.tsx — you own the file, no version pinning. Re-run anytime to refresh."
-            code={`dash add button`}
+            code={`dashkit add button`}
             output={`✔ Resolved button (4 deps)
 ✔ Wrote registry/dash/ui/button.tsx
 ✔ Wrote registry/dash/ui/button.stories.tsx
 ✔ Wrote registry/dash/lib/utils.ts (already up to date)
 ℹ Import: import { Button } from "@/registry/dash/ui/button"`}
-            imagePlaceholder="Terminal output of dash add button — files written list and the suggested import path."
+            imagePlaceholder="Terminal output of dashkit add button — files written list and the suggested import path."
           />
 
           <DocsStep
@@ -149,7 +149,7 @@ export default function MitraPage() {
             number={5}
             title="Wire the MCP server"
             description="Lets Claude Code / Cursor query the Dash registry by name during chat. After init, restart Claude and run /mcp — you should see dash-ds connected."
-            code={`dash mcp init
+            code={`dashkit mcp init
 
 # Writes ~/.claude/mcp.json:
 # {
@@ -172,7 +172,7 @@ export default function MitraPage() {
             number={6}
             title="Install the Dash skill"
             description="Skills are the prompt-engineering layer — they teach Claude when to use which Dash template, which anatomy to pick, and how to phrase prompts back to you."
-            code={`dash skill add dash-ds-pe`}
+            code={`dashkit skill add dash-ds-pe`}
             output={`✔ Resolved dash-ds-pe (skill v1.4.0)
 ✔ Wrote .claude/skills/dash-ds-pe/SKILL.md
 ✔ Wrote .claude/skills/dash-ds-pe/templates.md
@@ -184,7 +184,7 @@ export default function MitraPage() {
           <DocsStep
             number={7}
             title="Ask Claude to build a page"
-            description="Now describe the screen in plain Indonesian or English. Claude reads AGENTS.md, queries MCP, runs dash add for missing pieces, and writes the route — you only review the diff."
+            description="Now describe the screen in plain Indonesian or English. Claude reads AGENTS.md, queries MCP, runs dashkit add for missing pieces, and writes the route — you only review the diff."
             codeLanguage="markdown"
             code={`> Halo-dash repo. Tambah halaman trip history di route
 > /mitra/[id]/trips. Pakai Dash DS — table data, filter
@@ -194,7 +194,7 @@ export default function MitraPage() {
 1. Reads AGENTS.md → confirms Dash DS rules
 2. Queries MCP: dash_registry_lookup "list-detail with filters"
 3. Plan: template=list-detail-page, blocks=[data-table, filter-bar, empty-state, pagination]
-4. Runs: dash add list-detail-page data-table filter-bar empty-state pagination
+4. Runs: dashkit add list-detail-page data-table filter-bar empty-state pagination
 5. Writes app/(internal)/mitra/[id]/trips/page.tsx (~80 LOC)
 6. Writes mocks/trips.json (30 rows)
 7. Reports diff for your review.
@@ -235,7 +235,7 @@ gh pr create --fill`}
           items={[
             {
               title: "Claude Code (recommended)",
-              body: "Best MCP integration, longest context. dash mcp init writes ~/.claude/mcp.json. Verify with /mcp.",
+              body: "Best MCP integration, longest context. dashkit mcp init writes ~/.claude/mcp.json. Verify with /mcp.",
             },
             {
               title: "Cursor",
@@ -257,7 +257,7 @@ gh pr create --fill`}
           <DocsStep
             number={1}
             title="Claude doesn't query Dash MCP automatically"
-            description="Symptom: Claude proposes raw Tailwind divs instead of running dash add. Usually one of four causes — MCP not connected, token missing, prompt unclear, or stale Claude session."
+            description="Symptom: Claude proposes raw Tailwind divs instead of running dashkit add. Usually one of four causes — MCP not connected, token missing, prompt unclear, or stale Claude session."
             imagePlaceholder="Claude /mcp output showing dash-ds in 'connected' state with green dot — what success looks like."
             imageHeight="sm"
           >
@@ -281,9 +281,9 @@ gh pr create --fill`}
 
           <DocsStep
             number={2}
-            title="dash add fails (network / auth / version)"
+            title="dashkit add fails (network / auth / version)"
             description="The CLI prints a clear error code — match it to the table below."
-            imagePlaceholder="Terminal showing a 401 Unauthorized error from dash add — with the highlighted line for token mismatch."
+            imagePlaceholder="Terminal showing a 401 Unauthorized error from dashkit add — with the highlighted line for token mismatch."
             imageHeight="sm"
           >
             <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
@@ -327,8 +327,8 @@ export default {
           <DocsStep
             number={4}
             title="Component already exists in target repo"
-            description="dash add prompts before overwriting. Three options — pick the one that matches your migration mode."
-            imagePlaceholder="dash add prompt showing the three-option dialog: Overwrite / Skip / Rename (with arrow keys hint)."
+            description="dashkit add prompts before overwriting. Three options — pick the one that matches your migration mode."
+            imagePlaceholder="dashkit add prompt showing the three-option dialog: Overwrite / Skip / Rename (with arrow keys hint)."
             imageHeight="sm"
           >
             <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
@@ -339,7 +339,7 @@ export default {
                 <strong>Skip</strong> — keep your version, but flag it in the next brand audit.
               </li>
               <li>
-                <strong>Rename</strong> — <code className="text-xs">dash add button --as legacy-button</code>{" "}
+                <strong>Rename</strong> — <code className="text-xs">dashkit add button --as legacy-button</code>{" "}
                 keeps both side-by-side during migration.
               </li>
             </ul>

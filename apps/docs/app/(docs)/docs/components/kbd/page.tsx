@@ -25,7 +25,7 @@ export default function KbdDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add kbd`} />
+        <DocsCode language="bash" code={`dashkit add kbd`} />
       </DocsSection>
 
       <DocsSection title="Usage">

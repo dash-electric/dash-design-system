@@ -970,7 +970,7 @@
       "name": "stack-detector",
       "type": "registry:lib",
       "title": "Dash repo stack detector",
-      "description": "Inspects a consumer repo and identifies which of the 5 Dash FE stacks it matches (portal-v2, backoffice, halo-fe, basecamp, fleet-mgmt) or `unknown`. Pure filesystem inspection — no network, no spawn. Used by `dash init` and the Adaptation Layer to auto-select the right per-repo rule set.",
+      "description": "Inspects a consumer repo and identifies which of the 5 Dash FE stacks it matches (portal-v2, backoffice, halo-fe, basecamp, fleet-mgmt) or `unknown`. Pure filesystem inspection — no network, no spawn. Used by `dashkit init` and the Adaptation Layer to auto-select the right per-repo rule set.",
       "categories": [
         "tool",
         "ai"

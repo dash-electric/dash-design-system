@@ -20,7 +20,7 @@ export default function HrRegisterDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-register`} />
+        <DocsCode language="bash" code={`dashkit add hr-register`} />
       </DocsSection>
 
       <DocsSection title="Examples">

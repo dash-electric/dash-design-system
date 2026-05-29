@@ -1,5 +1,5 @@
 /**
- * `dash skill` — manage the v4 snapshot cache used by @dash/skill.
+ * `dashkit skill` — manage the v4 snapshot cache used by @dash/skill.
  *
  * Sub-commands:
  *   refresh   force a re-scan of the current cwd; updates the cache.
@@ -247,7 +247,7 @@ export async function runSkillStatus(opts: SkillCommandOpts = {}): Promise<void>
   }
   console.log(`  TTL:           ${formatAge(ttl)}`)
   console.log()
-  console.log(kleur.gray("  Run `dash skill refresh` to force re-scan."))
+  console.log(kleur.gray("  Run `dashkit skill refresh` to force re-scan."))
 }
 
 // ─── refresh ─────────────────────────────────────────────────────────────
@@ -262,7 +262,7 @@ export async function runSkillRefresh(opts: SkillCommandOpts = {}): Promise<void
   let raw: string
   const t0 = Date.now()
   try {
-    const out = exec("dash info --json", {
+    const out = exec("dashkit info --json", {
       cwd,
       encoding: "utf8",
       timeout: 5000,
@@ -274,7 +274,7 @@ export async function runSkillRefresh(opts: SkillCommandOpts = {}): Promise<void
     if (opts.json) {
       console.log(JSON.stringify({ ok: false, error: msg }))
     } else {
-      console.error(kleur.red("✗ Failed to run `dash info --json`:"))
+      console.error(kleur.red("✗ Failed to run `dashkit info --json`:"))
       console.error(`  ${msg}`)
     }
     process.exitCode = 1
@@ -289,7 +289,7 @@ export async function runSkillRefresh(opts: SkillCommandOpts = {}): Promise<void
     if (opts.json) {
       console.log(JSON.stringify({ ok: false, error: `JSON parse failed: ${msg}` }))
     } else {
-      console.error(kleur.red("✗ Failed to parse `dash info --json` output."))
+      console.error(kleur.red("✗ Failed to parse `dashkit info --json` output."))
     }
     process.exitCode = 1
     return

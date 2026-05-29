@@ -25,7 +25,7 @@
 - [ ] `pnpm -r typecheck` passes locally
 - [ ] `pnpm -r test` passes locally
 - [ ] `pnpm registry:build` produces no uncommitted diff
-- [ ] `dash audit` passes (if registry or component touched)
+- [ ] `dashkit audit` passes (if registry or component touched)
 - [ ] CHANGELOG.md updated (if user-facing change)
 - [ ] Conventional Commits title (`feat:`, `fix:`, `docs:`, ...)
 - [ ] Breaking changes flagged with `!` and described in BREAKING CHANGE footer

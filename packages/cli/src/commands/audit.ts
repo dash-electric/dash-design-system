@@ -1,5 +1,5 @@
 /**
- * `dash audit` — scan a consumer repo for drift against Dash design-system
+ * `dashkit audit` — scan a consumer repo for drift against Dash design-system
  * rules (banned deps, off-token colors, etc.).
  *
  * Complements `apps/docs/scripts/validate-patterns.ts`, which validates the
@@ -7,7 +7,7 @@
  * (halo-dash-fe, react-fleet-management-web-main, basecamp, …) to catch drift
  * that ships in feature PRs.
  *
- * Designed for CI: `dash audit --fail-on-error` exits 1 if any HIGH severity
+ * Designed for CI: `dashkit audit --fail-on-error` exits 1 if any HIGH severity
  * drift is found. `--json` for tooling consumption.
  */
 import fs from "node:fs"
@@ -475,7 +475,7 @@ function printPretty(report: AuditReport): void {
 /**
  * Print a short Layered Architecture summary. Mirrors the schema in
  * LAYERED-ARCHITECTURE.md so PEs can recall the rules without leaving the
- * terminal. Triggered by `dash audit --explain-layer`.
+ * terminal. Triggered by `dashkit audit --explain-layer`.
  */
 function printLayerExplain(): void {
   console.log()

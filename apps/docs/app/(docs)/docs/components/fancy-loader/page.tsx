@@ -34,7 +34,7 @@ export default function FancyLoaderDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add fancy-loader`} />
+        <DocsCode language="bash" code={`dashkit add fancy-loader`} />
       </DocsSection>
 
       <DocsSection title="Usage">

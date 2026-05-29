@@ -29,7 +29,7 @@ const entries: ChangelogEntry[] = [
           "dash-domain-glossary.md (1,982 lines) — 22+ entities, 4 state machines (Delivery 26-status, Maintenance 10-state, Repossession 7-state, Vehicle 6x6), BE envelope discrimination, cross-domain SSO trio, code style per service.",
           "3 canonical pattern blocks: @dash/multi-item-form, @dash/bulk-submit, @dash/use-code-field (case-sensitive charset per real PolicyOneTimeCode spec).",
           "Repo consolidation: apps/docs + packages/{cli,mcp-server,skill,registry-schema} + root pnpm workspace + vercel.json + 3 GH Actions workflows (ci + preview + release).",
-          "Dash CLI v0.4.0: dash doctor (10-check health diagnostic), dash sync (upgrade installed items), dash info (project introspection), Cursor MCP variant in dash mcp init, 7 framework templates (next-app/next-pages/vite/remix/astro/cra/react), framework-detector lib.",
+          "Dash CLI v0.4.0: dashkit doctor (10-check health diagnostic), dashkit sync (upgrade installed items), dashkit info (project introspection), Cursor MCP variant in dashkit mcp init, 7 framework templates (next-app/next-pages/vite/remix/astro/cra/react), framework-detector lib.",
           "@dash/mcp-server with 6 tools (Bearer-gated registry queries).",
           "@dash/skill Phase 2 scaffold (project-aware AI knowledge package, content pending pilot).",
           "Token usage dashboard at /docs/admin/usage (Bearer-gated, anonymized hashed-client metrics, ready for Vercel log ingestion post-deploy).",

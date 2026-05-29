@@ -19,7 +19,7 @@ export default function AuthLoginKeyDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add auth-login-key`} />
+        <DocsCode language="bash" code={`dashkit add auth-login-key`} />
       </DocsSection>
 
       <DocsSection title="Preview">

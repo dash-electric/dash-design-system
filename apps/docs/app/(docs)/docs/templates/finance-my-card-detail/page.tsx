@@ -20,7 +20,7 @@ export default function FinanceMyCardDetailDocsPage() {
         description="2-column card preview + info panel (Card Number / Expiry / CVC / Spending Limit) + Unhide / Adjust Limit / More action row + Recent Transactions list. Ported from AlignUI Pro Figma frame 'My Card Detail [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-my-card-detail`} />
+        <DocsCode language="bash" code={`dashkit add finance-my-card-detail`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

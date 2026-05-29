@@ -21,7 +21,7 @@ export default function MarketingSummaryDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-summary`} />
+        <DocsCode language="bash" code={`dashkit add marketing-summary`} />
       </DocsSection>
 
       <DocsSection title="Examples">

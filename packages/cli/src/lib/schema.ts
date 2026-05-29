@@ -51,7 +51,7 @@ export type ComponentsJson = {
   /**
    * Layer-2 Dash theme (`ride` | `logistic` | `travel` | `marketplace` |
    * `trellis-tenant`). Optional — when absent the CLI falls back to "ride"
-   * for backward compatibility. Set by `dash init --theme <x>` or by hand.
+   * for backward compatibility. Set by `dashkit init --theme <x>` or by hand.
    */
   dashTheme?: string
   tailwind?: {

@@ -49,7 +49,7 @@ describe("Hermes E2E smoke (Wave 4)", () => {
   // 1. Happy path — full user→gap→worker→PR→Slack pipeline.
   // -------------------------------------------------------------------------
   it("processes pending gap end-to-end → vendored + PR + Slack", async () => {
-    // 1. User drops a gap into the queue (simulating CLI `dash gap sync` having
+    // 1. User drops a gap into the queue (simulating CLI `dashkit gap sync` having
     //    POSTed to /api/dashboard/requests which writes the queue file).
     const gap = harness.seedGap({
       description: "no image-editor for mitra proof upload",
@@ -123,7 +123,7 @@ describe("Hermes E2E smoke (Wave 4)", () => {
     expect(slackBody.text).toContain("🤖 *Hermes Block Vendored*")
     expect(slackBody.text).toContain("score:")
     expect(slackBody.text).toContain("PR: https://github.com/")
-    expect(slackBody.text).toContain("install: dash add image-editor-with-audit")
+    expect(slackBody.text).toContain("install: dashkit add image-editor-with-audit")
 
     // 8. Queue entry mutated: vendored + generated_block_path set.
     const queueAfter = readQueue(harness.queuePath)

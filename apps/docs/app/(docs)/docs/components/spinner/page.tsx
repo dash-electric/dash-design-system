@@ -24,7 +24,7 @@ export default function SpinnerDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add spinner`} />
+        <DocsCode language="bash" code={`dashkit add spinner`} />
       </DocsSection>
 
       <DocsSection title="Usage">

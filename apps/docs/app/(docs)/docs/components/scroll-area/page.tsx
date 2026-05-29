@@ -35,7 +35,7 @@ export default function ScrollAreaDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add scroll-area`} />
+        <DocsCode language="bash" code={`dashkit add scroll-area`} />
       </DocsSection>
 
       <DocsSection title="Sizes">

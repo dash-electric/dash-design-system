@@ -20,7 +20,7 @@ export default function MultiItemFormPatternPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add multi-item-form`} />
+        <DocsCode language="bash" code={`dashkit add multi-item-form`} />
       </DocsSection>
 
       <DocsSection

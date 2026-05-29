@@ -33,22 +33,22 @@ pnpm add -g dash`}
       </DocsSection>
 
       <DocsSection
-        title="dash init"
+        title="dashkit init"
         description="Scaffold a consumer project so it can talk to the @dash registry."
       >
         <DocsCode
           language="bash"
           code={`# interactive — prompts for registry URL, token, framework
-dash init
+dashkit init
 
 # non-interactive
-dash init --yes --token sk-xxxx --registry https://ds.dash.com/r/{name}.json`}
+dashkit init --yes --token sk-xxxx --registry https://ds.dash.com/r/{name}.json`}
         />
         <p className="text-sm text-text-sub-600 mt-3">
           Writes <code className="text-xs">components.json</code>, appends{" "}
           <code className="text-xs">DASH_REGISTRY_TOKEN</code> to{" "}
           <code className="text-xs">.env.local</code>, then auto-runs{" "}
-          <code className="text-xs">dash add base-theme utils</code>.
+          <code className="text-xs">dashkit add base-theme utils</code>.
         </p>
         <DocsPropsTable
           rows={[
@@ -71,17 +71,17 @@ dash init --yes --token sk-xxxx --registry https://ds.dash.com/r/{name}.json`}
       </DocsSection>
 
       <DocsSection
-        title="dash add <names…>"
+        title="dashkit add <names…>"
         description="Install one or more registry items. Resolves registryDependencies recursively, dedupes, topo-sorts, then writes files and installs npm deps."
       >
         <DocsCode
           language="bash"
-          code={`dash add button
-dash add @dash/button                       # explicit @dash prefix
-dash add https://example.com/foo.json       # full URL also works
-dash add card avatar popover                # multiple at once
-dash add form --overwrite                   # force overwrite existing files
-dash add data-table --dry-run               # plan only — no writes`}
+          code={`dashkit add button
+dashkit add @dash/button                       # explicit @dash prefix
+dashkit add https://example.com/foo.json       # full URL also works
+dashkit add card avatar popover                # multiple at once
+dashkit add form --overwrite                   # force overwrite existing files
+dashkit add data-table --dry-run               # plan only — no writes`}
         />
         <p className="text-sm text-text-sub-600 mt-3">
           Bare names like <code className="text-xs">button</code> resolve against the first
@@ -101,15 +101,15 @@ dash add data-table --dry-run               # plan only — no writes`}
       </DocsSection>
 
       <DocsSection
-        title="dash build"
+        title="dashkit build"
         description="Build distribution JSON from a source registry.json. Drop-in for scripts/build-registry.ts."
       >
         <DocsCode
           language="bash"
           code={`# default: registry.json → public/r/
-dash build
+dashkit build
 
-dash build --registry custom.json --output dist/r`}
+dashkit build --registry custom.json --output dist/r`}
         />
         <DocsPropsTable
           rows={[
@@ -121,14 +121,14 @@ dash build --registry custom.json --output dist/r`}
       </DocsSection>
 
       <DocsSection
-        title="dash list"
+        title="dashkit list"
         description="List available registry items."
       >
         <DocsCode
           language="bash"
-          code={`dash list                                       # uses components.json registry
-dash list --type component                      # filter by type
-dash list --registry file:///path/to/public/r   # ad-hoc registry (no components.json)`}
+          code={`dashkit list                                       # uses components.json registry
+dashkit list --type component                      # filter by type
+dashkit list --registry file:///path/to/public/r   # ad-hoc registry (no components.json)`}
         />
         <DocsPropsTable
           rows={[
@@ -144,13 +144,13 @@ dash list --registry file:///path/to/public/r   # ad-hoc registry (no components
       </DocsSection>
 
       <DocsSection
-        title="dash search <query>"
+        title="dashkit search <query>"
         description="Full-text search the registry index by name, title, and description (case-insensitive)."
       >
         <DocsCode
           language="bash"
-          code={`dash search button
-dash search "data table"`}
+          code={`dashkit search button
+dashkit search "data table"`}
         />
       </DocsSection>
 

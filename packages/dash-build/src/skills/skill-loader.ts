@@ -14,7 +14,7 @@ import type { SkillContext } from "./types.js"
 export interface LoadSkillOpts {
   /** Repo root the user is generating against. */
   repoPath: string
-  /** Force re-scan of `dash info --json` even when fingerprint matches. */
+  /** Force re-scan of `dashkit info --json` even when fingerprint matches. */
   forceRefresh?: boolean
 }
 

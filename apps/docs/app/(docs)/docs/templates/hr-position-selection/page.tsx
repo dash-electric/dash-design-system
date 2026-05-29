@@ -20,7 +20,7 @@ export default function HrPositionSelectionDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-position-selection`} />
+        <DocsCode language="bash" code={`dashkit add hr-position-selection`} />
       </DocsSection>
 
       <DocsSection title="Examples">

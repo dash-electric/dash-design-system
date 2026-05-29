@@ -21,7 +21,7 @@ export default function MarketingPaymentBillingDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-payment-billing`} />
+        <DocsCode language="bash" code={`dashkit add marketing-payment-billing`} />
       </DocsSection>
 
       <DocsSection title="Examples">

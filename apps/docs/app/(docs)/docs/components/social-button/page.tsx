@@ -23,7 +23,7 @@ export default function SocialButtonDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add social-button`} />
+        <DocsCode language="bash" code={`dashkit add social-button`} />
       </DocsSection>
 
       <DocsSection title="Examples">

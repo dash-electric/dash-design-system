@@ -25,7 +25,7 @@ describe("collectDashInfo", () => {
     const result = await collectDashInfo("/tmp/proj", { exec })
 
     expect(exec).toHaveBeenCalledWith(
-      "dash info --json",
+      "dashkit info --json",
       expect.objectContaining({ cwd: "/tmp/proj", encoding: "utf8" }),
     )
     expect(result.ok).toBe(true)
@@ -48,7 +48,7 @@ describe("collectDashInfo", () => {
     const result = await collectDashInfo("/tmp/proj", { exec })
     expect(result.ok).toBe(false)
     if (!result.ok) {
-      expect(result.reason).toMatch(/dash info failed/)
+      expect(result.reason).toMatch(/dashkit info failed/)
       expect(result.reason).toMatch(/ENOENT/)
     }
   })
@@ -75,7 +75,7 @@ describe("collectDashInfo", () => {
     const exec = vi.fn().mockReturnValue(JSON.stringify(validSnapshot))
     await collectDashInfo(undefined, { exec })
     expect(exec).toHaveBeenCalledWith(
-      "dash info --json",
+      "dashkit info --json",
       expect.objectContaining({ cwd: process.cwd() }),
     )
   })

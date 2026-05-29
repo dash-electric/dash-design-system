@@ -228,9 +228,6 @@ importers:
 
   packages/cli:
     dependencies:
-      '@dash/registry-schema':
-        specifier: workspace:*
-        version: link:../registry-schema
       commander:
         specifier: ^14.0.3
         version: 14.0.3
@@ -256,6 +253,9 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@dash/registry-schema':
+        specifier: workspace:*
+        version: link:../registry-schema
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.1
@@ -265,12 +265,15 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.7
         version: 4.1.7(vitest@4.1.7)
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.3)(typescript@6.0.3)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
       vitest:
         specifier: ^4.1.7
-        version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3))
+        version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.22.3))
 
   packages/dash-build:
     dependencies:
@@ -340,6 +343,9 @@ importers:
       '@types/node':
         specifier: ^25
         version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.3)(typescript@6.0.3)
       tsx:
         specifier: ^4.19.2
         version: 4.22.3
@@ -348,7 +354,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: ^4.1.7
-        version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3))
+        version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.22.3))
 
   packages/skill:
     devDependencies:

@@ -95,7 +95,7 @@ export function getCredential(
   return store[normalizeUrl(registryUrl)]?.token
 }
 
-/** Exposed for tests / `dash login --help` messaging. */
+/** Exposed for tests / `dashkit login --help` messaging. */
 export function credentialsFilePath(opts: CredentialsOpts = {}): string {
   return credentialsPath(opts)
 }

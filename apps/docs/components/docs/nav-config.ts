@@ -216,7 +216,7 @@ export const componentInventory: InventorySection = {
       items: [
         // Buttons (7 variants) — consolidated under single "Buttons" entry.
         // Direct routes still live at /docs/components/{button-group,icon-button,…}
-        // for `dash add <name>` install commands; nav surfaces only the master page.
+        // for `dashkit add <name>` install commands; nav surfaces only the master page.
         { title: "Buttons", href: "/docs/components/button", status: "shipped" },
         { title: "Toggle", href: "/docs/components/toggle", status: "shipped" },
         { title: "Toggle Group", href: "/docs/components/toggle-group", status: "shipped" },

@@ -172,7 +172,7 @@ cd <dash-repo>
 echo "DASH_REGISTRY_TOKEN=$TOKEN" >> .env.local
 
 # Initialize
-dash init
+dashkit init
 # prompts:
 #   - registry URL: https://ds.dash.com   (default)
 #   - token: pulled from .env.local
@@ -183,11 +183,11 @@ dash init
 #   - installs @dash/base-theme
 
 # First install
-dash add button
+dashkit add button
 # expect: files written to registry/dash/ui/button.tsx, deps installed
 ```
 
-If `dash init` or `dash add` fails, capture the full error + tagged `@dud` in `#design-system` Slack channel before continuing.
+If `dashkit init` or `dashkit add` fails, capture the full error + tagged `@dud` in `#design-system` Slack channel before continuing.
 
 ---
 
@@ -201,7 +201,7 @@ In 1Password:
 
    > Dash DS is live at https://ds.dash.com 🟣
    > Install CLI: `pnpm i -g dash`
-   > Wire your repo: `cd <repo> && dash init` (grab token from 1Password → "Dash Registry — DASH_REGISTRY_TOKEN").
+   > Wire your repo: `cd <repo> && dashkit init` (grab token from 1Password → "Dash Registry — DASH_REGISTRY_TOKEN").
    > Docs: https://ds.dash.com/docs
    > Bugs / friction: ping @irfan or `#design-system`.
 

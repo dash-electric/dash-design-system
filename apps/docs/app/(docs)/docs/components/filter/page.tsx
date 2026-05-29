@@ -91,7 +91,7 @@ export default function FilterDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add filter`} />
+        <DocsCode language="bash" code={`dashkit add filter`} />
       </DocsSection>
 
       <DocsSection title="Single pill">

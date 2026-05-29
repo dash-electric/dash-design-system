@@ -23,7 +23,7 @@ const passDesign: DesignContext = {
 
 const passSkill: SkillContext = {
   systemAppend: "Per-repo: backoffice Next pages + useState + axios",
-  sources: ["dash info"],
+  sources: ["dashkit info"],
   detectedRepoStack: "backoffice",
   schemaVersion: 4,
 }

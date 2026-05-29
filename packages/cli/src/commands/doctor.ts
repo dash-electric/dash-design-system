@@ -1,5 +1,5 @@
 /**
- * `dash doctor` — end-to-end health check per user laptop.
+ * `dashkit doctor` — end-to-end health check per user laptop.
  *
  * Runs registry reachability, token validity, MCP wiring (Claude Code + Cursor),
  * CLI version, framework detection, components.json presence, .env.local token,
@@ -206,7 +206,7 @@ export async function collectDoctor(opts: DoctorOpts = {}): Promise<DoctorReport
         label: "Token valid",
         status: "warn",
         detail: "no DASH_REGISTRY_TOKEN configured",
-        hint: "run `dash init` or `dash login`",
+        hint: "run `dashkit init` or `dashkit login`",
       })
     } else {
       const url = `${registryUrl.replace(/\/$/, "")}/r/utils.json`
@@ -228,7 +228,7 @@ export async function collectDoctor(opts: DoctorOpts = {}): Promise<DoctorReport
           label: "Token valid",
           status: "error",
           detail: `/r/utils.json → ${res.status}`,
-          hint: "token expired or revoked — run `dash login`",
+          hint: "token expired or revoked — run `dashkit login`",
         })
       } else {
         checks.push({
@@ -253,7 +253,7 @@ export async function collectDoctor(opts: DoctorOpts = {}): Promise<DoctorReport
     label: "MCP wired",
     status: ccWired || cursorWired ? "ok" : "warn",
     detail: `${ccLabel} · ${cursorLabel}`,
-    hint: ccWired || cursorWired ? undefined : "run `dash mcp init`",
+    hint: ccWired || cursorWired ? undefined : "run `dashkit mcp init`",
   })
 
   // 4. CLI version
@@ -280,7 +280,7 @@ export async function collectDoctor(opts: DoctorOpts = {}): Promise<DoctorReport
     label: "components.json",
     status: cjExists ? "ok" : "warn",
     detail: cjExists ? "found" : "missing",
-    hint: cjExists ? undefined : "run `dash init`",
+    hint: cjExists ? undefined : "run `dashkit init`",
   })
 
   // 7. .env.local with token
@@ -290,7 +290,7 @@ export async function collectDoctor(opts: DoctorOpts = {}): Promise<DoctorReport
     label: ".env.local",
     status: hasTok ? "ok" : "warn",
     detail: hasTok ? "DASH_REGISTRY_TOKEN set" : "missing",
-    hint: hasTok ? undefined : "run `dash init`",
+    hint: hasTok ? undefined : "run `dashkit init`",
   })
 
   // 8. Node version

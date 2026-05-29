@@ -23,7 +23,7 @@ export default function AspectRatioDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add aspect-ratio`} />
+        <DocsCode language="bash" code={`dashkit add aspect-ratio`} />
       </DocsSection>
 
       <DocsSection title="Examples">

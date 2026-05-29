@@ -59,7 +59,7 @@ import "@/registry/dash/themes/ride/colors.css";
 ```
 
 The CLI (Phase C) will codify this and let you swap themes at scaffold time:
-`dash init --theme=logistic`.
+`dashkit init --theme=logistic`.
 
 ## Migration note
 

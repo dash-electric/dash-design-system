@@ -57,7 +57,7 @@ export default function ChartDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add chart`} />
+        <DocsCode language="bash" code={`dashkit add chart`} />
       </DocsSection>
 
       <DocsSection title="Usage">

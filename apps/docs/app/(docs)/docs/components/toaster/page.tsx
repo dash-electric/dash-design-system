@@ -46,7 +46,7 @@ export default function ToasterDocsPage() {
       <Toaster />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add toaster`} />
+        <DocsCode language="bash" code={`dashkit add toaster`} />
         <p className="text-sm text-text-sub-600 mt-2 max-w-2xl">
           Mount &lt;Toaster /&gt; once at the app root (typically inside <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">app/layout.tsx</code>). Call <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">toast()</code> / <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">toastFilled()</code> from anywhere.
         </p>

@@ -5,7 +5,7 @@
  * it matches (portal-v2, backoffice, halo-fe, basecamp, fleet-mgmt) or returns
  * `unknown` if no profile matches.
  *
- * Used by `dash init` / Adaptation Layer to auto-select the right per-repo
+ * Used by `dashkit init` / Adaptation Layer to auto-select the right per-repo
  * rule set (jotai vs zustand, App vs Pages router, MUI vs AlignUI, etc.).
  *
  * Pure filesystem inspection — no network, no spawn.

@@ -21,7 +21,7 @@ export default function MarketingProductsSettingsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-products-settings`} />
+        <DocsCode language="bash" code={`dashkit add marketing-products-settings`} />
       </DocsSection>
 
       <DocsSection title="Examples">

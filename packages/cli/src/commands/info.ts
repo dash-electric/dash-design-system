@@ -1,7 +1,7 @@
 /**
- * `dash info` — scan consumer project and emit a structured snapshot of its
+ * `dashkit info` — scan consumer project and emit a structured snapshot of its
  * Dash state. Prereq plumbing for the dash-skill auto-activation pipeline:
- * the skill calls `dash info --json` to capture repo context (installed items,
+ * the skill calls `dashkit info --json` to capture repo context (installed items,
  * framework, aliases, registry URL, custom hooks) before injecting AI prompts.
  *
  * Side-effect free: pure read of CWD. Never prints the registry token; only

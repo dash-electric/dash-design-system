@@ -583,7 +583,7 @@ export default function ProductWidgetsDocsPage() {
                 <div className="text-sm font-semibold text-text-strong-950">{p.title}</div>
                 <div className="text-xs text-text-sub-600">{p.note}</div>
               </div>
-              <code className="text-[10px] text-text-soft-400 font-mono">dash add widget-shell</code>
+              <code className="text-[10px] text-text-soft-400 font-mono">dashkit add widget-shell</code>
             </div>
           ))}
         </div>
@@ -913,7 +913,7 @@ function WidgetShell({
   headerExtra?: React.ReactNode
   headerNoTitle?: boolean
   children: React.ReactNode
-  /** Per-widget registry slug — drives the footer `dash add <slug>` hint. Falls back to `widget-shell` primitive. */
+  /** Per-widget registry slug — drives the footer `dashkit add <slug>` hint. Falls back to `widget-shell` primitive. */
   registrySlug?: string
   /** Hide footer install hint (e.g. in shell-anatomy demo). */
   showInstall?: boolean
@@ -940,7 +940,7 @@ function WidgetShell({
       ) : null}
       {showInstall ? (
         <div className="mt-3 pt-2.5 border-t border-stroke-soft-200/70 flex items-center justify-between">
-          <code className="text-[10px] text-text-soft-400 font-mono">dash add {registrySlug ?? "widget-shell"}</code>
+          <code className="text-[10px] text-text-soft-400 font-mono">dashkit add {registrySlug ?? "widget-shell"}</code>
           <span className="text-[10px] font-medium text-(--primary-base) opacity-0 transition-opacity group-hover/widget:opacity-100">
             Install →
           </span>

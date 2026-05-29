@@ -1,6 +1,6 @@
 /**
  * Snapshot cache — persist DashInfoSnapshot to disk keyed by cwd, so repeated
- * `loadDashSkill` calls within a short window skip the `dash info` shell-out.
+ * `loadDashSkill` calls within a short window skip the `dashkit info` shell-out.
  *
  * Cache location: `~/.dash/skill-cache/<key>.json`
  *   - <key> = sha256(cwd) first 16 chars
@@ -191,7 +191,7 @@ export function logMetric(event: CacheMetricEvent): void {
   }
 }
 
-/** Return all cache entries currently on disk. Used by `dash skill status`. */
+/** Return all cache entries currently on disk. Used by `dashkit skill status`. */
 export function listCacheEntries(): Array<{ key: string; path: string; cachedAt: number; fingerprint: string; cwd: string }> {
   const dir = getCacheDir()
   let names: string[]

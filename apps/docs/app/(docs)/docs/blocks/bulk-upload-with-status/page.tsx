@@ -47,7 +47,7 @@ export default function BulkUploadWithStatusDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add bulk-upload-with-status`} />
+        <DocsCode language="bash" code={`dashkit add bulk-upload-with-status`} />
       </DocsSection>
 
       <DocsSection

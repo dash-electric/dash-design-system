@@ -33,7 +33,7 @@ export default function SpinnerLoaderDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add spinner-loader`} />
+        <DocsCode language="bash" code={`dashkit add spinner-loader`} />
       </DocsSection>
 
       <DocsSection title="Usage">

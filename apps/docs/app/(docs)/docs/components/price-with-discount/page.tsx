@@ -34,7 +34,7 @@ export default function PriceWithDiscountDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add price-with-discount`} />
+        <DocsCode language="bash" code={`dashkit add price-with-discount`} />
       </DocsSection>
 
       <DocsSection title="Usage">

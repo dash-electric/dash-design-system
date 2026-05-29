@@ -22,7 +22,7 @@ import { toast } from "@/registry/dash/ui/toaster"
  * WHY this pattern is anchored as a registry block (not docs prose):
  *  - The "delivery creation page jadi multi-order" refactor case keeps re-
  *    appearing (Dash Express, Bulk, Halo). Anchoring as code means AI agents
- *    can copy this exact shape via `dash add multi-item-form` instead of
+ *    can copy this exact shape via `dashkit add multi-item-form` instead of
  *    re-deriving the array-of-rows wiring (which they get wrong ~half the
  *    time).
  *  - The row shape + validator live in the same file as the form so agents

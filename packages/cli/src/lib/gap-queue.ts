@@ -1,5 +1,5 @@
 /**
- * Local queue for `dash gap report` — records DS coverage gaps PEs encounter
+ * Local queue for `dashkit gap report` — records DS coverage gaps PEs encounter
  * (e.g., "no image-editor in DS"). Written to `~/.dash/gap-queue.json`. Wave 4
  * dashboard polls this file (or its sync'd remote equivalent) to surface the
  * backlog to the DS maintainer.

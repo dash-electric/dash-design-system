@@ -26,7 +26,7 @@ export const DocsCursorConfig = () => (
       know every component this docs site documents, and can install them on
       your behalf. Run{" "}
       <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">
-        dash mcp init --cursor
+        dashkit mcp init --cursor
       </code>{" "}
       to scaffold the file automatically.
     </p>

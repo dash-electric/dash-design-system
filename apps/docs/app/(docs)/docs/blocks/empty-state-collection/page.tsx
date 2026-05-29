@@ -21,7 +21,7 @@ export default function EmptyStateCollectionDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add empty-state-collection`} />
+        <DocsCode language="bash" code={`dashkit add empty-state-collection`} />
       </DocsSection>
 
       <DocsSection title="Preview">

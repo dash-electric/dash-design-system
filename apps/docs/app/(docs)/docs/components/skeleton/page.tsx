@@ -23,7 +23,7 @@ export default function SkeletonDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add skeleton`} />
+        <DocsCode language="bash" code={`dashkit add skeleton`} />
       </DocsSection>
 
       <DocsSection title="Usage">

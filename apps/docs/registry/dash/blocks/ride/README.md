@@ -21,4 +21,4 @@ If the workflow is also relevant to Logistic but with different copy/state, **fo
 
 ## How to use this index
 
-Exploration aid for engineers. Real consumption stays via `dash add <name>`.
+Exploration aid for engineers. Real consumption stays via `dashkit add <name>`.

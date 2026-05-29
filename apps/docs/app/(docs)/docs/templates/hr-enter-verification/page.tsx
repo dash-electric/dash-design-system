@@ -20,7 +20,7 @@ export default function HrEnterVerificationDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-enter-verification`} />
+        <DocsCode language="bash" code={`dashkit add hr-enter-verification`} />
       </DocsSection>
 
       <DocsSection title="Examples">
