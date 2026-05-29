@@ -621,9 +621,13 @@ describe("Orchestrator", () => {
       text: "touch auth",
       repo: "acme/x",
     })
-    // Drive the run deterministically (same pattern as the happy-path tests)
-    // instead of racing the auto-kick microtask with a fixed sleep.
-    await orchestrator.processPrompt(submitted.promptId)
+    // submitPrompt auto-kicks the run (queueMicrotask); the in-flight guard
+    // makes an explicit processPrompt a no-op, so poll the auto-run to terminal.
+    for (let i = 0; i < 200; i++) {
+      const p = store.getPrompt(submitted.promptId)
+      if (p && (p.status === "awaiting_approval" || p.status === "failed")) break
+      await new Promise((r) => setTimeout(r, 25))
+    }
 
     // Every commit must drop the auth path and keep the safe file.
     expect(branchManager.writeGeneratedFiles).toHaveBeenCalled()
@@ -699,7 +703,13 @@ describe("Orchestrator", () => {
       text: "rewrite existing",
       repo: "acme/x",
     })
-    await orchestrator.processPrompt(submitted.promptId)
+    // Poll the auto-kicked run to terminal (explicit processPrompt is a no-op
+    // under the in-flight guard).
+    for (let i = 0; i < 200; i++) {
+      const p = store.getPrompt(submitted.promptId)
+      if (p && (p.status === "awaiting_approval" || p.status === "failed")) break
+      await new Promise((r) => setTimeout(r, 25))
+    }
 
     for (const w of written) {
       const committed = w.files.map((f) => f.path)

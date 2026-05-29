@@ -280,6 +280,10 @@ export class Orchestrator {
    *  chain's clarify gate is suppressed for these on the resume pass so a
    *  skip (no folded answers) doesn't re-trigger the same clarify forever. */
   private readonly clarifyResolved: Set<string> = new Set()
+  /** Run ids currently being processed — coalesces a concurrent processPrompt
+   *  re-entry (auto-kick microtask + explicit call) so they don't race the
+   *  shared artifact. */
+  private readonly processing: Map<string, Promise<void>> = new Map()
 
   constructor(opts: OrchestratorOptions) {
     this.store = opts.store
@@ -977,6 +981,34 @@ export class Orchestrator {
       this.logger.info("processPrompt: terminal, skipping", { id: promptId })
       return
     }
+    // In-flight guard. submitPrompt auto-kicks a run via queueMicrotask; if a
+    // caller (or test) also invokes processPrompt explicitly, BOTH would race
+    // on the same artifact — the second re-entry intermittently clobbered
+    // artifact.rejectedPatches back to undefined. Coalesce: a second concurrent
+    // call for the same run AWAITS the in-flight run's promise instead of
+    // starting a parallel one. The explicit caller still resolves only when
+    // generation finishes (preserves the await-drives-to-completion contract)
+    // while the artifact is mutated by a single run.
+    const inFlight = this.processing.get(promptId)
+    if (inFlight) {
+      this.logger.info("processPrompt: already in-flight, awaiting existing run", {
+        id: promptId,
+      })
+      return await inFlight
+    }
+    const run = this.processPromptInner(promptId, prompt)
+    this.processing.set(promptId, run)
+    try {
+      return await run
+    } finally {
+      this.processing.delete(promptId)
+    }
+  }
+
+  private async processPromptInner(
+    promptId: string,
+    prompt: PromptRecord,
+  ): Promise<void> {
 
     // P11 — capture wall-clock start so run.end + the cost ledger carry a
     // real durationMs instead of the hardcoded 0. The codex runner doesn't
