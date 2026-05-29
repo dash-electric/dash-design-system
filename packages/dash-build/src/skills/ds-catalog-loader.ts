@@ -24,6 +24,7 @@
 import { promises as fs, existsSync } from "node:fs"
 import path from "node:path"
 import { findRepoRoot } from "./design-loader.js"
+import { createMcpClientFromEnv, type DashDsMcpClient } from "./mcp-client.js"
 
 export interface DSCatalogAtom {
   /** Registry name as it appears in registry.json (kebab-case). */
@@ -76,6 +77,11 @@ export interface LoadDSContextOpts {
   maxTemplates?: number
   /** Cap domain glossary character budget. Defaults to ~12K chars. */
   glossaryCharBudget?: number
+  /**
+   * MCP client override (test injection). When omitted, the default client is
+   * built from `DASH_DS_MCP_URL`; unset → MCP branch skipped, FS path runs.
+   */
+  mcpClient?: DashDsMcpClient | null
 }
 
 interface RawRegistryItem {
@@ -241,6 +247,32 @@ function locateDomainGlossary(repoRoot: string): string {
  * DSContext when the repo isn't dash-ds (or registry.json was never built).
  */
 export async function loadDSContext(opts: LoadDSContextOpts = {}): Promise<DSContext> {
+  const budgetMcp = opts.glossaryCharBudget ?? 12_000
+
+  // MCP-first branch (boundary spec §4). Gated on an injected client or
+  // DASH_DS_MCP_URL; falls through to the FS reads below on ANY error.
+  const mcpClient = opts.mcpClient !== undefined ? opts.mcpClient : createMcpClientFromEnv()
+  if (mcpClient) {
+    try {
+      const [catalogRaw, rulesText, glossaryRaw] = await Promise.all([
+        mcpClient.getCatalogRaw(),
+        mcpClient.getCompressedRules(),
+        mcpClient.getGlossary(),
+      ])
+      const catalog = parseRegistry(catalogRaw)
+      catalog.source = mcpClient.source
+      return {
+        catalog,
+        compressedRules: rulesText,
+        domainGlossary: truncateGlossary(glossaryRaw, budgetMcp),
+        loadedSources: [mcpClient.source],
+        missingSources: [],
+      }
+    } catch {
+      /* fall through to FS — boundary fallback */
+    }
+  }
+
   const cwd = opts.cwd ?? process.cwd()
   const repoRoot = opts.repoRoot ?? findRepoRoot(cwd)
   const loaded: string[] = []

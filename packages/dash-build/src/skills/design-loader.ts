@@ -19,6 +19,7 @@
 import { promises as fs, existsSync } from "node:fs"
 import path from "node:path"
 import type { DesignContext, FoundationManifest } from "./types.js"
+import { createMcpClientFromEnv, type DashDsMcpClient } from "./mcp-client.js"
 
 function hasDashFoundation(dir: string): boolean {
   return existsSync(path.join(dir, "apps", "docs", "registry", "dash", "foundation"))
@@ -80,6 +81,12 @@ export interface LoadDesignOpts {
   repoRoot?: string
   /** cwd to start search from (used when `repoRoot` is not provided). */
   cwd?: string
+  /**
+   * MCP client override (test injection). When omitted, the default client
+   * is built from `DASH_DS_MCP_URL`; if that is unset the MCP branch is
+   * skipped and the FS path runs (hermetic tests, monorepo dev).
+   */
+  mcpClient?: DashDsMcpClient | null
 }
 
 const FALLBACK_LAYERED = `# Layered Architecture (fallback summary)
@@ -99,6 +106,27 @@ Decision:
 export async function loadDesignContext(
   opts: LoadDesignOpts = {},
 ): Promise<DesignContext> {
+  // MCP-first branch (boundary spec §4). Gated on an injected client or
+  // DASH_DS_MCP_URL; falls through to the FS reads below on ANY error so
+  // monorepo dev + the hermetic suite keep working.
+  const mcpClient = opts.mcpClient !== undefined ? opts.mcpClient : createMcpClientFromEnv()
+  if (mcpClient) {
+    try {
+      const dc = await mcpClient.getDesignContext()
+      return {
+        designContract: dc.designContract,
+        cardinalRules: dc.cardinalRules,
+        voiceRules: dc.voiceRules,
+        manifest: dc.manifest,
+        layeredArchitecture: dc.layeredArchitecture ?? FALLBACK_LAYERED,
+        loadedSources: [mcpClient.source],
+        missingSources: [],
+      }
+    } catch {
+      /* fall through to FS — boundary fallback */
+    }
+  }
+
   const cwd = opts.cwd ?? process.cwd()
   const repoRoot = opts.repoRoot ?? findRepoRoot(cwd)
   const foundationDir = path.join(repoRoot, "apps", "docs", "registry", "dash", "foundation")
