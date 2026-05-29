@@ -1099,6 +1099,18 @@
       "description": "Canonical domain entity glossary across all 11 Dash repos (5 FE + 5 BE + 1 infra). Phase 1 (code-inferred, 22 entities) + Phase 1.5 (AGENTS.md verbatim) + Phase 1.7A (ts-delivery: Delivery FSM 26 statuses, AppError, Joi Bahasa, provider_order.* webhooks) + Phase 1.7B (nest-express + nest-fleet Drizzle, fleet entities Vehicle/Handover/Maintenance/Incident/Repossession, infrastructure OpenTofu+Cloud Run) + Phase 1.7C (next-basecamp shadcn+Zustand+Firebase, react-fleet-management CRA+CRACO+SSO-trio). 30+ entities total, state machines (delivery/maintenance/repossession/vehicle/incident), BE envelope discrimination (numeric vs string status), drift inventory (Dash team action items). Drop into consumer repo so AI agents know entity shapes + endpoints + conventions without re-reading repos."
     },
     {
+      "name": "dash-ai-rules.compressed",
+      "type": "registry:file",
+      "title": "Dash AI Rules (compressed)",
+      "description": "Pre-compressed form of dash-ai-rules.md — the Skill v2/v4 default context block (~18K chars, critical blocks pinned). Served over MCP via get_rules{variant:compressed} so AI generation gets the conventions without the full 800-line rules file. Regenerate via the Skill rebuild; do NOT edit the .compressed.md by hand."
+    },
+    {
+      "name": "design-context",
+      "type": "registry:file",
+      "title": "Dash Design Context Bundle",
+      "description": "Bundle of the cross-repo design contract (design.md), the Layered Architecture spec (LAYERED-ARCHITECTURE.md), the Layer 0 cardinal rules + voice rules, and the foundation manifest.json. Served over MCP via get_design_context in one round-trip so dash-build's design-loader can read the full design contract without walking the monorepo filesystem. Each file is identified by its registry path (design.md, LAYERED-ARCHITECTURE.md, cardinal-rules.md, voice-rules.md, manifest.json)."
+    },
+    {
       "name": "animated-alert",
       "type": "registry:ui",
       "title": "Animated Alert",
@@ -1525,6 +1537,18 @@
       "title": "Finance Budget Overview Widget",
       "description": "Annual / yearly budget vs actual stacked bars with category legend. Built on widget-shell primitive. Alias bundle — installs widget-shell + composition deps; reference implementation lives in finance-widgets.",
       "theme": "shared"
+    },
+    {
+      "name": "brand-logo",
+      "type": "registry:ui",
+      "title": "Brand Logo",
+      "description": "333 third-party brand / product / crypto logos, full-color static SVG (not tintable). Use <BrandLogo name=\"github\" /> or <BrandLogo name=\"adobe\" variant=\"white\" />. Full set ships via public/brand/."
+    },
+    {
+      "name": "flag",
+      "type": "registry:ui",
+      "title": "Flag",
+      "description": "262 region flags, full-color circular static SVG (not tintable). Use <Flag code=\"indonesia\" />. Keys listed in public/flags/manifest.json. Full set ships via public/flags/."
     }
   ]
 }

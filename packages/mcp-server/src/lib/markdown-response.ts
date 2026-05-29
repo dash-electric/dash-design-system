@@ -402,6 +402,71 @@ export function formatAuditChecklist(markdown: string): string {
   `;
 }
 
+export interface DesignContextView {
+  designContract: string;
+  layeredArchitecture: string;
+  cardinalRules: string;
+  voiceRules: string;
+  manifest: Record<string, unknown> | null;
+}
+
+export function formatDesignContext(ctx: DesignContextView): string {
+  const manifestBlock = ctx.manifest
+    ? `\`\`\`json\n${JSON.stringify(ctx.manifest, null, 2)}\n\`\`\``
+    : "_No foundation manifest available._";
+
+  return dedent`
+    ## Dash Design Context
+
+    The full cross-repo design contract in one bundle. Honour this when
+    generating or reviewing Dash UI. Verify with \`dash audit --layer-only\`.
+
+    ---
+
+    ## Design Contract (\`design.md\`)
+
+    ${ctx.designContract || "_Not available._"}
+
+    ---
+
+    ## Layered Architecture
+
+    ${ctx.layeredArchitecture || "_Not available._"}
+
+    ---
+
+    ## Cardinal Rules (Layer 0)
+
+    ${ctx.cardinalRules || "_Not available._"}
+
+    ---
+
+    ## Voice Rules (Layer 0)
+
+    ${ctx.voiceRules || "_Not available._"}
+
+    ---
+
+    ## Foundation Manifest
+
+    ${manifestBlock}
+  `;
+}
+
+export function formatGlossary(glossary: string): string {
+  return dedent`
+    ## Dash Domain Glossary
+
+    Canonical entity shapes, table names, state machines, and endpoint
+    conventions across all Dash repos. Use these names verbatim in generated
+    code; do not invent entity or field names.
+
+    ---
+
+    ${glossary || "_Glossary not available._"}
+  `;
+}
+
 export function formatError(message: string, suggestion?: string): string {
   return dedent`
     ## Error
