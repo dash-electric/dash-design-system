@@ -3,7 +3,7 @@
  *
  * Verifies:
  *   - registry.json is parsed into atoms / blocks / templates
- *   - the markdown rendering surfaces @dash/ui atom names
+ *   - the markdown rendering surfaces @dash/kit atom names
  *   - missing / malformed registries degrade gracefully (no throw)
  *   - the domain glossary truncation respects budgets and inserts a marker
  */
@@ -54,7 +54,7 @@ describe("parseRegistry", () => {
 })
 
 describe("renderDSCatalogBlock", () => {
-  it("emits the @dash/ui import directive and per-atom lines", () => {
+  it("emits the @dash/kit import directive and per-atom lines", () => {
     const cat = parseRegistry({
       items: [
         {
@@ -72,7 +72,7 @@ describe("renderDSCatalogBlock", () => {
       ],
     })
     const out = renderDSCatalogBlock(cat)
-    expect(out).toContain('import { X } from "@dash/ui"')
+    expect(out).toContain('import { X } from "@dash/kit"')
     expect(out).toContain("`badge` (Badge)")
     expect(out).toContain("`button` (Button)")
     expect(out).toContain("Inline tag for status")

@@ -25,9 +25,9 @@ import { measureDSCoverage } from "./validator.js"
 
 const UI_FILE_RE = /\.(tsx|jsx)$/
 const DS_IMPORT_BLOCK_RE =
-  /import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"]@dash\/(?:ui|blocks|templates|patterns|hooks|lib)(?:\/[^'"]*)?['"]/g
+  /import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"]@dash\/(?:kit|ui|blocks|templates|patterns|hooks|lib)(?:\/[^'"]*)?['"]/g
 const DS_IMPORT_DEFAULT_RE =
-  /import\s+([A-Za-z_$][A-Za-z0-9_$]*)\s+from\s+['"]@dash\/(?:ui|blocks|templates|patterns|hooks|lib)(?:\/[^'"]*)?['"]/g
+  /import\s+([A-Za-z_$][A-Za-z0-9_$]*)\s+from\s+['"]@dash\/(?:kit|ui|blocks|templates|patterns|hooks|lib)(?:\/[^'"]*)?['"]/g
 
 const LOW_COVERAGE_THRESHOLD = 0.4
 const STRONG_COVERAGE_THRESHOLD = 0.8
@@ -85,14 +85,14 @@ function buildSuggestions(input: {
   if (input.dsImports === 0) {
     out.push(
       "No @dash/* imports detected. Generated UI should prefer atoms from " +
-        "@dash/ui (Badge / Card / Table / Tabs) before reaching for raw HTML.",
+        "@dash/kit (Badge / Card / Table / Tabs) before reaching for raw HTML.",
     )
   }
   if (input.rawUtilityAntipatterns > 0) {
     out.push(
       `Found ${input.rawUtilityAntipatterns} raw utility-class status pattern(s). ` +
         "Replace `<div className=\"bg-success-light\">` with " +
-        "`<Badge variant=\"success\">` from @dash/ui.",
+        "`<Badge variant=\"success\">` from @dash/kit.",
     )
   }
   if (

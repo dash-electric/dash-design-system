@@ -1,7 +1,7 @@
 /**
  * Dash Design System catalog loader.
  *
- * Reads `apps/docs/registry.json` to surface the canonical list of `@dash/ui`
+ * Reads `apps/docs/registry.json` to surface the canonical list of `@dash/kit`
  * atoms (Layer 1 components) and Layer 3 blocks the model can `import` from.
  * Also loads the compressed AI rules + domain glossary so the system prompt
  * has the full context block — not just the Layer 0 cardinal rules.
@@ -186,7 +186,7 @@ export function renderDSCatalogBlock(catalog: DSCatalog, opts: LoadDSContextOpts
     `Dash DS registry catalog (Layer 1 atoms + Layer 3 blocks + templates).`,
     `Total registry items: ${catalog.total}. Source: ${catalog.source ?? "(unresolved)"}`,
     "",
-    `Layer 1 atoms (\`import { X } from "@dash/ui"\`) — ${catalog.atoms.length} available:`,
+    `Layer 1 atoms (\`import { X } from "@dash/kit"\`) — ${catalog.atoms.length} available:`,
     "",
   )
   for (const atom of catalog.atoms.slice(0, maxAtoms)) {

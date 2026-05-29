@@ -39,7 +39,7 @@ const PASSING_PRD_EVAL: PRDEval = {
 const CODEGEN_OUTPUT =
   "Generated:\n\n```js [src/pages/suspensions.js]\n" +
   'import { useState } from "react"\n' +
-  'import { Badge } from "@dash/ui"\n' +
+  'import { Badge } from "@dash/kit"\n' +
   'export default function P() {\n  return <Badge variant="success" className="bg-primary-500 text-text-strong-950">Anda</Badge>\n}\n' +
   "```\n\nUses useState. No banned libs."
 

@@ -71,8 +71,8 @@ function isInformalDefaultRepo(repoSlug: RepoSurface | null | undefined): boolea
 // Phase B (Tier 0C / 0J / 0K) — DS coverage + stack mandate + voice helpers.
 // ---------------------------------------------------------------------------
 
-/** Match any `import … from "@dash/<pkg>"` (ui, blocks, templates, etc.). */
-const DS_IMPORT_RE = /from\s+['"]@dash\/(?:ui|blocks|templates|patterns|hooks|lib)(?:\/[^'"]*)?['"]/g
+/** Match any `import … from "@dash/<pkg>"` (kit, ui, blocks, templates, etc.). */
+const DS_IMPORT_RE = /from\s+['"]@dash\/(?:kit|ui|blocks|templates|patterns|hooks|lib)(?:\/[^'"]*)?['"]/g
 /** Lightweight JSX element counter — matches `<Tag ` or `<Tag>` or `<Tag/>`. */
 const JSX_ELEMENT_RE = /<([A-Za-z][A-Za-z0-9.-]*)[\s/>]/g
 /** UI-shaped prompt keywords — table / dashboard / form / list / modal / etc. */
@@ -309,7 +309,7 @@ export interface ValidateOptions {
 // Scores how much the generated TSX leans on Dash DS imports vs raw HTML.
 // When ratio is low AND the prompt is UI-shaped, the validator emits a
 // high-severity error so the chain can retry with a stronger DS-first
-// directive (composer adds "PREFER @dash/ui imports" hint on retry).
+// directive (composer adds "PREFER @dash/kit imports" hint on retry).
 //
 // The full scorer ships in Phase B as `src/skills/ds-coverage-scorer.ts`.
 // Until that lands we compute a minimal in-line stub so 0D wiring is testable
@@ -416,7 +416,7 @@ export function checkDsCoverage(
     message:
       `Output uses ${score.dashImports}/${score.totalImports} Dash DS imports ` +
       `(ratio ${(score.dsImportRatio * 100).toFixed(0)}% < threshold ${DS_IMPORT_RATIO_THRESHOLD * 100}%). ` +
-      `UI-shaped prompts must prefer @dash/ui atoms (Badge, Card, Table, Tabs, Button, Input, …) ` +
+      `UI-shaped prompts must prefer @dash/kit atoms (Badge, Card, Table, Tabs, Button, Input, …) ` +
       `over raw <div>/<span>/<button> markup. Retry with stronger DS-first directive.`,
     file: focusFile,
     ruleId: "DS-COVERAGE",
@@ -697,7 +697,7 @@ export function validateOutput(
 
   // ── Phase 0D — DS coverage gate ─────────────────────────────────────────
   // UI-shaped prompts (dashboard/form/table/button/page/tab) MUST lean on
-  // @dash/ui atoms. Raw HTML + Tailwind utilities is the "Lovable lab demo"
+  // @dash/kit atoms. Raw HTML + Tailwind utilities is the "Lovable lab demo"
   // anti-pattern user explicitly pushed back on. High-severity finding so
   // `passed` flips false and the chain retries with a stronger directive.
   const dsCoverageError = checkDsCoverage(parsed, { prompt: opts.prompt })
@@ -721,7 +721,7 @@ export function validateOutput(
         severity: "medium",
         message:
           `Raw utility-class status pattern detected (${dsMetrics.rawUtilityAntipatterns} file(s)). ` +
-          `Use \`<Badge variant="...">\` from @dash/ui instead of \`<div className="bg-success-light">\`.`,
+          `Use \`<Badge variant="...">\` from @dash/kit instead of \`<div className="bg-success-light">\`.`,
         file: focusFile,
         // Distinct ruleId from Phase 0D's "DS-COVERAGE" so callers can target
         // each gate independently in tests + dashboards.

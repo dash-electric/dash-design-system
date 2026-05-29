@@ -26,13 +26,13 @@ describe("reviewDesignCoverage", () => {
     expect(out.suggestions[0]).toMatch(/No @dash\/\* imports/i)
   })
 
-  it("extracts named imports from @dash/ui blocks", () => {
+  it("extracts named imports from @dash/kit blocks", () => {
     const out = reviewDesignCoverage(
       emptyResponse([
         tsx(
           "src/page.tsx",
-          'import { Badge, Card, type CardProps } from "@dash/ui"\n' +
-            'import Table from "@dash/ui/table"\n' +
+          'import { Badge, Card, type CardProps } from "@dash/kit"\n' +
+            'import Table from "@dash/kit/table"\n' +
             'export default function Page(){return <Badge variant="success"><Card/></Badge>}',
         ),
       ]),
@@ -72,7 +72,7 @@ describe("reviewDesignCoverage", () => {
       emptyResponse([
         tsx(
           "src/strong.tsx",
-          'import { Badge, Card } from "@dash/ui"\n' +
+          'import { Badge, Card } from "@dash/kit"\n' +
             "export default function S(){return <Badge><Card/></Badge>}",
         ),
       ]),

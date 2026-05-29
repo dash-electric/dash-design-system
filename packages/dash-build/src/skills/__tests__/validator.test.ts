@@ -597,7 +597,7 @@ describe("validateOutput", () => {
             path: "src/dashboard.tsx",
             content: [
               'import * as React from "react"',
-              'import { Badge } from "@dash/ui/badge"',
+              'import { Badge } from "@dash/kit/badge"',
               "export const Dashboard = () =>",
               '  <div className="bg-primary-base text-text-strong-950">',
               "    <Badge>active</Badge>",
@@ -669,7 +669,7 @@ describe("validateOutput", () => {
           {
             path: "src/dashboard.tsx",
             content: [
-              'import { Card } from "@dash/ui"',
+              'import { Card } from "@dash/kit"',
               "export const X = () =>",
               '  <Card><div className="bg-success-light text-success-dark px-3 py-1 rounded-2xl">ON_TRACK</div></Card>',
             ].join("\n"),
@@ -690,7 +690,7 @@ describe("validateOutput", () => {
           {
             path: "src/dashboard.tsx",
             content: [
-              'import { Badge, Card } from "@dash/ui"',
+              'import { Badge, Card } from "@dash/kit"',
               "export const X = () => <Card><Badge variant=\"success\">ON_TRACK</Badge></Card>",
             ].join("\n"),
           },
@@ -729,7 +729,7 @@ describe("validateOutput", () => {
         parsed([
           {
             path: "src/pages/suspensions.tsx",
-            content: 'import { Badge } from "@dash/ui"\nexport default function P() { return <Badge variant="success" className="bg-primary-500 text-text-strong-950">ok</Badge> }',
+            content: 'import { Badge } from "@dash/kit"\nexport default function P() { return <Badge variant="success" className="bg-primary-500 text-text-strong-950">ok</Badge> }',
           },
         ]),
         EMPTY_DESIGN,
@@ -748,7 +748,7 @@ describe("validateOutput", () => {
             path: "src/pages/x.tsx",
             content: [
               'import { atom } from "jotai"',
-              'import { Badge } from "@dash/ui"',
+              'import { Badge } from "@dash/kit"',
               'export const X = () => <Badge variant="info" className="bg-primary-500 text-text-strong-950">x</Badge>',
             ].join("\n"),
           },
@@ -767,7 +767,7 @@ describe("validateOutput", () => {
         parsed([
           {
             path: "preview.tsx",
-            content: 'import { Badge } from "@dash/ui"\nexport default function Preview() { return <Badge variant="success" className="bg-primary-500 text-text-strong-950">ok</Badge> }',
+            content: 'import { Badge } from "@dash/kit"\nexport default function Preview() { return <Badge variant="success" className="bg-primary-500 text-text-strong-950">ok</Badge> }',
           },
         ]),
         EMPTY_DESIGN,

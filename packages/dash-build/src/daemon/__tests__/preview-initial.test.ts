@@ -493,7 +493,7 @@ describe("renderWorkspace embeds the init script when given a blob", () => {
           "export default function Hello() { return <div>hi</div> }",
         contextMap: {
           landsAt: "Hello.tsx",
-          uses: ["@dash/ui"],
+          uses: ["@dash/kit"],
           be: [],
           audit: null,
         },

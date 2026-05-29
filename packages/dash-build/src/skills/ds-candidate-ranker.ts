@@ -5,7 +5,7 @@
  * NAMES across runs). This module scans the actual generated source code
  * of completed runs for inline JSX patterns that look like DS atoms but
  * were rolled raw (`<div className="...">`). The output is a short list of
- * candidate components to promote into `@dash/ui`.
+ * candidate components to promote into `@dash/kit`.
  *
  * Why both rankers?
  *   - Name ranker = "this run produced a file called MetricCard.tsx"
@@ -448,6 +448,6 @@ function explainCandidate(info: {
   return (
     `Inline ${info.shape}-shaped div appeared ${info.occurrences}× ` +
     `across ${info.projects} project(s); ${variantPart}; ` +
-    `effort to add to @dash/ui: ${info.effort}.`
+    `effort to add to @dash/kit: ${info.effort}.`
   )
 }

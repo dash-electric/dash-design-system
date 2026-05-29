@@ -49,7 +49,7 @@ function passingDeps(overrides: Partial<ChainDeps> = {}): ChainDeps {
               // passes even when the prompt is UI-shaped ("dashboard").
               "Generated:\n\n```js [src/pages/suspensions.js]\n" +
               'import { useState } from "react"\n' +
-              'import { Badge } from "@dash/ui"\n' +
+              'import { Badge } from "@dash/kit"\n' +
               'export default function P() {\n  return <Badge variant="success" className="bg-primary-500 text-text-strong-950">Anda</Badge>\n}\n' +
               "```\n\nUses useState. No banned libs.",
           },
@@ -303,7 +303,7 @@ describe("generateWithSkillChain", () => {
       )
       const call = (deps.anthropic!.messages.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
       expect(call.system).toContain("DS-FIRST DIRECTIVE")
-      expect(call.system).toContain('import { X } from "@dash/ui"')
+      expect(call.system).toContain('import { X } from "@dash/kit"')
       expect(call.system).toContain("anti-pattern")
       expect(call.system).toContain("Badge")
     })

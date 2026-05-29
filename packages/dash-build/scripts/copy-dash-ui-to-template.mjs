@@ -2,13 +2,19 @@
 /**
  * copy-dash-ui-to-template.mjs — Tier 0 Phase C / 0E (sub-task 1).
  *
- * Copies a CURATED, SAFE subset of `@dash/ui` atoms from
- * `apps/docs/registry/dash/ui/*.tsx` into
+ * Copies a CURATED, SAFE subset of Dash UI atoms into
  * `packages/dash-build/preview-template/dash-ui/*.tsx` so they can be shipped
  * into the Sandpack iframe at runtime. The barrel `index.tsx` re-exports
  * every copied atom, so generated code that does
- * `import { Badge } from "@dash/ui"` resolves at runtime instead of 404-ing
- * against npm (the registry is sovereign — `@dash/ui` is NOT published).
+ * `import { Badge } from "@dash/kit"` resolves at runtime instead of 404-ing
+ * against npm (the registry is sovereign — `@dash/kit` is NOT published).
+ *
+ * Source resolution (see `resolveAtomsDir`):
+ *   - `package` mode — the installed `@dash/kit` package IS the post-ban-gate,
+ *     import-rewritten bundle. We copy its tree VERBATIM (no re-gate).
+ *   - `source` mode  — dev fallback. Read the raw atoms from the monorepo
+ *     `apps/docs/registry/dash/ui/*.tsx` and run the ban-gate + import rewrite
+ *     (the same logic `@dash/kit`'s own build applies — they share `planCopy`).
  *
  * Why we only ship a subset:
  *   - Many atoms pull heavy external deps (recharts, react-day-picker, cmdk,
@@ -22,8 +28,9 @@
  *     into iframe generation otherwise.
  *   - Atoms transitively depending on a dropped atom are pruned (BFS closure).
  *
- * Output:
- *   preview-template/dash-ui/
+ * Output (also the `@dash/kit` package layout — flat, so package mode is a
+ * verbatim tree copy):
+ *   preview-template/dash-ui/  (== @dash/kit/)
  *     ├── index.tsx       (barrel re-export `export * from "./badge"` …)
  *     ├── lib/utils.tsx   (the `cn` helper — depended on by every atom)
  *     ├── badge.tsx       (rewritten imports → `./lib/utils`, `./button`)
@@ -47,9 +54,11 @@ import {
 } from "node:fs"
 import { basename, dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import { createRequire } from "node:module"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+const require = createRequire(import.meta.url)
 
 // ─── Paths ────────────────────────────────────────────────────────────────
 const PACKAGE_ROOT = resolve(__dirname, "..")
@@ -59,6 +68,27 @@ const LIB_SOURCE_PATH = resolve(REPO_ROOT, "apps", "docs", "registry", "dash", "
 const OUTPUT_DIR = resolve(PACKAGE_ROOT, "preview-template", "dash-ui")
 const OUTPUT_LIB_DIR = resolve(OUTPUT_DIR, "lib")
 const MANIFEST_PATH = resolve(OUTPUT_DIR, "manifest.json")
+
+/**
+ * Resolve where the atom source lives. Two modes:
+ *   - `package` — the installed `@dash/kit` package. It IS the post-ban-gate,
+ *     import-rewritten bundle (its own build already ran `planCopy`), so the
+ *     copy is a verbatim tree copy: no re-gate, no rewrite.
+ *   - `source`  — monorepo dev fallback. The raw, un-gated atoms at
+ *     `apps/docs/registry/dash/ui`. The ban-gate + rewrite runs here.
+ *
+ * Resolve order: installed `@dash/kit` first, monorepo source dir as fallback.
+ */
+export function resolveAtomsDir() {
+  try {
+    const pkgJson = require.resolve("@dash/kit/package.json")
+    return { mode: "package", dir: dirname(pkgJson) }
+  } catch {
+    // `apps/docs/registry/dash/ui` is a DIR PATH (source location), not the
+    // `@dash/kit` package specifier — fine to keep referencing it for dev.
+    return { mode: "source", dir: ATOMS_SOURCE_DIR }
+  }
+}
 
 // ─── Banned packages — never ship an atom that imports any of these ───────
 // Mirror of `BANNED_IMPORTS` in `src/skills/prompt-composer.ts` plus the
@@ -160,15 +190,35 @@ function hasUnsupportedRegistryRef(source) {
 
 /**
  * Pure entry point used by `__tests__/copy-dash-ui-to-template.test.ts`.
- * Returns the `{ included, skipped, source }` triple without touching disk.
+ * Returns the `{ included, skipped }` pair without touching disk.
+ *
+ * `mode`:
+ *   - `"source"` (default) — raw monorepo atoms; run the ban-gate + BFS prune +
+ *     import rewrite.
+ *   - `"package"` — the `@dash/kit` bundle is ALREADY gated + rewritten, so
+ *     every `.tsx` (except `index.tsx`) is included verbatim, no re-gate.
  */
-export function planCopy({ atomsDir = ATOMS_SOURCE_DIR } = {}) {
+export function planCopy({ atomsDir = resolveAtomsDir().dir, mode = "source" } = {}) {
   if (!existsSync(atomsDir)) {
     throw new Error(`Atom source dir not found: ${atomsDir}`)
   }
   const atomFiles = readdirSync(atomsDir)
     .filter((f) => f.endsWith(".tsx"))
     .sort()
+
+  if (mode === "package") {
+    // Verbatim: the kit bundle is the post-ban-gate output. Drop only the
+    // barrel `index.tsx` (we regenerate it) — every other `.tsx` ships as-is.
+    const included = atomFiles
+      .filter((f) => f !== "index.tsx")
+      .map((file) => {
+        const slug = basename(file, ".tsx")
+        const source = readFileSync(join(atomsDir, file), "utf8")
+        return { slug, source, rewritten: source, externals: [], siblingDeps: [] }
+      })
+      .sort((a, b) => a.slug.localeCompare(b.slug))
+    return { included, skipped: [] }
+  }
 
   const skipped = []
   /** @type {Map<string, { source: string; siblingDeps: Set<string>; externals: Set<string> }>} */
@@ -232,9 +282,9 @@ export function renderBarrel(includedSlugs) {
     "/**",
     " * AUTO-GENERATED by scripts/copy-dash-ui-to-template.mjs — do NOT edit.",
     " *",
-    ' * Barrel re-export so generated components can use `import { Badge } from "@dash/ui"`',
+    ' * Barrel re-export so generated components can use `import { Badge } from "@dash/kit"`',
     " * inside the Sandpack iframe at runtime. The Sandpack files map maps the bare",
-    ' * `@dash/ui` specifier to `/dash-ui/index.tsx`.',
+    ' * `@dash/kit` specifier to `/dash-ui/index.tsx`.',
     " */",
     "",
   ].join("\n")
@@ -242,13 +292,17 @@ export function renderBarrel(includedSlugs) {
   return header + lines.join("\n") + "\n"
 }
 
-/** Render the bundled `lib/utils.tsx` — copied verbatim from registry. */
-function readLibUtils() {
-  return readFileSync(LIB_SOURCE_PATH, "utf8")
+/**
+ * Read the bundled `lib/utils.tsx`. In `source` mode this is the raw registry
+ * `lib/utils.ts`; in `package` mode the `@dash/kit` bundle already carries a
+ * pre-built `lib/utils.tsx`, so read it from the kit dir.
+ */
+function readLibUtils({ libSourcePath = LIB_SOURCE_PATH } = {}) {
+  return readFileSync(libSourcePath, "utf8")
 }
 
 /** Render the manifest JSON the runtime can read for diagnostics. */
-function renderManifest(plan) {
+export function renderManifest(plan) {
   return JSON.stringify(
     {
       generatedAt: new Date().toISOString(),
@@ -269,14 +323,14 @@ function renderManifest(plan) {
 /**
  * Apply the plan to disk. Idempotent — wipes `dash-ui/` before writing.
  */
-export function applyPlan(plan, { outputDir = OUTPUT_DIR } = {}) {
+export function applyPlan(plan, { outputDir = OUTPUT_DIR, libSourcePath = LIB_SOURCE_PATH } = {}) {
   // Wipe and recreate so stale files never linger.
   if (existsSync(outputDir)) rmSync(outputDir, { recursive: true, force: true })
   mkdirSync(outputDir, { recursive: true })
   mkdirSync(join(outputDir, "lib"), { recursive: true })
 
   // lib/utils.tsx — depended on by every atom.
-  writeFileSync(join(outputDir, "lib", "utils.tsx"), readLibUtils(), "utf8")
+  writeFileSync(join(outputDir, "lib", "utils.tsx"), readLibUtils({ libSourcePath }), "utf8")
 
   for (const atom of plan.included) {
     writeFileSync(join(outputDir, `${atom.slug}.tsx`), atom.rewritten, "utf8")
@@ -294,12 +348,16 @@ export function applyPlan(plan, { outputDir = OUTPUT_DIR } = {}) {
 const isDirectInvoke =
   process.argv[1] && resolve(process.argv[1]) === resolve(__filename)
 if (isDirectInvoke) {
-  const plan = planCopy()
-  applyPlan(plan)
+  const { mode, dir } = resolveAtomsDir()
+  const plan = planCopy({ atomsDir: dir, mode })
+  // In package mode the kit ships its own pre-built lib/utils.tsx; in source
+  // mode read the raw registry lib.
+  const libSourcePath = mode === "package" ? join(dir, "lib", "utils.tsx") : LIB_SOURCE_PATH
+  applyPlan(plan, { libSourcePath })
   const sample = plan.included.slice(0, 6).map((a) => a.slug).join(", ")
   // eslint-disable-next-line no-console
   console.log(
-    `[copy-dash-ui-to-template] wrote ${plan.included.length} atom(s) to preview-template/dash-ui/ ` +
-      `(skipped ${plan.skipped.length}). Sample: ${sample}…`,
+    `[copy-dash-ui-to-template] (${mode} mode, src ${dir}) wrote ${plan.included.length} atom(s) ` +
+      `to preview-template/dash-ui/ (skipped ${plan.skipped.length}). Sample: ${sample}…`,
   )
 }

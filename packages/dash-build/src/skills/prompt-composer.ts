@@ -54,7 +54,7 @@ export interface ComposeInput {
    *  domain glossary. When present, the composer injects:
    *    - the DS-FIRST directive block (NEVER raw HTML + utility classes
    *      where a Dash DS atom exists);
-   *    - the catalog of available @dash/ui atoms + @dash/blocks composites;
+   *    - the catalog of available @dash/kit atoms + @dash/blocks composites;
    *    - compressed AI rules + truncated domain glossary.
    *  Absent = legacy callers — composer falls back to today's behaviour. */
   dsContext?: DSContext | null
@@ -730,7 +730,7 @@ function renderOutputFormatSection(
  */
 export const DS_FIRST_DIRECTIVE_BLOCK = `## DS-FIRST DIRECTIVE (NON-NEGOTIABLE)
 
-ALWAYS prefer \`import { X } from "@dash/ui"\` over raw HTML + utility classes.
+ALWAYS prefer \`import { X } from "@dash/kit"\` over raw HTML + utility classes.
 
 Raw HTML is anti-pattern:
   BAD:  <div className="bg-success-light text-success-dark px-3 py-1 rounded-2xl">ON_TRACK</div>
@@ -760,7 +760,7 @@ raw HTML, mark it in the explanation as "DS atom gap — candidate for registry"
  */
 const STACK_MANDATE_BY_REPO: Record<string, string> = {
   "portal-v2":
-    "portal-v2 → Next App Router + TypeScript (.tsx) + Jotai (global state) + axios (data fetch). Use atoms from @dash/ui; do NOT introduce Zustand, Redux, or react-query.",
+    "portal-v2 → Next App Router + TypeScript (.tsx) + Jotai (global state) + axios (data fetch). Use atoms from @dash/kit; do NOT introduce Zustand, Redux, or react-query.",
   backoffice:
     "backoffice → Next Pages Router + JavaScript (.js, NOT .ts/.tsx) + useState (local state) + axios + NextAuth (session). Do NOT introduce TypeScript, Jotai, Zustand, Redux, or react-query.",
   basecamp:

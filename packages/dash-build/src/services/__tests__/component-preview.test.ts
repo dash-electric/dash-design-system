@@ -49,7 +49,7 @@ describe("component-preview service", () => {
     expect(paths.has("/public/index.html")).toBe(false)
     expect(res.sandpack.template).toBe("react-ts")
     expect(res.sandpack.entry).toBe("/index.tsx")
-    // Any additional files MUST belong to the @dash/ui local bundle — we
+    // Any additional files MUST belong to the @dash/kit local bundle — we
     // never leak unrelated paths into the iframe.
     for (const path of paths) {
       const isCore =
@@ -59,7 +59,7 @@ describe("component-preview service", () => {
         path === "/index.tsx" ||
         path === "/mocks.json"
       if (!isCore) {
-        expect(path.startsWith("/node_modules/@dash/ui/")).toBe(true)
+        expect(path.startsWith("/node_modules/@dash/kit/")).toBe(true)
       }
     }
   })
@@ -153,35 +153,35 @@ export default function F(){return null}`
   })
 
   it("auto-detects Dash DS imports and surfaces them in dependencies", async () => {
-    const src = `import { Button } from "@dash/ui/button"
+    const src = `import { Button } from "@dash/kit/button"
 import * as React from "react"
 export default function F(){return <Button>Hi</Button>}`
     const res = await renderComponentPreview({ componentSource: src })
     expect(res.ok).toBe(true)
     if (!res.ok) return
-    expect(res.sandpack.dependencies["@dash/ui"]).toBeDefined()
+    expect(res.sandpack.dependencies["@dash/kit"]).toBeDefined()
     expect(res.sandpack.dependencies["react"]).toBeDefined()
     expect(res.sandpack.dependencies["react-dom"]).toBeDefined()
   })
 
-  it("declares @dash/ui dependency as a semver range (not workspace:* — Sandpack rejects it)", async () => {
-    const src = `import { Badge } from "@dash/ui/badge"
+  it("declares @dash/kit dependency as a semver range (not workspace:* — Sandpack rejects it)", async () => {
+    const src = `import { Badge } from "@dash/kit/badge"
 import * as React from "react"
 export default function F(){return <Badge>x</Badge>}`
     const res = await renderComponentPreview({ componentSource: src })
     expect(res.ok).toBe(true)
     if (!res.ok) return
-    const v = res.sandpack.dependencies["@dash/ui"]
+    const v = res.sandpack.dependencies["@dash/kit"]
     expect(v).toBeDefined()
     expect(v).not.toMatch(/^workspace:/)
   })
 
-  it("resolves @remixicon/react when @dash/ui is imported (icon-belang fix 2026-05-29)", async () => {
-    // @dash/ui atoms (Badge, Alert, …) import icons from @remixicon/react
+  it("resolves @remixicon/react when @dash/kit is imported (icon-belang fix 2026-05-29)", async () => {
+    // @dash/kit atoms (Badge, Alert, …) import icons from @remixicon/react
     // transitively. If that package isn't in the Sandpack dependency map the
     // iframe can't fetch it and every DS icon renders as a broken box. Any
-    // component pulling in @dash/ui must therefore force-resolve the icon pkg.
-    const src = `import { Badge } from "@dash/ui/badge"
+    // component pulling in @dash/kit must therefore force-resolve the icon pkg.
+    const src = `import { Badge } from "@dash/kit/badge"
 import * as React from "react"
 export default function F(){return <Badge>x</Badge>}`
     const res = await renderComponentPreview({ componentSource: src })
@@ -203,27 +203,27 @@ export default function F(){return <RiMailLine />}`
     expect(res.sandpack.dependencies["@remixicon/react"]).toBeDefined()
   })
 
-  it("does NOT warn for @dash/ui when the local source bundle is shipped (Tier 0 Phase C)", async () => {
-    // The prebuild script copies a curated subset of `@dash/ui` atoms into
+  it("does NOT warn for @dash/kit when the local source bundle is shipped (Tier 0 Phase C)", async () => {
+    // The prebuild script copies a curated subset of `@dash/kit` atoms into
     // preview-template/dash-ui/. When present, Sandpack resolves the import
     // locally (no CDN round-trip) so the legacy "not on npm" warning MUST NOT
-    // fire for `@dash/ui` — emitting it would mislead the LLM into rendering
+    // fire for `@dash/kit` — emitting it would mislead the LLM into rendering
     // raw HTML fallbacks instead of trusting the local bundle.
-    const src = `import { Badge } from "@dash/ui/badge"
+    const src = `import { Badge } from "@dash/kit/badge"
 import * as React from "react"
 export default function F(){return <Badge>x</Badge>}`
     const res = await renderComponentPreview({ componentSource: src })
     expect(res.ok).toBe(true)
     if (!res.ok) return
     const dashUiWarnings = res.warnings.filter(
-      (w) => w.includes("@dash/ui") && w.includes("not yet published"),
+      (w) => w.includes("@dash/kit") && w.includes("not yet published"),
     )
     expect(dashUiWarnings).toEqual([])
     // Still warns for unrelated unresolvable Dash packages.
     expect(res.warnings.some((w) => w.includes("@dash/registry-schema"))).toBe(false)
   })
 
-  it("still warns for @dash/ui when the local bundle directory is absent", async () => {
+  it("still warns for @dash/kit when the local bundle directory is absent", async () => {
     // Sanity check — when developer skipped the prebuild step, the bundle
     // cache has `available: false` and the legacy warning re-fires so the
     // user knows to run `pnpm build`.
@@ -235,7 +235,7 @@ export default function F(){return <Badge>x</Badge>}`
     const bundle = __inspectDashUiBundleForTests()
     // In CI/dev the bundle IS shipped; the test documents the inverse path.
     if (!bundle.available) {
-      const src = `import { Badge } from "@dash/ui/badge"
+      const src = `import { Badge } from "@dash/kit/badge"
 import * as React from "react"
 export default function F(){return <Badge>x</Badge>}`
       const res = await renderComponentPreview({ componentSource: src })
@@ -249,44 +249,44 @@ export default function F(){return <Badge>x</Badge>}`
     }
   })
 
-  it("ships the @dash/ui bundle into Sandpack files when present", async () => {
+  it("ships the @dash/kit bundle into Sandpack files when present", async () => {
     const bundle = __inspectDashUiBundleForTests()
     if (!bundle.available) {
       // Skip in environments where prebuild hasn't run — covered by the
       // companion test above.
       return
     }
-    const src = `import { Badge } from "@dash/ui"
+    const src = `import { Badge } from "@dash/kit"
 import * as React from "react"
 export default function F(){return <Badge>hi</Badge>}`
     const res = await renderComponentPreview({ componentSource: src })
     expect(res.ok).toBe(true)
     if (!res.ok) return
     // package.json + index.tsx + at least one atom.
-    expect(res.sandpack.files["/node_modules/@dash/ui/package.json"]).toBeDefined()
-    expect(res.sandpack.files["/node_modules/@dash/ui/index.tsx"]).toBeDefined()
-    expect(res.sandpack.files["/node_modules/@dash/ui/badge.tsx"]).toBeDefined()
+    expect(res.sandpack.files["/node_modules/@dash/kit/package.json"]).toBeDefined()
+    expect(res.sandpack.files["/node_modules/@dash/kit/index.tsx"]).toBeDefined()
+    expect(res.sandpack.files["/node_modules/@dash/kit/badge.tsx"]).toBeDefined()
     // All bundle files are hidden + read-only (user can't clobber them).
-    const pkgFile = res.sandpack.files["/node_modules/@dash/ui/package.json"]!
+    const pkgFile = res.sandpack.files["/node_modules/@dash/kit/package.json"]!
     expect(pkgFile.hidden).toBe(true)
     expect(pkgFile.readOnly).toBe(true)
   })
 
-  it("@dash/ui bundle barrel re-exports each shipped atom", () => {
+  it("@dash/kit bundle barrel re-exports each shipped atom", () => {
     const bundle = __inspectDashUiBundleForTests()
     if (!bundle.available) return
-    const indexFile = bundle.files["/node_modules/@dash/ui/index.tsx"]
+    const indexFile = bundle.files["/node_modules/@dash/kit/index.tsx"]
     expect(indexFile).toBeDefined()
     expect(indexFile!.code).toContain('export * from "./badge"')
   })
 
-  it("@dash/ui bundle includes lib/utils so atoms can resolve cn()", () => {
+  it("@dash/kit bundle includes lib/utils so atoms can resolve cn()", () => {
     const bundle = __inspectDashUiBundleForTests()
     if (!bundle.available) return
-    expect(bundle.files["/node_modules/@dash/ui/lib/utils.tsx"]).toBeDefined()
+    expect(bundle.files["/node_modules/@dash/kit/lib/utils.tsx"]).toBeDefined()
   })
 
-  it("@dash/ui atoms have local relative imports (no @/registry paths leak)", () => {
+  it("@dash/kit atoms have local relative imports (no @/registry paths leak)", () => {
     const bundle = __inspectDashUiBundleForTests()
     if (!bundle.available) return
     for (const [path, file] of Object.entries(bundle.files)) {
@@ -350,16 +350,16 @@ export default function F(){return <Badge>hi</Badge>}`
   })
 
   it("merges duplicate dependencies without producing duplicate keys", async () => {
-    const src = `import { Button } from "@dash/ui/button"
+    const src = `import { Button } from "@dash/kit/button"
 import * as React from "react"
 export default function F(){return null}`
     const res = await renderComponentPreview({
       componentSource: src,
-      dependencies: ["@dash/ui", "clsx", "@dash/ui"],
+      dependencies: ["@dash/kit", "clsx", "@dash/kit"],
     })
     expect(res.ok).toBe(true)
     if (!res.ok) return
-    expect(Object.keys(res.sandpack.dependencies).filter((d) => d === "@dash/ui")).toHaveLength(1)
+    expect(Object.keys(res.sandpack.dependencies).filter((d) => d === "@dash/kit")).toHaveLength(1)
   })
 
   it("derives a stable previewId from (promptId, source-hash)", async () => {
@@ -423,11 +423,11 @@ describe("detectBannedImports", () => {
 
 describe("detectDashDsImports", () => {
   it("returns top-level @dash/* packages from import statements", () => {
-    const src = `import { Button } from "@dash/ui/button"
-import { Toast } from "@dash/ui/toast"
+    const src = `import { Button } from "@dash/kit/button"
+import { Toast } from "@dash/kit/toast"
 import { schema } from "@dash/registry-schema"`
     expect(detectDashDsImports(src).sort()).toEqual(
-      ["@dash/registry-schema", "@dash/ui"].sort(),
+      ["@dash/registry-schema", "@dash/kit"].sort(),
     )
   })
 

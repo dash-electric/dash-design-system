@@ -30,7 +30,7 @@ export interface ComponentPreviewRequest {
   componentSource: string
   /**
    * Extra runtime deps the component imports beyond `react` / `react-dom`.
-   * Strings like `@dash/ui` or `clsx`. Versions are resolved by the service.
+   * Strings like `@dash/kit` or `clsx`. Versions are resolved by the service.
    */
   dependencies?: string[]
   /** Optional mock fixture overrides. Merged into the default template mocks. */
@@ -130,7 +130,7 @@ export const BANNED_PREVIEW_IMPORTS: readonly string[] = [
 /** Hard cap on inbound source — defensive guard. */
 export const MAX_SOURCE_BYTES = 256 * 1024
 
-/** Dash DS imports auto-aliased to `@dash/ui` registry. */
+/** Dash DS imports auto-aliased to `@dash/kit` registry. */
 const DASH_DS_PREFIX = "@dash/"
 
 /** Template directory — relative to this file. */
@@ -162,15 +162,15 @@ const TEMPLATE_DIR = (() => {
 })()
 
 /**
- * `@dash/ui` source bundle directory — populated at build time by
+ * `@dash/kit` source bundle directory — populated at build time by
  * `scripts/copy-dash-ui-to-template.mjs`. Each `.tsx` here is shipped into
- * the Sandpack files map under `/node_modules/@dash/ui/<file>` so that bare
- * `import { Badge } from "@dash/ui"` specifiers resolve to local source code
- * INSIDE the iframe — no CDN round-trip required (`@dash/ui` is not on npm).
+ * the Sandpack files map under `/node_modules/@dash/kit/<file>` so that bare
+ * `import { Badge } from "@dash/kit"` specifiers resolve to local source code
+ * INSIDE the iframe — no CDN round-trip required (`@dash/kit` is not on npm).
  *
  * Probed lazily — if the directory is missing (developer skipped `pnpm build`)
  * we degrade gracefully: the bundle is omitted from `files`, the dependency
- * map still includes `@dash/ui` as a warning trigger, and the iframe surfaces
+ * map still includes `@dash/kit` as a warning trigger, and the iframe surfaces
  * a "module not found" error for the user to act on.
  */
 const DASH_UI_BUNDLE_DIR = resolve(TEMPLATE_DIR, "dash-ui")
@@ -226,15 +226,15 @@ export function __clearTemplateCacheForTests(): void {
 }
 
 // ---------------------------------------------------------------------------
-// @dash/ui local bundle — built by `scripts/copy-dash-ui-to-template.mjs`.
+// @dash/kit local bundle — built by `scripts/copy-dash-ui-to-template.mjs`.
 // ---------------------------------------------------------------------------
 
 interface DashUiBundle {
   /** Sandpack files map keyed by absolute virtual path
-   *  (`/node_modules/@dash/ui/badge.tsx`, …). Empty when the directory is
+   *  (`/node_modules/@dash/kit/badge.tsx`, …). Empty when the directory is
    *  missing on disk (script not run yet). */
   files: Record<string, SandpackFile>
-  /** Bundle present + non-empty → safe to mark `@dash/ui` as resolvable. */
+  /** Bundle present + non-empty → safe to mark `@dash/kit` as resolvable. */
   available: boolean
   /** Diagnostic — atom count shipped. */
   atomCount: number
@@ -262,11 +262,11 @@ function loadDashUiBundle(): DashUiBundle {
     return dashUiBundleCache
   }
 
-  // 1. Synthetic `package.json` so Sandpack resolves `@dash/ui` → index.tsx.
-  files["/node_modules/@dash/ui/package.json"] = {
+  // 1. Synthetic `package.json` so Sandpack resolves `@dash/kit` → index.tsx.
+  files["/node_modules/@dash/kit/package.json"] = {
     code: JSON.stringify(
       {
-        name: "@dash/ui",
+        name: "@dash/kit",
         version: "0.0.0-preview",
         main: "./index.tsx",
         module: "./index.tsx",
@@ -314,7 +314,7 @@ function loadDashUiBundle(): DashUiBundle {
       }
     }
   }
-  walk(DASH_UI_BUNDLE_DIR, "/node_modules/@dash/ui")
+  walk(DASH_UI_BUNDLE_DIR, "/node_modules/@dash/kit")
 
   dashUiBundleCache = {
     files,
@@ -391,7 +391,7 @@ export function detectDashDsImports(source: string): string[] {
   while ((match = importRe.exec(stripped)) !== null) {
     const spec = match[1]!
     if (spec.startsWith(DASH_DS_PREFIX)) {
-      // Capture the top-level package (e.g. `@dash/ui` from `@dash/ui/button`).
+      // Capture the top-level package (e.g. `@dash/kit` from `@dash/kit/button`).
       const parts = spec.split("/")
       const pkg = parts.length >= 2 ? `${parts[0]}/${parts[1]}` : spec
       out.add(pkg)
@@ -461,7 +461,7 @@ export async function renderComponentPreview(
   }
 
   // 5. Resolve dependencies — merge declared deps with auto-detected Dash DS.
-  //    `@dash/ui` is intentionally kept in the dependency map even when the
+  //    `@dash/kit` is intentionally kept in the dependency map even when the
   //    local bundle resolves it — Sandpack still surfaces it under "deps"
   //    diagnostics and downstream callers (tests, dashboard) rely on the
   //    package name appearing there.
@@ -469,16 +469,16 @@ export async function renderComponentPreview(
   const declaredDeps = new Set([...(req.dependencies ?? []), ...dashDsImports])
   const dashUiBundle = loadDashUiBundle()
 
-  // ICON-SANDPACK-FIX (2026-05-29): the @dash/ui source bundle we ship into the
+  // ICON-SANDPACK-FIX (2026-05-29): the @dash/kit source bundle we ship into the
   // iframe contains 22 atoms (Badge, Alert, Button, …) that import icons from
   // `@remixicon/react`. That specifier is NOT a `@dash/*` package, so it never
   // appeared in the resolved deps → Sandpack couldn't fetch it → every DS icon
-  // rendered as a broken box ("belang"). Whenever the @dash/ui bundle is
+  // rendered as a broken box ("belang"). Whenever the @dash/kit bundle is
   // present (or the component imports remixicon directly), force the icon
   // package into the dependency map so esm.sh resolves it in-iframe.
   const usesRemixIcon =
     dashUiBundle.available ||
-    dashDsImports.includes("@dash/ui") ||
+    dashDsImports.includes("@dash/kit") ||
     /@remixicon\/react/.test(req.componentSource)
   if (usesRemixIcon) declaredDeps.add("@remixicon/react")
 
@@ -508,9 +508,9 @@ export async function renderComponentPreview(
       hidden: true,
       readOnly: true,
     },
-    // 6a. Ship the local `@dash/ui` source bundle. Sandpack's in-iframe
+    // 6a. Ship the local `@dash/kit` source bundle. Sandpack's in-iframe
     //     resolver walks `node_modules/<pkg>/package.json` first, so a bare
-    //     specifier like `import { Badge } from "@dash/ui"` is satisfied by
+    //     specifier like `import { Badge } from "@dash/kit"` is satisfied by
     //     the synthetic package.json + `index.tsx` barrel below. When the
     //     bundle directory is missing (prebuild script not run yet) this is
     //     a no-op and the legacy "not on npm" warning still fires.
@@ -523,15 +523,15 @@ export async function renderComponentPreview(
       "Component does not appear to `export default` — Sandpack may fail to mount.",
     )
   }
-  // Dash DS imports won't resolve via Sandpack's npm CDN until @dash/ui ships
+  // Dash DS imports won't resolve via Sandpack's npm CDN until @dash/kit ships
   // to npm or a self-hosted ESM proxy. Sub-task 1 of Tier 0 Phase C ships a
-  // local source bundle at `/node_modules/@dash/ui/*` — when that bundle is
-  // present we DON'T emit the legacy "not on npm" warning for `@dash/ui`
+  // local source bundle at `/node_modules/@dash/kit/*` — when that bundle is
+  // present we DON'T emit the legacy "not on npm" warning for `@dash/kit`
   // (the import resolves locally). We still warn for any other unresolvable
   // `@dash/*` package (e.g. `@dash/registry-schema`).
   const unresolvableDashImports = Array.from(declaredDeps).filter((d) => {
     if (!DASH_DS_UNRESOLVABLE.includes(d)) return false
-    if (d === "@dash/ui" && dashUiBundle.available) return false
+    if (d === "@dash/kit" && dashUiBundle.available) return false
     return true
   })
   if (unresolvableDashImports.length > 0) {
@@ -540,9 +540,9 @@ export async function renderComponentPreview(
         "Component will render with Tailwind utilities + Layer 0 tokens only.",
     )
   }
-  if (declaredDeps.has("@dash/ui") && !dashUiBundle.available) {
+  if (declaredDeps.has("@dash/kit") && !dashUiBundle.available) {
     warnings.push(
-      "@dash/ui local bundle missing from preview-template/dash-ui/. " +
+      "@dash/kit local bundle missing from preview-template/dash-ui/. " +
         "Run `pnpm --filter @dash/build copy-dash-ui` (or `pnpm build`) to ship the atoms.",
     )
   }
@@ -570,11 +570,11 @@ export async function renderComponentPreview(
  *
  * Unknown packages default to `latest`. Sandpack's npm proxy will resolve.
  *
- * `@dash/ui` is the sovereign Dash registry source and is NOT published to
+ * `@dash/kit` is the sovereign Dash registry source and is NOT published to
  * npm — Sandpack's CDN proxy will 404 on import. We declare it as `latest`
  * so the bundler attempts resolution (and the warning surfaces in the
  * `warnings` array), but the real DS-bundle plumbing lives in the iframe
- * `index.html` (Tailwind CDN + dash-tokens.css). When/if `@dash/ui` is
+ * `index.html` (Tailwind CDN + dash-tokens.css). When/if `@dash/kit` is
  * published to npm or proxied through a self-hosted ESM CDN, drop the
  * warning and bump the version here.
  */
@@ -583,12 +583,12 @@ const VERSION_MAP: Record<string, string> = {
   "react-dom": "^18.3.0",
   clsx: "^2.1.0",
   "tailwind-merge": "^2.5.0",
-  "@dash/ui": "latest",
+  "@dash/kit": "latest",
   "@dash/registry-schema": "latest",
   // Icon set. Pinned to the version apps/docs depends on so Sandpack's esm.sh
-  // resolve matches what the @dash/ui atoms were authored against. Without this
+  // resolve matches what the @dash/kit atoms were authored against. Without this
   // entry the iframe couldn't resolve the icons imported transitively by 22
-  // @dash/ui atoms (Badge, Alert, Button, …) → glyphs rendered as broken boxes
+  // @dash/kit atoms (Badge, Alert, Button, …) → glyphs rendered as broken boxes
   // ("belang"). See ICON-SANDPACK-FIX note below.
   "@remixicon/react": "^4.9.0",
 }
@@ -597,7 +597,7 @@ const VERSION_MAP: Record<string, string> = {
  *  Surfaced as warnings so the UI can hint "DS bundle not yet on npm — using
  *  Tailwind utility fallback". */
 const DASH_DS_UNRESOLVABLE: readonly string[] = [
-  "@dash/ui",
+  "@dash/kit",
   "@dash/registry-schema",
 ] as const
 
