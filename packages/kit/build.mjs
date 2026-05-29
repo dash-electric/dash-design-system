@@ -42,7 +42,7 @@ import {
   planCopy,
   renderBarrel,
   renderManifest,
-} from "../dash-build/scripts/copy-dash-ui-to-template.mjs"
+} from "./tooling/copy-dash-ui-to-template.mjs"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -53,7 +53,7 @@ const ATOMS_SOURCE_DIR = resolve(REPO_ROOT, "apps", "docs", "registry", "dash", 
 const LIB_SOURCE_PATH = resolve(REPO_ROOT, "apps", "docs", "registry", "dash", "lib", "utils.ts")
 
 // Files we never touch — the package shell.
-const PRESERVE = new Set(["package.json", "build.mjs", "README.md", "node_modules"])
+const PRESERVE = new Set(["package.json", "build.mjs", "README.md", "node_modules", "tooling"])
 
 // ─── Clean stale generated artifacts (everything except the shell) ──────────
 for (const entry of readdirSync(KIT_ROOT)) {
