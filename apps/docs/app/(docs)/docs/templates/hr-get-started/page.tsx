@@ -20,7 +20,7 @@ export default function HrGetStartedDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-get-started`} />
+        <DocsCode language="bash" code={`dashkit add hr-get-started`} />
       </DocsSection>
 
       <DocsSection title="Examples">

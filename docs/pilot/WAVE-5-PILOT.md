@@ -2,7 +2,7 @@
 
 > Pilot infrastructure + operational playbook for the Wave 5 smoke test.
 > Validates the adoption hypothesis behind the Dash DS Master Plan before
-> committing to broader rollout. Pairs with `dash feedback` CLI and the
+> committing to broader rollout. Pairs with `dashkit feedback` CLI and the
 > `/docs/admin/pilot` dashboard.
 
 ---
@@ -24,7 +24,7 @@ real names live in `~/.dash/pilot-cohort.json`, gitignored).
 |---|---|---|
 | Users complete onboarding (steps 1–9 of `ONBOARDING-PLAYBOOK`) | ≥3 | Admin dashboard / per-user checklist |
 | Users install ≥3 Dash components in their repo | ≥2 of 3 | `registry-audit.jsonl` byHashedClient |
-| Gap reports filed | ≥5 across cohort | `dash gap report` queue |
+| Gap reports filed | ≥5 across cohort | `dashkit gap report` queue |
 | Successful Hermes auto-vendor runs (if Hermes deployed) | ≥1 | Hermes audit log |
 | Critical bugs blocking user work | 0 | Slack #dash-ds-pilot triage |
 
@@ -32,7 +32,7 @@ real names live in `~/.dash/pilot-cohort.json`, gitignored).
 
 - **<2 users complete onboarding** within 7 days — adoption signal too
   weak; pause and diagnose before reinvesting.
-- **<30% of AI prompts respect Dash rules** (sampled from `dash audit`
+- **<30% of AI prompts respect Dash rules** (sampled from `dashkit audit`
   on user PRs) — would require Skill v4 work before retrying.
 - **3+ critical bugs filed** in week one — stop accepting new users,
   triage, ship fixes, resume.
@@ -62,7 +62,7 @@ GitHub).
 `ONBOARDING-PLAYBOOK.md § Invite Template`. Plain message, no marketing
 language. One sentence on what's in it for them ("ship faster with
 audited Dash patterns + Hermes auto-vendor for missing pieces"), one
-sentence on the ask ("7 working days, file feedback via `dash feedback
+sentence on the ask ("7 working days, file feedback via `dashkit feedback
 log`, join #dash-ds-pilot").
 
 **Day -1 — Reminder + token.** Share the registry Bearer token via
@@ -84,12 +84,12 @@ or 30-min sync.
 | 2 (Tue) | TBD | Onboard [User-B] (1:1, 60 min) + 15-min check-in with [User-A] |
 | 3 (Wed) | TBD | Onboard [User-C] (1:1, 60 min) + 15-min check-in with [User-B] |
 | 4 (Thu) | TBD | Group sync (30 min, all 3 users) — surface shared blockers |
-| 5 (Fri) | TBD | Half-week retro — review `dash feedback list` + adjust plan |
+| 5 (Fri) | TBD | Half-week retro — review `dashkit feedback list` + adjust plan |
 | 6 (Sat) | TBD | Solo day — users work on their own, async Slack only |
 | 7 (Sun) | TBD | Final retro + survey + go/no-go on Wave 6 |
 
 Each 1:1 records onboarding step number reached + first component
-installed. Logged via `dash feedback log "<user> onboarded step 9"`.
+installed. Logged via `dashkit feedback log "<user> onboarded step 9"`.
 
 ---
 
@@ -97,14 +97,14 @@ installed. Logged via `dash feedback log "<user> onboarded step 9"`.
 
 Three channels, ranked by friction (lowest first):
 
-1. **`dash feedback log "<text>"` CLI** — async, zero context-switch.
+1. **`dashkit feedback log "<text>"` CLI** — async, zero context-switch.
    Lands in `~/.dash/feedback-log.jsonl`. Synced to dashboard via
-   `dash feedback sync`. Default channel for everything that isn't a
+   `dashkit feedback sync`. Default channel for everything that isn't a
    blocker.
 2. **Slack #dash-ds-pilot** — threaded discussion. Blockers go here so
    they're visible to the cohort.
 3. **End-of-week survey** — single Google Form OR in-CLI
-   `dash feedback survey` prompt. See § Open Questions below.
+   `dashkit feedback survey` prompt. See § Open Questions below.
 
 Every CLI feedback entry auto-tags `pilot: "wave-5"` and detects the
 user via `git config user.name` (overridable with `--pe`). Users never have
@@ -118,9 +118,9 @@ Per user per day, captured by the admin dashboard:
 
 | Metric | Source | Aggregation |
 |---|---|---|
-| Onboarding step completed (0–9) | `dash feedback log "step N"` | latest per user per day |
+| Onboarding step completed (0–9) | `dashkit feedback log "step N"` | latest per user per day |
 | Components installed | `registry-audit.jsonl` (op=install, hashed client) | count per user |
-| Components used in shipped PR | `dash audit` run on user branch | count per PR |
+| Components used in shipped PR | `dashkit audit` run on user branch | count per PR |
 | Gap reports filed | `~/.dash/gap-queue.json` (synced) | count per user |
 | AI prompt count (proxy) | Skill telemetry (if wired) | rolling sum |
 | Time-to-first-component | install timestamp – onboarding start | minutes |
@@ -202,7 +202,7 @@ clearing `~/.dash/pilot-frozen` on the server.
 
 ## Pre-flight checklist (Irfan, before Day 0)
 
-- [ ] `dash feedback log` CLI shipped and `pnpm test` green
+- [ ] `dashkit feedback log` CLI shipped and `pnpm test` green
 - [ ] `/docs/admin/pilot` page deployed + Bearer-gated
 - [ ] 1Password vault entry for `DASH_REGISTRY_TOKEN` shared with cohort
 - [ ] #dash-ds-pilot Slack channel created + 3 users invited

@@ -69,7 +69,7 @@ export default function ProofImageViewerDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add proof-image-viewer`} />
+        <DocsCode language="bash" code={`dashkit add proof-image-viewer`} />
       </DocsSection>
 
       <DocsSection title="Preview">

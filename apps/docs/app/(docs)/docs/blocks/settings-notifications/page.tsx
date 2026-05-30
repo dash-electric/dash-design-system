@@ -20,7 +20,7 @@ export default function SettingsNotificationsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add settings-notifications`} />
+        <DocsCode language="bash" code={`dashkit add settings-notifications`} />
       </DocsSection>
 
       <DocsSection title="Preview">

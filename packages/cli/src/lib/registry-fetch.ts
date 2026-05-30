@@ -132,7 +132,7 @@ export async function fetchRegistryItem(
         cause: parsed.error,
         issues: parsed.error.issues,
         suggestion:
-          "Registry server may be returning malformed data. Run `dash doctor --network` to diagnose, or check the registry build.",
+          "Registry server may be returning malformed data. Run `dashkit doctor --network` to diagnose, or check the registry build.",
       },
     )
   }
@@ -171,7 +171,7 @@ export async function fetchRegistryIndex(opts: FetchOpts): Promise<RegistryIndex
         cause: parsed.error,
         issues: parsed.error.issues,
         suggestion:
-          "Registry server may be returning malformed data. Run `dash doctor --network` to diagnose, or check the registry build.",
+          "Registry server may be returning malformed data. Run `dashkit doctor --network` to diagnose, or check the registry build.",
       },
     )
   }

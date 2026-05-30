@@ -55,7 +55,7 @@ export default function TagDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add tag`} />
+        <DocsCode language="bash" code={`dashkit add tag`} />
       </DocsSection>
 
       <DocsSection title="Variants × states">

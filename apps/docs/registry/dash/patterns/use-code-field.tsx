@@ -39,7 +39,7 @@ import { toast } from "@/registry/dash/ui/toaster"
  *  - Dash hard-bans RHF + zod across all 5 FE repos (portal-v2, backoffice,
  *    halo-dash, basecamp, fleet-mgmt). Earlier versions of this pattern
  *    leaked `useFormContext` + a zod-shaped JSDoc example — users running
- *    `dash add use-code-field` would have inherited a self-contradiction.
+ *    `dashkit add use-code-field` would have inherited a self-contradiction.
  *  - The canonical shape is now: `useCodeField()` hook with
  *    `{ value, setValue, error, isValid, regenerate, copy, copied }` —
  *    drops straight into the native `useState` form pattern every Dash FE

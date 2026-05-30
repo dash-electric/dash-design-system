@@ -26,7 +26,7 @@ export default function CalendarDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add calendar`} />
+        <DocsCode language="bash" code={`dashkit add calendar`} />
       </DocsSection>
 
       <DocsSection title="Examples">

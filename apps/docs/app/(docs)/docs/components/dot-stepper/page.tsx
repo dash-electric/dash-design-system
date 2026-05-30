@@ -28,7 +28,7 @@ export default function DotStepperDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add dot-stepper`} />
+        <DocsCode language="bash" code={`dashkit add dot-stepper`} />
       </DocsSection>
 
       <DocsSection title="Example">

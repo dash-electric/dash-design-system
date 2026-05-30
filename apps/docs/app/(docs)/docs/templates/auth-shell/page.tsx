@@ -29,7 +29,7 @@ export default function AuthShellDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add auth-shell`} />
+        <DocsCode language="bash" code={`dashkit add auth-shell`} />
       </DocsSection>
 
       <DocsSection

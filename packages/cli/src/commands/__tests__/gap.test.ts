@@ -117,7 +117,7 @@ describe("gap-queue lib", () => {
   })
 })
 
-describe("dash gap report — log mode", () => {
+describe("dashkit gap report — log mode", () => {
   let tmp: string
   let queuePath: string
   let io: CapturedIO
@@ -230,7 +230,7 @@ describe("dash gap report — log mode", () => {
   })
 })
 
-describe("dash gap report — list mode", () => {
+describe("dashkit gap report — list mode", () => {
   let tmp: string
   let queuePath: string
   let io: CapturedIO
@@ -284,7 +284,7 @@ describe("dash gap report — list mode", () => {
   })
 })
 
-describe("dash gap report — clear mode", () => {
+describe("dashkit gap report — clear mode", () => {
   let tmp: string
   let queuePath: string
   let io: CapturedIO
@@ -320,7 +320,7 @@ describe("dash gap report — clear mode", () => {
   })
 })
 
-describe("dash gap report — export mode", () => {
+describe("dashkit gap report — export mode", () => {
   let tmp: string
   let queuePath: string
   let io: CapturedIO
@@ -359,7 +359,7 @@ describe("dash gap report — export mode", () => {
   })
 })
 
-describe("dash gap report — mode exclusivity", () => {
+describe("dashkit gap report — mode exclusivity", () => {
   let tmp: string
   let io: CapturedIO
   let prevExit: number | undefined

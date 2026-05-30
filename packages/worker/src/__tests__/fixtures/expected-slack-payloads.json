@@ -6,7 +6,7 @@
       "repo:",
       "score:",
       "PR:",
-      "install: dash add"
+      "install: dashkit add"
     ]
   },
   "needsReview": {

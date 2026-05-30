@@ -21,7 +21,7 @@ export default function MarketingShippingDeliveryDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-shipping-delivery`} />
+        <DocsCode language="bash" code={`dashkit add marketing-shipping-delivery`} />
       </DocsSection>
 
       <DocsSection title="Examples">

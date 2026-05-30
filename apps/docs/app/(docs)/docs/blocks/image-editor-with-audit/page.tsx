@@ -56,7 +56,7 @@ export default function ImageEditorWithAuditDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add image-editor-with-audit`} />
+        <DocsCode language="bash" code={`dashkit add image-editor-with-audit`} />
       </DocsSection>
 
       <DocsSection title="Preview">

@@ -78,7 +78,7 @@ export default function TimePickerDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add time-picker`} />
+        <DocsCode language="bash" code={`dashkit add time-picker`} />
       </DocsSection>
 
       <DocsSection title="Usage">

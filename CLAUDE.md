@@ -4,14 +4,14 @@
 
 ## What this repo is
 
-Dash Design System — internal sovereign DS for 10+ team members at Dash (PT Dash Elektrik Indonesia). Custom CLI + MCP + Skill stack. Distributes 214+ registry items (atoms, blocks, templates, patterns) to consumer Dash repos via `dash add <name>`.
+Dash Design System — internal sovereign DS for 10+ team members at Dash (PT Dash Elektrik Indonesia). Custom CLI + MCP + Skill stack. Distributes 214+ registry items (atoms, blocks, templates, patterns) to consumer Dash repos via `dashkit add <name>`.
 
 ## Layered Architecture
 
 Dash is a **platform**, not a single product. The DS is structured as 4 layers so Ride, Logistic, Travel, Marketplace, and external Trellis tenants can share one foundation without forking.
 
 - **Layer 0 — Brand Foundation** (shared, locked): type ramp, spacing, radius, motion, semantic tokens, a11y floor. Changing Layer 0 requires a Head of Design RFC.
-- **Layer 1 — Common Primitives** (shared, atom-level): ~76 components (Button, Input, Modal, …). Always consume Layer 0 tokens, never hard-code accent hex. CI-enforced by `dash audit`.
+- **Layer 1 — Common Primitives** (shared, atom-level): ~76 components (Button, Input, Modal, …). Always consume Layer 0 tokens, never hard-code accent hex. CI-enforced by `dashkit audit`.
 - **Layer 2 — Product / Tenant Theme** (divergent, ~30 lines): accent tokens, voice register, density, optional radius overrides. The layer that bends. Themes today: `ride`, `logistic`, `travel`, `marketplace`, `trellis-{tenantId}`.
 - **Layer 3 — Workflow Blocks** (divergent, product-owned): composites like `ride-dispatch-board`, `logistic-route-planner`. Registered with a `theme:` field; new blocks default to `theme: "shared"` unless declared product-specific.
 
@@ -111,7 +111,7 @@ See `packages/dash-build/docs/gstack-adoption.md` and
 
 ## When generating code
 
-1. Check DS coverage first: `dash search <name>`. If hit, install via `dash add`. If miss, build custom matching Dash foundation.
+1. Check DS coverage first: `dashkit search <name>`. If hit, install via `dashkit add`. If miss, build custom matching Dash foundation.
 2. NEVER reach for external libraries without explicit user approval — see § External Library Policy in rules.
 3. Default stack per repo (auto-detected by Skill):
    - portal-v2: Next App Router + TS + Jotai + axios
@@ -136,10 +136,10 @@ again.
 ## Don't do
 
 - Modify Dash production repos (`/Users/irfanprimaputra.b/Dash/*`) — they are READ-ONLY references.
-- Ship code with banned imports (CI gate via `dash audit`).
+- Ship code with banned imports (CI gate via `dashkit audit`).
 - Skip audit trail for legal/financial fields.
 - Introduce a second component library (MUI/antd in greenfield).
-- Bypass `dash add` (copy-paste between repos).
+- Bypass `dashkit add` (copy-paste between repos).
 - Modify `.compressed.md` directly (regenerate via Skill rebuild).
 
 ## Common workflows
@@ -150,7 +150,7 @@ again.
 2. Register in apps/docs/registry.json
 3. Add doc page apps/docs/app/(docs)/docs/components/<name>/page.tsx
 4. Run pnpm registry:build
-5. Verify dash audit clean
+5. Verify dashkit audit clean
 ```
 
 ### Refactor pattern that violates rules

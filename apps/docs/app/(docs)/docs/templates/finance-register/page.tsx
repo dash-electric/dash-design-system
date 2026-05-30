@@ -20,7 +20,7 @@ export default function FinanceRegisterDocsPage() {
         description="Centered card on patterned background. Apex top bar + brand icon + Full Name + Email + Password with live 3-rule checklist + strength bar + FancyButton submit. Ported from AlignUI Pro Figma frame 'Register Page [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-register`} />
+        <DocsCode language="bash" code={`dashkit add finance-register`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

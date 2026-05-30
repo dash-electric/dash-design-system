@@ -79,10 +79,10 @@ export default function GettingStartedPage() {
         <DocsWorkflowDiagram
           steps={[
             { label: "Install CLI", sub: "pnpm i -g dash" },
-            { label: "Initialize repo", sub: "dash init" },
-            { label: "Add component", sub: "dash add button" },
+            { label: "Initialize repo", sub: "dashkit init" },
+            { label: "Add component", sub: "dashkit add button" },
             { label: "Use in code", sub: "<Button />" },
-            { label: "Wire AI editor", sub: "dash mcp init" },
+            { label: "Wire AI editor", sub: "dashkit mcp init" },
           ]}
         />
       </DocsSection>
@@ -143,14 +143,14 @@ export default function GettingStartedPage() {
           <DocsStep
             number={1}
             title="Install the dash CLI"
-            description="One-time machine setup. Installs the dash binary globally so every Dash repo can call dash init / dash add."
+            description="One-time machine setup. Installs the dash binary globally so every Dash repo can call dashkit init / dashkit add."
             code={`pnpm i -g dash
 
 # Verify
 dash --version`}
             output={`✔ Installed dash@1.0.0 to /usr/local/bin/dash
 ✔ Registry: https://ds.dash.com/r/
-ℹ Run \`dash init\` inside any Dash repo to wire it up.`}
+ℹ Run \`dashkit init\` inside any Dash repo to wire it up.`}
             imagePlaceholder="Terminal after pnpm i -g dash — green install banner and version output."
           >
             <div className="rounded-lg border border-warning-light bg-warning-lighter px-4 py-3 text-sm text-text-strong-950">
@@ -167,19 +167,19 @@ dash --version`}
             title="Initialize your repo"
             description="One-time per Dash consumer repo. Writes components.json, .env.local, AGENTS.md, merges the @dash tailwind preset. Idempotent — safe to re-run."
             code={`cd ~/halo-dash
-dash init --token $DASH_REGISTRY_TOKEN`}
+dashkit init --token $DASH_REGISTRY_TOKEN`}
             output={`✔ Detected Next.js 15 (App Router) + Tailwind v4
 ✔ Wrote components.json
 ✔ Wrote .env.local (DASH_REGISTRY_TOKEN)
 ✔ Wrote AGENTS.md (universal AI rules)
 ✔ Imported @dash/tokens into app/globals.css
 ✔ Extended tailwind.config.ts with @dash preset
-ℹ Next: dash add button`}
-            imagePlaceholder="Terminal after dash init — six green checkmarks confirming the scaffold."
+ℹ Next: dashkit add button`}
+            imagePlaceholder="Terminal after dashkit init — six green checkmarks confirming the scaffold."
           >
             <div className="rounded-lg border border-warning-light bg-warning-lighter px-4 py-3 text-sm text-text-strong-950">
               <span className="font-semibold">Gotcha:</span> Anda menjalankan{" "}
-              <code className="text-xs">dash init</code> di repo lama yang sudah
+              <code className="text-xs">dashkit init</code> di repo lama yang sudah
               punya <code className="text-xs">components.json</code>? CLI akan
               prompt sebelum overwrite — pilih <strong>Merge</strong> agar tetap
               aman.
@@ -191,18 +191,18 @@ dash init --token $DASH_REGISTRY_TOKEN`}
             number={3}
             title="Add your first component"
             description="Pulls button source into registry/dash/ui/button.tsx — you own the file, no version pinning. Re-run anytime to refresh."
-            code={`dash add button`}
+            code={`dashkit add button`}
             output={`✔ Resolved button (4 deps)
 ✔ Wrote registry/dash/ui/button.tsx
 ✔ Wrote registry/dash/ui/button.stories.tsx
 ✔ Wrote registry/dash/lib/utils.ts (already up to date)
 ℹ Import: import { Button } from "@/registry/dash/ui/button"`}
-            imagePlaceholder="dash add button output — files written list plus the suggested import path."
+            imagePlaceholder="dashkit add button output — files written list plus the suggested import path."
           >
             <div className="rounded-lg border border-warning-light bg-warning-lighter px-4 py-3 text-sm text-text-strong-950">
               <span className="font-semibold">Gotcha:</span> Need to find the
-              component name first? Use <code className="text-xs">dash search modal</code>{" "}
-              or <code className="text-xs">dash list</code> to browse the 214+
+              component name first? Use <code className="text-xs">dashkit search modal</code>{" "}
+              or <code className="text-xs">dashkit list</code> to browse the 214+
               registry items.
             </div>
           </DocsStep>
@@ -230,7 +230,7 @@ export default function MitraPage() {
               transparent / grey? Your{" "}
               <code className="text-xs">tailwind.config.ts</code> is missing the{" "}
               <code className="text-xs">@dash</code> preset — re-run{" "}
-              <code className="text-xs">dash init</code> or import the preset
+              <code className="text-xs">dashkit init</code> or import the preset
               manually.
             </div>
           </DocsStep>
@@ -240,7 +240,7 @@ export default function MitraPage() {
             number={5}
             title="Wire your AI editor"
             description="Lets Claude Code / Cursor query the Dash registry by name during chat. After init, restart your editor and verify the MCP connection."
-            code={`dash mcp init`}
+            code={`dashkit mcp init`}
             output={`✔ Wrote ~/.claude/mcp.json
 ✔ Wrote ~/.cursor/mcp.json
 ℹ Restart Claude Code to pick up the new server.
@@ -268,11 +268,11 @@ export default function MitraPage() {
       >
         <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-2 max-w-2xl">
           <li>
-            <code className="text-xs">dash list</code> prints 200+ items grouped
+            <code className="text-xs">dashkit list</code> prints 200+ items grouped
             by category (components, blocks, templates).
           </li>
           <li>
-            <code className="text-xs">dash audit</code> exits 0 — no banned imports,
+            <code className="text-xs">dashkit audit</code> exits 0 — no banned imports,
             no raw hex, no missing audit-trail fields.
           </li>
           <li>
@@ -286,7 +286,7 @@ export default function MitraPage() {
           </li>
           <li>
             Asking Claude for &ldquo;a Dash mitra list page&rdquo; triggers a{" "}
-            <code className="text-xs">dash add</code> call, not a from-scratch
+            <code className="text-xs">dashkit add</code> call, not a from-scratch
             Tailwind div.
           </li>
         </ul>
@@ -312,7 +312,7 @@ export default function MitraPage() {
             </div>
             <p className="text-sm text-text-sub-600 leading-relaxed mt-2">
               Six-step deep dive with every flag explained, manual fallback for
-              when <code className="text-xs">dash init</code> can&apos;t auto-detect.
+              when <code className="text-xs">dashkit init</code> can&apos;t auto-detect.
             </p>
           </Link>
 

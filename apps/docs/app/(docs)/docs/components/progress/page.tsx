@@ -36,7 +36,7 @@ export default function ProgressDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add progress`} />
+        <DocsCode language="bash" code={`dashkit add progress`} />
       </DocsSection>
 
       <DocsSection title="Value states">

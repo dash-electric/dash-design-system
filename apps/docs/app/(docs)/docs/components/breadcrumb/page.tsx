@@ -30,7 +30,7 @@ export default function BreadcrumbDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add breadcrumb`} />
+        <DocsCode language="bash" code={`dashkit add breadcrumb`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

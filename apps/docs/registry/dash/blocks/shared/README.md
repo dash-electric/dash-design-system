@@ -2,7 +2,7 @@
 
 **Layer 3 — Product-agnostic workflow blocks.** Used by any Dash product (Ride, Logistic, future verticals). No mitra/vehicle/dispatch concept required to render.
 
-This directory holds **re-export indexes only**. The source `.tsx` files remain in `apps/docs/registry/dash/blocks/` (flat layout). Theme membership is tagged via `theme: "shared"` + `products: [...]` on each entry in `apps/docs/registry.json` — those fields are the canonical source for filtering / `dash list --theme shared`.
+This directory holds **re-export indexes only**. The source `.tsx` files remain in `apps/docs/registry/dash/blocks/` (flat layout). Theme membership is tagged via `theme: "shared"` + `products: [...]` on each entry in `apps/docs/registry.json` — those fields are the canonical source for filtering / `dashkit list --theme shared`.
 
 ## Members (15)
 
@@ -35,4 +35,4 @@ If a block needs Ride-specific concepts (mitra voice, fleet workflow), it belong
 
 ## How to use this index
 
-This is an exploration aid for engineers picking blocks. Real consumption stays via `dash add <name>` — the CLI reads `registry.json` and pulls the source from the flat path. No imports change.
+This is an exploration aid for engineers picking blocks. Real consumption stays via `dashkit add <name>` — the CLI reads `registry.json` and pulls the source from the flat path. No imports change.

@@ -1,18 +1,18 @@
 /**
- * `dash sync` — scan consumer repo for installed @dash items, compare each
+ * `dashkit sync` — scan consumer repo for installed @dash items, compare each
  * against the latest registry version, and update those that drifted.
  *
  * Flags:
- *   dash sync                  interactive — list outdated, prompt per item
- *   dash sync --check          report only, no install
- *   dash sync --all            auto-update all outdated (no prompt)
- *   dash sync --json           machine-readable output (no prompts, no writes)
- *   dash sync <name...>        update only the listed components
- *   dash sync --auto-upgrade   only apply patch bumps (skip minor + major)
- *   dash sync --dry-run        preview without writing
+ *   dashkit sync                  interactive — list outdated, prompt per item
+ *   dashkit sync --check          report only, no install
+ *   dashkit sync --all            auto-update all outdated (no prompt)
+ *   dashkit sync --json           machine-readable output (no prompts, no writes)
+ *   dashkit sync <name...>        update only the listed components
+ *   dashkit sync --auto-upgrade   only apply patch bumps (skip minor + major)
+ *   dashkit sync --dry-run        preview without writing
  *
  * Bump classification reads the `@dash version` header injected by
- * `dash add`. When the header is missing or unparsable, sync falls back to
+ * `dashkit add`. When the header is missing or unparsable, sync falls back to
  * a checksum compare and labels the bump "unknown" — still safe to upgrade
  * but the user is informed.
  *
@@ -373,7 +373,7 @@ function printTable(report: SyncReport): void {
   if (report.total === 0) {
     console.log(
       kleur.dim(
-        "  No installed @dash items detected. Run `dash add` first.",
+        "  No installed @dash items detected. Run `dashkit add` first.",
       ),
     )
     return

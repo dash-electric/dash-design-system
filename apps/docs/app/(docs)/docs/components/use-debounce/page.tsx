@@ -28,7 +28,7 @@ export default function UseDebounceDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add use-debounce`} />
+        <DocsCode language="bash" code={`dashkit add use-debounce`} />
       </DocsSection>
 
       <DocsSection title="Examples">

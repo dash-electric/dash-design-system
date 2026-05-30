@@ -21,7 +21,7 @@ export default function StatCardGridDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add stat-card-grid`} />
+        <DocsCode language="bash" code={`dashkit add stat-card-grid`} />
       </DocsSection>
 
       <DocsSection title="Preview">

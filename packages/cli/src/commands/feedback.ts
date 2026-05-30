@@ -1,5 +1,5 @@
 /**
- * `dash feedback` — Wave 5 pilot signal capture.
+ * `dashkit feedback` — Wave 5 pilot signal capture.
  *
  * Subcommands:
  *   - log "<text>"  : append a free-text entry, auto-detect user via git
@@ -7,7 +7,7 @@
  *   - sync          : POST pending entries to the admin pilot API
  *   - list          : print entries in a compact table
  *
- * Mirrors the `dash gap` shape so users who learned one already know the
+ * Mirrors the `dashkit gap` shape so users who learned one already know the
  * other. JSONL on disk (`~/.dash/feedback-log.jsonl`) so appends are
  * effectively atomic and the dashboard can tail-stream.
  */
@@ -85,7 +85,7 @@ async function readStdinIfPiped(override?: string): Promise<string | null> {
   })
 }
 
-/** `dash feedback log`. */
+/** `dashkit feedback log`. */
 export async function runFeedbackLog(opts: FeedbackLogOpts): Promise<void> {
   const logPath = opts.logPath ?? defaultLogPath()
   const cwd = opts.cwd ?? process.cwd()
@@ -151,7 +151,7 @@ export async function runFeedbackLog(opts: FeedbackLogOpts): Promise<void> {
   if (!text) {
     console.error(
       kleur.red(
-        '✗ feedback text is required. Usage: dash feedback log "<text>"',
+        '✗ feedback text is required. Usage: dashkit feedback log "<text>"',
       ),
     )
     process.exitCode = 2
@@ -224,7 +224,7 @@ export function runFeedbackList(opts: FeedbackListOpts): void {
   if (entries.length === 0) {
     console.log(
       kleur.dim(
-        '  No feedback logged. Use `dash feedback log "description"` to add.',
+        '  No feedback logged. Use `dashkit feedback log "description"` to add.',
       ),
     )
     console.log()

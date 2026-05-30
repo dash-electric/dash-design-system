@@ -19,7 +19,7 @@ export default function FinanceLocalizationSettingsDocsPage() {
         description="Settings shell + Language / Currency / Timezone / Date Format field rows. Ported from AlignUI Pro Figma frame 'Localization Settings [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-localization-settings`} />
+        <DocsCode language="bash" code={`dashkit add finance-localization-settings`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

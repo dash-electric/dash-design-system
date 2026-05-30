@@ -20,7 +20,7 @@ export default function HrTeamsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-teams`} />
+        <DocsCode language="bash" code={`dashkit add hr-teams`} />
       </DocsSection>
 
       <DocsSection title="Examples">

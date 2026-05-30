@@ -62,7 +62,7 @@ export default function StepIndicatorDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add step-indicator dot-stepper`} />
+        <DocsCode language="bash" code={`dashkit add step-indicator dot-stepper`} />
       </DocsSection>
 
       <DocsSection title="Horizontal numbered chips">

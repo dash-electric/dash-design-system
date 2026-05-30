@@ -21,7 +21,7 @@ export default function MarketingAppearanceDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-appearance`} />
+        <DocsCode language="bash" code={`dashkit add marketing-appearance`} />
       </DocsSection>
 
       <DocsSection title="Examples">

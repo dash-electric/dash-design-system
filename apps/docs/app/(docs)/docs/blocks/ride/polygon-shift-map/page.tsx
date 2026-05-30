@@ -94,7 +94,7 @@ export default function PolygonShiftMapDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add polygon-shift-map`} />
+        <DocsCode language="bash" code={`dashkit add polygon-shift-map`} />
       </DocsSection>
 
       <DocsSection title="Preview (table renderer, default)">

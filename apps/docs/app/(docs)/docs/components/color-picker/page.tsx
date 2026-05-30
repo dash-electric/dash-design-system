@@ -32,7 +32,7 @@ export default function ColorPickerDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add color-picker`} />
+        <DocsCode language="bash" code={`dashkit add color-picker`} />
       </DocsSection>
 
       <DocsSection title="Usage">

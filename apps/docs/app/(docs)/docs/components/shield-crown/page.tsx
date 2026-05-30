@@ -33,7 +33,7 @@ export default function ShieldCrownDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add shield-crown`} />
+        <DocsCode language="bash" code={`dashkit add shield-crown`} />
       </DocsSection>
 
       <DocsSection title="Usage">

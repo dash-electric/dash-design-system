@@ -6,7 +6,7 @@ The internal component registry powering Dash's 10 portfolio products — one so
 
 Dash has 10 product surfaces (Express, Halo, Mitra, Mobility, Logistics, Finance, HR, Marketing, Pay, Office) being built by different squads. Without a shared system, each squad re-derives buttons, sidebars, and auth shells from Figma — and three months later nothing looks like the same product.
 
-Dash DS centralizes that. One Figma source → one token catalog → one registry → every product pulls the same `Button`, the same `DashboardShell`, the same purple. Brand drift becomes a `dash diff` away from being noticed.
+Dash DS centralizes that. One Figma source → one token catalog → one registry → every product pulls the same `Button`, the same `DashboardShell`, the same purple. Brand drift becomes a `dashkit diff` away from being noticed.
 
 Same shape as shadcn/ui, but:
 
@@ -32,8 +32,8 @@ For local dev against this repo, see [Local development](#local-development).
 ### 1. Human, building a feature
 
 ```bash
-dash search "table"
-dash add data-table orders-table
+dashkit search "table"
+dashkit add data-table orders-table
 ```
 
 Then open the file in your editor. The component is in *your* repo, not `node_modules` — edit it freely.
@@ -91,22 +91,22 @@ Browse `https://ds.dash.com` — the live docs site. Every item has a preview, a
 
 Categories: `template`, `shell`, `auth`, `dashboard`, `settings`, `tables`, `lists`, `forms`, `marketing`, `finance`, `hr`.
 
-Browse them all: `ds.dash.com/library` or `dash list`.
+Browse them all: `ds.dash.com/library` or `dashkit list`.
 
 ## AI-first workflow
 
 Three surfaces, same registry:
 
-- **CLI** — `dash add button` — for humans and for agents that prefer shell.
+- **CLI** — `dashkit add button` — for humans and for agents that prefer shell.
 - **MCP server** — `@dash/mcp-server` — exposes the registry as 6 native tools to Claude Code / Cursor / Codex. See [`dash-mcp/README.md`](../dash-mcp/README.md).
-- **AI rules file** — `registry/rules/dash-ai-rules.md` — installed by `dash init`. Tells the agent: how to name files, when to extend vs fork, what tokens to never inline, how to wire forms with react-hook-form + zod.
+- **AI rules file** — `registry/rules/dash-ai-rules.md` — installed by `dashkit init`. Tells the agent: how to name files, when to extend vs fork, what tokens to never inline, how to wire forms with react-hook-form + zod.
 
 Wire it once, every Dash repo Claude Code touches inherits the system.
 
 ```bash
 # One-time setup per project
-dash init
-dash mcp init   # patches ~/.config/claude-code/mcp_servers.json
+dashkit init
+dashkit mcp init   # patches ~/.config/claude-code/mcp_servers.json
 ```
 
 After that the agent answers questions like "what auth blocks ship with Dash?" or "search for finance dashboard templates" by calling MCP tools, not by guessing.
@@ -134,7 +134,7 @@ dash-ds/
 ├── figma-audit/               Parity decision logs (D1-D86 + summaries)
 ├── tests/                     Playwright visual regression
 ├── components.json            Schema for THIS repo (not consumers)
-├── registry.json              Item catalog (source of `dash list`)
+├── registry.json              Item catalog (source of `dashkit list`)
 ├── ROADMAP.md                 What shipped, what's next
 ├── AGENTS.md                  Conventions for AI editing this repo
 └── NOTICE.md                  AlignUI Pro license terms
@@ -155,7 +155,7 @@ To point a consumer project at your local registry instead of production:
 
 ```bash
 # In the consumer repo
-DASH_REGISTRY_URL=http://localhost:3000 dash add button
+DASH_REGISTRY_URL=http://localhost:3000 dashkit add button
 ```
 
 ## JSON Schemas (for editor validation)
@@ -206,4 +206,4 @@ The bar: a teammate (or an AI agent) should be able to install and use your comp
 
 ## Open questions
 
-If the docs are wrong, the registry is out of date, or `dash add` does something surprising, open an issue in `dash-tech/dash-ds`. Patches welcome — small ones especially.
+If the docs are wrong, the registry is out of date, or `dashkit add` does something surprising, open an issue in `dash-tech/dash-ds`. Patches welcome — small ones especially.

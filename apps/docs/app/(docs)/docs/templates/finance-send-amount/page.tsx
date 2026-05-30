@@ -20,7 +20,7 @@ export default function FinanceSendAmountDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-send-amount`} />
+        <DocsCode language="bash" code={`dashkit add finance-send-amount`} />
       </DocsSection>
 
       <DocsSection title="Examples">

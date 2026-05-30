@@ -8,7 +8,7 @@ function mkTmp(): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), "dash-mcp-test-"))
 }
 
-describe("dash mcp init — Cursor + Claude Code targeting", () => {
+describe("dashkit mcp init — Cursor + Claude Code targeting", () => {
   let tmpHome: string
 
   beforeEach(() => {

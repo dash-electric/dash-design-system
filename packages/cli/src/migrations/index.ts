@@ -1,5 +1,5 @@
 /**
- * Migration registry — central index of all available `dash migrate <name>`
+ * Migration registry — central index of all available `dashkit migrate <name>`
  * codemods / scanners.
  *
  * Each migration is a self-contained module that exports a `Migration`
@@ -30,7 +30,7 @@ export type MigrationResult = {
 }
 
 export type Migration = {
-  /** Short kebab-case identifier used on the CLI (`dash migrate <name>`). */
+  /** Short kebab-case identifier used on the CLI (`dashkit migrate <name>`). */
   name: string
   /** One-line description shown in `--list`. */
   description: string

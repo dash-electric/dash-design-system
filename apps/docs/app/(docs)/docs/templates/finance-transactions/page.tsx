@@ -20,7 +20,7 @@ export default function FinanceTransactionsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-transactions`} />
+        <DocsCode language="bash" code={`dashkit add finance-transactions`} />
       </DocsSection>
 
       <DocsSection title="Examples">

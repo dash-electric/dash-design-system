@@ -56,7 +56,7 @@ export default function AccordionDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add accordion`} />
+        <DocsCode language="bash" code={`dashkit add accordion`} />
       </DocsSection>
 
       <DocsSection title="Base">

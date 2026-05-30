@@ -20,7 +20,7 @@ export default function BadgeProfileAccountDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add badge-profile-account`} />
+        <DocsCode language="bash" code={`dashkit add badge-profile-account`} />
       </DocsSection>
 
       <DocsSection title="Examples">

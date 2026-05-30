@@ -40,7 +40,7 @@ export default function BulkSubmitPatternPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add bulk-submit`} />
+        <DocsCode language="bash" code={`dashkit add bulk-submit`} />
       </DocsSection>
 
       <DocsSection

@@ -74,7 +74,7 @@ Switch to terminal:
 
 ```bash
 cd /tmp/dash-demo
-dash init
+dashkit init
 # prompts:
 #   - registry URL? https://ds.dash.com  (default)
 #   - token? auto-detected from .env.local
@@ -83,7 +83,7 @@ dash init
 ```
 
 ```bash
-dash add data-table button input modal
+dashkit add data-table button input modal
 # Installing 4 components...
 # ✓ @dash/data-table (deps: @tanstack/react-table)
 # ✓ @dash/button
@@ -118,7 +118,7 @@ In Claude Code chat, type **exactly this prompt** (or close — keep it casual):
 **Watch what Claude does:**
 
 1. Queries Dash MCP `search_components "table search filter"` — returns `data-table`, `input`, `select`, `badge`, `empty-state-illustration`.
-2. Reads `dash info` for project state.
+2. Reads `dashkit info` for project state.
 3. Writes `app/mitra/page.tsx` using actual `@dash/*` imports.
 
 **Narrate while it works:**
@@ -164,7 +164,7 @@ Pre-recorded screen recording of Act 4 saved at `~/Documents/dash-ds-demo-record
 Run demo against localhost — `bash scripts/smoke.sh http://localhost:3000` first to confirm. Tell team "Vercel hiccup pagi ini, lagi gua fix paralel. Ini live registry sama, host beda".
 
 ### Backup 3: Claude Code burns tokens / hangs
-Skip Act 4 Claude part. Manually show `dash add data-table` files landing + open VS Code to edit one page using imports. Less impressive but still clear.
+Skip Act 4 Claude part. Manually show `dashkit add data-table` files landing + open VS Code to edit one page using imports. Less impressive but still clear.
 
 ---
 
@@ -189,7 +189,7 @@ Skip Act 4 Claude part. Manually show `dash add data-table` files landing + open
 - Update vault `06-Adoption-Metrics.md` with attendance + reactions
 
 ### Week 1
-- Shadow the 1 pilot user. Capture every friction point ("dash init prompt confusing", "Claude tried to install non-existent variant", etc.).
+- Shadow the 1 pilot user. Capture every friction point ("dashkit init prompt confusing", "Claude tried to install non-existent variant", etc.).
 - Friction → GitHub issue or vault `07-Ideas-Backlog.md`.
 
 ### Week 2
@@ -208,15 +208,15 @@ curl -s https://ds.dash.com/api/health | jq
 pnpm i -g dash
 
 # new consumer repo
-dash init                              # interactive setup
-dash add button input modal data-table # install components
-dash list                              # see all available
-dash search "table"                    # full-text search
-dash mcp init                          # wire Claude Code
+dashkit init                              # interactive setup
+dashkit add button input modal data-table # install components
+dashkit list                              # see all available
+dashkit search "table"                    # full-text search
+dashkit mcp init                          # wire Claude Code
 
 # upgrade
-dash diff button                       # see what changed
-dash add button --upgrade              # update local copy
+dashkit diff button                       # see what changed
+dashkit add button --upgrade              # update local copy
 
 # DS maintainer (only Irfan)
 cd /Users/irfanprimaputra.b/dash-ds

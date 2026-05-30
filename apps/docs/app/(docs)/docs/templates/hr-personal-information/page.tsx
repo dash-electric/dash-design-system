@@ -20,7 +20,7 @@ export default function HrPersonalInformationDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-personal-information`} />
+        <DocsCode language="bash" code={`dashkit add hr-personal-information`} />
       </DocsSection>
 
       <DocsSection title="Examples">

@@ -62,7 +62,7 @@ export default function ShimmerDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add shimmer`} />
+        <DocsCode language="bash" code={`dashkit add shimmer`} />
       </DocsSection>
 
       <DocsSection title="Usage">

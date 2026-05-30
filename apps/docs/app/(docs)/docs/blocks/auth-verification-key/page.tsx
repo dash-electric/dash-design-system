@@ -19,7 +19,7 @@ export default function AuthVerificationKeyDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add auth-verification-key`} />
+        <DocsCode language="bash" code={`dashkit add auth-verification-key`} />
       </DocsSection>
 
       <DocsSection title="Preview">

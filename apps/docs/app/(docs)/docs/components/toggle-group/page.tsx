@@ -24,7 +24,7 @@ export default function ToggleGroupDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add toggle-group`} />
+        <DocsCode language="bash" code={`dashkit add toggle-group`} />
       </DocsSection>
 
       <DocsSection title="Examples">

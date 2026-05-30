@@ -20,7 +20,7 @@ export default function SettingsProfileDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add settings-profile`} />
+        <DocsCode language="bash" code={`dashkit add settings-profile`} />
       </DocsSection>
 
       <DocsSection title="Preview">

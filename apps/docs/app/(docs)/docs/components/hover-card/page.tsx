@@ -25,7 +25,7 @@ export default function HoverCardDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hover-card`} />
+        <DocsCode language="bash" code={`dashkit add hover-card`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

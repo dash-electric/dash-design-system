@@ -32,7 +32,7 @@ export default function McpServerPage() {
       <DocsSection title="Setup — Claude Code">
         <DocsCode
           language="bash"
-          code={`dash mcp init --claude-code
+          code={`dashkit mcp init --claude-code
 # → writes ~/.claude/mcp-config.json entry
 # → bakes DASH_REGISTRY_TOKEN into the env block
 # → restart Claude Code to load`}
@@ -49,17 +49,17 @@ export default function McpServerPage() {
 export DASH_REGISTRY_TOKEN=dash_pat_xxx
 
 # 2. Wire Cursor
-dash mcp init --cursor
+dashkit mcp init --cursor
 
 # Or wire both editors in one shot:
-dash mcp init --both
+dashkit mcp init --both
 
 # Detect what's installed without writing anything:
-dash mcp init --check-only`}
+dashkit mcp init --check-only`}
         />
         <DocsCode
           language="json"
-          code={`// ~/.cursor/mcp.json (written by \`dash mcp init --cursor\`)
+          code={`// ~/.cursor/mcp.json (written by \`dashkit mcp init --cursor\`)
 {
   "mcpServers": {
     "@dash": {
@@ -76,12 +76,12 @@ dash mcp init --check-only`}
       </DocsSection>
 
       <DocsSection
-        title="Verify the wiring with `dash doctor`"
+        title="Verify the wiring with `dashkit doctor`"
         description="One command shows registry reachability, token validity, MCP wiring per editor, framework detection, and Node version."
       >
         <DocsCode
           language="bash"
-          code={`dash doctor
+          code={`dashkit doctor
 
 # 🩺 Dash DS health check
 #
@@ -116,13 +116,13 @@ dash mcp init --check-only`}
       <DocsSection title="Roadmap">
         <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
           <li><strong className="text-text-strong-950">WK01</strong> — server shipped in the repo as <code className="text-xs">@dash/mcp-server</code> (6 tools, Bearer-gated registry queries).</li>
-          <li><strong className="text-text-strong-950">WK02</strong> — Claude Code + Cursor wiring via <code className="text-xs">dash mcp init</code>. Both variants live.</li>
+          <li><strong className="text-text-strong-950">WK02</strong> — Claude Code + Cursor wiring via <code className="text-xs">dashkit mcp init</code>. Both variants live.</li>
           <li><strong className="text-text-strong-950">WK03</strong> — Windsurf config docs, diff_versions tool, audit log integration.</li>
           <li><strong className="text-text-strong-950">WK04</strong> — 5 user scale pilot across Reservasi, Express, Halo, Finance, Mitra.</li>
           <li><strong className="text-text-strong-950">WK05</strong> — full 10 user rollout. Deploy ETA: this week 2026-05-21+.</li>
         </ul>
         <p className="text-sm text-text-sub-600 mt-3">
-          If your editor isn&apos;t wired yet, fall back to the AI Rules markdown bundle (<code className="text-xs">dash add ai-rules</code>)
+          If your editor isn&apos;t wired yet, fall back to the AI Rules markdown bundle (<code className="text-xs">dashkit add ai-rules</code>)
           — same knowledge surface, just static.
         </p>
       </DocsSection>

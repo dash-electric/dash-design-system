@@ -1,12 +1,12 @@
 /**
- * Integration tests for `dash add` namespace dispatch.
+ * Integration tests for `dashkit add` namespace dispatch.
  *
  * Verifies:
- *   - `dash add button` (bare) hits the @dash registry URL
- *   - `dash add @dash/button` (explicit) hits the same URL → backward compat
- *   - `dash add @trellis/x` hits the per-namespace URL from components.json
+ *   - `dashkit add button` (bare) hits the @dash registry URL
+ *   - `dashkit add @dash/button` (explicit) hits the same URL → backward compat
+ *   - `dashkit add @trellis/x` hits the per-namespace URL from components.json
  *   - Unknown namespace throws RegistryError with namespace list suggestion
- *   - cross-namespace `dash add @dash/a @trellis/b` fans out to BOTH URLs
+ *   - cross-namespace `dashkit add @dash/a @trellis/b` fans out to BOTH URLs
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import fs from "node:fs"
@@ -88,7 +88,7 @@ function spyDispatchFetch(): { urls: string[]; restore: () => void } {
   }
 }
 
-describe("dash add — namespace dispatch", () => {
+describe("dashkit add — namespace dispatch", () => {
   let tmp: string
   let spy: { urls: string[]; restore: () => void }
 

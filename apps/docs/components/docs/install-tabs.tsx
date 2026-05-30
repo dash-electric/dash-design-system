@@ -8,10 +8,10 @@ import { cn } from "@/registry/dash/lib/utils"
 type Manager = "pnpm" | "npm" | "yarn" | "bun"
 
 const MANAGERS: Array<{ id: Manager; cmd: (name: string) => string }> = [
-  { id: "pnpm", cmd: (n) => `pnpm dlx dash add ${n}` },
-  { id: "npm", cmd: (n) => `npx dash add ${n}` },
-  { id: "yarn", cmd: (n) => `yarn dlx dash add ${n}` },
-  { id: "bun", cmd: (n) => `bunx dash add ${n}` },
+  { id: "pnpm", cmd: (n) => `pnpm dlx dashkit add ${n}` },
+  { id: "npm", cmd: (n) => `npx dashkit add ${n}` },
+  { id: "yarn", cmd: (n) => `yarn dlx dashkit add ${n}` },
+  { id: "bun", cmd: (n) => `bunx dashkit add ${n}` },
 ]
 
 type ManualBlock = {

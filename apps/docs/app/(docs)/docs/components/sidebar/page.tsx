@@ -35,7 +35,7 @@ export default function SidebarDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add sidebar`} />
+        <DocsCode language="bash" code={`dashkit add sidebar`} />
       </DocsSection>
 
       <DocsSection title="Example">

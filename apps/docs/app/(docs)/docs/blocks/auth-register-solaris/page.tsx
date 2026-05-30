@@ -19,7 +19,7 @@ export default function AuthRegisterSolarisDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add auth-register-solaris`} />
+        <DocsCode language="bash" code={`dashkit add auth-register-solaris`} />
       </DocsSection>
 
       <DocsSection title="Preview">

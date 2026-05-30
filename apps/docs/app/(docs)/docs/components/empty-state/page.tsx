@@ -31,7 +31,7 @@ export default function EmptyStateDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add empty-state`} />
+        <DocsCode language="bash" code={`dashkit add empty-state`} />
       </DocsSection>
 
       <DocsSection title="Examples">

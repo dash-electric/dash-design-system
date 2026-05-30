@@ -24,7 +24,7 @@ const FIXTURE_INDEX: RegistryIndex = {
   ],
 }
 
-describe("dash info — collectInfo", () => {
+describe("dashkit info — collectInfo", () => {
   let tmp: string
 
   beforeEach(() => {

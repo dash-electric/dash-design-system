@@ -20,7 +20,7 @@ export default function FinanceResetPasswordDocsPage() {
         description="Same chrome as FinanceRegister. Single email field + Reset Password FancyButton + try-another-method fallback. Ported from AlignUI Pro Figma frame 'Reset Password [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-reset-password`} />
+        <DocsCode language="bash" code={`dashkit add finance-reset-password`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

@@ -27,7 +27,7 @@ for the full spec, migration case studies, and visual showcase.
 
 ### Tooling
 
-- **`@dash/cli`** — Component install, audit, sync. `pnpm i -g dash`.
+- **`@dash-tech/dashkit`** — Component install, audit, sync. Published to GitHub Packages (org-restricted).
   Commands: `init`, `add`, `audit`, `build`, `diff`, `doctor`, `info`,
   `list`, `login`, `mcp`, `search`, `sync`. 49 vitest specs.
 - **`@dash/mcp-server`** — AI editor integration. 7 MCP tools, bearer-gated.
@@ -61,13 +61,13 @@ generation pipeline all live one directory hop apart.
 
 ## Quick start
 
-```bash
-# Install the CLI globally (after first publish)
-pnpm i -g dash
+> **First time?** Follow [Step 1 of the onboarding playbook](./docs/pilot/ONBOARDING-PLAYBOOK.md#step-1--install-the-cli) to configure `~/.npmrc` with your GitHub Packages PAT — the CLI is published org-restricted to `@dash-tech`.
 
-# In any Dash product repo:
-dash init           # bootstrap dash.config + tailwind tokens
-dash add button     # install a registry component
+```bash
+# In any Dash product repo (after one-time .npmrc setup):
+pnpm i -g @dash-tech/dashkit
+dashkit init           # bootstrap dash.config + tailwind tokens
+dashkit add button     # install a registry component
 
 # Or kick off the browser-based AI builder:
 pnpm i -g @dash/build
@@ -90,7 +90,7 @@ dash-ds/
 ├── apps/
 │   └── docs/                  # @dash/docs — Next.js 16 docs site + registry source of truth
 ├── packages/
-│   ├── cli/                   # dash — install CLI (v0.3.0, 49 vitest specs)
+│   ├── cli/                   # dashkit — install CLI (v0.4.0, 49 vitest specs)
 │   ├── mcp-server/            # @dash/mcp-server — MCP server exposing the registry to AI
 │   ├── skill/                 # @dash/skill — Claude Code skill (v4)
 │   ├── worker/                # @dash/worker — Hermes generation pipeline
@@ -106,7 +106,7 @@ dash-ds/
 ## Per-package docs
 
 - [`apps/docs/README.md`](./apps/docs/README.md) — docs site, registry build, smoke probes
-- [`packages/cli/README.md`](./packages/cli/README.md) — `dash` CLI commands and flags
+- [`packages/cli/README.md`](./packages/cli/README.md) — `dashkit` CLI commands and flags
 - [`packages/mcp-server/README.md`](./packages/mcp-server/README.md) — MCP server setup for Claude Code / Cursor
 - [`packages/skill/README.md`](./packages/skill/README.md) — Claude Code skill manifest
 - [`packages/dash-build/README.md`](./packages/dash-build/README.md) — Dash Build daemon, auth, deployment
@@ -126,7 +126,7 @@ dash-ds/
 Package-scoped commands use pnpm filters:
 
 ```bash
-pnpm --filter dash test                 # only CLI tests
+pnpm --filter @dash-tech/dashkit test   # only CLI tests
 pnpm --filter @dash/docs build          # only Next build
 pnpm --filter @dash/build typecheck     # only Dash Build typecheck
 pnpm --filter @dash/build test          # only Dash Build tests (263)

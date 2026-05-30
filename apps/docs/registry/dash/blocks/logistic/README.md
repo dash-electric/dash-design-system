@@ -20,4 +20,4 @@ When the first Logistic block lands:
 
 ## How to use this index
 
-Once populated, exploration aid for engineers. Real consumption stays via `dash add <name>`.
+Once populated, exploration aid for engineers. Real consumption stays via `dashkit add <name>`.

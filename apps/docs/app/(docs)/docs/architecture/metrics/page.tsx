@@ -107,7 +107,7 @@ const capabilities: Capability[] = [
     incumbent: "Greenfield-only — no concept of multi-product theming",
   },
   {
-    dash: "Brownfield additive — existing Dash code untouched, opt-in via dash add",
+    dash: "Brownfield additive — existing Dash code untouched, opt-in via dashkit add",
     incumbent: "Requires rewrite to their template or framework",
   },
   {
@@ -131,7 +131,7 @@ const capabilities: Capability[] = [
     incumbent: "Flat component library, no divergence model",
   },
   {
-    dash: "Canonical token contract (CSS var, no hex) enforced by dash audit",
+    dash: "Canonical token contract (CSS var, no hex) enforced by dashkit audit",
     incumbent: "Inline hex tolerated; drift creeps silently",
   },
 ]
@@ -158,7 +158,7 @@ const readiness: Status[] = [
   {
     state: "ready",
     label: "Audit enforcement",
-    detail: "13 rules CI-gateable via dash audit (banned imports + style + layer)",
+    detail: "13 rules CI-gateable via dashkit audit (banned imports + style + layer)",
   },
   {
     state: "ready",
@@ -495,7 +495,7 @@ export default function MetricsPage() {
             >
               User Onboarding Playbook
             </Link>{" "}
-            — how a Dash user goes from clone to first <code className="text-xs">dash add</code>.
+            — how a Dash user goes from clone to first <code className="text-xs">dashkit add</code>.
           </li>
           <li>
             <Link

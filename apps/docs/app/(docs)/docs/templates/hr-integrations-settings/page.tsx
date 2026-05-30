@@ -20,7 +20,7 @@ export default function HrIntegrationsSettingsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-integrations-settings`} />
+        <DocsCode language="bash" code={`dashkit add hr-integrations-settings`} />
       </DocsSection>
 
       <DocsSection title="Examples">

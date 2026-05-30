@@ -3,10 +3,10 @@
  * `@<namespace>/<item>` protocol.
  *
  * Examples:
- *   dash add button                       → @dash/button (default)
- *   dash add @dash/button                 → @dash/button (explicit)
- *   dash add @trellis/some-tenant-block   → @trellis/some-tenant-block
- *   dash add @logistic/route-planner      → @logistic/route-planner
+ *   dashkit add button                       → @dash/button (default)
+ *   dashkit add @dash/button                 → @dash/button (explicit)
+ *   dashkit add @trellis/some-tenant-block   → @trellis/some-tenant-block
+ *   dashkit add @logistic/route-planner      → @logistic/route-planner
  *
  * Per-namespace URLs resolve from (in order):
  *   1. components.json `registries` field, e.g. `registries["@trellis"].url`

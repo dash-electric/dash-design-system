@@ -19,7 +19,7 @@ export default function FinanceProfileSettingsDocsPage() {
         description="Vertical tab nav (Profile/Company/Notifications/Team/Privacy/Integrations/Localization) + Apex ID + Profile Photo + Full Name + Email + Phone + Legal Address field rows. Ported from AlignUI Pro Figma frame 'Profile Settings [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-profile-settings`} />
+        <DocsCode language="bash" code={`dashkit add finance-profile-settings`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

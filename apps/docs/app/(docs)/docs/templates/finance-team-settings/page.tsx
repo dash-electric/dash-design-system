@@ -20,7 +20,7 @@ export default function FinanceTeamSettingsDocsPage() {
         description="Settings shell + SegmentedControl [All|Active|Invited] filter + Search/Filter/Sort row + Invite CTA + Members table with avatar/name/email/last-activity/role columns. Ported from AlignUI Pro Figma frame 'Team Settings [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-team-settings`} />
+        <DocsCode language="bash" code={`dashkit add finance-team-settings`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

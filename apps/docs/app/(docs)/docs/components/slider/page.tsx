@@ -27,7 +27,7 @@ export default function SliderDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add slider`} />
+        <DocsCode language="bash" code={`dashkit add slider`} />
       </DocsSection>
 
       <DocsSection title="Usage">

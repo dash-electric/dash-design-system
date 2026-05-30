@@ -21,7 +21,7 @@ export default function MarketingResetPasswordDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-reset-password`} />
+        <DocsCode language="bash" code={`dashkit add marketing-reset-password`} />
       </DocsSection>
 
       <DocsSection title="Examples">

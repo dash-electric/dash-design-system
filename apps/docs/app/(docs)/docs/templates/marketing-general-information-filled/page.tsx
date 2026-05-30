@@ -21,7 +21,7 @@ export default function MarketingGeneralInformationFilledDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-general-information-filled`} />
+        <DocsCode language="bash" code={`dashkit add marketing-general-information-filled`} />
       </DocsSection>
 
       <DocsSection title="Examples">

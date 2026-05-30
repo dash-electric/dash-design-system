@@ -20,7 +20,7 @@ export default function HrResetPasswordDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-reset-password`} />
+        <DocsCode language="bash" code={`dashkit add hr-reset-password`} />
       </DocsSection>
 
       <DocsSection title="Examples">

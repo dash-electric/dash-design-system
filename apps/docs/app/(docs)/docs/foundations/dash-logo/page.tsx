@@ -42,7 +42,7 @@ export default function DashLogoDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add dash-logo`} />
+        <DocsCode language="bash" code={`dashkit add dash-logo`} />
       </DocsSection>
 
       <DocsSection title="Brand card">

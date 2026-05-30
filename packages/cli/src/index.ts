@@ -1,6 +1,6 @@
-#!/usr/bin/env node
 /**
  * Dash CLI entrypoint — commander wiring.
+ * Shebang is injected by tsup as a banner (see tsup.config.ts).
  */
 import { Command } from "commander"
 import kleur from "kleur"
@@ -33,7 +33,7 @@ import { runMigrate } from "./commands/migrate.js"
 const program = new Command()
 
 program
-  .name("dash")
+  .name("dashkit")
   .description("Dash Design System CLI — install registry items into your project")
   .version(VERSION)
 
@@ -308,7 +308,7 @@ gap
   })
 
 // ─────────────────────────────────────────────────────────────────────────
-// `dash feedback` — Wave 5 pilot signal capture
+// `dashkit feedback` — Wave 5 pilot signal capture
 // ─────────────────────────────────────────────────────────────────────────
 
 const feedback = program
@@ -373,7 +373,7 @@ feedback
   })
 
 // ─────────────────────────────────────────────────────────────────────────
-// `dash skill` — v4 freshness cache management
+// `dashkit skill` — v4 freshness cache management
 // ─────────────────────────────────────────────────────────────────────────
 
 const skill = program
@@ -391,7 +391,7 @@ skill
 
 skill
   .command("refresh")
-  .description("Force a re-scan of `dash info --json` and update the skill cache")
+  .description("Force a re-scan of `dashkit info --json` and update the skill cache")
   .option("--cwd <path>", "Override working directory")
   .option("--json", "Emit machine-readable JSON")
   .action(async (opts) => {
@@ -409,7 +409,7 @@ skill
   })
 
 // ─────────────────────────────────────────────────────────────────────────
-// `dash migrate <name>` — apply codemods for breaking changes
+// `dashkit migrate <name>` — apply codemods for breaking changes
 // ─────────────────────────────────────────────────────────────────────────
 
 program

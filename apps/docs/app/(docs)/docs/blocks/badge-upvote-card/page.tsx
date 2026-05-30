@@ -20,7 +20,7 @@ export default function BadgeUpvoteCardDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add badge-upvote-card`} />
+        <DocsCode language="bash" code={`dashkit add badge-upvote-card`} />
       </DocsSection>
 
       <DocsSection title="Examples">

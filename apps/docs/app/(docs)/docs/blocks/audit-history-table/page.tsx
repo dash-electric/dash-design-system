@@ -130,7 +130,7 @@ export default function AuditHistoryTableDocsPage() {
       <DocsSection title="Install">
         <DocsCode
           language="bash"
-          code={`dash add audit-history-table`}
+          code={`dashkit add audit-history-table`}
         />
       </DocsSection>
 

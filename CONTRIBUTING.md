@@ -19,9 +19,9 @@ The canonical 10-step flow lives in [`apps/docs/MAINTENANCE.md` §5](apps/docs/M
 7. Type-check + visual: `pnpm tsc --noEmit && pnpm --filter @dash/docs dev` → eyeball `http://localhost:3000/docs/components/<name>`.
 8. Smoke: `bash apps/docs/scripts/smoke.sh http://localhost:3000 ""`.
 9. Commit (see [Commit messages](#commit-messages)) + push + `gh pr create --fill`.
-10. After merge: Vercel auto-deploys. Slack `#design-system`: `@dash/<name> shipped — install: dash add <name>`.
+10. After merge: Vercel auto-deploys. Slack `#design-system`: `@dash/<name> shipped — install: dashkit add <name>`.
 
-For **blocks / templates / patterns**, same flow with `type: "registry:block" | "registry:page" | "registry:pattern"` and the file in `registry/dash/blocks/` / `registry/dash/templates/` / `registry/dash/patterns/`. Templates need `target: "<consumer-path>"` so `dash add` knows where to write.
+For **blocks / templates / patterns**, same flow with `type: "registry:block" | "registry:page" | "registry:pattern"` and the file in `registry/dash/blocks/` / `registry/dash/templates/` / `registry/dash/patterns/`. Templates need `target: "<consumer-path>"` so `dashkit add` knows where to write.
 
 ---
 
@@ -148,7 +148,7 @@ If your component **needs** one of these, file an issue first — there's usuall
 | Live incident (`ds.dash.com` down) | Slack `#design-system` first, GitHub issue after with `incident` label |
 | Security concern | DM Irfan directly. Do not open a public issue. |
 
-Include: repo name + version, reproduction steps, expected vs actual, screenshots (if visual), `dash doctor` output (if CLI / MCP).
+Include: repo name + version, reproduction steps, expected vs actual, screenshots (if visual), `dashkit doctor` output (if CLI / MCP).
 
 ---
 

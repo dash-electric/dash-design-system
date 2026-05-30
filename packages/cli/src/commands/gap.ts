@@ -1,8 +1,8 @@
 /**
- * `dash gap report` — log DS coverage gaps users hit while building features.
+ * `dashkit gap report` — log DS coverage gaps users hit while building features.
  *
  * Wave 4 Agent M (decoupled). A user encounters something the DS doesn't ship
- * (e.g. no image-editor) → runs `dash gap report "image editor missing"` →
+ * (e.g. no image-editor) → runs `dashkit gap report "image editor missing"` →
  * structured entry lands in `~/.dash/gap-queue.json`. Wave 4 dashboard
  * (separate session) will read the queue and surface backlog to the DS
  * maintainer.
@@ -90,7 +90,7 @@ function age(createdAt: string): string {
 }
 
 /**
- * Detect current repo. Best-effort via `dash info` machinery (reads package.json
+ * Detect current repo. Best-effort via `dashkit info` machinery (reads package.json
  * name from CWD). Falls back to basename(cwd). Returns null on total failure so
  * the entry stays useful even when run outside a project.
  */
@@ -109,7 +109,7 @@ async function detectRepo(cwd: string): Promise<string | null> {
   } catch {
     /* fall through */
   }
-  // Fall back to `dash info` (skip network — we just want framework/root).
+  // Fall back to `dashkit info` (skip network — we just want framework/root).
   try {
     const snap = await collectInfo({ cwd, _index: null })
     const base = path.basename(snap.project.rootPath)
@@ -123,7 +123,7 @@ async function runLogMode(opts: GapReportOpts): Promise<void> {
   const description = (opts.description ?? "").trim()
   if (!description) {
     console.error(
-      kleur.red("✗ description is required. Usage: dash gap report \"<description>\""),
+      kleur.red("✗ description is required. Usage: dashkit gap report \"<description>\""),
     )
     process.exitCode = 2
     return
@@ -218,7 +218,7 @@ function runListMode(opts: GapReportOpts): void {
   if (queue.entries.length === 0) {
     console.log(
       kleur.dim(
-        `  No gaps logged. Use 'dash gap report "description"' to add.`,
+        `  No gaps logged. Use 'dashkit gap report "description"' to add.`,
       ),
     )
     console.log()
@@ -363,7 +363,7 @@ function runExportMode(opts: GapReportOpts): void {
 }
 
 /**
- * Dispatcher for `dash gap report`. Resolves mode from flags, runs it. Modes
+ * Dispatcher for `dashkit gap report`. Resolves mode from flags, runs it. Modes
  * are mutually exclusive; if more than one is passed we error with exit 2.
  */
 export async function runGapReport(opts: GapReportOpts): Promise<void> {
@@ -388,7 +388,7 @@ export async function runGapReport(opts: GapReportOpts): Promise<void> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// `dash gap sync` — push local queue to dashboard API
+// `dashkit gap sync` — push local queue to dashboard API
 // ─────────────────────────────────────────────────────────────────────────
 
 export type GapSyncOpts = {

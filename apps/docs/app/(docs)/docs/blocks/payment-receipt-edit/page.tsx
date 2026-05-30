@@ -48,7 +48,7 @@ export default function PaymentReceiptEditDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add payment-receipt-edit`} />
+        <DocsCode language="bash" code={`dashkit add payment-receipt-edit`} />
       </DocsSection>
 
       <DocsSection title="Preview">

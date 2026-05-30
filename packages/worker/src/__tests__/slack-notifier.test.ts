@@ -37,7 +37,7 @@ describe("buildSlackPayload", () => {
     expect(payload.text).toContain("92/100")
     expect(payload.text).toContain("halo-dash-fe")
     expect(payload.text).toContain("https://github.com/x/pull/1")
-    expect(payload.text).toContain("dash add image-editor-with-audit")
+    expect(payload.text).toContain("dashkit add image-editor-with-audit")
   })
 
   it("formats needs-review with draft PR", () => {

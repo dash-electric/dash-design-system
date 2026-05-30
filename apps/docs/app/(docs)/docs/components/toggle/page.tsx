@@ -24,7 +24,7 @@ export default function ToggleDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add toggle`} />
+        <DocsCode language="bash" code={`dashkit add toggle`} />
       </DocsSection>
 
       <DocsSection title="Examples">

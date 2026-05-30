@@ -26,7 +26,7 @@ function fakeFetch(routes: Array<{ match: string; status: number }>): typeof fet
   }) as typeof fetch
 }
 
-describe("dash doctor — collectDoctor", () => {
+describe("dashkit doctor — collectDoctor", () => {
   let tmpCwd: string
   let tmpHome: string
 

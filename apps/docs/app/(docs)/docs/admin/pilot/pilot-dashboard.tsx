@@ -280,12 +280,12 @@ export function PilotDashboard({
 
       <DocsSection
         title="Feedback feed"
-        description="Last 50 entries from dash feedback log + sync. Newest first. Filter via CLI: `dash feedback list --category bug`."
+        description="Last 50 entries from dashkit feedback log + sync. Newest first. Filter via CLI: `dashkit feedback list --category bug`."
       >
         {data.feedback.length === 0 ? (
           <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-4 py-6 text-center text-sm text-text-sub-600">
-            No feedback yet. Users submit via <code>dash feedback log "&lt;text&gt;"</code> →{" "}
-            <code>dash feedback sync</code>.
+            No feedback yet. Users submit via <code>dashkit feedback log "&lt;text&gt;"</code> →{" "}
+            <code>dashkit feedback sync</code>.
           </div>
         ) : (
           <ul className="space-y-2">
@@ -344,7 +344,7 @@ export function PilotDashboard({
       >
         <div className="rounded-xl border border-error-light bg-error-lighter/30 p-4">
           <p className="text-sm text-text-strong-950">
-            Triggering the kill switch will block all <code>dash add</code>{" "}
+            Triggering the kill switch will block all <code>dashkit add</code>{" "}
             installs for the pilot cohort. Use only if § A failure criterion
             trips and you've escalated to PM Dash + Head of Design first.
           </p>

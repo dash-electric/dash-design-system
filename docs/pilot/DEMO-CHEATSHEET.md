@@ -23,9 +23,9 @@ bash apps/docs/scripts/smoke.sh https://ds.dash.com "$DASH_REGISTRY_TOKEN"
 # expect: fail=0
 
 # 3. Verify CLI + MCP detect
-dash info
+dashkit info
 # expect: registry=https://ds.dash.com · token=set · mcp=wired
-dash doctor
+dashkit doctor
 # expect: all checks green
 
 # 4. Clean a scratch demo repo (mirrors a real Dash next-portal-v2-web checkout)
@@ -88,7 +88,7 @@ Switch to terminal:
 
 ```bash
 cd /tmp/dash-demo
-dash init
+dashkit init
 # prompts:
 #   - registry URL? https://ds.dash.com  (default)
 #   - token? auto-detected from .env.local
@@ -97,7 +97,7 @@ dash init
 ```
 
 ```bash
-dash add data-table button input modal use-code-field
+dashkit add data-table button input modal use-code-field
 # Installing 5 components...
 # ✓ @dash/data-table (deps: @tanstack/react-table)
 # ✓ @dash/button
@@ -126,7 +126,7 @@ cat ~/.claude/mcp-config.json | grep dash
 # expect: @dash/mcp-server config present
 
 # verify framework detected as portal stack
-dash info --path ~/dash-tech/next-portal-v2-web
+dashkit info --path ~/dash-tech/next-portal-v2-web
 # expect: framework=next-app · stack=portal (Jotai + axios + native useState)
 ```
 
@@ -137,7 +137,7 @@ In Claude Code chat, type **exactly this prompt** (the Dash-domain killer):
 **Watch what Claude does (narrate live):**
 
 1. Queries Dash MCP `search_components "multi item form use code bulk"` — returns `multi-item-form` pattern, `use-code-field`, `data-table`, `button`.
-2. Reads `dash info` → detects **portal stack** → activates **Adaptation Layer**: no RHF, no zod, no `react-query` — instead Jotai atoms + native `useState` + axios.
+2. Reads `dashkit info` → detects **portal stack** → activates **Adaptation Layer**: no RHF, no zod, no `react-query` — instead Jotai atoms + native `useState` + axios.
 3. Reads `multi-item-form` pattern source. Reads `use-code-field` (case-sensitive charset — no `toUpperCase()` forcing).
 4. Writes `app/[locale]/(dashboard)/deliveries/create/page.tsx`:
    - Multi-row Jotai atom for order list.
@@ -189,7 +189,7 @@ Pre-recorded screen recording of Act 4 saved at `~/Documents/dash-ds-demo-record
 Run demo against localhost — `bash apps/docs/scripts/smoke.sh http://localhost:3000` first to confirm. Tell team "Vercel hiccup pagi ini, lagi gua fix paralel. Ini live registry sama, host beda".
 
 ### Backup 3: Claude Code burns tokens / hangs
-Skip Act 4 Claude part. Manually show `dash add multi-item-form use-code-field` files landing + open VS Code to edit one page using imports. Less impressive but still clear.
+Skip Act 4 Claude part. Manually show `dashkit add multi-item-form use-code-field` files landing + open VS Code to edit one page using imports. Less impressive but still clear.
 
 ---
 
@@ -198,7 +198,7 @@ Skip Act 4 Claude part. Manually show `dash add multi-item-form use-code-field` 
 Run **before** Act 4 starts (last sanity check):
 
 ```bash
-dash doctor
+dashkit doctor
 # Should show:
 #   ✓ registry reachable
 #   ✓ token valid
@@ -211,15 +211,15 @@ If `MCP server responding` fails:
 
 ```bash
 # 1. Re-wire MCP
-dash mcp init --force
+dashkit mcp init --force
 
 # 2. Restart Claude Code (fully quit + reopen — Cmd+Q on Mac)
 
 # 3. Re-verify
-dash doctor
+dashkit doctor
 ```
 
-If still failing → skip MCP narration in Act 4. Manually instruct Claude `"first run 'dash search multi-item-form' and read the result before coding"`. The components still install via CLI; you lose only the auto-discovery wow factor.
+If still failing → skip MCP narration in Act 4. Manually instruct Claude `"first run 'dashkit search multi-item-form' and read the result before coding"`. The components still install via CLI; you lose only the auto-discovery wow factor.
 
 ---
 
@@ -241,14 +241,14 @@ If still failing → skip MCP narration in Act 4. Manually instruct Claude `"fir
 | Question | Answer |
 |---|---|
 | "Kenapa pakai canonical pattern RHF + zod di registry kalau Dash banned RHF?" | "Registry itu canonical — source of truth. MCP punya **Adaptation Layer** yang translate per-stack. Repo Dash detect sebagai `portal` stack → AI swap RHF → Jotai + native useState, zod → manual validator. Lu ga pernah lihat RHF masuk PR Dash. Adaptation Layer 5 FE + 5 BE, total 30 anti-pattern dijaga." |
-| "Kalau gua kerja di `fleet-mgmt` (CRA, bukan Next), apa aman?" | "Aman. `framework-detector` di CLI baca `package.json` + struktur — detect CRA, Vite, Remix, Astro, Next App, Next Pages, React lib. 7 framework template. `dash add` adaptasi import path + entrypoint sesuai stack. fleet-mgmt sudah dicover." |
+| "Kalau gua kerja di `fleet-mgmt` (CRA, bukan Next), apa aman?" | "Aman. `framework-detector` di CLI baca `package.json` + struktur — detect CRA, Vite, Remix, Astro, Next App, Next Pages, React lib. 7 framework template. `dashkit add` adaptasi import path + entrypoint sesuai stack. fleet-mgmt sudah dicover." |
 | "Berapa cost Vercel?" | "$20/bulan Pro 1 seat. Token + auth gratis. Dependencies semua open-source. Total infra cost untuk DS = $20/mo." |
 | "Sekarang berapa repo dicover?" | "11 repo total — 5 FE (next-portal-v2-web, fleet-mgmt-fe, basecamp, claim-portal, driver-app-web) + 5 BE (ts-delivery-service, nodejs-core-service, payroll-service, dispatch-service, outlet-service) + 1 infra reference. Adaptation Layer mapping di `dash-ai-rules.md` v2 (829 lines, 30 anti-pattern)." |
 | "Kenapa ga pakai shadcn langsung?" | "Sama foundation, tapi @dash udah brand-match Dash sejak Day 1. Ga perlu re-skin tiap komponen. Plus MCP custom buat workflow Dash + pattern Dash-specific (use-code, multi-item-form, bulk-submit) yang ga ada di shadcn." |
 | "Lisensi?" | "Internal Dash team only. AlignUI Pro license covers this. External redistribution prohibited per NOTICE.md." |
 | "Kapan multi-stack (Vite, Remix) ready?" | "Hari ini ready — 7 framework template di CLI v0.3.0. Kalau ketemu stack edge case, ping gua, gua adaptasi dalam 1 hari." |
 | "Bisa contribute komponen baru?" | "Yes — PR ke `dash-tech/dash-ds`. Workflow di `CONTRIBUTING.md`. Gua review + merge dalam 1 hari kerja." |
-| "Performance impact?" | "Komponen di-tree-shake — cuma yang lu pakai yang ke-bundle. Base theme 8KB gz. Tidak ada runtime registry call di production — semua jadi source di repo lu setelah `dash add`." |
+| "Performance impact?" | "Komponen di-tree-shake — cuma yang lu pakai yang ke-bundle. Base theme 8KB gz. Tidak ada runtime registry call di production — semua jadi source di repo lu setelah `dashkit add`." |
 | "Kalau Dash brand berubah?" | "Token-based — semua warna/spacing pakai CSS variable `--dash-*`. Brand refresh = update token, semua komponen ikut auto. Tested via token swap demo." |
 
 ---
@@ -261,7 +261,7 @@ If still failing → skip MCP narration in Act 4. Manually instruct Claude `"fir
 - Update vault `06-Adoption-Metrics.md` with attendance + reactions
 
 ### Week 1
-- Shadow the 1 pilot user. Capture every friction point ("dash init prompt confusing", "Claude tried to install non-existent variant", etc.).
+- Shadow the 1 pilot user. Capture every friction point ("dashkit init prompt confusing", "Claude tried to install non-existent variant", etc.).
 - Friction → GitHub issue or vault `07-Ideas-Backlog.md`.
 
 ### Week 2
@@ -276,22 +276,22 @@ If still failing → skip MCP narration in Act 4. Manually instruct Claude `"fir
 # health
 curl -s https://ds.dash.com/api/health | jq
 
-# install CLI (user laptop, one-time)
-pnpm i -g dash
+# install CLI (user laptop, one-time — requires ~/.npmrc with @dash-tech registry + PAT, see ONBOARDING-PLAYBOOK)
+pnpm i -g @dash-tech/dashkit
 
 # new consumer repo
-dash init                              # interactive setup
-dash add button input modal data-table # install components
-dash add multi-item-form use-code-field # Dash-domain patterns
-dash list                              # see all 181 registry items
-dash search "table"                    # full-text search
-dash mcp init                          # wire Claude Code
-dash doctor                            # diagnose MCP / token / framework
-dash info                              # see detected stack + registry config
+dashkit init                              # interactive setup
+dashkit add button input modal data-table # install components
+dashkit add multi-item-form use-code-field # Dash-domain patterns
+dashkit list                              # see all 181 registry items
+dashkit search "table"                    # full-text search
+dashkit mcp init                          # wire Claude Code
+dashkit doctor                            # diagnose MCP / token / framework
+dashkit info                              # see detected stack + registry config
 
 # upgrade
-dash diff button                       # see what changed
-dash add button --upgrade              # update local copy
+dashkit diff button                       # see what changed
+dashkit add button --upgrade              # update local copy
 
 # DS maintainer (only Irfan)
 cd /Users/irfanprimaputra.b/dash-ds
@@ -308,7 +308,7 @@ vercel rollback <url> --prod           # rollback (from apps/docs)
 | Symptom | First move |
 |---|---|
 | Demo crashes mid-flow | Switch to slide 11 ROI math, finish on math + commitment, schedule individual demos for next week |
-| `dash doctor` red mid-prep | Re-run `dash mcp init --force`, restart Claude Code, re-verify. If still red, fallback to manual `dash search` narration. |
-| Claude generates RHF anyway | Stop, say "look — without Adaptation Layer that's exactly what you'd get". Type `"first run dash search and check stack via dash info"` as a follow-up. Shows the layer in action by absence vs presence. |
+| `dashkit doctor` red mid-prep | Re-run `dashkit mcp init --force`, restart Claude Code, re-verify. If still red, fallback to manual `dashkit search` narration. |
+| Claude generates RHF anyway | Stop, say "look — without Adaptation Layer that's exactly what you'd get". Type `"first run dashkit search and check stack via dashkit info"` as a follow-up. Shows the layer in action by absence vs presence. |
 | Vercel deploy down | Demo against localhost — `pnpm --filter @dash/docs dev` + `bash apps/docs/scripts/smoke.sh http://localhost:3000`. Tell team "Vercel hiccup, live registry sama, host beda". |
 | User asks deep BE question (envelope/state machine) | Open `apps/docs/dash-domain-glossary.md` — 1,982 lines, 22+ entities, 4 state machines. Answer from source. |

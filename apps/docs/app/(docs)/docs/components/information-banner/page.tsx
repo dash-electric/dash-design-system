@@ -54,7 +54,7 @@ export default function InformationBannerDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add information-banner`} />
+        <DocsCode language="bash" code={`dashkit add information-banner`} />
       </DocsSection>
 
       <DocsSection title="Usage">

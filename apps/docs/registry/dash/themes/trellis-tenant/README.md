@@ -11,7 +11,7 @@ external customers don't get Dash Purple as their brand, but they DO inherit
 Layer 0 + Layer 1 (foundation + primitives) for free.
 
 This template ships with a **neutral grey accent (`#6b7280`)** as a safe
-placeholder. The Phase C CLI (`dash init --theme=trellis-tenant --tenant=acme`)
+placeholder. The Phase C CLI (`dashkit init --theme=trellis-tenant --tenant=acme`)
 will:
 
 1. Clone this directory to `themes/trellis-acme/`.
@@ -34,7 +34,7 @@ will:
 - Layer 1 primitive internals.
 - A11y floor (focus rings, target sizes).
 
-These are CI-enforced via `dash audit` running against tenant repos.
+These are CI-enforced via `dashkit audit` running against tenant repos.
 
 ## When to use this template
 

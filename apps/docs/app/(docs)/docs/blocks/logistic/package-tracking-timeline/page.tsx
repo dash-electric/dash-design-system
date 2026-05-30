@@ -106,7 +106,7 @@ export default function PackageTrackingTimelineDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add package-tracking-timeline`} />
+        <DocsCode language="bash" code={`dashkit add package-tracking-timeline`} />
       </DocsSection>
 
       <DocsSection title="Preview — full overlay">

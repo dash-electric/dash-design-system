@@ -4,7 +4,7 @@
  * Namespace re-exports for theme-scoped discovery. Canonical metadata lives
  * in `apps/docs/registry.json` under each item's `theme: "shared"` field.
  * Source .tsx files remain in `../` (flat layout) — this index avoids moving
- * physical files so existing imports + `dash add` paths stay intact.
+ * physical files so existing imports + `dashkit add` paths stay intact.
  *
  * Usage:
  *   import { AuditHistoryTable, PageHeader } from "@/registry/dash/blocks/shared"

@@ -19,7 +19,7 @@ export default function AuthLoginPhoenixDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add auth-login-phoenix`} />
+        <DocsCode language="bash" code={`dashkit add auth-login-phoenix`} />
       </DocsSection>
 
       <DocsSection title="Preview">

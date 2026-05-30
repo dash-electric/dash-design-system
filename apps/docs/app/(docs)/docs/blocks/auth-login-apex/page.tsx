@@ -19,7 +19,7 @@ export default function AuthLoginApexDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add auth-login-apex`} />
+        <DocsCode language="bash" code={`dashkit add auth-login-apex`} />
       </DocsSection>
 
       <DocsSection title="Preview">

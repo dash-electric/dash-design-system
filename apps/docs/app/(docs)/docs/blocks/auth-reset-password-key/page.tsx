@@ -19,7 +19,7 @@ export default function AuthResetPasswordKeyDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add auth-reset-password-key`} />
+        <DocsCode language="bash" code={`dashkit add auth-reset-password-key`} />
       </DocsSection>
 
       <DocsSection title="Preview">

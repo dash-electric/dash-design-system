@@ -32,7 +32,7 @@ export default function InputOtpDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add input-otp`} />
+        <DocsCode language="bash" code={`dashkit add input-otp`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

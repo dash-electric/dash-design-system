@@ -3,7 +3,7 @@
  *
  * Hashes mtime + size of the small set of files that meaningfully affect a
  * Dash snapshot. When any of these change, the snapshot cache should be
- * invalidated and `dash info` re-run.
+ * invalidated and `dashkit info` re-run.
  *
  * Strict requirements:
  *   - NO external deps (node:fs + node:crypto only)

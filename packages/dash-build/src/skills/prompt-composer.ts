@@ -465,7 +465,7 @@ export function composeSystemPrompt(ctx: ComposeInput): string {
     ctx.design.cardinalRules.trim() ||
     `CR-1 Additive only · CR-2 Audit trail · CR-3 Banned libs (${BANNED_IMPORTS.join(
       ", ",
-    )}) · CR-4 Voice formal Anda · CR-5 Tokens not hex · CR-6 Use registry · CR-7 dash sync · CR-8 Audit UI`
+    )}) · CR-4 Voice formal Anda · CR-5 Tokens not hex · CR-6 Use registry · CR-7 dashkit sync · CR-8 Audit UI`
 
   const voiceBlock =
     ctx.design.voiceRules.trim() ||

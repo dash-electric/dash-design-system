@@ -34,16 +34,16 @@ Every tool returns a single MCP `TextContent` block whose body is **markdown** (
 ### `button` — Button _(form)_
 Primary action button.
 
-**Type:** `ui` · **Install:** `dash add button`
+**Type:** `ui` · **Install:** `dashkit add button`
 
 ### `icon-button` — Icon Button _(form)_
 Compact icon-only variant.
 
-**Type:** `ui` · **Install:** `dash add icon-button`
+**Type:** `ui` · **Install:** `dashkit add icon-button`
 
 **To install one:**
 ```bash
-dash add <component-name>
+dashkit add <component-name>
 ```
 
 **To see the full schema (files, deps, cssVars) for any of these:**
@@ -57,10 +57,10 @@ Backward compat: the MCP protocol shape (`content: [{ type: "text", text: ... }]
 ```bash
 git clone https://github.com/dash-tech/dash-mcp ~/dash-mcp
 cd ~/dash-mcp && npm install && npm run build
-dash mcp init   # if you have the dash CLI; otherwise see "Manual config" below
+dashkit mcp init   # if you have the dash CLI; otherwise see "Manual config" below
 ```
 
-`dash mcp init` patches `~/.config/claude-code/mcp_servers.json` to point at the build output. Restart Claude Code, ask "search dash for auth blocks", confirm tool calls fire.
+`dashkit mcp init` patches `~/.config/claude-code/mcp_servers.json` to point at the build output. Restart Claude Code, ask "search dash for auth blocks", confirm tool calls fire.
 
 ## Manual config
 
@@ -223,4 +223,4 @@ UNLICENSED — internal Dash use only. See [`dash-ds/NOTICE.md`](../dash-ds/NOTI
 ## Related repos
 
 - [`dash-ds`](../dash-ds/README.md) — the registry this server reads from.
-- [`dash-cli`](../dash-cli/README.md) — the human-facing installer. `dash mcp init` wires this server up for you.
+- [`dash-cli`](../dash-cli/README.md) — the human-facing installer. `dashkit mcp init` wires this server up for you.

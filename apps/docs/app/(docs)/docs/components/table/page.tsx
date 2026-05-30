@@ -46,7 +46,7 @@ export default function TableDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add table`} />
+        <DocsCode language="bash" code={`dashkit add table`} />
       </DocsSection>
 
       <DocsSection title="Usage">

@@ -48,7 +48,7 @@ export default function AnimatedAlertDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add animated-alert`} />
+        <DocsCode language="bash" code={`dashkit add animated-alert`} />
       </DocsSection>
 
       <DocsSection title="Usage">

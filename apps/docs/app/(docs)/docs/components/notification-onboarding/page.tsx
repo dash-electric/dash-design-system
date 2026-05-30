@@ -48,7 +48,7 @@ export default function NotificationOnboardingDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add notification-onboarding`} />
+        <DocsCode language="bash" code={`dashkit add notification-onboarding`} />
       </DocsSection>
 
       <DocsSection title="Usage">

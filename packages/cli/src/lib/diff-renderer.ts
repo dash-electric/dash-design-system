@@ -1,5 +1,5 @@
 /**
- * diff-renderer — vanilla line-by-line diff rendering for `dash sync`
+ * diff-renderer — vanilla line-by-line diff rendering for `dashkit sync`
  * prompts. Two modes:
  *
  *   - renderPreview(local, remote, { maxLines })  → short snippet for the

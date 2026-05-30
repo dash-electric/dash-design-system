@@ -1,5 +1,5 @@
 /**
- * Tests for `dash sync`.
+ * Tests for `dashkit sync`.
  *
  * Strategy: inject `_snapshot`, `_fetchItem`, and `_answers` so the suite
  * never hits the network or stdin. Every test creates a tmp consumer repo
@@ -90,7 +90,7 @@ function setupConsumer(tmp: string): void {
   })
 }
 
-describe("dash sync — planSync (read-only detection)", () => {
+describe("dashkit sync — planSync (read-only detection)", () => {
   let tmp: string
   let logSpy: ReturnType<typeof vi.spyOn>
 
@@ -179,7 +179,7 @@ describe("dash sync — planSync (read-only detection)", () => {
   })
 })
 
-describe("dash sync — runSync flows", () => {
+describe("dashkit sync — runSync flows", () => {
   let tmp: string
   let logSpy: ReturnType<typeof vi.spyOn>
 
