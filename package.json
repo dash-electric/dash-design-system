@@ -15,8 +15,8 @@
     "smoke": "pnpm --filter @dash/docs smoke"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.0.1",
-    "@commitlint/config-conventional": "^21.0.1",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "typescript": "^6",
     "tsx": "^4"
   },
