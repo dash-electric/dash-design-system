@@ -24,6 +24,7 @@
       ["upper-case", "pascal-case", "start-case"]
     ],
     "header-max-length": [2, "always", 100],
-    "body-max-line-length": [1, "always", 100]
+    "body-max-line-length": [1, "always", 100],
+    "footer-leading-blank": [0, "always"]
   }
 }
