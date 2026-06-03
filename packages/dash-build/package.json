@@ -36,7 +36,7 @@
   "dependencies": {
     "@inquirer/prompts": "^7.0.0",
     "@octokit/app": "^15.0.0",
-    "@octokit/rest": "^21.0.0",
+    "@octokit/rest": "^22.0.1",
     "boxen": "^7.1.0",
     "chalk": "^5.4.0",
     "open": "^11.0.0",
