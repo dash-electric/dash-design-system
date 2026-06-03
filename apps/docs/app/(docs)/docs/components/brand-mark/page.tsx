@@ -24,7 +24,7 @@ export default function BrandMarkDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add brand-mark`} />
+        <DocsCode language="bash" code={`dashkit add brand-mark`} />
       </DocsSection>
 
       <DocsSection title="Preview">

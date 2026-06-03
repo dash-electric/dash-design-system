@@ -22,7 +22,7 @@ export default function Phase7ResultsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add phase7-results`} />
+        <DocsCode language="bash" code={`dashkit add phase7-results`} />
       </DocsSection>
 
       <DocsSection title="Examples">

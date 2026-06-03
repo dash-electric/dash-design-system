@@ -26,7 +26,7 @@ export default function HrWidgetsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-widgets`} />
+        <DocsCode language="bash" code={`dashkit add hr-widgets`} />
       </DocsSection>
 
       <DocsSection title="Examples">

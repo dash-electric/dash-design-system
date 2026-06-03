@@ -21,7 +21,7 @@ export default function TeamGridDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add team-grid`} />
+        <DocsCode language="bash" code={`dashkit add team-grid`} />
       </DocsSection>
 
       <DocsSection title="Preview">

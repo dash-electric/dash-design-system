@@ -20,7 +20,7 @@ export default function VerificationOtpDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add verification-otp`} />
+        <DocsCode language="bash" code={`dashkit add verification-otp`} />
       </DocsSection>
 
       <DocsSection title="Preview">

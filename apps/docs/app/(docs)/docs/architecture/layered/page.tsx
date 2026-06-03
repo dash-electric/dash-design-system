@@ -501,25 +501,25 @@ export function AssignRoute() {
         <ol className="space-y-4 text-sm text-text-sub-600 list-decimal pl-6">
           <li>
             <span className="font-medium text-text-strong-950">Bootstrap.</span>{" "}
-            <code className="text-xs">dash init --theme logistic</code> writes{" "}
+            <code className="text-xs">dashkit init --theme logistic</code> writes{" "}
             <code className="text-xs">dash.config.json</code>, Tailwind tokens, and Layer 0
             CSS variables. Done once per consumer repo.
           </li>
           <li>
             <span className="font-medium text-text-strong-950">Install primitives.</span>{" "}
-            <code className="text-xs">dash add button input select modal</code> pulls Layer
+            <code className="text-xs">dashkit add button input select modal</code> pulls Layer
             1 components. They render correctly in the active theme without any
             theme-specific code.
           </li>
           <li>
             <span className="font-medium text-text-strong-950">Install or build blocks.</span>{" "}
-            <code className="text-xs">dash add logistic-route-planner</code> for
+            <code className="text-xs">dashkit add logistic-route-planner</code> for
             product-specific Layer 3 blocks. New blocks default to{" "}
             <code className="text-xs">theme: &quot;shared&quot;</code> unless declared.
           </li>
           <li>
             <span className="font-medium text-text-strong-950">CI audits.</span>{" "}
-            <code className="text-xs">dash audit</code> rejects hard-coded accent hex,
+            <code className="text-xs">dashkit audit</code> rejects hard-coded accent hex,
             theme mismatches, missing audit-trail fields, and banned external libraries.
           </li>
         </ol>
@@ -627,9 +627,9 @@ export const logistic = defineTheme({
           Full spec, migration case studies, and showcase angles live in{" "}
           <Link
             className="text-(--dash-purple-600) underline-offset-4 hover:underline"
-            href="https://github.com/dash-elektrik/dash-ds/blob/main/LAYERED-ARCHITECTURE.md"
+            href="https://github.com/dash-electric/express-design-system/blob/main/ARCHITECTURE.md"
           >
-            <code className="text-xs">LAYERED-ARCHITECTURE.md</code>
+            <code className="text-xs">ARCHITECTURE.md</code>
           </Link>{" "}
           at the repo root.
         </p>

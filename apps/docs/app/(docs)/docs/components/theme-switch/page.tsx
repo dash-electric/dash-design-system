@@ -34,7 +34,7 @@ export default function ThemeSwitchDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add theme-switch
+        <DocsCode language="bash" code={`dashkit add theme-switch
 # plus the theme provider:
 pnpm add next-themes`} />
       </DocsSection>

@@ -183,7 +183,7 @@ export default function RepossessionActionSheetDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add repossession-action-sheet`} />
+        <DocsCode language="bash" code={`dashkit add repossession-action-sheet`} />
       </DocsSection>
 
       <DocsSection title="Preview">

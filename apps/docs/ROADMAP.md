@@ -101,11 +101,11 @@ phase2-summary.md, phase3-summary.md, component-node-map.md).
 - [x] Light-default topbar with backdrop blur
 
 ### Phase 7 — Dash CLI (packages/dash-cli)
-- [x] `dash init` — scaffold consumer project
-- [x] `dash add <name>` — fetch + install registry item with deps
-- [x] `dash build` — graduated from scripts/ to CLI
-- [x] `dash search <query>` — full-text search registry
-- [x] `dash list` — list installed/available items
+- [x] `dashkit init` — scaffold consumer project
+- [x] `dashkit add <name>` — fetch + install registry item with deps
+- [x] `dashkit build` — graduated from scripts/ to CLI
+- [x] `dashkit search <query>` — full-text search registry
+- [x] `dashkit list` — list installed/available items
 - [x] Bearer auth header interpolation from env
 
 ### Phase 8 — Registry API + Auth (Day 7 from plan)
@@ -163,10 +163,10 @@ internal-only 10-user Dash deployment.
   auto-discovers blocks as they ship.
 - [ ] **CLI publish to GitHub Packages** (~3 jam) — `pnpm i -g dash`
   for all 10 users. CI release workflow on git tag.
-- [ ] **Multi-stack `dash init` templates** (~4 jam) — Vite/Remix/Astro
+- [ ] **Multi-stack `dashkit init` templates** (~4 jam) — Vite/Remix/Astro
   variants alongside the Next.js default.
 - [ ] **`@dash/skill` package** (~6 jam) — Claude Code skill format
-  with `dash info --json` introspection. Depends on MCP done.
+  with `dashkit info --json` introspection. Depends on MCP done.
 - [ ] **Smoke test campaign** — 1 user (Andi or similar) ships a feature
   using ≥3 @dash items in <1 day. Document ROI.
 

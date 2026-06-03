@@ -21,7 +21,7 @@ export default function TransactionsTableDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add transactions-table`} />
+        <DocsCode language="bash" code={`dashkit add transactions-table`} />
       </DocsSection>
 
       <DocsSection title="Preview">

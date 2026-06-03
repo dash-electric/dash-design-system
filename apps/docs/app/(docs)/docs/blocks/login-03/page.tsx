@@ -20,7 +20,7 @@ export default function LoginBlock03DocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add login-03`} />
+        <DocsCode language="bash" code={`dashkit add login-03`} />
       </DocsSection>
 
       <DocsSection title="Preview">

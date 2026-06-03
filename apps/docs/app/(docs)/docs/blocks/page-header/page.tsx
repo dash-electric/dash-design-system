@@ -20,7 +20,7 @@ export default function PageHeaderDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add page-header`} />
+        <DocsCode language="bash" code={`dashkit add page-header`} />
       </DocsSection>
 
       <DocsSection title="Examples">

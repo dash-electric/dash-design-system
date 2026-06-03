@@ -5,7 +5,7 @@ It is intentionally repo-agnostic: every Dash product repo should receive the
 same interaction quality, visual rhythm, and brand behavior even when its
 framework, folder structure, or data-fetching style differs.
 
-Repo-specific implementation details belong in repo skills, `dash info`, or
+Repo-specific implementation details belong in repo skills, `dashkit info`, or
 the Adaptation Layer. This file defines what the UI must feel like.
 
 ## Purpose

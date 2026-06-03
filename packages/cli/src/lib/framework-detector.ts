@@ -131,7 +131,7 @@ export function detectFramework(rootPath: string): Framework {
 }
 
 /**
- * Per-framework scaffold defaults consumed by `dash init`.
+ * Per-framework scaffold defaults consumed by `dashkit init`.
  */
 export type FrameworkScaffold = {
   /** Path (relative to repo root) where global CSS lives. */

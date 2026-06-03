@@ -89,12 +89,12 @@ export default function TestingLocallyPage() {
           { label: "Prereqs", sub: "node + pnpm + git" },
           { label: "Quick start", sub: "clone + install" },
           { label: "Install CLI", sub: "pnpm i -g dash" },
-          { label: "Init repo", sub: "dash init" },
-          { label: "Add component", sub: "dash add button" },
+          { label: "Init repo", sub: "dashkit init" },
+          { label: "Add component", sub: "dashkit add button" },
           { label: "Smoke check", sub: "audit + doctor" },
           { label: "Try POD demo", sub: "image-editor-with-audit" },
-          { label: "Wire AI", sub: "dash mcp init" },
-          { label: "Report bugs", sub: "dash feedback log" },
+          { label: "Wire AI", sub: "dashkit mcp init" },
+          { label: "Report bugs", sub: "dashkit feedback log" },
         ]}
       />
 
@@ -172,7 +172,7 @@ pnpm dev
           <DocsStep
             number={1}
             title="Install the Dash CLI globally"
-            description="One-time machine setup. Installs the dash binary so any consumer repo can call dash init / dash add. We will publish to npm at GA; until then, install from the local workspace."
+            description="One-time machine setup. Installs the dash binary so any consumer repo can call dashkit init / dashkit add. We will publish to npm at GA; until then, install from the local workspace."
             code={`# Recommended path (once published to npm)
 pnpm install -g dash
 
@@ -184,7 +184,7 @@ cd ~/dash-ds/packages/cli
 pnpm link --global`}
             output={`+ dash 1.x.x
 added 1 package in 4s
-ℹ Run \`dash init\` inside any project to wire it up.`}
+ℹ Run \`dashkit init\` inside any project to wire it up.`}
             imagePlaceholder="Terminal showing pnpm install -g dash succeeding with version output."
           />
 
@@ -215,7 +215,7 @@ Commands:
           <DocsStep
             number={3}
             title="Make a throwaway test repo"
-            description="Isolate the test so you don't dirty a real project. We use a Next.js 15 starter because Dash defaults to App Router — any framework that dash init supports will also work."
+            description="Isolate the test so you don't dirty a real project. We use a Next.js 15 starter because Dash defaults to App Router — any framework that dashkit init supports will also work."
             code={`# Pick any tmp location
 cd ~/tmp
 mkdir test-dash-ds && cd test-dash-ds
@@ -235,10 +235,10 @@ pnpm create next-app@latest . \\
             title="Initialize Dash inside the test repo"
             description="Wires the project up to the Dash registry. Writes components.json, .env.local with your token, AGENTS.md, .cursorrules, and merges the @dash Tailwind preset. Idempotent — safe to re-run if you change something."
             code={`# Token comes from the Dash 1Password vault — never paste it into Slack
-dash init --token sk-dash-xxxxxxxxxxxx
+dashkit init --token sk-dash-xxxxxxxxxxxx
 
 # Or with prompts (CLI asks for framework, token, etc.)
-dash init`}
+dashkit init`}
             output={`✔ Detected Next.js 15 (App Router) + Tailwind v4
 ✔ Wrote components.json
 ✔ Wrote .env.local (DASH_REGISTRY_TOKEN)
@@ -246,14 +246,14 @@ dash init`}
 ✔ Wrote .cursorrules (re-exports AGENTS.md)
 ✔ Imported @dash/tokens into app/globals.css
 ✔ Extended tailwind.config.ts with @dash preset
-ℹ Next: dash add button`}
-            imagePlaceholder="Terminal after dash init showing six green checkmarks confirming the scaffold."
+ℹ Next: dashkit add button`}
+            imagePlaceholder="Terminal after dashkit init showing six green checkmarks confirming the scaffold."
           />
 
           <DocsStep
             number={5}
             title="Confirm files written"
-            description="A 30-second visual check. Open the repo in your editor and tick each file off. If anything is missing, run dash init again with --yes to overwrite."
+            description="A 30-second visual check. Open the repo in your editor and tick each file off. If anything is missing, run dashkit init again with --yes to overwrite."
             codeLanguage="text"
             code={`test-dash-ds/
 ├── components.json        ← Dash project manifest
@@ -269,14 +269,14 @@ dash init`}
           <DocsStep
             number={6}
             title="Install your first component"
-            description="dash add pulls the button source into your repo at registry/dash/ui/button.tsx — you own the file, no version pinning. Re-run anytime to refresh."
-            code={`dash add button`}
+            description="dashkit add pulls the button source into your repo at registry/dash/ui/button.tsx — you own the file, no version pinning. Re-run anytime to refresh."
+            code={`dashkit add button`}
             output={`✔ Resolved button (4 deps)
 ✔ Wrote registry/dash/ui/button.tsx
 ✔ Wrote registry/dash/ui/button.stories.tsx
 ✔ Wrote registry/dash/lib/utils.ts
 ℹ Import: import { Button } from "@/registry/dash/ui/button"`}
-            imagePlaceholder="Terminal output of dash add button — files written list and the suggested import path."
+            imagePlaceholder="Terminal output of dashkit add button — files written list and the suggested import path."
           />
 
           <DocsStep
@@ -308,9 +308,9 @@ export default function HomePage() {
 
           <DocsStep
             number={8}
-            title="Run dash audit"
+            title="Run dashkit audit"
             description="On a fresh repo this must pass clean — zero HIGH-severity drift. If it doesn't, file a bug (Section 9) before doing anything else."
-            code={`dash audit`}
+            code={`dashkit audit`}
             output={`Scanning test-dash-ds/ …
 ✔ Imports         0 issues
 ✔ Style tokens    0 issues
@@ -318,15 +318,15 @@ export default function HomePage() {
 ✔ Banned libs     0 issues
 ℹ 0 HIGH · 0 MED · 0 LOW
 ✓ Ready to ship`}
-            imagePlaceholder="Terminal showing dash audit with four green ticks across import / style / layer / banned-lib categories."
+            imagePlaceholder="Terminal showing dashkit audit with four green ticks across import / style / layer / banned-lib categories."
             imageHeight="sm"
           />
 
           <DocsStep
             number={9}
-            title="Run dash doctor"
+            title="Run dashkit doctor"
             description="End-to-end health check across registry, token, MCP, framework, env. Reports each subsystem as green / yellow / red. Run this any time something feels off."
-            code={`dash doctor`}
+            code={`dashkit doctor`}
             output={`Dash Doctor
 ─────────────────────────────────────────
 ✔ CLI version          1.x.x (latest)
@@ -338,28 +338,28 @@ export default function HomePage() {
 ✔ Skill cache          fresh (last refresh 2 min ago)
 ─────────────────────────────────────────
 0 errors · 0 warnings`}
-            imagePlaceholder="Terminal output of dash doctor with seven green checkmarks across the subsystem matrix."
+            imagePlaceholder="Terminal output of dashkit doctor with seven green checkmarks across the subsystem matrix."
             imageHeight="md"
           />
 
           <DocsStep
             number={10}
             title="Check skill v4 cache"
-            description="Skill v4 caches a snapshot of dash info --json per cwd so Claude doesn't re-scan on every prompt. 'no cache' on first run is normal — Claude will populate it on first Dash-related prompt."
-            code={`dash skill status
+            description="Skill v4 caches a snapshot of dashkit info --json per cwd so Claude doesn't re-scan on every prompt. 'no cache' on first run is normal — Claude will populate it on first Dash-related prompt."
+            code={`dashkit skill status
 
 # Force refresh if you just installed new components
-dash skill refresh
+dashkit skill refresh
 
 # Wipe everything if cache acts up
-dash skill clear --all`}
+dashkit skill clear --all`}
             output={`Skill snapshot for /Users/you/tmp/test-dash-ds
 ─────────────────────────────────────────
 status        fresh
 last refresh  2 minutes ago
 items cached  214 registry entries + 3 installed (@dash/ui/button, …)
 prompt hint   "Use Dash DS" picked up via AGENTS.md`}
-            imagePlaceholder="Terminal output of dash skill status showing fresh cache with item counts."
+            imagePlaceholder="Terminal output of dashkit skill status showing fresh cache with item counts."
             imageHeight="sm"
           />
         </DocsStepList>
@@ -374,7 +374,7 @@ prompt hint   "Use Dash DS" picked up via AGENTS.md`}
           <li className="flex gap-3 items-start">
             <span className="text-(--dash-purple-600) font-bold">✓</span>
             <div>
-              <code className="text-xs">dash list</code> prints the registry
+              <code className="text-xs">dashkit list</code> prints the registry
               catalog (~214 items: ui, blocks, templates, patterns). If empty,
               token is bad.
             </div>
@@ -382,7 +382,7 @@ prompt hint   "Use Dash DS" picked up via AGENTS.md`}
           <li className="flex gap-3 items-start">
             <span className="text-(--dash-purple-600) font-bold">✓</span>
             <div>
-              <code className="text-xs">dash search button</code> returns
+              <code className="text-xs">dashkit search button</code> returns
               metadata for the Button atom (name, type, deps, description).
             </div>
           </li>
@@ -404,7 +404,7 @@ prompt hint   "Use Dash DS" picked up via AGENTS.md`}
           <li className="flex gap-3 items-start">
             <span className="text-(--dash-purple-600) font-bold">✓</span>
             <div>
-              <code className="text-xs">dash audit</code> reports{" "}
+              <code className="text-xs">dashkit audit</code> reports{" "}
               <strong>0 HIGH</strong> on the freshly initialized repo.
             </div>
           </li>
@@ -446,9 +446,9 @@ prompt hint   "Use Dash DS" picked up via AGENTS.md`}
 1. Loads Skill v4 snapshot for this cwd (cached).
 2. Reads AGENTS.md → confirms Dash DS + audit-trail + useState rules.
 3. Queries MCP: dash_registry_search "image edit audit"
-4. Suggests: dash add image-editor-with-audit
+4. Suggests: dashkit add image-editor-with-audit
 5. Asks: "OK to install? Will write registry/dash/blocks/image-editor-with-audit.tsx (~220 LOC) and patch app/(internal)/pod/[id]/page.tsx."
-6. Waits for your approval before running dash add.`}
+6. Waits for your approval before running dashkit add.`}
             imagePlaceholder="Claude response in chat — bullet list summarizing the registry lookup and proposed install plan."
             imageHeight="md"
           />
@@ -456,14 +456,14 @@ prompt hint   "Use Dash DS" picked up via AGENTS.md`}
           <DocsStep
             number={3}
             title="Run the suggested install"
-            description="Approve and let Claude run dash add. Watch the file tree — the block lands under registry/dash/blocks/, not registry/dash/ui/."
-            code={`dash add image-editor-with-audit`}
+            description="Approve and let Claude run dashkit add. Watch the file tree — the block lands under registry/dash/blocks/, not registry/dash/ui/."
+            code={`dashkit add image-editor-with-audit`}
             output={`✔ Resolved image-editor-with-audit (8 deps)
 ✔ Wrote registry/dash/blocks/image-editor-with-audit.tsx
 ✔ Wrote registry/dash/blocks/image-editor-with-audit.stories.tsx
 ✔ Updated registry/dash/lib/canvas-utils.ts
 ℹ Import: import { ImageEditorWithAudit } from "@/registry/dash/blocks/image-editor-with-audit"`}
-            imagePlaceholder="Terminal output of dash add image-editor-with-audit, with file paths under registry/dash/blocks/ highlighted."
+            imagePlaceholder="Terminal output of dashkit add image-editor-with-audit, with file paths under registry/dash/blocks/ highlighted."
             imageHeight="sm"
           />
 
@@ -508,18 +508,18 @@ prompt hint   "Use Dash DS" picked up via AGENTS.md`}
         <DocsStepList>
           <DocsStep
             number={1}
-            title="Run dash mcp init"
+            title="Run dashkit mcp init"
             description="Writes ~/.claude/mcp.json with a dash-ds server entry pointing to @dash/mcp-server. Token reads from your env automatically."
             code={`# Wire Claude Code only (default if Claude is detected)
-dash mcp init --claude-code
+dashkit mcp init --claude-code
 
 # Or pass the token explicitly
-dash mcp init --claude-code --token sk-dash-xxxx`}
+dashkit mcp init --claude-code --token sk-dash-xxxx`}
             output={`✔ Detected Claude Code at /Applications/Claude.app
 ✔ Wrote ~/.claude/mcp.json
 ✔ Server: dash-ds (bearer-gated, 6 tools)
 ℹ Restart Claude Code to pick up the new server.`}
-            imagePlaceholder="Terminal output of dash mcp init --claude-code with the config path and tool count."
+            imagePlaceholder="Terminal output of dashkit mcp init --claude-code with the config path and tool count."
             imageHeight="sm"
           />
 
@@ -555,7 +555,7 @@ Found 2 matches in the Dash registry:
 2. image-uploader (ui)
    — Drag-drop uploader, NO editing capability.
 
-For the POD audit-trail use case, install #1: dash add image-editor-with-audit`}
+For the POD audit-trail use case, install #1: dashkit add image-editor-with-audit`}
             imagePlaceholder="Claude Code chat showing the MCP tool-call trace badge and Claude's response listing the two matching components."
             imageHeight="md"
           />
@@ -570,18 +570,18 @@ For the POD audit-trail use case, install #1: dash add image-editor-with-audit`}
         <DocsStepList>
           <DocsStep
             number={1}
-            title="Run dash mcp init for Cursor"
+            title="Run dashkit mcp init for Cursor"
             description="Same command, different flag. Writes ~/.cursor/mcp.json. Use --both to wire Claude Code and Cursor in one shot."
             code={`# Cursor only
-dash mcp init --cursor
+dashkit mcp init --cursor
 
 # Both editors at once
-dash mcp init --both`}
+dashkit mcp init --both`}
             output={`✔ Detected Cursor at /Applications/Cursor.app
 ✔ Wrote ~/.cursor/mcp.json
 ✔ Server: dash-ds (bearer-gated, 6 tools)
 ℹ Restart Cursor to pick up the new server.`}
-            imagePlaceholder="Terminal output of dash mcp init --cursor with the Cursor config path."
+            imagePlaceholder="Terminal output of dashkit mcp init --cursor with the Cursor config path."
             imageHeight="sm"
           />
 
@@ -645,7 +645,7 @@ cat AGENTS.md | head -20
               <tr className="border-b border-stroke-soft-200">
                 <td className="px-4 py-3 align-top">
                   <code className="text-xs">401 Unauthorized</code> on{" "}
-                  <code className="text-xs">dash add</code>
+                  <code className="text-xs">dashkit add</code>
                 </td>
                 <td className="px-4 py-3 align-top">
                   Token missing, expired, or wrong.
@@ -653,7 +653,7 @@ cat AGENTS.md | head -20
                 <td className="px-4 py-3 align-top">
                   Re-check the token in 1Password ('Dash DS — Registry Token'),
                   then run{" "}
-                  <code className="text-xs">dash login --token sk-dash-xxxx</code>{" "}
+                  <code className="text-xs">dashkit login --token sk-dash-xxxx</code>{" "}
                   to save it to <code className="text-xs">~/.dash/credentials.json</code>.
                 </td>
               </tr>
@@ -675,7 +675,7 @@ cat AGENTS.md | head -20
               <tr className="border-b border-stroke-soft-200">
                 <td className="px-4 py-3 align-top">
                   <code className="text-xs">tsc</code> fails after{" "}
-                  <code className="text-xs">dash add</code>
+                  <code className="text-xs">dashkit add</code>
                 </td>
                 <td className="px-4 py-3 align-top">
                   Missing peer dep that the registry item declares.
@@ -683,7 +683,7 @@ cat AGENTS.md | head -20
                 <td className="px-4 py-3 align-top">
                   Run <code className="text-xs">pnpm install</code> again. Peer
                   deps are added to <code className="text-xs">package.json</code>{" "}
-                  by <code className="text-xs">dash add</code> but you still
+                  by <code className="text-xs">dashkit add</code> but you still
                   need a fresh install.
                 </td>
               </tr>
@@ -697,7 +697,7 @@ cat AGENTS.md | head -20
                 <td className="px-4 py-3 align-top">
                   Verify <code className="text-xs">paths</code> includes{" "}
                   <code className="text-xs">&quot;@/*&quot;: [&quot;./*&quot;]</code>{" "}
-                  (or your equivalent). <code className="text-xs">dash init</code>{" "}
+                  (or your equivalent). <code className="text-xs">dashkit init</code>{" "}
                   writes this — re-run it.
                 </td>
               </tr>
@@ -712,14 +712,14 @@ cat AGENTS.md | head -20
                 <td className="px-4 py-3 align-top">
                   Add{" "}
                   <code className="text-xs">presets: [require(&quot;@dash/tailwind-preset&quot;)]</code>{" "}
-                  to your tailwind config. <code className="text-xs">dash init</code>{" "}
+                  to your tailwind config. <code className="text-xs">dashkit init</code>{" "}
                   handles this — re-run it if the file was overwritten by{" "}
                   <code className="text-xs">create-next-app</code>.
                 </td>
               </tr>
               <tr className="border-b border-stroke-soft-200">
                 <td className="px-4 py-3 align-top">
-                  <code className="text-xs">dash skill status</code> shows{" "}
+                  <code className="text-xs">dashkit skill status</code> shows{" "}
                   <em>&ldquo;no cache&rdquo;</em>
                 </td>
                 <td className="px-4 py-3 align-top">
@@ -728,7 +728,7 @@ cat AGENTS.md | head -20
                 <td className="px-4 py-3 align-top">
                   Normal — ask Claude any Dash-related question and the cache
                   builds. Force-populate with{" "}
-                  <code className="text-xs">dash skill refresh</code>.
+                  <code className="text-xs">dashkit skill refresh</code>.
                 </td>
               </tr>
               <tr>
@@ -754,26 +754,26 @@ cat AGENTS.md | head -20
       {/* ─────────────────────────── 9. Reporting bugs */}
       <DocsSection
         title="9. When things break — how to report"
-        description="Two-channel reporting. Use dash feedback log for quick signal (no GitHub login, syncs to the pilot dashboard). Use GitHub issues for reproducible bugs that need maintainer attention."
+        description="Two-channel reporting. Use dashkit feedback log for quick signal (no GitHub login, syncs to the pilot dashboard). Use GitHub issues for reproducible bugs that need maintainer attention."
       >
         <DocsStepList>
           <DocsStep
             number={1}
             title="Log via the CLI (fastest)"
-            description="The CLI captures user, repo, and command context automatically. Use --severity to flag urgency. Entries land in ~/.dash/feedback-log.jsonl and sync to the admin dashboard when you run dash feedback sync."
+            description="The CLI captures user, repo, and command context automatically. Use --severity to flag urgency. Entries land in ~/.dash/feedback-log.jsonl and sync to the admin dashboard when you run dashkit feedback sync."
             code={`# Quick signal — one-liner
-dash feedback log "dash add image-editor-with-audit failed: peer dep tsx missing" \\
+dashkit feedback log "dashkit add image-editor-with-audit failed: peer dep tsx missing" \\
   --category bug \\
   --severity high \\
-  --command "dash add" \\
+  --command "dashkit add" \\
   --component image-editor-with-audit
 
 # Sync to the pilot dashboard
-dash feedback sync`}
+dashkit feedback sync`}
             output={`✔ Logged entry (id: fb_8f2c3a4d)
 ℹ category: bug · severity: high · pilot: wave-5
-ℹ Run \`dash feedback sync\` to push to admin dashboard.`}
-            imagePlaceholder="Terminal output of dash feedback log + sync confirming the entry id and pilot tag."
+ℹ Run \`dashkit feedback sync\` to push to admin dashboard.`}
+            imagePlaceholder="Terminal output of dashkit feedback log + sync confirming the entry id and pilot tag."
             imageHeight="sm"
           />
 
@@ -829,7 +829,7 @@ Tag the area with one of:
           </li>
           <li>
             File feedback liberally —{" "}
-            <code className="text-xs">dash feedback log</code> for CLI signal,
+            <code className="text-xs">dashkit feedback log</code> for CLI signal,
             Slack for nuance, GitHub for repros.
           </li>
         </ul>
@@ -904,14 +904,14 @@ Tag the area with one of:
             We publish the kill criteria for the Wave 5 pilot so you know
             exactly when the project would be paused or scrapped. Read{" "}
             <a
-              href="https://github.com/irfanputra-design/dash/blob/main/KILL-CRITERIA.md"
+              href="https://github.com/dash-electric/express-design-system/blob/main/docs/strategy/KILL-CRITERIA.md"
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"
               target="_blank"
               rel="noreferrer"
             >
               KILL-CRITERIA.md
             </a>{" "}
-            in the repo root. Honest feedback against those thresholds is the
+            under <code className="text-xs">docs/strategy/</code>. Honest feedback against those thresholds is the
             single most valuable thing you can give back.
           </p>
         </div>

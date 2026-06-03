@@ -20,7 +20,7 @@ export default function SettingsTeamDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add settings-team`} />
+        <DocsCode language="bash" code={`dashkit add settings-team`} />
       </DocsSection>
 
       <DocsSection title="Preview">

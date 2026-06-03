@@ -24,8 +24,8 @@
     "schemas"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -37,8 +37,9 @@
   },
   "devDependencies": {
     "@types/node": "^25",
-    "tsx": "^4.19.2",
-    "typescript": "^5",
+    "tsup": "^8.0.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6",
     "vitest": "^4.1.7"
   }
 }

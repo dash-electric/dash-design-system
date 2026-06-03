@@ -20,7 +20,7 @@ export default function SignupBlock02DocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add signup-02`} />
+        <DocsCode language="bash" code={`dashkit add signup-02`} />
       </DocsSection>
 
       <DocsSection title="Preview">

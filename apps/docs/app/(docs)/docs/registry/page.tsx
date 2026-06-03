@@ -63,7 +63,7 @@ export default function RegistryPage() {
                   │   GET https://ds.dash.com/r/button.json
                   │   Authorization: Bearer <token>
                   ▼
-              dash add button                       (CLI on user machine)
+              dashkit add button                       (CLI on user machine)
                   │
                   ▼
               registry/dash/ui/button.tsx           (consumer copy)`}
@@ -93,7 +93,7 @@ export default function RegistryPage() {
           </li>
           <li>
             <strong className="text-text-strong-950">Verify</strong> by running{" "}
-            <code className="text-xs">dash add &lt;name&gt;</code> in a scratch consumer
+            <code className="text-xs">dashkit add &lt;name&gt;</code> in a scratch consumer
             project.
           </li>
         </ol>

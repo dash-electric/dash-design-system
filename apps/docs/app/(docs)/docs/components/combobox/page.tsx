@@ -38,7 +38,7 @@ export default function ComboboxDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add combobox`} />
+        <DocsCode language="bash" code={`dashkit add combobox`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

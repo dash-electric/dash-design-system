@@ -20,7 +20,7 @@ export default function HrCalendarDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-calendar`} />
+        <DocsCode language="bash" code={`dashkit add hr-calendar`} />
       </DocsSection>
 
       <DocsSection title="Examples">

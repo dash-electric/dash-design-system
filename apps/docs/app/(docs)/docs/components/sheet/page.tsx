@@ -34,7 +34,7 @@ export default function SheetDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add sheet`} />
+        <DocsCode language="bash" code={`dashkit add sheet`} />
       </DocsSection>
 
       <DocsSection title="Examples">

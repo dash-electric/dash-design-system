@@ -14,7 +14,7 @@ This skill auto-activates when CWD contains:
 
 ## On activation, the skill:
 
-1. Runs `dash info --json` to capture repo state
+1. Runs `dashkit info --json` to capture repo state
 2. Fetches latest `dash-ai-rules.md` from configured registry (cached 5min)
 3. Loads Dash domain glossary
 4. Injects into AI context
@@ -22,7 +22,7 @@ This skill auto-activates when CWD contains:
 ## What AI should do after activation:
 
 - Before generating any UI, query Dash MCP `search_components` for matching primitives
-- Use installed @dash items from `dash info` output — don't redundantly install
+- Use installed @dash items from `dashkit info` output — don't redundantly install
 - Apply refactor protocol (read → plan → confirm → write → diff → tsc) for any modification to existing code
 - Apply auto-inference protocol when prompts are short/ambiguous
 - Refuse anti-patterns (hardcoded hex, custom Modal from scratch, raw table for grids) — redirect to @dash equivalent

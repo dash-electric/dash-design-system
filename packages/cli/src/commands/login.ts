@@ -1,5 +1,5 @@
 /**
- * `dash login` / `dash logout` — manage persistent Bearer tokens at
+ * `dashkit login` / `dashkit logout` — manage persistent Bearer tokens at
  * `~/.dash/credentials.json`. Credentials are keyed by registry URL so
  * users with multiple registries (staging vs prod) can authenticate to each.
  */

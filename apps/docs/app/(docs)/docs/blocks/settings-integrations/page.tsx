@@ -20,7 +20,7 @@ export default function SettingsIntegrationsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add settings-integrations`} />
+        <DocsCode language="bash" code={`dashkit add settings-integrations`} />
       </DocsSection>
 
       <DocsSection title="Preview">

@@ -74,7 +74,7 @@ export default function TooltipDocsPage() {
         />
 
         <DocsSection title="Install">
-          <DocsCode language="bash" code={`dash add tooltip`} />
+          <DocsCode language="bash" code={`dashkit add tooltip`} />
         </DocsSection>
 
         <DocsSection title="Usage">

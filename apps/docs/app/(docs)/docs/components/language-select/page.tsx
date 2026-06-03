@@ -35,7 +35,7 @@ export default function LanguageSelectDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add language-select
+        <DocsCode language="bash" code={`dashkit add language-select
 # plus locale routing (optional):
 pnpm add next-intl`} />
       </DocsSection>

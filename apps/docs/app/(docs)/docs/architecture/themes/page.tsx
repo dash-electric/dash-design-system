@@ -345,7 +345,7 @@ export default function ThemesPage() {
           + scoped <code className="text-xs">data-theme</code> wrapper. In production, the
           theme is wired through <code className="text-xs">--accent-*</code> CSS variables at
           the <code className="text-xs">html</code> element — set once at boot by{" "}
-          <code className="text-xs">dash init</code>.
+          <code className="text-xs">dashkit init</code>.
         </p>
       </DocsSection>
 
@@ -563,7 +563,7 @@ export default function ThemesPage() {
               {
                 t: "30 min",
                 h: "Tenant repo lights up",
-                p: "Tenant runs dash init --theme trellis-acme. Layer 1 primitives now render in tenant brand. Zero Layer 0–1 forks. Zero per-tenant component code.",
+                p: "Tenant runs dashkit init --theme trellis-acme. Layer 1 primitives now render in tenant brand. Zero Layer 0–1 forks. Zero per-tenant component code.",
               },
             ].map((step, i) => (
               <li key={step.t} className="px-6 py-4 flex items-start gap-4">
@@ -601,7 +601,7 @@ export default function ThemesPage() {
           <li>Replace accent + dark from tenant brand assets. Verify WCAG AA contrast against <code className="text-xs">--bg-white-0</code> and <code className="text-xs">--bg-strong-950</code>.</li>
           <li>Set voice register from tenant config (formal / casual / mixed).</li>
           <li>Register in <code className="text-xs">registry.json</code> with <code className="text-xs">scope: &quot;trellis&quot;</code>.</li>
-          <li>Tenant consumer repo runs <code className="text-xs">dash init --theme trellis-acme</code>.</li>
+          <li>Tenant consumer repo runs <code className="text-xs">dashkit init --theme trellis-acme</code>.</li>
         </ol>
         <p className="text-sm text-text-sub-600 mt-3">
           Full architecture context:{" "}

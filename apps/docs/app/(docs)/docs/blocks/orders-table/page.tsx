@@ -21,7 +21,7 @@ export default function OrdersTableDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add orders-table`} />
+        <DocsCode language="bash" code={`dashkit add orders-table`} />
       </DocsSection>
 
       <DocsSection title="Preview">

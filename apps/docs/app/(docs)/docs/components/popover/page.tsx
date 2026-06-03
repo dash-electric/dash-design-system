@@ -27,7 +27,7 @@ export default function PopoverDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add popover`} />
+        <DocsCode language="bash" code={`dashkit add popover`} />
       </DocsSection>
 
       <DocsSection title="Usage">

@@ -34,7 +34,7 @@ export default function AvailabilityStatusDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add availability-status`} />
+        <DocsCode language="bash" code={`dashkit add availability-status`} />
       </DocsSection>
 
       <DocsSection title="Usage">

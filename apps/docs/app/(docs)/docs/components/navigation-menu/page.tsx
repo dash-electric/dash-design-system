@@ -38,7 +38,7 @@ export default function NavigationMenuDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add navigation-menu`} />
+        <DocsCode language="bash" code={`dashkit add navigation-menu`} />
       </DocsSection>
 
       <DocsSection title="Example">

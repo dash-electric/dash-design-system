@@ -30,7 +30,7 @@ export default function UseCodeFieldPatternPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add use-code-field`} />
+        <DocsCode language="bash" code={`dashkit add use-code-field`} />
       </DocsSection>
 
       <DocsSection

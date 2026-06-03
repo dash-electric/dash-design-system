@@ -88,7 +88,7 @@ function EmptyState({ filePath }: { filePath?: string }) {
       <p className="mt-2 text-sm text-text-sub-600">
         Users can run{" "}
         <code className="rounded bg-bg-white-0 px-1.5 py-0.5 text-xs">
-          dash gap report &quot;&lt;description&gt;&quot;
+          dashkit gap report &quot;&lt;description&gt;&quot;
         </code>{" "}
         from their repo to add an entry.
       </p>

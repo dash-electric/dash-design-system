@@ -37,7 +37,7 @@ export default function FormStepperPageDocs() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add form-stepper-page`} />
+        <DocsCode language="bash" code={`dashkit add form-stepper-page`} />
       </DocsSection>
 
       <DocsSection

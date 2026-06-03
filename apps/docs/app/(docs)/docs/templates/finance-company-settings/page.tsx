@@ -19,7 +19,7 @@ export default function FinanceCompanySettingsDocsPage() {
         description="Settings shell + Logo / Legal Name / Tax ID / Email / Phone / Address / Web Links field rows. Ported from AlignUI Pro Figma frame 'Company Settings [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-company-settings`} />
+        <DocsCode language="bash" code={`dashkit add finance-company-settings`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

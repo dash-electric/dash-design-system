@@ -1,5 +1,5 @@
 /**
- * `dash list` — list all registry items, optionally filtered by type.
+ * `dashkit list` — list all registry items, optionally filtered by type.
  */
 import kleur from "kleur"
 import { DEFAULT_REGISTRY_URL, readComponentsJson } from "../lib/components-json.js"

@@ -116,7 +116,7 @@
       "CR-4 Voice formal Anda",
       "CR-5 Token usage (no raw hex)",
       "CR-6 File conventions (registry, not copy-paste)",
-      "CR-7 Cross-repo sync via dash sync",
+      "CR-7 Cross-repo sync via dashkit sync",
       "CR-8 Audit trail UI on disputable entities"
     ]
   },

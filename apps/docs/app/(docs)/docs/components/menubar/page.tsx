@@ -35,7 +35,7 @@ export default function MenubarDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add menubar`} />
+        <DocsCode language="bash" code={`dashkit add menubar`} />
       </DocsSection>
 
       <DocsSection title="Example">

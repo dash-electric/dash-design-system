@@ -72,7 +72,7 @@ export default function SegmentedControlDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add segmented-control`} />
+        <DocsCode language="bash" code={`dashkit add segmented-control`} />
       </DocsSection>
 
       <DocsSection title="Usage">

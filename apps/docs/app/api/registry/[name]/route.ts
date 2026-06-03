@@ -114,7 +114,7 @@ export async function GET(
       {
         error: "Not Found",
         name,
-        hint: "Run `pnpm dash build` to regenerate the registry.",
+        hint: "Run `pnpm dashkit build` to regenerate the registry.",
       },
       { status: 404 },
     )

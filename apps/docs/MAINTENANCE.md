@@ -14,7 +14,7 @@ Dash DS has **3 surfaces** to maintain:
 
 | Surface | Repo | Hosted at | Who pulls it |
 |---|---|---|---|
-| Registry source | `dash-tech/design-system` | `ds.dash.com` (Vercel) | CLI (`dash add`) |
+| Registry source | `dash-tech/design-system` | `ds.dash.com` (Vercel) | CLI (`dashkit add`) |
 | CLI tool | `dash-tech/dash-cli` | npm (private) or GH | User laptops (`pnpm i -g dash`) |
 | MCP server | `dash-tech/dash-mcp` | npm (private) or GH | User Claude Code config |
 
@@ -50,7 +50,7 @@ vercel.com/dash/design-system → Deployments tab.
 
 ### 1c. Slack `#design-system` skim
 
-Look for friction posts ("kok `dash add` error?"). Respond within 1 working day.
+Look for friction posts ("kok `dashkit add` error?"). Respond within 1 working day.
 
 ---
 
@@ -199,7 +199,7 @@ $EDITOR registry.json
 
 # 4. Build registry
 pnpm tsx scripts/build-registry.ts
-# (later: `dash build` after CLI graduates to root)
+# (later: `dashkit build` after CLI graduates to root)
 
 # 5. Add docs page
 $EDITOR "app/(docs)/docs/components/rating-stars/page.tsx"
@@ -222,7 +222,7 @@ gh pr create --fill
 #    https://ds.dash.com/r/rating-stars.json
 
 # 10. Slack:
-#     "@dash/rating-stars shipped — install: `dash add rating-stars`"
+#     "@dash/rating-stars shipped — install: `dashkit add rating-stars`"
 ```
 
 ---
@@ -231,7 +231,7 @@ gh pr create --fill
 
 Identical to Section 5 except `type: "registry:block"` or `"registry:page"` and the file lives in `registry/dash/blocks/` or `registry/dash/templates/`.
 
-For templates, set `target: "<consumer-path>"` so `dash add` knows where to write:
+For templates, set `target: "<consumer-path>"` so `dashkit add` knows where to write:
 ```json
 { "path": "registry/dash/templates/list-detail.tsx", "type": "registry:page", "target": "app/list-detail/page.tsx" }
 ```
@@ -252,7 +252,7 @@ vercel rollback https://design-system-<hash>-dash.vercel.app --prod
 
 Or via web: Vercel dashboard → Deployments → previous green deploy → `...` → Promote to Production.
 
-DNS stays pointed at the Vercel project. Active deploy alias swaps instantly. Consumers see new (rolled-back) registry on their next `dash add`.
+DNS stays pointed at the Vercel project. Active deploy alias swaps instantly. Consumers see new (rolled-back) registry on their next `dashkit add`.
 
 After rollback: open the bad deploy logs, find root cause, fix on a branch, PR, re-deploy.
 
@@ -291,8 +291,8 @@ When a new engineer joins Dash:
 
 > Welcome 🟣. Setup Dash DS:
 > 1. `pnpm i -g dash` (or `pnpm dlx github:dash-tech/dash-cli#v1` if no npm registry access)
-> 2. In your first Dash repo: `cd <repo> && dash init` (grab token from 1Password "Dash Registry")
-> 3. `dash mcp init` (wires Claude Code to query the registry natively)
+> 2. In your first Dash repo: `cd <repo> && dashkit init` (grab token from 1Password "Dash Registry")
+> 3. `dashkit mcp init` (wires Claude Code to query the registry natively)
 > 4. Bookmark https://ds.dash.com/docs — Quick Start + decision tree
 > 5. First feature, ping me — I'll shadow once.
 

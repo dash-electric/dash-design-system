@@ -71,7 +71,7 @@ export default function MitraDisputeFlowDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add mitra-dispute-flow`} />
+        <DocsCode language="bash" code={`dashkit add mitra-dispute-flow`} />
       </DocsSection>
 
       <DocsSection title="Preview">

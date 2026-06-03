@@ -27,7 +27,7 @@ Generated blocks MUST register in `apps/docs/registry.json` with a `theme` field
 }
 ```
 
-The `dash audit` CI gate rejects:
+The `dashkit audit` CI gate rejects:
 
 - Missing `theme` field on block/template entries
 - Hard-coded accent hex (e.g. `#5e2aac`) inside Layer 1 primitives — accent must come from `--accent-base` token
@@ -52,10 +52,10 @@ Generated output inherits the resolved theme. If a worker can't resolve the repo
 
 ## Layered Architecture — do not violate
 
-Agents MUST respect the layer boundaries documented in [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md):
+Agents MUST respect the layer boundaries documented in [`ARCHITECTURE.md`](./ARCHITECTURE.md):
 
 - **Layer 0** (foundation tokens, type ramp, motion) is **locked**. Do not generate new entries. If a generation appears to require a Layer 0 change, stop and surface the request — Head of Design owns this layer.
-- **Layer 1** (primitives) is **shared and stable**. New atoms allowed only if not already present (`dash search <name>` first). Never hard-code brand color.
+- **Layer 1** (primitives) is **shared and stable**. New atoms allowed only if not already present (`dashkit search <name>` first). Never hard-code brand color.
 - **Layer 2** (theme manifest) — generate when onboarding a new product or Trellis tenant. ~30 lines. Use `registry/dash/themes/trellis-template.ts` as the scaffold.
 - **Layer 3** (workflow blocks) — primary generation surface for product features. Declare `theme:` correctly.
 
@@ -84,7 +84,7 @@ dash-intake -> dash-prd -> dash-design-review? -> dash-trd -> generation -> dash
 - [`CLAUDE.md`](./CLAUDE.md) — repo-level rules and Claude-Code-specific workflows
 - [`design.md`](./design.md) — global cross-repo design contract for AI generation
 - [`packages/dash-build/docs/gstack-adoption.md`](./packages/dash-build/docs/gstack-adoption.md) — Dash Build planning workflow adopted from gstack principles
-- [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md) — full architecture spec
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — full architecture spec
 - [`apps/docs/registry/rules/dash-ai-rules.md`](./apps/docs/registry/rules/dash-ai-rules.md) — per-repo stack mandates, banned imports
 - [`apps/docs/registry/rules/dash-domain-glossary.md`](./apps/docs/registry/rules/dash-domain-glossary.md) — entities, table names, state machines
 - [`apps/docs/AGENTS.md`](./apps/docs/AGENTS.md) — Next.js 16 specifics for docs app

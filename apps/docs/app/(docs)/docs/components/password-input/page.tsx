@@ -24,7 +24,7 @@ export default function PasswordInputDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add password-input`} />
+        <DocsCode language="bash" code={`dashkit add password-input`} />
       </DocsSection>
 
       <DocsSection title="Preview">

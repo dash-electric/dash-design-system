@@ -116,7 +116,7 @@ export default function BatchDispatchGridDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add batch-dispatch-grid`} />
+        <DocsCode language="bash" code={`dashkit add batch-dispatch-grid`} />
       </DocsSection>
 
       <DocsSection title="Preview">

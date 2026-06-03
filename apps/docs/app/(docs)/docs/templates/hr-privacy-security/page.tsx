@@ -20,7 +20,7 @@ export default function HrPrivacySecurityDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-privacy-security`} />
+        <DocsCode language="bash" code={`dashkit add hr-privacy-security`} />
       </DocsSection>
 
       <DocsSection title="Examples">

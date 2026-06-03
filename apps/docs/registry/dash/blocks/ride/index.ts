@@ -4,7 +4,7 @@
  * Namespace re-exports for theme-scoped discovery. Canonical metadata lives
  * in `apps/docs/registry.json` under each item's `theme: "ride"` field.
  * Source .tsx files remain in `../` (flat layout) — this index avoids moving
- * physical files so existing imports + `dash add` paths stay intact.
+ * physical files so existing imports + `dashkit add` paths stay intact.
  *
  * Usage:
  *   import { MitraDisputeFlow } from "@/registry/dash/blocks/ride"

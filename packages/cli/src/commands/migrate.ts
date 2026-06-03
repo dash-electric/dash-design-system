@@ -1,8 +1,8 @@
 /**
- * `dash migrate <name>` — apply codemods for breaking changes.
+ * `dashkit migrate <name>` — apply codemods for breaking changes.
  *
  * Pattern adopted from shadcn (`shadcn migrate <name>`). Each breaking
- * change ships a migration; consumers run `dash migrate <name>` to apply
+ * change ships a migration; consumers run `dashkit migrate <name>` to apply
  * the codemod. Migrations are scan-only (report) or write (codemod).
  *
  * Flags:
@@ -38,7 +38,7 @@ function printList(): void {
   }
   console.log(
     kleur.dim(
-      `Run a migration: ${kleur.cyan("dash migrate <name>")}  ` +
+      `Run a migration: ${kleur.cyan("dashkit migrate <name>")}  ` +
         `(${kleur.cyan("--dry-run")} to preview)`,
     ),
   )
@@ -92,7 +92,7 @@ export async function runMigrate(opts: MigrateOpts): Promise<void> {
   if (!migration) {
     console.error(kleur.red(`✗ Migration not found: ${opts.name}`))
     console.error(
-      kleur.dim(`Run ${kleur.cyan("dash migrate --list")} to see available migrations.`),
+      kleur.dim(`Run ${kleur.cyan("dashkit migrate --list")} to see available migrations.`),
     )
     process.exit(1)
   }

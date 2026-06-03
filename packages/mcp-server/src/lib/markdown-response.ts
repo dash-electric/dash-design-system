@@ -116,7 +116,7 @@ export function formatComponentList(
 
     **To install one:**
     \`\`\`bash
-    dash add <component-name>
+    dashkit add <component-name>
     \`\`\`
 
     **To see the full schema (files, deps, cssVars) for any of these:**
@@ -133,7 +133,7 @@ function formatComponentRow(item: ComponentSummary): string {
     ### \`${item.name}\` — ${title}${cats}
     ${desc}
 
-    **Type:** \`${item.type}\` · **Install:** \`dash add ${installName}\`
+    **Type:** \`${item.type}\` · **Install:** \`dashkit add ${installName}\`
     [Open in Dash Docs](https://ds.dash.com/docs/components/${installName})
   `;
 }
@@ -157,7 +157,7 @@ export function formatComponentDetail(item: ComponentDetail): string {
     ## Install
 
     \`\`\`bash
-    dash add ${installName}
+    dashkit add ${installName}
     \`\`\`
   `);
 
@@ -179,7 +179,7 @@ export function formatComponentDetail(item: ComponentDetail): string {
 
       ${item.registryDependencies.map((d) => `- \`${d}\``).join("\n")}
 
-      _These are pulled automatically when you run \`dash add ${installName}\`._
+      _These are pulled automatically when you run \`dashkit add ${installName}\`._
     `);
   }
 
@@ -234,8 +234,8 @@ export function formatComponentDetail(item: ComponentDetail): string {
 
   sections.push(dedent`
     **Next:**
-    - Install: \`dash add ${installName}\`
-    - Audit your repo afterwards: \`dash audit --layer-only\`
+    - Install: \`dashkit add ${installName}\`
+    - Audit your repo afterwards: \`dashkit audit --layer-only\`
     - Docs: https://ds.dash.com/docs/components/${installName}
   `);
 
@@ -247,7 +247,7 @@ export function formatCategoryList(cats: CategorySummary[]): string {
     return dedent`
       ## No categories indexed yet
 
-      The registry is empty or the index failed to load. Try \`dash sync\` or check the registry URL.
+      The registry is empty or the index failed to load. Try \`dashkit sync\` or check the registry URL.
     `;
   }
 
@@ -300,7 +300,7 @@ export function formatTemplateList(
         ### \`${t.name}\` — ${t.title ?? t.name}${v}
         ${desc}
 
-        **Install:** \`dash add ${stripScope(t.name)}\`
+        **Install:** \`dashkit add ${stripScope(t.name)}\`
       `;
     })
     .join("\n\n");
@@ -312,7 +312,7 @@ export function formatTemplateList(
 
     **To scaffold a page from a template:**
     \`\`\`bash
-    dash add <template-name>
+    dashkit add <template-name>
     \`\`\`
   `;
 }
@@ -362,7 +362,7 @@ export function formatAiRules(markdown: string): string {
 
     The canonical convention guide. Read first when working in a Dash repo.
 
-    **Verify your code with:** \`dash audit --layer-only\`
+    **Verify your code with:** \`dashkit audit --layer-only\`
 
     ---
 
@@ -378,13 +378,13 @@ export function formatAuditChecklist(markdown: string): string {
 
     **Verify your code locally:**
     \`\`\`bash
-    dash audit --layer-only
+    dashkit audit --layer-only
     \`\`\`
 
     **Full rule set:**
     \`\`\`bash
     # Inside any Dash repo
-    dash info rules
+    dashkit info rules
     \`\`\`
 
     ---
@@ -398,7 +398,7 @@ export function formatAuditChecklist(markdown: string): string {
     - Audit trail mandatory for legal/financial fields (CR-2, CR-8)
     - Voice: formal "Anda" mitra-facing (CR-4)
     - Tokens only, no raw hex; Dash Purple = \`#5e2aac\` (CR-5)
-    - Use \`dash add\`, never copy-paste components (CR-6)
+    - Use \`dashkit add\`, never copy-paste components (CR-6)
   `;
 }
 

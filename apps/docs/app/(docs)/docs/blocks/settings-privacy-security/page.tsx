@@ -20,7 +20,7 @@ export default function SettingsPrivacySecurityDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add settings-privacy-security`} />
+        <DocsCode language="bash" code={`dashkit add settings-privacy-security`} />
       </DocsSection>
 
       <DocsSection title="Preview">

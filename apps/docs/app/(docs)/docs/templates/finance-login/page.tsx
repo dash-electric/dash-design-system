@@ -20,7 +20,7 @@ export default function FinanceLoginDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-login`} />
+        <DocsCode language="bash" code={`dashkit add finance-login`} />
       </DocsSection>
 
       <DocsSection title="Examples">

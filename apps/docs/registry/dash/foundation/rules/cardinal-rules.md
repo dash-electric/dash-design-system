@@ -6,7 +6,7 @@ Distilled from `apps/docs/registry/rules/dash-ai-rules.md` (996 lines) and `CLAU
 
 ## CR-1 — Additive only
 
-Existing Dash production code is **NEVER modified** by the DS. Dash DS is purely **additive**: build new patterns + components here, consumer repos pull via `dash add`. The DS adapts to each real Dash repo; it does NOT force-migrate stacks.
+Existing Dash production code is **NEVER modified** by the DS. Dash DS is purely **additive**: build new patterns + components here, consumer repos pull via `dashkit add`. The DS adapts to each real Dash repo; it does NOT force-migrate stacks.
 
 Source: `CLAUDE.md` § "Cardinal rules" #1; `dash-ai-rules.md` § "Dash Repo Adaptation Layer" (user mandate 2026-05-20: "kita gabisa ngubah existing, kita hanya bisa support itu").
 
@@ -50,15 +50,15 @@ Source: `CLAUDE.md` § "Cardinal rules" #4; `dash-ai-rules.md` § "Always" #3 + 
 
 ## CR-6 — File conventions (use registry, not copy-paste)
 
-NEVER copy-paste a component between Dash repos. Always use `dash add <name>` to install a fresh copy from the registry — the CLI handles tokens, dependencies, and cssVars correctly. Manual copy will silently break theming.
+NEVER copy-paste a component between Dash repos. Always use `dashkit add <name>` to install a fresh copy from the registry — the CLI handles tokens, dependencies, and cssVars correctly. Manual copy will silently break theming.
 
-Divergence requires `dash gap report` FIRST. Cosmetic tweaks in place are OK; behavioral changes must be reported upstream. No silent forks.
+Divergence requires `dashkit gap report` FIRST. Cosmetic tweaks in place are OK; behavioral changes must be reported upstream. No silent forks.
 
 Source: `dash-ai-rules.md` § "Cross-Repo Component Replication" lines 927-947.
 
-## CR-7 — Cross-repo sync via `dash sync`
+## CR-7 — Cross-repo sync via `dashkit sync`
 
-Mass updates and version reconciliation across consumer repos run through `dash sync` (planned v0.5). Do not precompose manual upgrade scripts. Each repo's `components.json` records installed versions; do not hand-edit version fields.
+Mass updates and version reconciliation across consumer repos run through `dashkit sync` (planned v0.5). Do not precompose manual upgrade scripts. Each repo's `components.json` records installed versions; do not hand-edit version fields.
 
 Source: `dash-ai-rules.md` § "Cross-Repo Component Replication" #4-5 (lines 941-942); `CLAUDE.md` § "Tooling".
 

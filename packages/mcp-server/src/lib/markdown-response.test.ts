@@ -39,11 +39,11 @@ describe("formatComponentList", () => {
     );
     expect(out).toContain("## Found 2 components for `button`");
     expect(out).toContain("### `button` — Button");
-    expect(out).toContain("**Install:** `dash add button`");
-    expect(out).toContain("**Install:** `dash add data-table`"); // scope stripped
+    expect(out).toContain("**Install:** `dashkit add button`");
+    expect(out).toContain("**Install:** `dashkit add data-table`"); // scope stripped
     expect(out).toContain("**Type:** `ui`");
     expect(out).toContain("**Type:** `block`");
-    expect(out).toContain("```bash\ndash add <component-name>\n```");
+    expect(out).toContain("```bash\ndashkit add <component-name>\n```");
     // Each row has an "Open in Dash Docs" link with the install-style name
     expect(out).toContain("[Open in Dash Docs](https://ds.dash.com/docs/components/button)");
     expect(out).toContain("[Open in Dash Docs](https://ds.dash.com/docs/components/data-table)");
@@ -80,7 +80,7 @@ describe("formatComponentDetail", () => {
       cssVars: { light: { "primary-500": "#5e2aac" } },
     });
     expect(out).toContain("# `button` — Button");
-    expect(out).toContain("```bash\ndash add button\n```");
+    expect(out).toContain("```bash\ndashkit add button\n```");
     expect(out).toContain("## npm dependencies");
     expect(out).toContain("`clsx`");
     expect(out).toContain("`@types/react`");
@@ -90,7 +90,7 @@ describe("formatComponentDetail", () => {
     expect(out).toContain("`ui/button.tsx`");
     expect(out).toContain("## CSS Variables");
     expect(out).toContain("`--primary-500`: `#5e2aac`");
-    expect(out).toContain("`dash audit --layer-only`");
+    expect(out).toContain("`dashkit audit --layer-only`");
   });
 
   it("hints at includeFiles when files have no content", () => {
@@ -128,7 +128,7 @@ describe("formatCategoryList", () => {
   it("handles empty registry", () => {
     const out = formatCategoryList([]);
     expect(out).toContain("No categories indexed yet");
-    expect(out).toContain("`dash sync`");
+    expect(out).toContain("`dashkit sync`");
   });
 });
 
@@ -149,7 +149,7 @@ describe("formatTemplateList", () => {
     expect(out).toContain("## 1 template (vertical: `marketing`)");
     expect(out).toContain("### `marketing-landing` — Marketing Landing");
     expect(out).toContain("_vertical: marketing_");
-    expect(out).toContain("`dash add marketing-landing`");
+    expect(out).toContain("`dashkit add marketing-landing`");
   });
 
   it("empty state suggests dropping vertical", () => {
@@ -185,7 +185,7 @@ describe("formatAiRules", () => {
   it("wraps markdown with audit CTA", () => {
     const out = formatAiRules("# Some rules\n\ndo this");
     expect(out).toContain("## Dash AI Rules");
-    expect(out).toContain("`dash audit --layer-only`");
+    expect(out).toContain("`dashkit audit --layer-only`");
     expect(out).toContain("# Some rules");
   });
 });
@@ -194,8 +194,8 @@ describe("formatAuditChecklist", () => {
   it("wraps cardinal rules with verification CTAs and quick reference", () => {
     const out = formatAuditChecklist("## CR-1\nadditive only");
     expect(out).toContain("## Dash Cardinal Rules — Audit Checklist");
-    expect(out).toContain("dash audit --layer-only"); // appears in fenced code block
-    expect(out).toContain("dash info rules");
+    expect(out).toContain("dashkit audit --layer-only"); // appears in fenced code block
+    expect(out).toContain("dashkit info rules");
     expect(out).toContain("Banned imports");
     expect(out).toContain("Audit trail mandatory");
     expect(out).toContain("Voice");

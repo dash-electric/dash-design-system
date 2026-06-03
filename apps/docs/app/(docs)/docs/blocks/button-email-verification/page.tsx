@@ -20,7 +20,7 @@ export default function ButtonEmailVerificationDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add button-email-verification`} />
+        <DocsCode language="bash" code={`dashkit add button-email-verification`} />
       </DocsSection>
 
       <DocsSection title="Examples">

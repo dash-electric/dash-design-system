@@ -1,5 +1,5 @@
 /**
- * `dash init` — interactive setup for consumer projects.
+ * `dashkit init` — interactive setup for consumer projects.
  *
  * Multi-stack aware: detects Next.js (App/Pages), Vite, Remix, Astro, CRA/CRACO,
  * and plain React. Each variant gets framework-specific globals.css path, alias
@@ -360,7 +360,7 @@ export async function runInit(opts: InitOpts): Promise<void> {
   }
 
   console.log(kleur.bold().green("\n✓ Dash initialized"))
-  console.log(kleur.dim(`Next: ${kleur.cyan("dash add button")}`))
+  console.log(kleur.dim(`Next: ${kleur.cyan("dashkit add button")}`))
     initSucceeded = true
   } catch (err) {
     // Any failure mid-init → roll back to pre-init state.

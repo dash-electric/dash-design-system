@@ -24,7 +24,7 @@ export default function StatDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add stat`} />
+        <DocsCode language="bash" code={`dashkit add stat`} />
       </DocsSection>
 
       <DocsSection title="Examples">

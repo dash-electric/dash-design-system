@@ -12,7 +12,7 @@
   "expected_use": [
     "@dash/button with tone='primary' style='filled'",
     "semantic Tailwind tokens like bg-primary / text-primary / bg-primary-base",
-    "tokens from @dash/base-theme installed via `dash add base-theme`",
+    "tokens from @dash/base-theme installed via `dashkit add base-theme`",
     "if a raw brand reference is unavoidable, the canonical Dash Purple is `#5e2aac` (matches DS token `--dash-purple-500`); always prefer the token over the literal"
   ],
   "expected_pattern_ref": "Token usage (rules L192-227); Brand token (rules L218-219); Anti-Pattern Catalog 'Hardcode hex color' (rules L335); Button anatomy (rules L150-164); next-basecamp-web brand `#5e2aac` (rules L417)",

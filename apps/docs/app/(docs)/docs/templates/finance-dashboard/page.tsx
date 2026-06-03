@@ -22,7 +22,7 @@ export default function FinanceDashboardDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-dashboard`} />
+        <DocsCode language="bash" code={`dashkit add finance-dashboard`} />
       </DocsSection>
 
       <DocsSection

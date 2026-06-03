@@ -1,7 +1,7 @@
 /**
  * Dash Design System — minimal registry build script (Day 1-7 bootstrap).
  * Reads registry.json + source files, inlines content, outputs public/r/<name>.json.
- * Day 8-13 graduates this into proper `dash build` CLI subcommand.
+ * Day 8-13 graduates this into proper `dashkit build` CLI subcommand.
  *
  * NOTE on production access:
  *   The JSON files written here are the BUILD ARTIFACTS only. In production

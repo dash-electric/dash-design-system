@@ -21,7 +21,7 @@ export default function MarketingLoginDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-login`} />
+        <DocsCode language="bash" code={`dashkit add marketing-login`} />
       </DocsSection>
 
       <DocsSection title="Examples">

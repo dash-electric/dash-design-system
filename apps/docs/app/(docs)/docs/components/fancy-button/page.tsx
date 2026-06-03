@@ -24,7 +24,7 @@ export default function FancyButtonDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add fancy-button`} />
+        <DocsCode language="bash" code={`dashkit add fancy-button`} />
       </DocsSection>
 
       <DocsSection title="Examples">

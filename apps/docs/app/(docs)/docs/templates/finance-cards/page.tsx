@@ -21,7 +21,7 @@ export default function FinanceCardsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-cards`} />
+        <DocsCode language="bash" code={`dashkit add finance-cards`} />
       </DocsSection>
 
       <DocsSection

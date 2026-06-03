@@ -21,7 +21,7 @@ export default function MarketingPrivacySecurityDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-privacy-security`} />
+        <DocsCode language="bash" code={`dashkit add marketing-privacy-security`} />
       </DocsSection>
 
       <DocsSection title="Examples">

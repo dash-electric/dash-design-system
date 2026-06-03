@@ -20,7 +20,7 @@ export default function HrCompanySettingsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-company-settings`} />
+        <DocsCode language="bash" code={`dashkit add hr-company-settings`} />
       </DocsSection>
 
       <DocsSection title="Examples">

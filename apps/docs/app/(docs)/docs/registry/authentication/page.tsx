@@ -219,7 +219,7 @@ echo "DASH_REGISTRY_TOKEN=<your-token>" >> .env.local`}
         <DocsCode
           language="bash"
           code={`# 3. Install something
-dash add button
+dashkit add button
 # → CLI interpolates env var, sends Bearer header, lands files`}
         />
         <p className="text-base text-text-sub-600 leading-relaxed">
@@ -257,7 +257,7 @@ curl -i \\
           <li>Update Vercel env var <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">DASH_REGISTRY_TOKEN</code>. Redeploy.</li>
           <li>Post new token to 1Password / vault. Notify <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">#design-system</code> Slack with rotation deadline.</li>
           <li>Each user updates their <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">.env.local</code>. CI secrets updated by platform team.</li>
-          <li>After deadline, old token returns 401. Users who missed the rotation: <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">dash add</code> fails fast, pings them to re-auth.</li>
+          <li>After deadline, old token returns 401. Users who missed the rotation: <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">dashkit add</code> fails fast, pings them to re-auth.</li>
         </ol>
         <p className="text-sm text-text-sub-600 leading-relaxed">
           Future versions will support per-project tokens with audit logs. The single-secret model is good enough for v1 (10 users, internal-only).
@@ -268,7 +268,7 @@ curl -i \\
         <ul className="text-base text-text-sub-600 leading-relaxed list-disc pl-6 space-y-1.5">
           <li><code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">401</code> — token missing, header malformed, or token mismatch.</li>
           <li><code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">400</code> — item name fails regex (path traversal, unsupported chars).</li>
-          <li><code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">404</code> — item not in <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">public/r/</code>. Check the name; run <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">pnpm dash build</code> if it&apos;s a freshly added item.</li>
+          <li><code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">404</code> — item not in <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">public/r/</code>. Check the name; run <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">pnpm dashkit build</code> if it&apos;s a freshly added item.</li>
         </ul>
       </DocsSection>
     </DocsPageShell>

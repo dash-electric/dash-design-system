@@ -26,7 +26,7 @@ export default function FinanceWidgetsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-widgets`} />
+        <DocsCode language="bash" code={`dashkit add finance-widgets`} />
       </DocsSection>
 
       <DocsSection title="Examples">

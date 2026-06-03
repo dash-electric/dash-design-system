@@ -143,7 +143,7 @@ describe("feedback-log lib", () => {
   })
 })
 
-describe("dash feedback log (command)", () => {
+describe("dashkit feedback log (command)", () => {
   let tmp: string
   let logPath: string
   let io: CapturedIO
@@ -192,7 +192,7 @@ describe("dash feedback log (command)", () => {
       text: "Hermes vendor crashed on add",
       category: "bug",
       severity: "high",
-      command: "dash add image-editor",
+      command: "dashkit add image-editor",
       component: "image-editor",
       repo: "halo-dash-fe",
       pe: "bob",
@@ -203,7 +203,7 @@ describe("dash feedback log (command)", () => {
     expect(entries).toHaveLength(1)
     expect(entries[0].category).toBe("bug")
     expect(entries[0].severity).toBe("high")
-    expect(entries[0].context?.command).toBe("dash add image-editor")
+    expect(entries[0].context?.command).toBe("dashkit add image-editor")
     expect(entries[0].context?.component).toBe("image-editor")
     expect(entries[0].context?.repo).toBe("halo-dash-fe")
   })
@@ -256,7 +256,7 @@ describe("dash feedback log (command)", () => {
   })
 })
 
-describe("dash feedback list", () => {
+describe("dashkit feedback list", () => {
   let tmp: string
   let logPath: string
   let io: CapturedIO
@@ -296,7 +296,7 @@ describe("dash feedback list", () => {
   })
 })
 
-describe("dash feedback sync", () => {
+describe("dashkit feedback sync", () => {
   let tmp: string
   let logPath: string
   let io: CapturedIO

@@ -13,7 +13,7 @@ function writeFile(file: string, content: string): void {
   fs.writeFileSync(file, content)
 }
 
-describe("dash audit — collectAudit", () => {
+describe("dashkit audit — collectAudit", () => {
   let tmp: string
 
   beforeEach(() => {
@@ -163,7 +163,7 @@ describe("dash audit — collectAudit", () => {
   })
 })
 
-describe("dash audit — runAudit JSON output", () => {
+describe("dashkit audit — runAudit JSON output", () => {
   let tmp: string
   let stdoutChunks: string[]
   let writeSpy: typeof process.stdout.write
@@ -236,7 +236,7 @@ describe("dash audit — runAudit JSON output", () => {
 // Layered Architecture rules (L-1 … L-7)
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("dash audit — Layered Architecture rules", () => {
+describe("dashkit audit — Layered Architecture rules", () => {
   let tmp: string
 
   beforeEach(() => {

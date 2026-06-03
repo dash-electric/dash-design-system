@@ -74,7 +74,7 @@ The building blocks every product uses. ~76 components. **Never** hard-code bran
 
 Button, Input, Select, Checkbox, Radio, Switch, Badge, Avatar, Tag, Chip, Modal, Drawer, Popover, Tooltip, Tabs, Accordion, Toast, Banner, Alert, Skeleton, Spinner, Progress, Slider, DatePicker, FileUpload, Combobox, Command, Breadcrumb, Pagination, Table, Card, Divider, …
 
-A primitive that breaks the contract — e.g. `<Button>` referencing `#5e2aac` directly instead of `--accent-base` — is rejected at CI by `dash audit`.
+A primitive that breaks the contract — e.g. `<Button>` referencing `#5e2aac` directly instead of `--accent-base` — is rejected at CI by `dashkit audit`.
 
 **Hex carve-outs for Layer 1** (per RULE-REALITY-AUDIT-2026-05-28 C2):
 
@@ -153,27 +153,27 @@ The tenant inherits Layer 0 + Layer 1 unchanged — meaning every Trellis custom
 
 ## CLI usage
 
-The `dash` CLI is theme-aware. Theme defaults are auto-detected from `dash.config.json` and can be overridden per command.
+The `dashkit` CLI is theme-aware. Theme defaults are auto-detected from `dash.config.json` and can be overridden per command.
 
 ```bash
 # Install a primitive (Layer 1) — works in every product
-dash add button
+dashkit add button
 
 # Install a workflow block (Layer 3) — the block's theme metadata must match
-dash add ride-dispatch-board               # OK in dash-ride repo
-dash add ride-dispatch-board               # WARN in dash-logistic repo (theme mismatch)
+dashkit add ride-dispatch-board               # OK in dash-ride repo
+dashkit add ride-dispatch-board               # WARN in dash-logistic repo (theme mismatch)
 
 # Install a primitive into a specific theme
-dash add button --theme logistic           # writes Layer 1 + Layer 2 override
+dashkit add button --theme logistic           # writes Layer 1 + Layer 2 override
 
 # List blocks available for current product
-dash list --theme logistic --kind block
+dashkit list --theme logistic --kind block
 
 # Generate a new theme manifest for a Trellis tenant
-dash add --theme trellis-acme --create
+dashkit add --theme trellis-acme --create
 ```
 
-The `dash audit` command runs against any consumer repo and rejects:
+The `dashkit audit` command runs against any consumer repo and rejects:
 
 - Layer 1 component with hard-coded accent hex (`#5e2aac` etc.)
 - Layer 3 block installed under wrong theme
@@ -192,7 +192,7 @@ Dash Logistic ships in Q3 2026. Migration plan:
 2. **Layer 1 — touch nothing.** Logistic uses the same Button, Input, Modal as Ride. CI guarantees parity.
 3. **Layer 2 — add `themes/logistic.ts`** (~30 lines). Industrial blue accent, formal "Anda" voice (matching driver-app rule), compact density for ops dashboards.
 4. **Layer 3 — build `logistic-route-planner`, `logistic-fleet-status`, `logistic-eta-card`.** Register with `theme: "logistic"`. Reviewed by DS for Layer 0/1 compliance.
-5. **Consumer repo `dash init --theme logistic`** — bootstraps `dash.config.json` with `defaultTheme: "logistic"`.
+5. **Consumer repo `dashkit init --theme logistic`** — bootstraps `dash.config.json` with `defaultTheme: "logistic"`.
 
 **Time to first component in production:** target 1 day. **Time to a full Logistic dashboard:** target 1 week.
 
@@ -214,7 +214,7 @@ Compare to the alternative — forking the DS — which would burn 2–3 weeks b
 - Component API surface for Layer 1 primitives (props, slots, refs)
 - Accessibility floor — focus ring, contrast, touch target
 - Motion curves
-- Banned imports list (`dash audit` gate)
+- Banned imports list (`dashkit audit` gate)
 
 **Flexible (theme-level decision):**
 

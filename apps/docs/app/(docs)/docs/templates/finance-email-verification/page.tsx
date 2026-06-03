@@ -20,7 +20,7 @@ export default function FinanceEmailVerificationDocsPage() {
         description="Same chrome as FinanceResetPassword. 4-digit OTP input (via @dash/input-otp) + Submit Code FancyButton + Resend link. Ported from AlignUI Pro Figma frame 'Email Verification [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-email-verification`} />
+        <DocsCode language="bash" code={`dashkit add finance-email-verification`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

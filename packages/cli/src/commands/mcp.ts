@@ -1,5 +1,5 @@
 /**
- * `dash mcp init` — wire @dash/mcp-server into Claude Code + Cursor MCP configs.
+ * `dashkit mcp init` — wire @dash/mcp-server into Claude Code + Cursor MCP configs.
  *
  * Editor targets (auto-detected from `~/.claude/` and `~/.cursor/` presence):
  *   - Claude Code: `~/.claude/mcp-config.json` (key "dash", npx invocation)

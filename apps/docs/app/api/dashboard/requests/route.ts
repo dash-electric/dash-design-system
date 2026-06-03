@@ -43,7 +43,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     )
   }
 
-  // Bulk mode: body shape `{ entries: GapEntry[] }`. Used by `dash gap sync`.
+  // Bulk mode: body shape `{ entries: GapEntry[] }`. Used by `dashkit gap sync`.
   if (body && typeof body === "object" && "entries" in (body as object)) {
     const v = validateBulkCreateBody(body)
     if (!v.ok) return NextResponse.json({ error: v.error }, { status: 400 })

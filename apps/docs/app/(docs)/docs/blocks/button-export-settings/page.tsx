@@ -20,7 +20,7 @@ export default function ButtonExportSettingsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add button-export-settings`} />
+        <DocsCode language="bash" code={`dashkit add button-export-settings`} />
       </DocsSection>
 
       <DocsSection title="Examples">

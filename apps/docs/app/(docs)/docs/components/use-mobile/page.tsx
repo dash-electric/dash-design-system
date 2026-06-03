@@ -24,7 +24,7 @@ export default function UseMobileDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add use-mobile`} />
+        <DocsCode language="bash" code={`dashkit add use-mobile`} />
       </DocsSection>
 
       <DocsSection title="Example">

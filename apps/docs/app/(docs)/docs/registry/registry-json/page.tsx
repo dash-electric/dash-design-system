@@ -14,7 +14,7 @@ export default function RegistryJsonPage() {
       <DocsHeader
         category="Registry"
         title="registry.json"
-        description="The manifest at the design-system repo root. Lists every item Dash ships, with type, deps, source files, and CSS vars. dash build reads this and emits per-item JSON to public/r/."
+        description="The manifest at the design-system repo root. Lists every item Dash ships, with type, deps, source files, and CSS vars. dashkit build reads this and emits per-item JSON to public/r/."
       />
 
       <DocsSection title="Top-level shape">
@@ -43,9 +43,9 @@ export default function RegistryJsonPage() {
       <DocsSection title="items[i] schema">
         <DocsPropsTable
           rows={[
-            { name: "name",                 type: "string",          description: "Slug, kebab-case. CLI argument to dash add." },
+            { name: "name",                 type: "string",          description: "Slug, kebab-case. CLI argument to dashkit add." },
             { name: "type",                 type: "RegistryItemType", description: "registry:ui | registry:lib | registry:hook | registry:page | registry:block | registry:theme | registry:file." },
-            { name: "title",                type: "string",          description: "Human label. Renders in dash list and dash search." },
+            { name: "title",                type: "string",          description: "Human label. Renders in dashkit list and dashkit search." },
             { name: "description",          type: "string",          description: "One-liner. Also used by AI rules + search index." },
             { name: "categories",           type: "string[]",        defaultValue: "[]", description: "Optional tags (forms, layout, mitra, etc)." },
             { name: "dependencies",         type: "string[]",        defaultValue: "[]", description: "npm packages to install on the consumer." },
@@ -96,7 +96,7 @@ export default function RegistryJsonPage() {
 
       <DocsSection
         title="Example — base-theme entry"
-        description="Theme items inject CSS variables only, no TSX. Always installed first via dash init."
+        description="Theme items inject CSS variables only, no TSX. Always installed first via dashkit init."
       >
         <DocsCode
           language="json"
@@ -132,7 +132,7 @@ pnpm registry:build
 # → reads registry.json
 # → resolves each item.files[].path → reads file content into memory
 # → writes public/r/<name>.json (one per item)
-# → writes public/r/index.json (list endpoint for dash list/search)`}
+# → writes public/r/index.json (list endpoint for dashkit list/search)`}
         />
         <p className="text-sm text-text-sub-600 mt-3">
           Dash currently runs this on pre-commit + on the deploy step. Consumer-facing CDN cache TTL

@@ -46,7 +46,7 @@ export default function InlineEditWithAuditDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add inline-edit-with-audit`} />
+        <DocsCode language="bash" code={`dashkit add inline-edit-with-audit`} />
       </DocsSection>
 
       <DocsSection title="Preview">

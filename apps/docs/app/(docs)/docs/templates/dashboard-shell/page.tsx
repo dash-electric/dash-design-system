@@ -28,7 +28,7 @@ export default function DashboardShellDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add dashboard-shell`} />
+        <DocsCode language="bash" code={`dashkit add dashboard-shell`} />
       </DocsSection>
 
       <DocsSection

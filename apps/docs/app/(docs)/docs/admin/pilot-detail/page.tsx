@@ -127,7 +127,7 @@ export default function PilotDetailPage() {
                   <div>
                     <span className="font-medium text-text-strong-950">Numerator:</span>{" "}
                     developers who installed ≥1 component via{" "}
-                    <code className="text-xs">dash add</code>
+                    <code className="text-xs">dashkit add</code>
                   </div>
                   <div>
                     <span className="font-medium text-text-strong-950">Denominator:</span>{" "}
@@ -280,9 +280,9 @@ export default function PilotDetailPage() {
           />
           <DocsStep
             number={4}
-            title="Verify with dash add from any consumer"
+            title="Verify with dashkit add from any consumer"
             description="From any Dash consumer repo, attempt an install. Expect a friendly read-only mode error message — not a stack trace."
-            code="dash add button"
+            code="dashkit add button"
             output="Error: Registry frozen, read-only mode. Reason: <your-reason>. Contact @irfan."
             imagePlaceholder="CLI showing Registry frozen, read-only mode error"
           />

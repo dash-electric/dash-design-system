@@ -33,7 +33,7 @@ export default function DiscountLineItemDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add discount-line-item`} />
+        <DocsCode language="bash" code={`dashkit add discount-line-item`} />
       </DocsSection>
 
       <DocsSection title="Usage">

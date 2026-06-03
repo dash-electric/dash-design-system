@@ -30,7 +30,7 @@ export default function ProgressCircleDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add progress-circle`} />
+        <DocsCode language="bash" code={`dashkit add progress-circle`} />
       </DocsSection>
 
       <DocsSection title="Examples">

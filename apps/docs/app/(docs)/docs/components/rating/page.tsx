@@ -139,7 +139,7 @@ export default function RatingDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add rating`} />
+        <DocsCode language="bash" code={`dashkit add rating`} />
       </DocsSection>
 
       <DocsSection title="Star row">

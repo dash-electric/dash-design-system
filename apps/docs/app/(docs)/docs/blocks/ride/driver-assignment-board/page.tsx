@@ -160,7 +160,7 @@ export default function DriverAssignmentBoardDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add driver-assignment-board`} />
+        <DocsCode language="bash" code={`dashkit add driver-assignment-board`} />
       </DocsSection>
 
       <DocsSection title="Preview">

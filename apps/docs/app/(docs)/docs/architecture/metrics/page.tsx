@@ -107,7 +107,7 @@ const capabilities: Capability[] = [
     incumbent: "Greenfield-only — no concept of multi-product theming",
   },
   {
-    dash: "Brownfield additive — existing Dash code untouched, opt-in via dash add",
+    dash: "Brownfield additive — existing Dash code untouched, opt-in via dashkit add",
     incumbent: "Requires rewrite to their template or framework",
   },
   {
@@ -131,7 +131,7 @@ const capabilities: Capability[] = [
     incumbent: "Flat component library, no divergence model",
   },
   {
-    dash: "Canonical token contract (CSS var, no hex) enforced by dash audit",
+    dash: "Canonical token contract (CSS var, no hex) enforced by dashkit audit",
     incumbent: "Inline hex tolerated; drift creeps silently",
   },
 ]
@@ -158,7 +158,7 @@ const readiness: Status[] = [
   {
     state: "ready",
     label: "Audit enforcement",
-    detail: "13 rules CI-gateable via dash audit (banned imports + style + layer)",
+    detail: "13 rules CI-gateable via dashkit audit (banned imports + style + layer)",
   },
   {
     state: "ready",
@@ -495,12 +495,12 @@ export default function MetricsPage() {
             >
               User Onboarding Playbook
             </Link>{" "}
-            — how a Dash user goes from clone to first <code className="text-xs">dash add</code>.
+            — how a Dash user goes from clone to first <code className="text-xs">dashkit add</code>.
           </li>
           <li>
             <Link
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"
-              href="https://github.com/dash-elektrik/dash-ds/blob/main/KILL-CRITERIA.md"
+              href="https://github.com/dash-electric/express-design-system/blob/main/docs/strategy/KILL-CRITERIA.md"
             >
               <code className="text-xs">KILL-CRITERIA.md</code>
             </Link>{" "}
@@ -509,7 +509,7 @@ export default function MetricsPage() {
           <li>
             <Link
               className="text-(--dash-purple-600) underline-offset-4 hover:underline"
-              href="https://github.com/dash-elektrik/dash-ds/blob/main/BASELINE-DRIFT-2026-05-20.md"
+              href="https://github.com/dash-electric/express-design-system/blob/main/docs/strategy/BASELINE-DRIFT-2026-05-20.md"
             >
               <code className="text-xs">BASELINE-DRIFT-2026-05-20.md</code>
             </Link>{" "}

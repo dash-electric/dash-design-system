@@ -34,7 +34,7 @@ export default function AlertDialogDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add alert-dialog`} />
+        <DocsCode language="bash" code={`dashkit add alert-dialog`} />
       </DocsSection>
 
       <DocsSection title="Examples">

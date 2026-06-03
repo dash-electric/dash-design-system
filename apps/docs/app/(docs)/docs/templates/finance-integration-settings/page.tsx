@@ -20,7 +20,7 @@ export default function FinanceIntegrationSettingsDocsPage() {
         description="Settings shell + SegmentedControl [All Apps|Connected|Disconnected] + Search/Filter/Sort + 3-column app grid (logo, name, status badge, description, Manage CTA). Ported from AlignUI Pro Figma frame 'Integration Settings [Finance & Banking]'."
       />
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add finance-integration-settings`} />
+        <DocsCode language="bash" code={`dashkit add finance-integration-settings`} />
       </DocsSection>
       <DocsSection title="Examples">
         <DocsExample

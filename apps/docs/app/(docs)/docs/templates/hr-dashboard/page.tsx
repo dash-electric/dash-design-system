@@ -22,7 +22,7 @@ export default function HrDashboardDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-dashboard`} />
+        <DocsCode language="bash" code={`dashkit add hr-dashboard`} />
       </DocsSection>
 
       <DocsSection title="Examples">

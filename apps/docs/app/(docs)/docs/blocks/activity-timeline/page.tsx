@@ -21,7 +21,7 @@ export default function ActivityTimelineDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add activity-timeline`} />
+        <DocsCode language="bash" code={`dashkit add activity-timeline`} />
       </DocsSection>
 
       <DocsSection title="Preview">

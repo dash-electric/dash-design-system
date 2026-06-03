@@ -41,11 +41,11 @@ export default function InstallationPage() {
       <DocsWorkflowDiagram
         steps={[
           { label: "Check prerequisites", sub: "Next 15, Tailwind v4" },
-          { label: "Run dash init", sub: "scaffold + token" },
+          { label: "Run dashkit init", sub: "scaffold + token" },
           { label: "Wire components.json", sub: "registry pointer" },
-          { label: "Install base theme", sub: "dash add base-theme" },
-          { label: "Verify", sub: "dash list" },
-          { label: "Add first component", sub: "dash add button" },
+          { label: "Install base theme", sub: "dashkit add base-theme" },
+          { label: "Verify", sub: "dashkit list" },
+          { label: "Add first component", sub: "dashkit add button" },
         ]}
       />
 
@@ -71,16 +71,16 @@ export default function InstallationPage() {
         <DocsStepList>
           <DocsStep
             number={1}
-            title="Quick install with dash init"
+            title="Quick install with dashkit init"
             description="One command — Dash CLI scaffolds components.json, writes .env.local, and pulls the base theme. Auto-detects your framework from package.json."
-            code={`pnpm dlx dash@latest init --token sk-dash-xxxx`}
+            code={`pnpm dlx dashkit@latest init --token sk-dash-xxxx`}
             output={`✔ Detected Next.js 15 + Tailwind v4
 ✔ Wrote components.json
 ✔ Wrote .env.local (DASH_REGISTRY_TOKEN)
 ✔ Wrote registry/dash/lib/utils.ts
 ✔ Imported @dash/tokens into app/globals.css
-ℹ Run \`pnpm dlx dash add button\` to verify the wire-up.`}
-            imagePlaceholder="Terminal output of dash init — five green checkmarks confirming scaffold, plus the suggested first-add command."
+ℹ Run \`pnpm dlx dashkit add button\` to verify the wire-up.`}
+            imagePlaceholder="Terminal output of dashkit init — five green checkmarks confirming scaffold, plus the suggested first-add command."
           />
 
           <DocsStep
@@ -132,19 +132,19 @@ DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
             number={4}
             title="Install the base theme + utils"
             description="Drops the token system into app/globals.css (between markers, so updates are idempotent) and writes the cn() helper at registry/dash/lib/utils.ts."
-            code={`pnpm dlx dash add base-theme utils`}
+            code={`pnpm dlx dashkit add base-theme utils`}
             output={`✔ Resolved base-theme (12 token groups)
 ✔ Wrote registry/dash/lib/utils.ts
 ✔ Updated app/globals.css (between @dash:start/end markers)
-ℹ Run \`pnpm dlx dash list\` to see all available components.`}
+ℹ Run \`pnpm dlx dashkit list\` to see all available components.`}
             imagePlaceholder="Diff view of app/globals.css showing the @dash:start/end markers wrapping the new CSS variable block."
           />
 
           <DocsStep
             number={5}
             title="Verify the registry connection"
-            description="dash list hits the registry with your token and returns the available items. If you see 0 items, your token is bad — check the troubleshooting tips below."
-            code={`pnpm dlx dash list
+            description="dashkit list hits the registry with your token and returns the available items. If you see 0 items, your token is bad — check the troubleshooting tips below."
+            code={`pnpm dlx dashkit list
 # → 181 items available: button, card, data-table, dashboard-shell, …`}
             output={`@dash registry · 181 items
   ui          92 components
@@ -153,14 +153,14 @@ DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
   templates    9 page shells
   hooks        2 utilities
   lib          2 helpers`}
-            imagePlaceholder="Terminal output of dash list showing categorized counts for ui / blocks / templates / hooks / forms / charts."
+            imagePlaceholder="Terminal output of dashkit list showing categorized counts for ui / blocks / templates / hooks / forms / charts."
           />
 
           <DocsStep
             number={6}
             title="Add your first component"
             description="Pulls button source into registry/dash/ui/button.tsx — you own the file. Now you can import it anywhere in your app and ship."
-            code={`pnpm dlx dash add button`}
+            code={`pnpm dlx dashkit add button`}
             output={`✔ Resolved button (4 deps)
 ✔ Wrote registry/dash/ui/button.tsx
 ℹ Import: import { Button } from "@/registry/dash/ui/button"`}
@@ -175,22 +175,22 @@ DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
       >
         <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
-            <code className="text-xs">dash add button</code> — installs <code className="text-xs">@dash/button</code> (default namespace, backward compatible)
+            <code className="text-xs">dashkit add button</code> — installs <code className="text-xs">@dash/button</code> (default namespace, backward compatible)
           </li>
           <li>
-            <code className="text-xs">dash add @dash/button</code> — explicit form, identical behavior
+            <code className="text-xs">dashkit add @dash/button</code> — explicit form, identical behavior
           </li>
           <li>
-            <code className="text-xs">dash add @trellis/tenant-block</code> — routes to the Trellis tenant registry
+            <code className="text-xs">dashkit add @trellis/tenant-block</code> — routes to the Trellis tenant registry
           </li>
           <li>
-            <code className="text-xs">dash add @logistic/route-planner</code> — Dash Logistic-specific partition
+            <code className="text-xs">dashkit add @logistic/route-planner</code> — Dash Logistic-specific partition
           </li>
           <li>
-            <code className="text-xs">dash list --namespace trellis</code> — list a single namespace
+            <code className="text-xs">dashkit list --namespace trellis</code> — list a single namespace
           </li>
           <li>
-            <code className="text-xs">dash search button</code> — searches every known namespace and tags results with their <code className="text-xs">@&lt;ns&gt;/</code> prefix
+            <code className="text-xs">dashkit search button</code> — searches every known namespace and tags results with their <code className="text-xs">@&lt;ns&gt;/</code> prefix
           </li>
         </ul>
         <p className="mt-3 text-sm text-text-sub-600">
@@ -216,7 +216,7 @@ DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
 
       <DocsSection
         title="Troubleshooting"
-        description="If dash list returns 0 items: check that the bearer token isn't URL-encoded, your registry URL matches https://ds.dash.com/r/{name}.json, and your shell environment exports the token (not just the .env.local file — Next.js loads .env.local, but the CLI reads process.env)."
+        description="If dashkit list returns 0 items: check that the bearer token isn't URL-encoded, your registry URL matches https://ds.dash.com/r/{name}.json, and your shell environment exports the token (not just the .env.local file — Next.js loads .env.local, but the CLI reads process.env)."
       >
         <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>

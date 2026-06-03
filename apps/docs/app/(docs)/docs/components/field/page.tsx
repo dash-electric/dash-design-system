@@ -27,7 +27,7 @@ export default function FieldDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add field`} />
+        <DocsCode language="bash" code={`dashkit add field`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

@@ -8,7 +8,7 @@
  *
  * An invalid CLI flag is a hard error (the user clearly intended a specific
  * theme). An invalid value sitting in `components.json` is non-fatal: we warn
- * and fall back to the default. This keeps `dash add` working even if the
+ * and fall back to the default. This keeps `dashkit add` working even if the
  * config has drifted ahead of the CLI's known-theme list.
  */
 import kleur from "kleur"

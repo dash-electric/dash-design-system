@@ -5,7 +5,7 @@
  * builder can scope context (theme manifest, voice overrides, block list).
  *
  * Detection priority (first hit wins):
- *   1. `components.json` field `dashTheme` (set by `dash init --theme <name>`).
+ *   1. `components.json` field `dashTheme` (set by `dashkit init --theme <name>`).
  *   2. `package.json` `name` heuristic (e.g. `@dash-ride/foo` → `ride`).
  *   3. Env var `DASH_TENANT`.
  *   4. Auto-detect from imports — installed-items + customHooks containing a

@@ -24,7 +24,7 @@ export default function CompactButtonDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add compact-button`} />
+        <DocsCode language="bash" code={`dashkit add compact-button`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

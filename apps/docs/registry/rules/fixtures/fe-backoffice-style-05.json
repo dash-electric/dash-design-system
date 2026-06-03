@@ -13,7 +13,7 @@
     "@dash/button tone='primary' style='filled'",
     "Tailwind semantic class bg-primary / text-primary from @dash/base-theme",
     "if MUI/antd Button must stay on the page, use the lib's own theme primary token (not raw hex)",
-    "tokens via `dash add base-theme`"
+    "tokens via `dashkit add base-theme`"
   ],
   "expected_pattern_ref": "Token usage (rules L192-227); Brand token (rules L218-219); Anti-Pattern Catalog 'Hardcode hex color' (rules L335); next-basecamp-web brand `#5e2aac` (rules L417)",
   "context_notes": "Three theme systems coexist (MUI, antd, Tailwind+Dash tokens). Whichever button library wins the row must reach for that lib's brand token — never an inline hex. Canonical Dash Purple = `#5e2aac` (matches DS token `--dash-purple-500`); older `#7C4FC4` references are deprecated (synced 2026-05-20).",

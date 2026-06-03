@@ -27,7 +27,7 @@ export default function RichEditorDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add rich-editor`} />
+        <DocsCode language="bash" code={`dashkit add rich-editor`} />
       </DocsSection>
 
       <DocsSection title="Usage">

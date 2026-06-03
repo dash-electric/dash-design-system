@@ -27,7 +27,7 @@ export default function CollapsibleDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add collapsible`} />
+        <DocsCode language="bash" code={`dashkit add collapsible`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

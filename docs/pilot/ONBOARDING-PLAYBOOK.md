@@ -15,14 +15,14 @@ Companion docs:
 
 ## A. Pre-flight (5 min)
 
-**What is Dash DS.** Internal sovereign design system for 10+ team members at Dash. You pull components by name with the `dash` CLI; your AI editor learns the registry through MCP + a Skill that enforces Dash conventions (tokens, voice, audit trail).
+**What is Dash DS.** Internal sovereign design system for 10+ team members at Dash. You pull components by name with the `dashkit` CLI; your AI editor learns the registry through MCP + a Skill that enforces Dash conventions (tokens, voice, audit trail).
 
 **Who this is for.** Wave 5 = the first 3 pilot users on Ride tribe. Logistic, Travel, Marketplace pilots come later. You should already be comfortable shipping Next.js + Tailwind features and using Claude Code or Cursor daily.
 
 **Time commitment.** ~30–45 min onboarding (this doc). ~1 hour for your first real ticket. ~15 min/week giving feedback in `#dash-ds-pilot`. Pilot window: 1 week.
 
 **What you can do after.**
-- Install components in any Dash repo via `dash add <name>`
+- Install components in any Dash repo via `dashkit add <name>`
 - Prompt your editor to build Dash-themed screens that respect tokens / voice / audit-trail
 - Report gaps the moment the DS falls short
 
@@ -33,10 +33,25 @@ Companion docs:
 **Prerequisites:** Node 20+, pnpm, Claude Code **or** Cursor (latest).
 
 ### Step 1 — Install the CLI
+
+The CLI ships from **GitHub Packages**, org-restricted to `dash-tech`. You need a personal access token (PAT) with `read:packages` scope to install it.
+
 ```bash
-pnpm install -g dash
-dash --version
-# → dash@1.x.x
+# One-time setup: configure pnpm to fetch @dash-tech/* from GH Packages.
+# Grab your PAT from 1Password → "GH Packages PAT (read-only)".
+cat >> ~/.npmrc <<'EOF'
+@dash-tech:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
+EOF
+
+# Add your PAT to shell rc (don't commit, don't paste in Slack).
+echo 'export GITHUB_PACKAGES_TOKEN=ghp_xxxxxx' >> ~/.zshrc  # or ~/.bashrc
+source ~/.zshrc
+
+# Install
+pnpm install -g @dash-tech/dashkit
+dashkit --version
+# → @dash-tech/dashkit@1.x.x
 ```
 
 ### Step 2 — Get your Bearer token
@@ -46,14 +61,14 @@ If you don't see the entry, ping **@Irfan** in `#dash-ds-pilot`.
 
 ### Step 3 — Log in
 ```bash
-dash login --token <paste-from-1password>
+dashkit login --token <paste-from-1password>
 # ✔ Token validated
 # ✔ Saved to ~/.config/dash/auth.json
 ```
 
 ### Step 4 — Sanity check
 ```bash
-dash doctor
+dashkit doctor
 # ✔ Node 20.x
 # ✔ pnpm 9.x
 # ✔ Bearer token valid (registry reachable)
@@ -64,10 +79,12 @@ All green? You're done with B.
 ### Common issues + fixes
 | Symptom | Fix |
 | --- | --- |
-| `EACCES` on `pnpm install -g dash` | Global bin folder unwritable. Run `pnpm setup` and follow its instructions. Avoid `sudo`. |
-| `401 Unauthorized` on `dash login` | Token paste picked up a leading/trailing space. Re-copy from 1Password. |
-| `dash doctor: MCP probe failed` | `npx` can't reach the registry — check VPN / corporate proxy. Retry; persisting → ping channel. |
-| `dash: command not found` | pnpm global bin not on PATH. Run `pnpm bin -g`, add that path to your shell rc. |
+| `EACCES` on `pnpm install -g @dash-tech/dashkit` | Global bin folder unwritable. Run `pnpm setup` and follow its instructions. Avoid `sudo`. |
+| `401 Unauthorized` from `npm.pkg.github.com` | `GITHUB_PACKAGES_TOKEN` missing/expired/lacking `read:packages`. Regenerate at github.com → Settings → Developer settings → PATs (classic). |
+| `404 Not Found` for `@dash-tech/dashkit` | You're not yet a member of the `dash-tech` GitHub org. Ping **@Irfan** to be added. |
+| `401 Unauthorized` on `dashkit login` | Bearer token paste picked up a leading/trailing space. Re-copy from 1Password. (Different token from the GH PAT — this one auths the *registry*, not the package install.) |
+| `dashkit doctor: MCP probe failed` | `npx` can't reach the registry — check VPN / corporate proxy. Retry; persisting → ping channel. |
+| `dashkit: command not found` | pnpm global bin not on PATH. Run `pnpm bin -g`, add that path to your shell rc. |
 
 ---
 
@@ -103,7 +120,7 @@ Open a new chat and ask:
 
 > What Dash DS components are available for building a mitra detail page?
 
-**Expected:** a short list referencing `@dash` registry items (Button, Input, DataTable, FilterBar, EmptyState, etc.) and a suggestion to scaffold via `dash add`.
+**Expected:** a short list referencing `@dash` registry items (Button, Input, DataTable, FilterBar, EmptyState, etc.) and a suggestion to scaffold via `dashkit add`.
 
 **Drift signal:** generic shadcn answer or "I don't have access to your DS" → MCP didn't connect. Recheck step 1 / 2.
 
@@ -122,7 +139,7 @@ Open [https://ds.dash.com/docs/components](https://ds.dash.com/docs/components).
 
 ### Step 3 — Add Button
 ```bash
-dash add button
+dashkit add button
 # ✔ Wrote src/components/ui/button.tsx
 # ℹ Import: import { Button } from "@/components/ui/button"
 ```
@@ -181,13 +198,13 @@ The whole point of Wave 5 is to find what the DS doesn't cover. Don't work aroun
 
 ### Log locally
 ```bash
-dash gap report "no Dash component for inline OTP input with 6 boxes — needed in mitra phone re-verify flow"
+dashkit gap report "no Dash component for inline OTP input with 6 boxes — needed in mitra phone re-verify flow"
 # ✔ Logged to ~/.config/dash/gaps.local.json
 ```
 
 ### Sync to the dashboard
 ```bash
-dash gap sync
+dashkit gap sync
 # ✔ Synced 1 gap to ds.dash.com/admin/gaps
 ```
 
@@ -223,7 +240,7 @@ Honest critique > polite agreement.
 
 - **Don't modify Dash production code via the DS.** The DS is purely additive — components ship into your repo as source you own, not as a replacement for what already exists there.
 - **Don't share your Bearer token.** Not in Slack, screenshots, or commits. Rotate via 1Password if it leaks.
-- **Don't bypass `dash add`.** No copy-pasting components from other Dash repos — that breaks audit + dep tracking.
+- **Don't bypass `dashkit add`.** No copy-pasting components from other Dash repos — that breaks audit + dep tracking.
 - **Don't modify production Dash repos under `/Users/.../Dash/*`** — they are READ-ONLY references for the DS work.
 
 ---

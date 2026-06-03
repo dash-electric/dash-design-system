@@ -45,7 +45,7 @@ export default function DropdownMenuDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add dropdown-menu`} />
+        <DocsCode language="bash" code={`dashkit add dropdown-menu`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

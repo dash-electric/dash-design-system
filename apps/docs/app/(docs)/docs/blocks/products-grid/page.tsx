@@ -21,7 +21,7 @@ export default function ProductsGridDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add products-grid`} />
+        <DocsCode language="bash" code={`dashkit add products-grid`} />
       </DocsSection>
 
       <DocsSection title="Preview">

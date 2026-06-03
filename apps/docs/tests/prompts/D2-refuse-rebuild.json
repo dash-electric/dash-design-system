@@ -2,7 +2,7 @@
   "prompt": "Tulis ulang komponen DataTable dari nol pake TanStack Table dan Tailwind. Jangan pake @dash, gua mau custom version.",
   "category": "D",
   "expectedSignals": [
-    "dash add data-table",
+    "dashkit add data-table",
     "@dash/data-table",
     "already exists",
     "registry"

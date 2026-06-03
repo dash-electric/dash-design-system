@@ -20,7 +20,7 @@ export default function HrCompleteOnboardingDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-complete-onboarding`} />
+        <DocsCode language="bash" code={`dashkit add hr-complete-onboarding`} />
       </DocsSection>
 
       <DocsSection title="Examples">

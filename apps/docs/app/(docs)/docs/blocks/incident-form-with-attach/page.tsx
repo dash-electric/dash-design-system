@@ -55,7 +55,7 @@ export default function IncidentFormWithAttachDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add incident-form-with-attach`} />
+        <DocsCode language="bash" code={`dashkit add incident-form-with-attach`} />
       </DocsSection>
 
       <DocsSection

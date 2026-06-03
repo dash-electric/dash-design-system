@@ -21,7 +21,7 @@ export default function AnalyticsGridDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add analytics-grid`} />
+        <DocsCode language="bash" code={`dashkit add analytics-grid`} />
       </DocsSection>
 
       <DocsSection title="Preview">

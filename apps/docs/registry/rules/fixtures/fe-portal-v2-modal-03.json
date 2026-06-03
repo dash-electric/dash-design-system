@@ -10,7 +10,7 @@
     "Jotai for open/close (overkill — useState is canonical for local toggle)"
   ],
   "expected_use": [
-    "@dash/modal primitive (dash add modal)",
+    "@dash/modal primitive (dashkit add modal)",
     "@dash/alert-dialog if framing as destructive confirmation (no overlay-click dismiss)",
     "useState<boolean> for open state local to the page",
     "@dash/button with tone='destructive' style='filled' for confirm",

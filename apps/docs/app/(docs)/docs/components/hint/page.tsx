@@ -25,7 +25,7 @@ export default function HintDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hint`} />
+        <DocsCode language="bash" code={`dashkit add hint`} />
       </DocsSection>
 
       <DocsSection title="Examples">

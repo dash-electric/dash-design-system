@@ -13,7 +13,7 @@ import { isAuthorized, unauthorized } from "@/app/api/registry/_auth"
  *      Used to derive per-user component-install counts. User identity is
  *      mapped through `pilot-cohort.json` (hashed-client → user name).
  *   2. `pilot-feedback.jsonl` — feedback entries synced from users via
- *      `dash feedback sync`. Drives the feedback feed.
+ *      `dashkit feedback sync`. Drives the feedback feed.
  *   3. `pilot-cohort.json` — declares the 3 users in this pilot. If
  *      missing, returns 3 placeholder users so the dashboard renders.
  *
@@ -145,7 +145,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     : 0
 
   // Per-user counts. Component-install count is derived from feedback context
-  // (when a user logs `dash add X` as feedback) OR from audit when we add an
+  // (when a user logs `dashkit add X` as feedback) OR from audit when we add an
   // explicit user field to the audit line (future). For now: count distinct
   // components per user via feedback context.command + context.component.
   const perPe = members.map((m) => {
@@ -154,7 +154,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     for (const f of peFeedback) {
       if (f.context?.component) componentSet.add(f.context.component)
       if (typeof f.context?.command === "string") {
-        const match = /dash add\s+(\S+)/.exec(f.context.command)
+        const match = /dashkit add\s+(\S+)/.exec(f.context.command)
         if (match) componentSet.add(match[1])
       }
     }

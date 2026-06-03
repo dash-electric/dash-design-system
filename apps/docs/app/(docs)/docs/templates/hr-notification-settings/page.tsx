@@ -20,7 +20,7 @@ export default function HrNotificationSettingsDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-notification-settings`} />
+        <DocsCode language="bash" code={`dashkit add hr-notification-settings`} />
       </DocsSection>
 
       <DocsSection title="Examples">

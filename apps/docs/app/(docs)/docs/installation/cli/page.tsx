@@ -27,7 +27,7 @@ export default function InstallationCliPage() {
             <DocsCode
               language="bash"
               code={`# one-shot
-pnpm dlx dash@latest init
+pnpm dlx dashkit@latest init
 
 # project-local
 pnpm add -D dash
@@ -55,7 +55,7 @@ npm i -g dash`}
             <DocsCode
               language="bash"
               code={`# one-shot
-yarn dlx dash init
+yarn dlx dashkit init
 
 # project-local
 yarn add -D dash
@@ -69,7 +69,7 @@ yarn global add dash`}
             <DocsCode
               language="bash"
               code={`# one-shot
-bunx dash init
+bunx dashkit init
 
 # project-local
 bun add -D dash
@@ -112,19 +112,19 @@ pnpm add -D dash`}
         <DocsCode
           language="bash"
           code={`# scaffold consumer (writes components.json + .env.local)
-dash init --token sk-dash-xxxx
+dashkit init --token sk-dash-xxxx
 
 # add components (resolves registryDependencies recursively)
-dash add button card data-table
+dashkit add button card data-table
 
 # list everything in the registry
-dash list --type component
+dashkit list --type component
 
 # search by name / title / description
-dash search "mitra suspend"
+dashkit search "mitra suspend"
 
 # rebuild distribution JSON (in the design-system repo, not consumers)
-dash build`}
+dashkit build`}
         />
       </DocsSection>
 
@@ -158,7 +158,7 @@ source ~/.zshrc`} />
           <div>
             <div className="font-semibold text-text-strong-950">cssVars not merging into globals.css</div>
             CLI looks for <code className="text-xs">{`/* @dash:start <name> */`}</code> marker comments. If they were manually edited, run{" "}
-            <code className="text-xs">dash add --overwrite base-theme</code>.
+            <code className="text-xs">dashkit add --overwrite base-theme</code>.
           </div>
           <div>
             <div className="font-semibold text-text-strong-950">Tailwind v4 not picking up tokens</div>

@@ -1,5 +1,5 @@
 /**
- * `dash add <name...>` — install registry items into consumer project.
+ * `dashkit add <name...>` — install registry items into consumer project.
  */
 import path from "node:path"
 import fs from "node:fs"
@@ -56,7 +56,7 @@ export async function runAdd(opts: AddOpts): Promise<void> {
   if (!config) {
     console.log(
       kleur.yellow(
-        `! components.json not found — run ${kleur.cyan("dash init")} first (or use --path to override)`,
+        `! components.json not found — run ${kleur.cyan("dashkit init")} first (or use --path to override)`,
       ),
     )
   }
@@ -75,7 +75,7 @@ export async function runAdd(opts: AddOpts): Promise<void> {
   // Resolve all items + dedupe across requests.
   // Each name is parsed for an `@<ns>/` prefix; the namespace selects which
   // registry URL + token the item is fetched from. Bare names default to
-  // `@dash`. Backward compat: `dash add button` === `dash add @dash/button`.
+  // `@dash`. Backward compat: `dashkit add button` === `dashkit add @dash/button`.
   const seen = new Map<string, RegistryItem>()
   const spinner = ora("Resolving registry items").start()
   try {
@@ -128,7 +128,7 @@ export async function runAdd(opts: AddOpts): Promise<void> {
         ? path.join(cwd, opts.path, path.basename(f.target ?? f.path))
         : resolveTargetPath(f, config, cwd)
       // Inject `@dash version` header on first install of a JS/TS source file
-      // so `dash sync` can classify bump severity later. Idempotent: skipped
+      // so `dashkit sync` can classify bump severity later. Idempotent: skipped
       // if header already present.
       const stamped = stampDashHeader(f, item.name, itemVersion, theme.name)
       const result = await writeRegistryFile(stamped, baseTarget, {

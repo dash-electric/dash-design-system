@@ -6,7 +6,7 @@
 
 Claude Code skill that auto-activates inside any repository wired to the `@dash` registry and injects:
 
-1. **Project state** — captured via `dash info --json` (framework, aliases, installed @dash items, custom hooks, API base URL)
+1. **Project state** — captured via `dashkit info --json` (framework, aliases, installed @dash items, custom hooks, API base URL)
 2. **Latest AI rules** — fetched from `{registryUrl}/r/dash-ai-rules.json`, cached 5 min
 3. **Dash domain glossary** — `delivery`, `mitra`, `use-code`, `dispatch`, `outlet`, `driver`
 
@@ -28,7 +28,7 @@ dash-skill/
 ├── SKILL.md               # Skill body — markdown frontmatter + activation rules
 ├── src/
 │   ├── index.ts           # Entry — composes info + rules + glossary
-│   ├── info-collector.ts  # Calls `dash info --json` via execSync
+│   ├── info-collector.ts  # Calls `dashkit info --json` via execSync
 │   ├── prompt-builder.ts  # Composes captured context → AI prompt template
 │   └── activate.ts        # Auto-activation predicate (CWD detection)
 ├── package.json
@@ -40,13 +40,13 @@ dash-skill/
 
 | Phase | When | What |
 | --- | --- | --- |
-| 1 (current) | pilot | Scaffold only. `dash info` plumbing in `dash-cli` v0.2.0 ready. |
+| 1 (current) | pilot | Scaffold only. `dashkit info` plumbing in `dash-cli` v0.2.0 ready. |
 | 2 | post-pilot, week 3 | Replace stub `src/index.ts` with real prompt assembly + caching layer |
 | 3 | week 4+ | Glossary + anti-pattern detection + per-tribe overlays |
 
 ## Prereqs
 
-- `dash` CLI ≥ 0.2.0 (provides `dash info --json`)
+- `dashkit` CLI ≥ 0.2.0 (provides `dashkit info --json`)
 - Claude Code session with skill loader enabled
 
 ## v3 — multi-tenant scoping
@@ -72,7 +72,7 @@ const prompt = await loadDashSkill({
 ### Tenant detection priority
 
 1. `opts.tenantId` (explicit override, must be valid)
-2. `components.json` field `dashTheme` (written by `dash init --theme <name>`)
+2. `components.json` field `dashTheme` (written by `dashkit init --theme <name>`)
 3. `package.json` `name` heuristic (e.g. `@dash-ride/portal`)
 4. Env var `DASH_TENANT`
 5. Auto-detect from imports (paths under `blocks/<tenant>/*`)
@@ -129,7 +129,7 @@ To opt a consumer in:
 
 1. Bump call to `loadDashSkill({ version: 3 })`.
 2. (Optional) Add `dashTheme` to `components.json` or run
-   `dash init --theme ride` for a fresh repo.
+   `dashkit init --theme ride` for a fresh repo.
 3. (Optional) Provide `dsRoot` if your consumer project lives outside the
    `dash-ds` monorepo so the loader can find `themes/manifest.json`.
 

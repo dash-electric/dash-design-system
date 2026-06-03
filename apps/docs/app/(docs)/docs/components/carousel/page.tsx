@@ -38,7 +38,7 @@ export default function CarouselDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add carousel`} />
+        <DocsCode language="bash" code={`dashkit add carousel`} />
       </DocsSection>
 
       <DocsSection title="Anatomy">

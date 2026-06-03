@@ -21,7 +21,7 @@ export default function MarketingEmailVerificationDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-email-verification`} />
+        <DocsCode language="bash" code={`dashkit add marketing-email-verification`} />
       </DocsSection>
 
       <DocsSection title="Examples">

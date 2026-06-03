@@ -50,7 +50,7 @@ export default function DeliveryStatusTimelineDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add delivery-status-timeline`} />
+        <DocsCode language="bash" code={`dashkit add delivery-status-timeline`} />
       </DocsSection>
 
       <DocsSection title="Preview">

@@ -35,7 +35,7 @@ export type ValidationResult = {
   typecheckPassed: boolean
   /** Did `pnpm test` succeed (or skipped). */
   testsPassed: boolean
-  /** Did `dash audit` produce zero HIGH findings. */
+  /** Did `dashkit audit` produce zero HIGH findings. */
   auditClean: boolean
 }
 

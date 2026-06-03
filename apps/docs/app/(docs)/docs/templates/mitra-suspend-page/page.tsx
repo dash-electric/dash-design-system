@@ -22,7 +22,7 @@ export default function MitraSuspendPageDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add mitra-suspend-page`} />
+        <DocsCode language="bash" code={`dashkit add mitra-suspend-page`} />
       </DocsSection>
 
       <DocsSection title="Examples">

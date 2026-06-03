@@ -21,7 +21,7 @@ export default function MarketingPricingDetailFilledDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add marketing-pricing-detail-filled`} />
+        <DocsCode language="bash" code={`dashkit add marketing-pricing-detail-filled`} />
       </DocsSection>
 
       <DocsSection title="Examples">

@@ -14,7 +14,7 @@ export default function RegistryItemJsonPage() {
       <DocsHeader
         category="Registry"
         title="registry-item.json"
-        description="Per-item output written by dash build. This is what dash add fetches from ds.dash.com/r/<name>.json. Same shape as one entry in registry.json, but with file contents baked in."
+        description="Per-item output written by dashkit build. This is what dashkit add fetches from ds.dash.com/r/<name>.json. Same shape as one entry in registry.json, but with file contents baked in."
       />
 
       <DocsSection title="Schema reference">
@@ -23,7 +23,7 @@ export default function RegistryItemJsonPage() {
             { name: "name",                 type: "string",           description: "kebab-case slug, matches the JSON filename." },
             { name: "type",                 type: "RegistryItemType", description: "Same as registry.json item." },
             { name: "title",                type: "string",           description: "Human label." },
-            { name: "description",          type: "string",           description: "One-liner used in dash list / dash search." },
+            { name: "description",          type: "string",           description: "One-liner used in dashkit list / dashkit search." },
             { name: "dependencies",         type: "string[]",         description: "npm packages the CLI installs." },
             { name: "registryDependencies", type: "string[]",         description: "Other registry items to fetch + install first." },
             { name: "files",                type: "FileEntry[]",      description: "Source files with content baked in. See below." },

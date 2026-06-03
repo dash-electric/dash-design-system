@@ -40,7 +40,7 @@ export default function SettingsTabsPageDocs() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add settings-tabs-page`} />
+        <DocsCode language="bash" code={`dashkit add settings-tabs-page`} />
       </DocsSection>
 
       <DocsSection title="Examples">

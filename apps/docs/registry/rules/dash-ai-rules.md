@@ -5,7 +5,7 @@
 ## Always
 
 1. **Query Dash registry FIRST** before generating UI primitives. The registry lives at `@dash`. Available items: 111 components / hooks / templates / blocks / theme.
-2. **Use `dash add <name>`** to install. Never copy-paste source code from another repo or invent a new primitive.
+2. **Use `dashkit add <name>`** to install. Never copy-paste source code from another repo or invent a new primitive.
 3. **Never use raw color hex / rgb**. Always use semantic tokens (e.g. `bg-bg-white-0`, `text-text-strong-950`, `border-stroke-soft-200`). Token reference: `@dash/base-theme` (ships full `app/globals.css`).
 4. **Forms**: use `@dash/form` + `@dash/field` + zod schema via `@hookform/resolvers`. Never raw `<form>` without RHF.
 5. **Page layouts**: pick from `@dash/templates/*` first. Decision tree below.
@@ -247,8 +247,8 @@ Avoid raw colors. Always reach for semantic tokens:
 ## Workflow conventions
 
 1. **Before generating any UI**: query Dash registry via cmd+K on `https://ds.dash.com/docs` OR Dash MCP `search` tool.
-2. **Install dependencies**: `dash add <name1> <name2>` — handles cascading registryDependencies automatically.
-3. **Theme**: install once via `dash add base-theme` — writes consumer's `app/globals.css` with full token system.
+2. **Install dependencies**: `dashkit add <name1> <name2>` — handles cascading registryDependencies automatically.
+3. **Theme**: install once via `dashkit add base-theme` — writes consumer's `app/globals.css` with full token system.
 4. **Layout first**: pick a template before composing sections. Templates already handle Sidebar / topbar / split / wizard scaffolding.
 5. **Form pattern**: always RHF + zod resolver + Dash Form primitives:
    ```tsx
@@ -327,7 +327,7 @@ screens, dashboards). Allowed carve-outs:
 ## Anti-patterns
 
 ❌ **DO**:
-- `import { Button } from "@/registry/dash/ui/button"` after `dash add button`
+- `import { Button } from "@/registry/dash/ui/button"` after `dashkit add button`
 - Use semantic token classes `bg-bg-white-0`
 - Use `tone="primary" style="filled"` for Buttons
 - Use `appearance="light"` for Badge / Alert / Banner
@@ -336,7 +336,7 @@ screens, dashboards). Allowed carve-outs:
 - `import { Button } from "@radix-ui/react-button"` directly (wrong primitive)
 - `style={{ backgroundColor: "#5e2aac" }}` (raw hex)
 - `<Button variant="default">` (shadcn name — won't work in Dash)
-- Copy entire shadcn component file into the repo (use `dash add` instead — auto-handles tokens + dependencies + cssVars)
+- Copy entire shadcn component file into the repo (use `dashkit add` instead — auto-handles tokens + dependencies + cssVars)
 - Hardcode `text-white` on light surfaces — use `text-text-strong-950` / `text-static-white` depending on context
 
 ---
@@ -423,7 +423,7 @@ Dash has **11 product/service repos with distinct stacks** (5 FE + 5 BE-or-servi
 
 ## Stack detection (extended for 5 FE + 5 BE)
 
-When `dash info --json` returns repo metadata, infer target repo by:
+When `dashkit info --json` returns repo metadata, infer target repo by:
 
 **Frontend:**
 - `framework: "next"` + `typescript: true` + App Router + Jotai dep → `next-portal-v2-web`
@@ -966,7 +966,7 @@ Dash owns its primitives (Button, Input, Modal, Form, Tag, Badge, etc.) via `@da
 2. **Maintenance**: last commit ≤6 months on the default branch. Archived / abandoned repos are auto-rejected.
 3. **Bundle size**: <30KB gzipped (heuristic). Larger libs require a written justification in the PR description naming the alternative considered.
 4. **No DS duplication**: lib MUST NOT overlap with an existing `@dash` primitive. Don't add a second button / modal / form / select lib.
-5. **Wrappable**: lib's surface area is small enough to wrap under `@dash/lib-wrappers/`. If it requires deep app-level integration (router, store, build plugin), escalate via `dash gap report`.
+5. **Wrappable**: lib's surface area is small enough to wrap under `@dash/lib-wrappers/`. If it requires deep app-level integration (router, store, build plugin), escalate via `dashkit gap report`.
 
 ### Wrapper pattern (mandatory)
 
@@ -983,7 +983,7 @@ export function ImageEditor(props: DashImageEditorProps) {
 }
 ```
 
-Once a wrapper proves stable in one repo, it gets promoted to the DS registry as a `block` and consumed via `dash add image-editor` thereafter.
+Once a wrapper proves stable in one repo, it gets promoted to the DS registry as a `block` and consumed via `dashkit add image-editor` thereafter.
 
 ### Banned categories (refuse on sight)
 
@@ -995,7 +995,7 @@ Once a wrapper proves stable in one repo, it gets promoted to the DS registry as
 ### Allowed categories (with wrapper)
 
 - **Chart**: `recharts` is the established choice — must be wrapped, never imported direct
-- **Date pickers** if `@dash/date-picker` lacks the feature (rare — first file `dash gap report`)
+- **Date pickers** if `@dash/date-picker` lacks the feature (rare — first file `dashkit gap report`)
 - **File handling**: CSV parsers (papaparse), image manipulation (browser-image-compression)
 - **Animation**: framer-motion is allowed when wrapped — direct usage in feature code is discouraged
 
@@ -1011,20 +1011,20 @@ When an external lib gets wrapped, the wrapper becomes a DS block — see "Cross
 
 ### Rules
 
-1. **NEVER copy-paste** a component between Dash repos. Use `dash add <name>` to install a fresh copy from the registry. The CLI handles tokens, dependencies, and cssVars correctly — manual copy will silently break theming (see Anti-pattern #4).
+1. **NEVER copy-paste** a component between Dash repos. Use `dashkit add <name>` to install a fresh copy from the registry. The CLI handles tokens, dependencies, and cssVars correctly — manual copy will silently break theming (see Anti-pattern #4).
 2. **Divergence protocol**: if a component must diverge in a repo (e.g., backoffice Button needs a tone the registry doesn't have), the divergence MUST:
-   1. Be reported via `dash gap report <component> --reason="<why>"` FIRST.
+   1. Be reported via `dashkit gap report <component> --reason="<why>"` FIRST.
    2. Resolve as EITHER (a) promote the variant to DS as a new component or new variant prop, OR (b) justify per-repo override in the PR description with explicit ADR-style reasoning.
-3. **No silent forks**. Once a component is vendored locally via `dash add`, developers may modify it, but:
+3. **No silent forks**. Once a component is vendored locally via `dashkit add`, developers may modify it, but:
    - **Cosmetic tweaks** (margin, label copy, icon swap) → OK in place.
-   - **Behavioral changes** (state machine, event contract, accessibility tree) → log via `dash gap report` for upstream consideration; do not fork silently.
+   - **Behavioral changes** (state machine, event contract, accessibility tree) → log via `dashkit gap report` for upstream consideration; do not fork silently.
    - The component file should NOT be edited beyond surface props. Deep edits inside the component body signal a divergence that needs DS-level discussion.
 4. **Version pinning**: each repo's `components.json` records installed component versions (managed by the `dash` CLI). Do not hand-edit version fields.
-5. **Mass update**: `dash sync` (planned v0.5 CLI feature) will detect components installed in a repo and prompt for upgrade — do NOT precompose a manual upgrade script.
+5. **Mass update**: `dashkit sync` (planned v0.5 CLI feature) will detect components installed in a repo and prompt for upgrade — do NOT precompose a manual upgrade script.
 
 ### Anti-pattern
 
-`git cp src/components/Button.tsx <other-repo>/src/components/Button.tsx` → **REFUSE**. Run `dash add button` in the destination repo instead.
+`git cp src/components/Button.tsx <other-repo>/src/components/Button.tsx` → **REFUSE**. Run `dashkit add button` in the destination repo instead.
 
 ---
 
@@ -1045,7 +1045,7 @@ Dash components follow strict semver:
 |---|---|---|
 | **Patch** (v1.0.x) | bug fix, no API change | Update freely whenever. No PR review required for the upgrade itself. |
 | **Minor** (v1.x.0) | new feature, backward-compatible | Update at convenience. Changelog must list new props / variants. |
-| **Major** (vX.0.0) | breaking change (prop rename, removed variant, behavior shift) | **Mandatory upgrade window: 14 days** from release. After window, the old version is EOL and `dash audit` will flag it as critical. |
+| **Major** (vX.0.0) | breaking change (prop rename, removed variant, behavior shift) | **Mandatory upgrade window: 14 days** from release. After window, the old version is EOL and `dashkit audit` will flag it as critical. |
 
 ### Auto-PR pattern
 
@@ -1063,7 +1063,7 @@ When a new component version lands in DS, the maintainer optionally triggers an 
 
 ### Stale detection
 
-`dash audit --stale` flags components >90 days behind upstream. Output is non-blocking but feeds into per-repo health dashboards.
+`dashkit audit --stale` flags components >90 days behind upstream. Output is non-blocking but feeds into per-repo health dashboards.
 
 ### Maintainer commitment
 
@@ -1073,5 +1073,5 @@ When a new component version lands in DS, the maintainer optionally triggers an 
 
 ### Cross-ref
 
-This policy assumes the "Cross-Repo Component Replication" model above — components are vendored via CLI, not imported from a shared package. Update propagation = re-running `dash add` (or `dash sync`) per repo, not bumping a node_modules dep.
+This policy assumes the "Cross-Repo Component Replication" model above — components are vendored via CLI, not imported from a shared package. Update propagation = re-running `dashkit add` (or `dashkit sync`) per repo, not bumping a node_modules dep.
 

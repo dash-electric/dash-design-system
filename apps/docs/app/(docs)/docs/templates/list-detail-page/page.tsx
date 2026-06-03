@@ -41,7 +41,7 @@ export default function ListDetailPageDocs() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add list-detail-page`} />
+        <DocsCode language="bash" code={`dashkit add list-detail-page`} />
       </DocsSection>
 
       <DocsSection title="Examples">

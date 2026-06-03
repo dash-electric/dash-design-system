@@ -115,13 +115,13 @@ export default function IntroductionPage() {
 │                            registry.json               │
 │                                  │                     │
 │                                  ▼                     │
-│                       dash build ──▶ public/r/*.json   │
+│                       dashkit build ──▶ public/r/*.json   │
 │                                            │           │
 │                                            ▼           │
 │                            ds.dash.com (Vercel + auth) │
 │                                            │           │
 │                                            ▼           │
-│                            dash add button             │
+│                            dashkit add button             │
 │                                            │           │
 │                                            ▼           │
 │                  components/ui/button.tsx in your repo │
@@ -135,8 +135,8 @@ export default function IntroductionPage() {
       >
         <DocsCode
           language="bash"
-          code={`pnpm dlx dash@latest init --token sk-dash-xxxx
-pnpm dlx dash add button card dashboard-shell`}
+          code={`pnpm dlx dashkit@latest init --token sk-dash-xxxx
+pnpm dlx dashkit add button card dashboard-shell`}
         />
         <p className="text-sm text-text-sub-600 mt-3">
           See <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/installation">Installation</Link>{" "}

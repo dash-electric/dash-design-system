@@ -17,7 +17,7 @@ export default function AiRulesDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add dash-ai-rules`} />
+        <DocsCode language="bash" code={`dashkit add dash-ai-rules`} />
         <p className="text-sm text-text-sub-600 mt-3">
           Writes <code className="text-xs">CLAUDE.md</code> at your repo root. AI tools
           will auto-discover it. Pair with <code className="text-xs">AGENTS.md</code> or
@@ -28,7 +28,7 @@ export default function AiRulesDocsPage() {
       <DocsSection title="What it teaches AI">
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• Query Dash registry FIRST before generating UI primitives</li>
-          <li>• Use <code className="text-xs">dash add &lt;name&gt;</code> — never hand-copy</li>
+          <li>• Use <code className="text-xs">dashkit add &lt;name&gt;</code> — never hand-copy</li>
           <li>• Use semantic tokens (<code className="text-xs">bg-bg-white-0</code>, <code className="text-xs">text-text-strong-950</code>) — never raw colors</li>
           <li>• Forms = RHF + zod pattern blocks as canonical reference. Adaptation Layer translates per-repo (Jotai for portal-v2, useState for backoffice/halo/fleet-mgmt, Zustand for basecamp).</li>
           <li>• Page layouts = pick from <code className="text-xs">@dash/templates/*</code> first</li>

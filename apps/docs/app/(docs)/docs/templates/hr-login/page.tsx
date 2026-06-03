@@ -20,7 +20,7 @@ export default function HrLoginDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add hr-login`} />
+        <DocsCode language="bash" code={`dashkit add hr-login`} />
       </DocsSection>
 
       <DocsSection title="Examples">

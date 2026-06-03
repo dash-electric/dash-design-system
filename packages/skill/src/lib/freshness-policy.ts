@@ -3,7 +3,7 @@
  * or should be re-scanned.
  *
  * Three invalidation triggers, in priority order:
- *   1. forceRefresh flag (explicit `dash skill refresh` or programmatic opt-in)
+ *   1. forceRefresh flag (explicit `dashkit skill refresh` or programmatic opt-in)
  *   2. fingerprint mismatch (consumer repo files changed)
  *   3. TTL expired (default 4h — long enough to amortize scan cost, short
  *      enough that "I forgot to refresh after a git pull" recovers within
@@ -68,7 +68,7 @@ export function shouldRefresh(input: FreshnessInput): FreshnessDecision {
 }
 
 /**
- * Human-readable summary used by `dash skill status`. Shows whether the next
+ * Human-readable summary used by `dashkit skill status`. Shows whether the next
  * `loadDashSkill` call will hit cache or re-scan, and why.
  */
 export function describeFreshness(decision: FreshnessDecision): string {

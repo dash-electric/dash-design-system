@@ -157,7 +157,7 @@ export default function MultiStageApprovalDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add multi-stage-approval`} />
+        <DocsCode language="bash" code={`dashkit add multi-stage-approval`} />
       </DocsSection>
 
       <DocsSection title="Preview (rollback, viewer = assigned approver)">

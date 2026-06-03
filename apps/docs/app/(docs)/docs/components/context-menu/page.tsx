@@ -39,7 +39,7 @@ export default function ContextMenuDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add context-menu`} />
+        <DocsCode language="bash" code={`dashkit add context-menu`} />
       </DocsSection>
 
       <DocsSection title="Examples">

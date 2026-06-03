@@ -100,7 +100,7 @@ export default function RadioDocsPage() {
       />
 
       <DocsSection title="Install">
-        <DocsCode language="bash" code={`dash add radio`} />
+        <DocsCode language="bash" code={`dashkit add radio`} />
       </DocsSection>
 
       <DocsSection title="States">

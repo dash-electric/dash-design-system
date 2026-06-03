@@ -1,9 +1,9 @@
 /**
  * component-version — parse + compare `@dash version X.Y.Z` header comments
- * stamped onto installed component files. Used by `dash sync` to detect drift
+ * stamped onto installed component files. Used by `dashkit sync` to detect drift
  * and classify bump severity (patch / minor / major).
  *
- * Header convention (injected by `dash add` on first write):
+ * Header convention (injected by `dashkit add` on first write):
  *
  *   /**
  *    * @dash version 1.2.0
