@@ -31,5 +31,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build workspace deps
+        run: pnpm --filter @dash/registry-schema build
+
       - name: Run tests across workspace
         run: pnpm -r test

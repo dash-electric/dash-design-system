@@ -1108,7 +1108,7 @@
       "name": "design-context",
       "type": "registry:file",
       "title": "Dash Design Context Bundle",
-      "description": "Bundle of the cross-repo design contract (design.md), the Layered Architecture spec (LAYERED-ARCHITECTURE.md), the Layer 0 cardinal rules + voice rules, and the foundation manifest.json. Served over MCP via get_design_context in one round-trip so dash-build's design-loader can read the full design contract without walking the monorepo filesystem. Each file is identified by its registry path (design.md, LAYERED-ARCHITECTURE.md, cardinal-rules.md, voice-rules.md, manifest.json)."
+      "description": "Bundle of the cross-repo design contract (design.md), the Layered Architecture spec (ARCHITECTURE.md), the Layer 0 cardinal rules + voice rules, and the foundation manifest.json. Served over MCP via get_design_context in one round-trip so dash-build's design-loader can read the full design contract without walking the monorepo filesystem. Each file is identified by its registry path (design.md, ARCHITECTURE.md, cardinal-rules.md, voice-rules.md, manifest.json)."
     },
     {
       "name": "animated-alert",
