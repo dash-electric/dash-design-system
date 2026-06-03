@@ -1,0 +1,21 @@
+export default {
+  extends: ['@commitlint/config-conventional'],
+  ignores: [
+    // Legacy compound-type commit from Wave 2-4 branch (pre-lint enforcement)
+    (commit) => /^fix\+feat/.test(commit),
+  ],
+  rules: {
+    'type-enum': [
+      2,
+      'always',
+      [
+        'feat', 'fix', 'docs', 'style', 'refactor',
+        'perf', 'test', 'build', 'ci', 'chore', 'revert',
+      ],
+    ],
+    'subject-case': [2, 'never', ['upper-case', 'pascal-case', 'start-case']],
+    'header-max-length': [2, 'always', 120],
+    'body-max-line-length': [1, 'always', 100],
+    'footer-leading-blank': [0, 'always'],
+  },
+};
