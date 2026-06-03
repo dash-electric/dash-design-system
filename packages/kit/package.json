@@ -1,7 +1,7 @@
 {
   "name": "@dash/kit",
-  "version": "0.0.1",
-  "description": "Dash UI kit — curated, ban-gated @dash/ui atom source bundle for AI generation + Sandpack preview.",
+  "version": "0.0.2",
+  "description": "Dash UI kit — curated, ban-gated @dash/ui atom source bundle for AI generation + Sandpack preview + consumer apps (dash-dashboard, dash-build).",
   "type": "module",
   "private": true,
   "files": [
@@ -20,7 +20,7 @@
     "prepare": "node ./build.mjs"
   },
   "peerDependencies": {
-    "react": "^18.3.0",
+    "react": "^18.3.0 || ^19.0.0",
     "@remixicon/react": "^4.9.0"
   },
   "engines": {
