@@ -11,7 +11,6 @@ COPY packages/mcp-server/package.json ./packages/mcp-server/
 COPY packages/registry-schema/package.json ./packages/registry-schema/
 COPY packages/skill/package.json ./packages/skill/
 COPY packages/worker/package.json ./packages/worker/
-COPY packages/dash-build/package.json ./packages/dash-build/
 
 RUN pnpm install --frozen-lockfile
 
