@@ -86,7 +86,7 @@ const buttonVariants = cva(
 
       // NEUTRAL — source Figma mapping (sub-600 text, surface-800 fill, stroke-soft-200 border + shadow-regular-xs on stroke)
       { tone: "neutral", style: "filled", className: "bg-bg-surface-800 text-static-white hover:bg-bg-strong-950 active:bg-bg-strong-950/90" },
-      { tone: "neutral", style: "stroke", className: "bg-bg-white-0 border-stroke-soft-200 text-text-sub-600 shadow-regular-xs hover:bg-bg-weak-50 hover:text-text-strong-950 active:bg-bg-weak-50" },
+      { tone: "neutral", style: "stroke", className: "bg-bg-white-0 border-stroke-soft-200 text-text-sub-600 shadow-xs hover:bg-bg-weak-50 hover:text-text-strong-950 active:bg-bg-weak-50" },
       { tone: "neutral", style: "lighter", className: "bg-bg-weak-50 text-text-sub-600 hover:bg-bg-soft-200 hover:text-text-strong-950 active:bg-bg-soft-200" },
       { tone: "neutral", style: "ghost", className: "text-text-sub-600 hover:bg-bg-weak-50 hover:text-text-strong-950 active:bg-bg-soft-200" },
       { tone: "neutral", style: "link", className: "text-text-sub-600 hover:text-text-strong-950 hover:underline underline-offset-4" },

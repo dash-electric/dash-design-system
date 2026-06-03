@@ -157,9 +157,9 @@ export default function AppStoreBadgesPage() {
                     <div className="text-xs text-text-sub-600">Download on the App Store</div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <ChipBox><StoreBadge store={STORES[0]} style="black" /></ChipBox>
-                  <ChipBox><StoreBadge store={STORES[0]} style="white" /></ChipBox>
+                <div className="grid grid-cols-1 gap-2">
+                  <ChipBox label="Black"><StoreBadge store={STORES[0]} style="black" /></ChipBox>
+                  <ChipBox label="White"><StoreBadge store={STORES[0]} style="white" /></ChipBox>
                 </div>
               </div>
               <div className="space-y-1 text-sm">
@@ -183,9 +183,9 @@ export default function AppStoreBadgesPage() {
           Same badge dimensions across all 8 stores. Black style = filled dark on light page. White style = white surface w/ gray border on dark page.
         </p>
         <DocsExample
-          title="Black (filled) row"
+          title="Black (filled) — all 8 stores"
           preview={
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {STORES.map((s) => (
                 <StoreBadge key={s.key} store={s} style="black" />
               ))}
@@ -196,9 +196,9 @@ export default function AppStoreBadgesPage() {
 <StoreBadge store="microsoft"  style="black" />`}
         />
         <DocsExample
-          title="White (stroke) row"
+          title="White (stroke) — all 8 stores"
           preview={
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {STORES.map((s) => (
                 <StoreBadge key={s.key} store={s} style="white" />
               ))}
@@ -365,11 +365,11 @@ function StoreBadge({
   )
 }
 
-function ChipBox({ children }: { children: React.ReactNode }) {
+function ChipBox({ children, label = "Original" }: { children: React.ReactNode; label?: string }) {
   return (
     <div className="rounded-lg border border-stroke-soft-200 p-3 flex flex-col items-center gap-2">
       {children}
-      <div className="text-[10px] text-text-soft-400">Original</div>
+      <div className="text-[10px] text-text-soft-400">{label}</div>
     </div>
   )
 }

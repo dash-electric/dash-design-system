@@ -116,7 +116,7 @@ export default function HRDailyWorkHoursWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Headline</strong> — total time string with bold numerals + tag emoji.</li>
           <li><strong>Bar</strong> — 8px stacked horizontal segments, rounded-full ends. Hairline 1px gap between segments.</li>
           <li><strong>Legend</strong> — dot + label triplet (warning / success / information dot colors).</li>

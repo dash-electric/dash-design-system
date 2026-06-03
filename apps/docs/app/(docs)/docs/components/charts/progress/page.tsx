@@ -216,7 +216,7 @@ export default function ProgressChartPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Container width is measured at runtime; peg count = floor(width / step).</li>
           <li>Variant A uses a CSS linear-gradient mask (6/3 split, 9px step).</li>
           <li>Variant B uses an inline SVG mask (rounded 1px rect, 10px step).</li>

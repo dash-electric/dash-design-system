@@ -129,7 +129,7 @@ export default function DailyWorkHoursWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><span className="font-medium">Shell</span> — `WidgetShell` (title + See All). Bar variant fits in 4-up grid.</li>
           <li><span className="font-medium">Bars</span> — 7 columns, gap 6px, baseline aligned. Active bar `bg-(--primary-base)`, rest `bg-(--primary-alpha-24)`.</li>
           <li><span className="font-medium">Labels</span> — `text-[9px] text-text-soft-400` weekday initial under each bar.</li>

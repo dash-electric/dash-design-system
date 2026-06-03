@@ -196,7 +196,7 @@ export default function BadgeDocsPage() {
           title="Week's Top Contributor"
           preview={
             <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 max-w-md shadow-(--shadow-custom-sm)">
-              <div className="px-5 py-4 border-b border-stroke-soft-200">
+              <div className="px-6 py-4 border-b border-stroke-soft-200">
                 <h3 className="text-sm font-semibold text-text-strong-950">Week&apos;s Top Contributor</h3>
               </div>
               <ul className="divide-y divide-stroke-soft-200">
@@ -206,7 +206,7 @@ export default function BadgeDocsPage() {
                   { name: "Arthur Taylor",   role: "CEO of Apex",         dir: "flat" as const, n: 11 },
                   { name: "Emma Wright",     role: "Front-end Developer", dir: "down" as const, n: 4  },
                 ].map((r) => (
-                  <li key={r.name} className="flex items-center gap-3 px-5 py-3">
+                  <li key={r.name} className="flex items-center gap-3 px-6 py-3">
                     <Avatar size="md">
                       <AvatarImage src={`https://i.pravatar.cc/80?u=${r.name}`} />
                       <AvatarFallback>{r.name[0]}</AvatarFallback>
@@ -226,7 +226,7 @@ export default function BadgeDocsPage() {
                   </li>
                 ))}
               </ul>
-              <div className="px-5 py-3 border-t border-stroke-soft-200">
+              <div className="px-6 py-3 border-t border-stroke-soft-200">
                 <Button size="sm" tone="neutral" style="stroke" className="w-full" leftIcon={<Plus />}>Upvote</Button>
               </div>
             </div>
@@ -290,14 +290,14 @@ export default function BadgeDocsPage() {
           title="Absent + Away with time counter"
           preview={
             <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 max-w-md shadow-(--shadow-custom-sm)">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-stroke-soft-200">
+              <div className="flex items-center justify-between px-6 py-3 border-b border-stroke-soft-200">
                 <div className="inline-flex items-center gap-2">
                   <Monitor className="size-4 text-icon-soft-400" />
                   <span className="text-sm font-semibold text-text-strong-950">Status Tracker</span>
                 </div>
                 <Button size="sm" tone="neutral" style="stroke">See All</Button>
               </div>
-              <div className="px-5 py-3 border-b border-stroke-soft-200">
+              <div className="px-6 py-3 border-b border-stroke-soft-200">
                 <div className="text-xs text-text-soft-400 mb-2">Absent</div>
                 <div className="flex items-center gap-3">
                   <Avatar size="md">
@@ -312,7 +312,7 @@ export default function BadgeDocsPage() {
                   <StatusBadge status="faded" variant="icon-light">Absent</StatusBadge>
                 </div>
               </div>
-              <div className="px-5 py-3">
+              <div className="px-6 py-3">
                 <div className="text-xs text-text-soft-400 mb-2">Away</div>
                 <ul className="space-y-3">
                   {[

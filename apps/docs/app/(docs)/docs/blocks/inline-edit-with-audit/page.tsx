@@ -217,7 +217,7 @@ EDIT MODE
           dash-ai-rules.md § Audit Trail (applies to ALL user-editable fields,
           not just legal/financial):
         </p>
-        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-5">
+        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-6">
           <li>Receive <code>onSave</code> payload — fieldName + originalValue + newValue + editReason + editorId + timestamp.</li>
           <li>Insert <code>t_&lt;entity&gt;_audit_log</code> row BEFORE updating the entity column.</li>
           <li>Update the entity row's column in the same transaction.</li>
@@ -227,7 +227,7 @@ EDIT MODE
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for low-risk single-field text edits: mitra display name, outlet contact, vehicle description, internal notes.</li>
           <li><strong>Use</strong> with <code>requireReason</code> for fields that affect dispatch, safety, or pricing — even if the field itself looks cosmetic.</li>
           <li><strong>Don't</strong> use for multi-field forms — wire up a proper form block instead.</li>
@@ -262,7 +262,7 @@ EDIT MODE
       </DocsSection>
 
       <DocsSection title="Accessibility">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Read row is <code>role="button"</code> + <code>tabIndex=0</code> with <code>Enter</code> / <code>Space</code> entering edit mode.</li>
           <li>44px minimum tap target on the read row — no hover-only affordance.</li>
           <li>Keyboard inside edit form: <kbd>Enter</kbd> saves (when valid), <kbd>Esc</kbd> cancels (with confirmation when changes pending).</li>

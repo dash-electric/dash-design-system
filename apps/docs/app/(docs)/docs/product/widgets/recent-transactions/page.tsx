@@ -143,7 +143,7 @@ export default function RecentTransactionsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card shell with title left + See All link right.</li>
           <li>3-segment SegmentedControl (full width) below header.</li>
           <li>Row: 28px tinted-circle icon + 2-line title/desc + right-aligned amount/date + chevron.</li>

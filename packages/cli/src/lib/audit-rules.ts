@@ -86,6 +86,9 @@ export const AUDIT_RULES: readonly AuditRule[] = [
     fileExt: [".ts", ".tsx", ".js", ".jsx"],
     regex: /from\s+['"]zod(?:\/[^'"]*)?['"]/,
     lineFilter: isValueImportLine,
+    // Carve-out per RULE-REALITY-AUDIT-2026-05-28 B1: `packages/registry-schema/**`
+    // is the runtime registry-JSON validator (trust boundary, not a form lib).
+    allowlistPathContains: ["/packages/registry-schema/"],
   },
   {
     id: "no-tanstack-query",

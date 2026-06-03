@@ -166,7 +166,7 @@ export default function TabsDocsPage() {
           title='"Profile Settings"'
           preview={
             <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 overflow-hidden">
-              <header className="flex items-start gap-3 px-6 py-5 border-b border-stroke-soft-200">
+              <header className="flex items-start gap-3 px-6 py-6 border-b border-stroke-soft-200">
                 <span className="size-9 rounded-full bg-bg-weak-50 inline-flex items-center justify-center text-icon-soft-400 shrink-0">
                   <Settings className="size-4" />
                 </span>
@@ -185,7 +185,7 @@ export default function TabsDocsPage() {
                   <TabsTrigger value="privacy">Privacy &amp; Security</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="profile" className="py-5">
+                <TabsContent value="profile" className="py-6">
                   <div className="grid grid-cols-[200px_1fr] gap-6">
                     <aside className="space-y-1">
                       <div className="text-[10px] uppercase tracking-wider text-text-soft-400 px-2 py-1">Select menu</div>
@@ -246,10 +246,10 @@ export default function TabsDocsPage() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="general"       className="py-5 text-sm text-text-sub-600">General settings content here.</TabsContent>
-                <TabsContent value="company"       className="py-5 text-sm text-text-sub-600">Company settings content here.</TabsContent>
-                <TabsContent value="notifications" className="py-5 text-sm text-text-sub-600">Notification settings content here.</TabsContent>
-                <TabsContent value="privacy"       className="py-5 text-sm text-text-sub-600">Privacy &amp; Security content here.</TabsContent>
+                <TabsContent value="general"       className="py-6 text-sm text-text-sub-600">General settings content here.</TabsContent>
+                <TabsContent value="company"       className="py-6 text-sm text-text-sub-600">Company settings content here.</TabsContent>
+                <TabsContent value="notifications" className="py-6 text-sm text-text-sub-600">Notification settings content here.</TabsContent>
+                <TabsContent value="privacy"       className="py-6 text-sm text-text-sub-600">Privacy &amp; Security content here.</TabsContent>
               </Tabs>
             </div>
           }

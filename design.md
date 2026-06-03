@@ -34,8 +34,12 @@ The design system must keep the same product character across:
   marketing layouts.
 - Do not place cards inside cards. Cards are for repeated items, modals, and
   genuinely framed tools.
-- Keep card radius at 8px or less unless the target repo already has a stricter
-  tokenized radius rule.
+- Radius defaults (sourced from Figma canonical):
+  - Card (default content block, repeated row, list item): 16px (`rounded-2xl`).
+  - Modal / Drawer / Sheet / Alert Dialog: 20px.
+  - Popover / Dropdown / Menu / Toast: 16px.
+  - Inline chips, pills, dense table-row cards: 6-8px or full.
+  Override only when the target repo has a stricter tokenized radius rule.
 - Use familiar controls: icon buttons for tools, tabs for views, segmented
   controls for modes, switches for binary settings, and menus for option sets.
 - Every async workflow needs a visible loading, empty, error, and success state.
@@ -44,7 +48,17 @@ The design system must keep the same product character across:
 - Text must fit its container on desktop and mobile. Do not use viewport-scaled
   font sizes.
 - Do not rely on decorative gradients, blobs, bokeh, or generic illustration to
-  make an internal tool feel designed.
+  make an internal tool feel designed. Scope: in-app workflow surfaces (lists,
+  tables, forms, detail screens, dashboards). Explicit carve-outs where
+  gradients are intentional and allowed:
+  - Auth shells (login / register / reset / verify) — auth is its own visual register.
+  - Chart fills — SVG `<linearGradient>` / `<radialGradient>` / `conic-gradient`
+    used as data-viz fill (donut, area, bar) is not "decoration".
+  - Brand showcase pages — Foundation, Theme Studio, Brand Assets, color/typography
+    demo pages — expressing the brand is the point.
+  - Dash Build's own dashboard chrome — Dash Build is a meta-application surface
+    (control tower for AI workflows), not a consumer ops surface.
+  - Premium CTA polish — top-down sheen on `FancyButton` (sanctioned motion polish).
 - Treat this file as the active design system whenever it is available. Do not
   ask the user to choose a visual direction unless the target repo has no Dash
   design contract or the user explicitly wants an exploration.
@@ -86,11 +100,20 @@ Use these density defaults unless the target repo already has tighter tokens:
 - Chat/task bubble line-height: 1.35-1.45.
 - Chat/task thread gap: 8-10px.
 - Composer textarea minimum height: 56-64px for normal prompts.
-- Workflow surface radius: 10-14px. Avoid 20px+ radii for operational shells.
-- Cards in dense tools: radius 6-8px, shallow shadow or border, not both unless
-  the component is floating above the workspace.
+- Workflow surface radius: 10-14px for app shell chrome and inline workspace
+  containers. Larger 16-20px radii are reserved for floating surfaces (Modal,
+  Drawer, Sheet, Alert Dialog) per the Non-Negotiable radius defaults.
+- Cards in dense tools (inline table-row cards, list-item cards): radius 6-8px,
+  shallow shadow or border, not both unless the component is floating above the
+  workspace. Standard Card primitive (widget, content block) follows the 16px
+  default from Figma source.
 - Use hairline borders and spacing changes before large shadows, blur, or
-  oversized rounded containers.
+  oversized rounded containers. Default: hairline border OR shadow, not both.
+  Exception — floating surfaces above the workspace MAY combine border + shallow
+  shadow for elevation clarity: Modal, Drawer, Sheet, Alert Dialog, Popover,
+  Tooltip, HoverCard, DropdownMenu, ContextMenu, Menubar, NavigationMenu,
+  Toaster, DatePicker, Carousel, BulkActionBar, and fixed/sticky toolbars
+  when scrolled. Inline workspace cards stay border-or-shadow, never both.
 
 If a surface looks soft, puffy, or inflated, reduce padding first, then radius,
 then shadow. Preserve readable hit targets for actual controls.
@@ -110,7 +133,12 @@ Generated UI should preserve expected behavior across repos:
 - Evidence: proof images, payment data, signatures, KYC, and approvals must
   surface provenance and audit status.
 - Navigation: preserve the target repo navigation model. Do not introduce a
-  new sidebar, shell, or route pattern unless explicitly requested.
+  new sidebar, shell, or route pattern unless explicitly requested. **Scope:**
+  this rule applies to **consumer repos** (`portal-v2`, `backoffice`, `basecamp`,
+  `react-fleet`, `halo-dash`, tribe apps). Dash DS itself MAY ship multiple
+  preview shells (per-product mirror shells like `hr-app-shell`, `finance-app-shell`,
+  `dashboard-shell`, `auth-shell`) — these are DS-internal infrastructure for
+  previewing generated UI inside a realistic product chrome, not consumer drift.
 - Repo-aware preview: when a target repo is selected, Dash Build must wrap the
   generated preview in a deterministic repo shell/navigation context and active
   route. `preview.tsx` should render the feature/page content inside that route
@@ -148,16 +176,25 @@ Use:
 - predictable spacing
 - clear affordances
 - sober motion for feedback
+- reduced-motion respect — every shipped surface MUST honor
+  `@media (prefers-reduced-motion: reduce)`; consumer repos add one global
+  block to `globals.css` that flattens animation-duration / transition-duration
+  for users who opt out. Keyframe-driven loops (Shimmer, Spinner, AnnouncementBar)
+  fall back to a static state under reduced-motion.
 
 Avoid:
 
-- oversized hero compositions inside apps
-- purple-only screens
+- oversized hero compositions inside ops apps (post-login workflow surfaces).
+  Auth shells, marketing, brand showcase, and Foundation docs are exempt.
+- purple-only screens (aspirational — visual-review check; landing/brand
+  surfaces may legitimately lean heavily into purple)
 - nested card stacks
 - generic glassmorphism as the primary system
-- frosted-glass app shells for operational tools
+- frosted-glass app shells for operational tools (backdrop-blur on overlays —
+  Modal / Drawer / Sheet / sticky headers — is the standard pattern and allowed)
 - random shadows or radii
-- raw hex color values
+- raw hex color values (carve-outs: external brand colors in SocialButton, and
+  the canonical Dash Purple constant when used inside Layer 0 foundation tokens)
 - ornamental SVGs that do not reveal product state
 
 ## Generation Critique
@@ -197,6 +234,12 @@ stop and surface it instead of generating a silent override.
 Reject or rewrite output that includes:
 
 - `react-hook-form`, `zod`, TanStack Query, or SWR in existing Dash repos
+  (carve-out: `packages/registry-schema/**` may import `zod` for runtime
+  registry-JSON validation only)
+- Layer 2 theme files importing Layer 1 source (`registry/dash/themes/**`
+  importing from `registry/dash/ui/**`). Themes are token + manifest overrides
+  only; primitives are consumed via Layer 1 token resolution, not imported.
+  Enforced by `dash audit` rule L-2.
 - hard-coded Dash Purple or custom accent hex values
 - card-inside-card layouts
 - decorative gradient/blob-heavy internal tools

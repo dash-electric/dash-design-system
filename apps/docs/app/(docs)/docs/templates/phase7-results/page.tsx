@@ -53,7 +53,7 @@ export default function Phase7ResultsDocsPage() {
         title="Composition"
         description="Recharts AreaChart + @dash Card/Stat/Badge composition. No hidden state — fully driven by props."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Hero</strong> — iteration label, holdout-passed badge, iron-law status, last-validated timestamp.</li>
           <li><strong>KPI grid</strong> — 6 <code>Stat</code> tiles (Total PnL, Trades, Win rate, Expectancy R, Max DD, Worst day).</li>
           <li><strong>Equity curve</strong> — <code>AreaChart</code> with gradient fill and zero <code>ReferenceLine</code>.</li>
@@ -63,7 +63,7 @@ export default function Phase7ResultsDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for PT Box iteration result publishing (internal-only, not user-facing).</li>
           <li><strong>Use</strong> as a reference for any backtest/experiment result page — A/B test, ML eval, growth experiment.</li>
           <li><strong>Use</strong> when "trust the math" matters more than aesthetics — pain metrics are emphasized on purpose.</li>

@@ -36,7 +36,7 @@ export default function SettingsProfileDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Top — <code>Avatar</code> with Upload/Remove buttons.</li>
           <li><code>FieldGroup</code> + <code>Field</code> + <code>Label</code> + <code>InputRoot</code> stack for name, email, phone, role.</li>
           <li>Bio uses <code>Textarea</code>.</li>
@@ -46,7 +46,7 @@ export default function SettingsProfileDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> as the Profile tab of any Settings hub.</li>
           <li><strong>Use</strong> as a standalone "edit profile" page.</li>
           <li><strong>Don't</strong> use for KYC document upload — that's a different flow (FormStepperPage + FileUpload).</li>

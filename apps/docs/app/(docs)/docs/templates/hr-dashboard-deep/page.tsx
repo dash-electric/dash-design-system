@@ -61,7 +61,7 @@ function WidgetCard({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200",
+        "flex flex-col gap-4 rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200",
         className,
       )}
     >
@@ -708,7 +708,7 @@ export default function HrDashboardDeepDocsPage() {
         title="Anatomy"
         description="Three-zone layout. The 272px sidebar is fixed; the right column flexes from the 88px header into a 3-column widget grid that spans up to ~1280px before the outer container handles overflow."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Sidebar (272px)</strong> — Company Switch (Synergy HR · Pro Plan)
             → Main nav (Dashboard active, Calendar, Time Off, Projects, Teams,
@@ -728,7 +728,7 @@ export default function HrDashboardDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Avatar / AvatarFallback</strong> — Sophia avatar, sidebar user card, status rows, spotlight.</li>
           <li><strong>Badge, StatusBadge</strong> — Note category pills, employee-of-the-month pill.</li>
           <li><strong>Button</strong> — Schedule, Create Request, See all, Pause.</li>

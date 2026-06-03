@@ -27,10 +27,10 @@ Full spec: [`ARCHITECTURE.md`](./ARCHITECTURE.md). Visual showcase: `/docs/archi
 ## Cardinal rules
 
 1. **Existing Dash production code is NEVER modified.** This repo is purely ADDITIVE. Generate new patterns + components here; consumer repos pull via CLI.
-2. **No external form libraries.** No `react-hook-form`, `zod`, `@hookform/resolvers`, `@tanstack/react-query`, `swr`. Use `useState` + hand-rolled validation. See `apps/docs/registry/rules/dash-ai-rules.md` § "Banned Imports".
+2. **No external form / data-fetch libraries in UI / consumer code.** Banned: `react-hook-form`, `@hookform/resolvers`, `@tanstack/react-query`, `swr`, plus `zod` in UI consumer code. Use `useState` + hand-rolled validation in components. **Carve-out:** `packages/registry-schema/**` MAY use `zod` for runtime registry-JSON validation (this is a trust-boundary validator at a consumer-package edge, not a UI form library). The audit gate (`dash audit`) excepts this path. See `apps/docs/registry/rules/dash-ai-rules.md` § "Banned Imports".
 3. **Audit trail mandatory** for user-editable fields carrying legal/financial weight (image proof, payment, signature, KYC). Log original + edited + editor + reason. See rules § "Audit Trail".
 4. **Dash Purple canonical hex:** `#5e2aac`. Do not introduce `#7C4FC4` or any other purple variant.
-5. **Mitra-facing UI voice = formal "Anda"**, not casual "kamu". Per Dash voice rule.
+5. **Voice register is per-surface — follow each repo's existing convention, do not globalise.** portal-v2 mitra-facing default = informal **"kamu"**; **"Anda"** is a per-feature override for formal/compliance surfaces (e.g. Auto Suspend). Internal ops / backoffice / admin = formal **"Anda"**. Canonical per-repo rule: `apps/docs/registry/rules/dash-ai-rules.md` § refuse-list item 6. When in doubt, match the strings already in the target repo.
 
 ## Deployment safety rule
 
@@ -77,37 +77,17 @@ If the contributor declines or stays silent, leave the PR open (or branch unpush
 
 **Registry URL defaults:** CLI + MCP both resolve via `process.env.DASH_REGISTRY_URL ?? "http://localhost:3000"` (local-dev mode). For production consumer repos, export `DASH_REGISTRY_URL=https://ds.dash.com` in shell rc, or pass `--registry-url` per command. Docs site (`pnpm --filter @dash/docs dev`, port 3000) must be running when consuming the local registry.
 
-## Dash Build (Lovable-for-Dash Internal)
+## Dash Build (moved to sister repo)
 
-Browser-based AI workflow at `packages/dash-build/`. Day 1-3 shipped 2026-05-21.
+Browser-based AI builder (Lovable-for-Dash internal) was carved out of this
+monorepo on 2026-05-29 (commit `dbb1e64`). It now lives in its own sister
+repo at `~/Work/dash/dash-build`. Cross-repo coordination contracts live in
+`~/Work/dash/_shared-contracts/`.
 
-**Install + use:**
-```bash
-npm install -g @dash/build
-dash-build
-# → opens browser at http://localhost:7777/dashboard
-```
-
-**Auth:** OpenAI via official Codex CLI login, with BYO OpenAI API key fallback. GitHub App handles PR creation; local pilot mode may use a stub callback until real app credentials are present.
-
-**Capabilities (Day 1-3 shipped):**
-- 9router-style multi-interface menu (Web UI / Terminal / Tray / Exit)
-- Skill chain: dash-prd → `design.md` → Layer 0 rules → Skill v4 → OpenAI/Codex
-- AI clarification gate (multi-turn questions when uncertain)
-- Sandboxed iframe preview (esbuild peer dep)
-- Foundation match score (0-100)
-- GitHub PR creation via Dash Build App
-- Lovable-style split dashboard + toast notifications + skeleton states
-- 263 tests, 6 packages typecheck clean
-
-**Architecture:** see `packages/dash-build/README.md`
-
-**Planning workflow:** Dash Build uses a gstack-inspired artifact pipeline:
-`dash-intake -> dash-prd -> dash-design-review? -> dash-trd -> Skill v4 + Codex -> dash-review -> dash-qa`.
-See `packages/dash-build/docs/gstack-adoption.md` and
-`packages/dash-build/docs/artifact-contracts.md`.
-
-**Pilot use case:** any Dash team member (PM, finance ops, designer, dev) can prompt feature → AI ships PR.
+When working on `dash-ds`, treat dash-build as a downstream consumer — it
+pulls components via `@dash/kit` (`file:` workspace dep) and design metadata
+via the MCP server in `packages/mcp-server/`. Do NOT edit dash-build sources
+from within this repo.
 
 ## When generating code
 

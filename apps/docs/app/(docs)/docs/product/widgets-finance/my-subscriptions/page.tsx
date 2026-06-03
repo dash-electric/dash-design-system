@@ -88,7 +88,7 @@ export default function FinanceMySubscriptionsWidgetPage() {
             <div className="max-w-md">
               <WidgetShell title={<><RiFileListLine className="size-4 text-icon-sub-600" /> My Subscriptions</>}>
                 <Divider />
-                <div className="flex flex-col items-center gap-3 p-5 pt-8">
+                <div className="flex flex-col items-center gap-3 p-6 pt-8">
                   <RiFileListLine className="size-10 text-icon-soft-400" />
                   <p className="text-center text-sm text-text-soft-400">You do not have any subscriptions yet.<br />Feel free to explore.</p>
                   <Button tone="neutral" style="stroke" size="xs">Explore</Button>
@@ -111,7 +111,7 @@ export default function FinanceMySubscriptionsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Promo banner</strong> — 124px tall rounded-xl bg-weak-50 panel. Brand glyph in upper-left, faded duplicate glyph bleeding off the right edge.</li>
           <li><strong>Sub row</strong> — 40px circular brand bubble + 2-line label (paragraph-xs sub-600 + price/period) + status Badge + ghost xs IconButton.</li>
           <li><strong>Status badges</strong> — Paid (success/lighter green), Expiring (gray/lighter), Paused (warning/lighter orange).</li>

@@ -38,7 +38,7 @@ export default function EmptyStateCollectionDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Each state uses an <code>EmptyState</code> primitive: icon + heading + description + optional CTA.</li>
           <li>Covers: zero results, no mitra in tribe, no flagged suspensions, search miss, broken filter, first-time-empty.</li>
           <li>Copy is Dash-domain — "Belum ada dispatch hari ini", "Tribe-Express kosong di region ini".</li>
@@ -47,7 +47,7 @@ export default function EmptyStateCollectionDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> as a palette during design — pick the closest pattern, adapt copy.</li>
           <li><strong>Use</strong> when you need a Dash-flavored empty state that matches existing tone.</li>
           <li><strong>Don't</strong> render the whole collection in production — only copy the variants you need.</li>

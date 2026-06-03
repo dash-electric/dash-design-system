@@ -109,7 +109,7 @@ ModalContent.displayName = "ModalContent"
 const ModalHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="modal-header"
-    className={cn("flex flex-col gap-1 pt-4 pr-4 pb-4 pl-5", className)}
+    className={cn("flex flex-col gap-1 pt-4 pr-4 pb-4 pl-6", className)}
     {...props}
   />
 )
@@ -143,7 +143,7 @@ ModalDescription.displayName = "ModalDescription"
 const ModalBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="modal-body"
-    className={cn("flex-1 overflow-y-auto px-5 py-4", className)}
+    className={cn("flex-1 overflow-y-auto px-6 py-4", className)}
     {...props}
   />
 )
@@ -152,7 +152,7 @@ const ModalFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   <div
     data-slot="modal-footer"
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end gap-3 px-5 py-4 border-t border-stroke-soft-200",
+      "flex flex-col-reverse sm:flex-row sm:justify-end gap-3 px-6 py-4 border-t border-stroke-soft-200",
       className,
     )}
     {...props}

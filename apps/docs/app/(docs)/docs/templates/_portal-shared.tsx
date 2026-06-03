@@ -70,7 +70,7 @@ export function PortalAnnouncementBar() {
 export function PortalSidebar({ active }: { active: string }) {
   return (
     <aside className="flex h-full w-[240px] shrink-0 flex-col border-r border-stroke-soft-200 bg-bg-white-0">
-      <div className="flex items-center justify-between p-5">
+      <div className="flex items-center justify-between p-6">
         <div className="flex items-center gap-2">
           <div className="flex size-8 items-center justify-center rounded-lg bg-text-strong-950 text-static-white text-xs font-bold">
             D
@@ -142,7 +142,7 @@ export function PortalHeader({
 }) {
   return (
     <div className="sticky top-0 z-10 bg-bg-white-0">
-      <div className="flex h-[72px] w-full items-center justify-between px-8 py-5">
+      <div className="flex h-[72px] w-full items-center justify-between px-8 py-6">
         <div className="flex flex-col gap-1">
           {title ? (
             <p className="text-lg font-medium text-text-strong-950">{title}</p>

@@ -37,7 +37,7 @@ export default function UseCodeFieldPatternPage() {
         title="When to use"
         description="Whenever a Dash flow needs a 6-character code to hand to a mitra at pickup."
       >
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>Delivery creation (Dash Express, Bulk) — one code per delivery</li>
           <li>Halo-dash voucher redemption</li>
           <li>Any frontend-generated code validated server-side at dispatch</li>
@@ -57,7 +57,7 @@ export default function UseCodeFieldPatternPage() {
         title="Anatomy"
         description="Single-file pattern — generator and field live together so AI agents don't invent new generators."
       >
-        <ol className="list-decimal pl-5 space-y-2 text-sm text-text-sub-600">
+        <ol className="list-decimal pl-6 space-y-2 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Charset</strong> — 31 chars, uppercase, ambiguous{" "}
             <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">0 / O / 1 / I / L</code>{" "}
@@ -101,7 +101,7 @@ export default function UseCodeFieldPatternPage() {
       </DocsSection>
 
       <DocsSection title="Pair with">
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>
             <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">@dash/multi-item-form</code> — for per-row codes
           </li>

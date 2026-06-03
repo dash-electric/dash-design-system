@@ -174,7 +174,7 @@ const AccordionContent = React.forwardRef<
     >
       <div
         className={cn(
-          variant === "default" ? "px-3.5 pb-3.5 pt-0" : "pb-4 pt-0 pl-1 pr-7",
+          variant === "default" ? "px-3.5 pb-3.5 pt-0" : "pb-4 pt-0 pl-1 pr-8",
           "leading-relaxed",
           className,
         )}

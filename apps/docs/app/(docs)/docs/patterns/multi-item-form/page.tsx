@@ -27,7 +27,7 @@ export default function MultiItemFormPatternPage() {
         title="When to use"
         description="Reach for this pattern whenever a form needs N variable rows of the same shape with per-row validation and a single batch submit."
       >
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>Multi-order delivery creation (Dash Express, Bulk)</li>
           <li>Bulk mitra invitation form</li>
           <li>Bulk outlet onboarding</li>
@@ -48,7 +48,7 @@ export default function MultiItemFormPatternPage() {
         title="Anatomy"
         description="Three concerns live in one file so refactor prompts don't drift."
       >
-        <ol className="list-decimal pl-5 space-y-2 text-sm text-text-sub-600">
+        <ol className="list-decimal pl-6 space-y-2 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Zod schema</strong> —{" "}
             <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">items: z.array(itemSchema).min(1)</code>.
@@ -117,7 +117,7 @@ const { fields, append, remove } = useFieldArray({
       </DocsSection>
 
       <DocsSection title="Pair with">
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>
             <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">@dash/use-code-field</code> — per-row 6-digit code
           </li>

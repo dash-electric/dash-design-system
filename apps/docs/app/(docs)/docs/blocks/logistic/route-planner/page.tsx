@@ -194,7 +194,7 @@ export default function RoutePlannerDocsPage() {
         <p className="text-sm text-text-sub-600 max-w-2xl">
           The block is FE-only. The consumer's <code>onAssign</code> MUST persist:
         </p>
-        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-5">
+        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-6">
           <li>Route stops in order — pickup/dropoff sequence is legally relevant for SLA disputes.</li>
           <li>Driver ID + dispatcher ID + timestamp.</li>
           <li>Total distance (meters) + ETA (ISO).</li>
@@ -203,7 +203,7 @@ export default function RoutePlannerDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for dispatcher-driven route assembly. Drag-reorder + optimize + flag-manual is the canonical UX.</li>
           <li><strong>Use</strong> as the only route-assignment UI — tribes should not roll their own list ordering.</li>
           <li><strong>Don't</strong> use for live-tracking a route in progress — that's <code>package-tracking-timeline</code> + driver telemetry.</li>

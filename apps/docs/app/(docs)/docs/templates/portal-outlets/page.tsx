@@ -163,7 +163,7 @@ export default function PortalOutletsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Sidebar</b> — 240px brand + Main nav group (Delivery / Address / Outlets / Users / Policies / Billing / Developers / Setting) + user card.</li>
           <li><b>Topbar</b> — page title + subtitle on the left, locale select + notification bell + primary action on the right.</li>
           <li><b>Toolbar</b> — search input (300px, debounce 1000ms) + Filter popover + <b>Add Outlet</b> primary button.</li>
@@ -174,7 +174,7 @@ export default function PortalOutletsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Use</b> for any tenant-scoped directory (outlets, addresses, vehicles, hubs) where each row is a manageable asset.</li>
           <li><b>Use</b> when row actions need to live in a sticky right column so the action target never scrolls out of view.</li>
           <li><b>Don't</b> use for time-series records (deliveries, transactions) — those want timeline ordering, not directory ordering.</li>

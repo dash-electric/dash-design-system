@@ -4,13 +4,22 @@
   "description": "Shared registry types + runtime zod schemas across Dash DS repo packages.",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./zod": "./src/zod-schemas.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./zod": {
+      "types": "./dist/zod-schemas.d.ts",
+      "import": "./dist/zod-schemas.js",
+      "default": "./dist/zod-schemas.js"
+    }
   },
   "files": [
+    "dist",
     "src",
     "schemas"
   ],
@@ -20,7 +29,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate:json-schema": "tsx scripts/generate-json-schema.ts"
+    "generate:json-schema": "tsx scripts/generate-json-schema.ts",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "zod": "^4.4.3"

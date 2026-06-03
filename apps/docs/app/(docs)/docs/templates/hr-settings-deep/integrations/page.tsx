@@ -294,7 +294,7 @@ export default function HrSettingsDeepIntegrationsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong>Card</strong> — rounded-xl, soft-200 ring, p-4 pr-16. Switch
             is absolutely positioned top-right (right-5 top-5).

@@ -273,7 +273,7 @@ export default function HrSettingsDeepGeneralPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong>Language</strong> — 9 options. Each option renders a 16px
             flag chip (US/GB/ES/MX/FR/DE/CN/JP/KR) before the label.

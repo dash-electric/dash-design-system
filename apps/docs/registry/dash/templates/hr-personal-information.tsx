@@ -146,7 +146,7 @@ export function OnboardingTopNav({
   steps: string[]
 }) {
   return (
-    <header className="flex items-center justify-between gap-4 px-6 lg:px-10 py-5 border-b border-stroke-soft-200">
+    <header className="flex items-center justify-between gap-4 px-6 lg:px-10 py-6 border-b border-stroke-soft-200">
       {brand ?? (
         <div className="flex items-center gap-2 shrink-0">
           <div className="size-8 rounded-lg bg-(--primary-base) grid place-items-center text-text-white-0 font-semibold">
@@ -179,7 +179,7 @@ export function OnboardingTopNav({
 
 export function OnboardingBottomBar({ onBack }: { onBack?: () => void }) {
   return (
-    <footer className="flex items-center justify-between gap-4 px-6 lg:px-10 py-5 border-t border-stroke-soft-200">
+    <footer className="flex items-center justify-between gap-4 px-6 lg:px-10 py-6 border-t border-stroke-soft-200">
       <Button tone="neutral" style="stroke" size="sm" onClick={onBack}>
         <ChevronLeft className="size-3.5" /> Back
       </Button>

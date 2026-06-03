@@ -35,7 +35,7 @@ export default function AuthRegisterSolarisDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>BrandMark</code> 56×56 round, custom tone with <code>bg-error-base</code>.</li>
           <li>2 SSO stacked vertically via <code>grid grid-cols-1 gap-2</code>.</li>
           <li>Single email field — magic-link / email-first style flow.</li>

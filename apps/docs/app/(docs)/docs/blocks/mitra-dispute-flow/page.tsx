@@ -178,7 +178,7 @@ return open ? (
           the full payload to <code>t_disputes_audit_log</code> per
           dash-ai-rules.md § Audit Trail:
         </p>
-        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-5">
+        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-6">
           <li>Receive the payload: <code>caseId</code> + <code>caseType</code> + <code>mitraId</code> + <code>reason</code> + <code>detail</code> + <code>requestEscalation</code> + <code>timestamp</code>.</li>
           <li>Insert a row in <code>t_disputes_audit_log</code> with the full payload (the snapshot of evidence URLs at submission time is the caller's responsibility — pass <code>evidence</code> through if you need it logged).</li>
           <li>Generate a dispute ticket id (e.g. <code>DSP-YYYY-MM-DD-####</code>) and return it as <code>{`{ disputeId }`}</code>.</li>
@@ -188,7 +188,7 @@ return open ? (
       </DocsSection>
 
       <DocsSection title="Mitra voice samples (formal Anda)">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>"Apakah Anda yakin ingin mengajukan keberatan?"</li>
           <li>"Mohon jelaskan keberatan Anda secara spesifik."</li>
           <li>"Keberatan Anda berhasil dikirim."</li>
@@ -201,7 +201,7 @@ return open ? (
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for any mitra-initiated dispute against a recorded event: delivery proof, payment amount, suspension trigger, or maintenance charge.</li>
           <li><strong>Use</strong> as the canonical reference — tribes should not roll their own dispute form.</li>
           <li><strong>Don't</strong> use for backoffice-initiated investigations (different flow — internal audit, not mitra-facing).</li>
@@ -235,7 +235,7 @@ return open ? (
       </DocsSection>
 
       <DocsSection title="Accessibility">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Two-step submit (form → confirm) prevents accidental dispute submission.</li>
           <li>Image evidence opens in <code>role="dialog"</code> with click-to-dismiss.</li>
           <li>Errors surface inline with <code>aria-invalid</code> on the reason trigger + textarea.</li>

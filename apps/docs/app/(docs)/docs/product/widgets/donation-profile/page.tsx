@@ -118,7 +118,7 @@ export default function DonationProfileWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card shell with title + Donate CTA in the header.</li>
           <li>3-segment SegmentedControl below header.</li>
           <li>Overview: centered avatar + name + caption + 2-up metric cards.</li>

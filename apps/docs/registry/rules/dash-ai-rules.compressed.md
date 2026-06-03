@@ -29,6 +29,10 @@
 
 `@dash/templates/{list,detail,form,empty-state,login,error}-page`. Always wrap content in `@dash/page-layout`.
 
+## Shell / sidebar scope
+
+"No new sidebar/shell/route pattern without explicit request" applies to **consumer repos** (portal-v2, backoffice, basecamp, react-fleet, halo-dash, tribes). Dash DS itself ships preview shells (auth-shell, dashboard-shell, hr-app-shell, finance-app-shell, marketing-*-shell) as DS-internal infrastructure for realistic previews — NOT consumer drift.
+
 ## Pre-composed blocks
 
 `@dash/blocks/{transactions-table,orders-table,user-profile-card,notification-center,settings-form,kpi-grid}`.
@@ -41,6 +45,7 @@
 - State `text-state-{success,warning,error,info}-{base,light,dark}`
 - Brand `bg-primary-{base,light,dark}`, `text-primary-{base,…}` — Dash Purple `#5e2aac`
 - Shadow `shadow-{xs,sm,md,lg,xl}`. Radii `rounded-{xs,sm,md,lg,xl,full}`.
+- Per-surface radius (Figma canonical): Card 16px (`rounded-2xl`); Modal/Drawer/Sheet/AlertDialog 20px; Popover/Dropdown/Menu/Toast 16px; inline table-row cards & chips 6-8px or full.
 
 ## Workflow conventions
 
@@ -50,6 +55,14 @@
 ## Anti-patterns (DS-level)
 
 DON'T: raw `@radix-ui/*` imports, raw hex, shadcn `variant="default"`, copy entire shadcn file, hardcode `text-white` on light surfaces.
+
+## Border + shadow policy
+
+Default: border OR shadow, not both. Exception (allowed combo) for floating-above-workspace surfaces: Modal, Drawer, Sheet, AlertDialog, Popover, Tooltip, HoverCard, DropdownMenu, ContextMenu, Menubar, NavigationMenu, Toaster, DatePicker, Carousel, BulkActionBar, sticky toolbars. Card `elevated` variant also exempt. Inline workspace cards stay flat (one or the other).
+
+## Decorative gradient policy
+
+No decorative gradients on in-app workflow surfaces. Carve-outs (allowed): auth shells (login/register/reset/verify), chart fills (SVG `<linearGradient>` / `conic-gradient` inside Chart), brand showcase pages (Foundation/Theme Studio/Brand Assets), Dash Build's own dashboard meta-surface, `FancyButton` sheen.
 
 ## Refactor / Auto-inference protocols
 
@@ -244,7 +257,7 @@ Wrapper pattern: feature code imports `@/lib-wrappers/<thing>`, NEVER the lib di
 
 Banned (refuse on sight):
 - Form libs: react-hook-form, Formik, Final Form, react-final-form.
-- Validation: zod, joi (FE), yup, ajv, valibot.
+- Validation (UI / consumer code): zod, joi (FE), yup, ajv, valibot. **Carve-out:** `packages/registry-schema/**` MAY use zod for runtime registry-JSON validation (trust-boundary, not form-validation). `dash audit` excepts this path.
 - Data-fetch: TanStack Query, SWR, react-query, Apollo Client.
 - Component libs in greenfield: MUI, antd, Chakra, Mantine, Radix-themes (backoffice tolerates legacy MUI+antd).
 

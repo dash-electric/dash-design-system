@@ -255,7 +255,7 @@ export default function ComboboxDocsPage() {
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• <strong>Role</strong> — trigger is <code className="text-xs">role=&quot;combobox&quot;</code> with <code className="text-xs">aria-expanded</code>, <code className="text-xs">aria-controls</code>, <code className="text-xs">aria-haspopup=&quot;listbox&quot;</code>. List inside is <code className="text-xs">role=&quot;listbox&quot;</code>.</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">Enter</code> / <code className="text-xs">Space</code> / <code className="text-xs">↓</code> opens the popover.</li>
               <li><code className="text-xs">↑</code> / <code className="text-xs">↓</code> walks options. <code className="text-xs">Home</code> / <code className="text-xs">End</code> jumps to first/last.</li>
               <li>Typing filters the list — cmdk does fuzzy matching.</li>

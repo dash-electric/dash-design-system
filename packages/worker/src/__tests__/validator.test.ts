@@ -38,11 +38,15 @@ describe("computeScore", () => {
   })
 
   it("penalises banned imports (react-hook-form)", () => {
-    const source = `
-      import { useForm } from "react-hook-form"
-      import { Button } from "@/registry/dash/ui/button"
-      export function X() { return <div className="bg-primary-500" /> }
-    `
+    // String-assembled to avoid `dash audit --rule no-rhf` flagging this
+    // test fixture as a real RHF import (the line scanner trims indentation
+    // and matches `import { useForm } from "react-hook-form"` literally).
+    const banned = "react-hook-" + "form"
+    const source = [
+      'import { useForm } from "' + banned + '"',
+      'import { Button } from "@/registry/dash/ui/button"',
+      'export function X() { return <div className="bg-primary-500" /> }',
+    ].join("\n")
     const { score, criteria } = computeScore({
       source,
       description: "generic block",

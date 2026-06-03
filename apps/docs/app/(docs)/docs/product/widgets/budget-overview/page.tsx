@@ -120,7 +120,7 @@ export default function BudgetOverviewWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Header — title + 3-dot legend (Income · Expenses · Scheduled) + range trigger (Last Year / Monthly / …).</li>
           <li>Metric tiles — 3-column row, each tile = icon avatar + uppercase label + amount + optional delta pill.</li>
           <li>Column stack — bottom purple (Scheduled), middle cyan (Expenses), top blue (Income); rounded outer corners.</li>

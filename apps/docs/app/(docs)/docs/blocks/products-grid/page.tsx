@@ -38,7 +38,7 @@ export default function ProductsGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Each card uses <code>Card</code> + <code>CardContent</code> with custom hero swatch on top.</li>
           <li>Hero shows <code>Package</code> icon over Dash gradient.</li>
           <li>Body — name + region + active mitra count + status <code>Badge</code>.</li>
@@ -48,7 +48,7 @@ export default function ProductsGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for resource browse with strong visual identity per item.</li>
           <li><strong>Use</strong> for dispatch pool selection, campaign templates, initiative gallery.</li>
           <li><strong>Don't</strong> use for dense data review — reach for <code>OrdersTable</code> instead.</li>

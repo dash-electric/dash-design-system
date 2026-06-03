@@ -115,7 +115,7 @@ export default function ShadowsPage() {
             body: "Reach for `--shadow-*` always. Custom box-shadow values get rejected at review.",
           },
         ].map((item) => (
-          <div key={item.title} className="rounded-lg border border-border bg-card p-5">
+          <div key={item.title} className="rounded-lg border border-border bg-card p-6">
             <div className="text-sm font-semibold text-foreground mb-1.5">{item.title}</div>
             <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
           </div>
@@ -163,7 +163,7 @@ export default function ShadowsPage() {
             { component: "Dialog / Modal", shadow: "--shadow-card-lg" },
             { component: "Hero showcase tile", shadow: "--shadow-card-lg" },
           ].map((row) => (
-            <div key={row.component} className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4 px-5 py-3.5">
+            <div key={row.component} className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4 px-6 py-3.5">
               <div className="text-sm text-foreground">{row.component}</div>
               <code className="text-xs text-muted-foreground">{row.shadow}</code>
             </div>
@@ -174,7 +174,7 @@ export default function ShadowsPage() {
       {/* Usage */}
       <section>
         <h2 className="text-xl font-semibold tracking-tight mb-4">Usage</h2>
-        <div className="rounded-lg bg-(--dash-slate-950) text-(--dash-slate-100) p-5 text-sm overflow-x-auto">
+        <div className="rounded-lg bg-(--dash-slate-950) text-(--dash-slate-100) p-6 text-sm overflow-x-auto">
           <div className="text-(--dash-slate-400) mb-1"># inline style for arbitrary use</div>
           <div>{`<div style={{ boxShadow: "var(--shadow-card-md)" }} />`}</div>
           <div className="text-(--dash-slate-400) mt-3 mb-1"># Tailwind v4 arbitrary token reference</div>

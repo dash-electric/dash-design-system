@@ -130,7 +130,7 @@ export default function PortalSignupPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Shell</strong> — same 40/60 split as signin; auth carousel on the right.</li>
           <li><strong>Step 1</strong> halo icon = <code>RiUserAddLine</code>; Step 3 halo icon = <code>RiSuitcaseLine</code>.</li>
           <li><strong>Validation</strong> — email regex, password regex <code>/^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{`{8,}`}$/</code>, confirm password match.</li>
@@ -141,7 +141,7 @@ export default function PortalSignupPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>InputRoot</code> / <code>Input</code> / <code>InputIcon</code> — text fields.</li>
           <li><code>Label</code> / <code>Hint</code> — field labels and inline guidance / errors.</li>
           <li><code>Checkbox</code> — partner picks.</li>

@@ -117,7 +117,7 @@ export default function PortalSimulationDetailPage() {
                 <div className="grid grid-cols-12 gap-6 px-8 py-6">
                   {/* Left — Config form */}
                   <div className="col-span-12 flex flex-col gap-4 lg:col-span-5">
-                    <div className="rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+                    <div className="rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
                       <div className="mb-4 flex items-center justify-between">
                         <p className="text-base font-medium text-text-strong-950">
                           Configuration
@@ -160,7 +160,7 @@ export default function PortalSimulationDetailPage() {
 
                   {/* Right — Map + Price */}
                   <div className="col-span-12 flex flex-col gap-4 lg:col-span-7">
-                    <div className="rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+                    <div className="rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
                       <div className="mb-4 flex items-center justify-between">
                         <p className="text-base font-medium text-text-strong-950">
                           Route preview
@@ -173,7 +173,7 @@ export default function PortalSimulationDetailPage() {
                       <MapPlaceholder />
                     </div>
 
-                    <div className="rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+                    <div className="rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
                       <p className="mb-3 text-base font-medium text-text-strong-950">
                         Price breakdown
                       </p>
@@ -239,7 +239,7 @@ export default function PortalSimulationDetailPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Header</b> — back button + run title + scenario subtitle + sandbox pill.</li>
           <li><b>Config panel (5/12)</b> — origin, destination, parcel weight (with affix), recipient. Pre-fills from simulation seed; editable while status is Allocating only.</li>
           <li><b>Route preview (7/12)</b> — map placeholder with pickup/dropoff pins and dashed path. In production this is a Mapbox GL canvas with live driver position.</li>
@@ -249,7 +249,7 @@ export default function PortalSimulationDetailPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Use</b> for sandbox flows that need to drive a state machine forward with explicit operator clicks.</li>
           <li><b>Use</b> the warning-Banner-above-actions pattern wherever destructive lifecycle moves live (cancel / fail / etc.) — the banner is the affordance contract.</li>
           <li><b>Don't</b> reuse this layout for production delivery detail — that page has the same skeleton but inline sandbox controls instead of footer-pinned ones.</li>

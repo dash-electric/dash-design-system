@@ -103,7 +103,7 @@ export default function UserRetentionWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card shell with standard header.</li>
           <li>Heatmap grid: 194px tall. Each row = 1 cohort. Each cell = primary-base with opacity = value/100.</li>
           <li>Empty cells right-pad shorter rows so the grid stays aligned.</li>
@@ -130,7 +130,7 @@ const TONE_BG: Record<WidgetTone, string> = {
 
 function WidgetShell({ className, children, tone = "neutral" }: { className?: string; children: React.ReactNode; tone?: WidgetTone }) {
   return (
-    <div className={cn("relative flex w-full flex-col gap-5 rounded-2xl p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200", TONE_BG[tone], className)}>
+    <div className={cn("relative flex w-full flex-col gap-6 rounded-2xl p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200", TONE_BG[tone], className)}>
       {children}
     </div>
   )

@@ -46,7 +46,7 @@ export default function HaloDash3PaneDocsPage() {
         title="Composition"
         description="A full work-surface template — sidebar + 3 resizable panes glued by the @dash Resizable primitive."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>Sidebar</code> — Halo-dash brand + Queue / Resolved / My team / Settings groups.</li>
           <li><strong>Pane 1 (28%)</strong> — Ticket list with search, priority badge, SLA timer, and unread border indicator.</li>
           <li><strong>Pane 2 (45%)</strong> — Conversation header (customer + ticket meta) + message thread + composer footer with Send button.</li>
@@ -56,7 +56,7 @@ export default function HaloDash3PaneDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for Halo-dash agent's primary work surface.</li>
           <li><strong>Use</strong> for any inbox-driven workflow — moderation queue, dispatch override queue, fraud review.</li>
           <li><strong>Use</strong> when context (customer / target / metadata) lives alongside the conversation.</li>

@@ -42,7 +42,7 @@ export default function BadgeProfileAccountDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>DropdownMenu</code> anchored to an <code>Avatar</code> trigger.</li>
           <li>Header row — avatar + name + plan <code>Badge</code>.</li>
           <li>Menu items — Settings, Integrations, Dark Mode <code>Switch</code>, Logout.</li>

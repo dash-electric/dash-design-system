@@ -54,7 +54,7 @@ export default function BulkUploadWithStatusDocsPage() {
         title="When to use"
         description="Reach for this block when one user task produces N file artifacts that must all be uploaded, but each can fail independently."
       >
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>Mitra uploads delivery proof photos for an Express batch</li>
           <li>Ops uploads KYC document set (KTP + SKCK + STNK + foto) per mitra</li>
           <li>Vehicle inspection photo upload (4-side view + odometer + battery)</li>
@@ -166,7 +166,7 @@ export default function BulkUploadWithStatusDocsPage() {
         title="Anatomy"
         description="The uploadFile function is injected so the block works against any upload endpoint (S3 presigned, Cloudinary, internal Dash media gateway)."
       >
-        <ol className="list-decimal pl-5 space-y-2 text-sm text-text-sub-600">
+        <ol className="list-decimal pl-6 space-y-2 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Drop zone</strong> — Real{" "}
             <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">&lt;label&gt;</code> wrapping a hidden
@@ -245,7 +245,7 @@ export default function BulkUploadWithStatusDocsPage() {
         title="A11y"
         description="The block ships with the affordances a screen-reader user needs to operate it solo."
       >
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>
             Drop zone is a <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">&lt;label&gt;</code> wrapping
             the hidden file input — Enter/Space opens the picker, no JS keyboard handler needed.
@@ -350,7 +350,7 @@ export default function BulkUploadWithStatusDocsPage() {
       </DocsSection>
 
       <DocsSection title="Pair with">
-        <ul className="list-disc pl-5 space-y-1 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1 text-sm text-text-sub-600">
           <li>
             <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50">@dash/file-upload</code> — single-file
             primitive (Figma-parity dropzone, progress card). Use when N=1.

@@ -53,7 +53,7 @@ export default function HRTrainingAnalysisWidgetPage() {
                   <div className="flex-1">
                     <div className="text-base font-medium text-text-strong-950">12 courses</div>
                     <div className="text-xs text-text-sub-600">Completed in this quarter</div>
-                    <div className="mt-[18px] flex items-center gap-2">
+                    <div className="mt-[16px] flex items-center gap-2">
                       <AvatarGroup size="xs" spacing="tight">
                         <Avatar><AvatarImage src="/images/avatar/illustration/james.png" /><AvatarFallback>JB</AvatarFallback></Avatar>
                         <Avatar><AvatarImage src="/images/avatar/illustration/sophia.png" /><AvatarFallback>SW</AvatarFallback></Avatar>
@@ -94,7 +94,7 @@ export default function HRTrainingAnalysisWidgetPage() {
                   <div className="flex-1">
                     <div className="text-base font-medium text-text-sub-600">0 courses</div>
                     <div className="text-xs text-text-soft-400">Completed in this quarter</div>
-                    <div className="mt-[18px] flex items-center gap-2">
+                    <div className="mt-[16px] flex items-center gap-2">
                       <div className="size-6 rounded-full bg-bg-weak-50" />
                       <div className="text-xs text-text-sub-600">No attendance</div>
                     </div>
@@ -123,7 +123,7 @@ export default function HRTrainingAnalysisWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Left column</strong> — label-md headline + xs helper + avatar group + N Attended.</li>
           <li><strong>Bar chart</strong> — 7 vertical bars, 12px wide, 8px gap. Primary-base fills, sub-300 in disabled state.</li>
         </ul>

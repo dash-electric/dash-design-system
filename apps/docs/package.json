@@ -22,7 +22,10 @@
     "test:unit": "vitest run tests/lib tests/prompts",
     "validate:prompts": "tsx scripts/validate-prompts.ts",
     "validate:patterns": "tsx scripts/validate-patterns.ts",
-    "screenshots": "tsx scripts/capture-screenshots.ts"
+    "screenshots": "tsx scripts/capture-screenshots.ts",
+    "audit:tokens": "node scripts/audit-tokens.mjs",
+    "audit:tokens:report": "node scripts/audit-tokens.mjs --report",
+    "audit:tokens:strict": "node scripts/audit-tokens.mjs --strict"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

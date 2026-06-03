@@ -236,7 +236,7 @@ export default function MultiStageApprovalDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             Header — title + status <code>Badge</code> reflecting the current
             stage state (pending / in_progress / approved / rejected / skipped).
@@ -281,7 +281,7 @@ export default function MultiStageApprovalDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Use</strong> for any workflow with 2+ ordered approvers
             (Maintenance, Repossession, Mitra-reinstate, payment-adjustment
@@ -362,7 +362,7 @@ export default function MultiStageApprovalDocsPage() {
           <code>onTransition</code>. Per Dash AI Rules § Audit Trail, every
           transition for a legal/financial entity MUST persist:
         </p>
-        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-5 max-w-3xl">
+        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-6 max-w-3xl">
           <li>
             <code>stageId</code> + <code>action</code> (approve / reject / skip)
           </li>

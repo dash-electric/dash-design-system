@@ -94,7 +94,7 @@ function AuthShellPreview({ children }: { children: React.ReactNode }) {
       }}
     >
       <div className="flex h-full flex-col p-1.5 lg:p-2 lg:pr-0">
-        <div className="flex flex-1 flex-col rounded-2xl bg-bg-white-0 px-3.5 lg:px-11 lg:py-6">
+        <div className="flex flex-1 flex-col rounded-2xl bg-bg-white-0 px-3.5 lg:px-12 lg:py-6">
           <div className="mx-auto flex w-full items-center justify-between gap-6 py-3.5 lg:py-0">
             <a href="/" className="shrink-0">
               <div className="flex size-8 items-center justify-center rounded-md bg-text-strong-950 text-static-white text-xs font-semibold">
@@ -136,7 +136,7 @@ function AuthShellPreview({ children }: { children: React.ReactNode }) {
           <div className="absolute right-0 top-0 size-full opacity-20" aria-hidden>
             <div className="size-full bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_60%)]" />
           </div>
-          <section className="relative w-full max-w-[452px] select-none pb-11">
+          <section className="relative w-full max-w-[452px] select-none pb-12">
             <div className="px-6">
               <div className="flex w-full flex-col gap-10">
                 <Avatar size="xl" className="bg-information-base text-static-white">
@@ -144,7 +144,7 @@ function AuthShellPreview({ children }: { children: React.ReactNode }) {
                     SW
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex w-full flex-col gap-7">
+                <div className="flex w-full flex-col gap-8">
                   <div className="text-xl leading-snug text-static-white/[.72]">
                     <span className="text-static-white">
                       The Marketing Management app has revolutionized our tasks.
@@ -330,7 +330,7 @@ export default function MarketingAuthRegisterPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>
             <strong>Header</strong> — &ldquo;Already have an account?&rdquo; +
             lighter primary <code>Button</code> linking to <code>/login</code>
@@ -370,7 +370,7 @@ export default function MarketingAuthRegisterPage() {
       </DocsSection>
 
       <DocsSection title="Source map">
-        <ul className="space-y-2 text-sm text-text-sub-600 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-sub-600 list-disc pl-6">
           <li><code>app/(auth)/layout.tsx</code> → split shell.</li>
           <li>
             <code>app/(auth)/header.tsx</code> →{" "}
@@ -383,7 +383,7 @@ export default function MarketingAuthRegisterPage() {
       </DocsSection>
 
       <DocsSection title="Primitive deviations">
-        <ul className="space-y-2 text-sm text-text-sub-600 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-sub-600 list-disc pl-6">
           <li>
             <strong>Hint.Root + Hint.Icon as=&#123;RiInformationFill&#125;</strong>{" "}
             → Dash <code>Hint hideIcon</code> + inline icon

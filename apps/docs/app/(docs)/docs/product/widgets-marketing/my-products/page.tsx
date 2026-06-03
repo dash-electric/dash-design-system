@@ -18,7 +18,7 @@ import { cn } from "@/registry/dash/lib/utils"
  * Ported from AlignUI Marketing Template (widget-my-products.tsx, 2026-05-18).
  *
  * Structure:
- *   - Header (p-5 pb-4): "My Products" label + tooltip, "468" + "+2.1% vs last week", "See All" button.
+ *   - Header (p-6 pb-4): "My Products" label + tooltip, "468" + "+2.1% vs last week", "See All" button.
  *   - Search row (h-11, border-y stroke-soft-200): inline search icon + input.
  *   - Scrollable product list (243px h, ScrollArea):
  *       40px image · name · "N units sold to date" description.
@@ -45,7 +45,7 @@ function MyProductsWidget() {
 
   return (
     <div className="relative flex w-full flex-col overflow-hidden rounded-2xl bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
-      <div className="flex items-start gap-2 p-5 pb-4">
+      <div className="flex items-start gap-2 p-6 pb-4">
         <div className="flex-1">
           <div className="flex items-center gap-1">
             <span className="text-sm font-medium text-text-sub-600">My Products</span>
@@ -63,7 +63,7 @@ function MyProductsWidget() {
         </Button>
       </div>
 
-      <div className="h-11 w-full border-y border-stroke-soft-200 px-5">
+      <div className="h-11 w-full border-y border-stroke-soft-200 px-6">
         <div className="group relative flex h-full w-full items-center">
           <RiSearch2Line className="pointer-events-none absolute left-0 top-1/2 size-5 -translate-y-1/2 text-text-soft-400 transition group-focus-within:text-text-sub-600" />
           <input
@@ -71,7 +71,7 @@ function MyProductsWidget() {
             placeholder="Search products..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="w-full bg-transparent pl-[30px] text-sm text-text-strong-950 caret-(--primary-base) placeholder:text-text-soft-400 focus:outline-none"
+            className="w-full bg-transparent pl-[32px] text-sm text-text-strong-950 caret-(--primary-base) placeholder:text-text-soft-400 focus:outline-none"
           />
         </div>
       </div>
@@ -127,11 +127,11 @@ export default function MyProductsWidgetPage() {
           title="No products yet"
           preview={
             <div className="max-w-md mx-auto rounded-2xl bg-bg-white-0 ring-1 ring-inset ring-stroke-soft-200 overflow-hidden">
-              <div className="p-5 pb-4">
+              <div className="p-6 pb-4">
                 <div className="text-sm font-medium text-text-sub-600">My Products</div>
                 <div className="mt-1 text-xs text-text-soft-400">No products yet — add one to start tracking sales.</div>
               </div>
-              <div className="h-11 border-y border-stroke-soft-200 px-5 flex items-center text-xs text-text-soft-400">
+              <div className="h-11 border-y border-stroke-soft-200 px-6 flex items-center text-xs text-text-soft-400">
                 Search products…
               </div>
               <div className="h-[160px] flex items-center justify-center text-xs text-text-soft-400">No data</div>
@@ -154,7 +154,7 @@ export default function MyProductsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card: rounded-2xl + overflow-hidden so the scroll area corners clip cleanly.</li>
           <li>Header: 14px label + tooltip, 24px KPI + 12px delta, neutral-stroke "See All" 28px button.</li>
           <li>Search row: 44px tall, stroke-soft top + bottom borders, inline icon at left.</li>

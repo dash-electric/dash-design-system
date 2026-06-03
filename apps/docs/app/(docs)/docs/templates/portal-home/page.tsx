@@ -51,13 +51,13 @@ export default function Home() {
   useEffect(() => {
     router.push('/signin')
   })
-  return <div className='container mx-auto flex-1 px-5' />
+  return <div className='container mx-auto flex-1 px-6' />
 }`}
         />
       </DocsSection>
 
       <DocsSection title="Notes">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Imports kept in source but unused: <code>Link</code>, <code>Button</code>, <code>RiGithubFill</code> — vestigial from the AlignUI starter template.</li>
           <li>The signed-in landing route is <code>/deliveries</code> (see <code>signin/page.tsx</code> → <code>router.replace(&apos;/deliveries&apos;)</code> on success).</li>
           <li>The redirect uses <code>router.push</code> not <code>redirect()</code> because the page is <code>&apos;use client&apos;</code>.</li>
@@ -66,7 +66,7 @@ export default function Home() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Use when you need a soft landing that defers routing decisions to client-side checks (e.g. localStorage token gating).</li>
           <li>For server-side checks prefer <code>middleware.ts</code> + <code>NextResponse.redirect</code> instead — this page only exists to keep the route table stable.</li>
         </ul>

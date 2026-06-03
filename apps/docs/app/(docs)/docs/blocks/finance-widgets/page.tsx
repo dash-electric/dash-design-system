@@ -68,7 +68,7 @@ export default function FinanceWidgetsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>MyCardsWidget</code> — gradient card stack + balance + IBAN + actions row.</li>
           <li><code>RecentTransactionsWidget</code> — compact transactions list with amount + status.</li>
           <li><code>TotalBalanceWidget</code> — hero stat with month-over-month delta + sparkline.</li>

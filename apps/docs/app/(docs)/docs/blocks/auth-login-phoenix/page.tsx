@@ -35,7 +35,7 @@ export default function AuthLoginPhoenixDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Primary CTA placed <em>before</em> the divider (form-first pattern).</li>
           <li>Forgot-password link sits inline with the password label.</li>
           <li>2 SSO side-by-side via <code>grid grid-cols-2 gap-3</code>, no per-brand label.</li>

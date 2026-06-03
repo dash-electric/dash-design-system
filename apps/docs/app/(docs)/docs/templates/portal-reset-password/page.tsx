@@ -46,7 +46,7 @@ export default function PortalResetPasswordPage() {
               </ResetShell>
             </DocsTemplatePreview>
           }
-          code={`<WidgetBox className="max-w-[560px] p-5">
+          code={`<WidgetBox className="max-w-[560px] p-6">
   <Image src={ResetPasswordIcon} width={88} height={88} />
   <h1>Reset Password</h1>
   <p>Enter your phone number to reset your password.</p>
@@ -97,7 +97,7 @@ export default function PortalResetPasswordPage() {
               </ResetShell>
             </DocsTemplatePreview>
           }
-          code={`<WidgetBox className="max-w-[560px] p-5">
+          code={`<WidgetBox className="max-w-[560px] p-6">
   <Image src={ForgotPasswordIcon} />
   <h1>Create New Password</h1>
   <p>Enter your new password below.</p>
@@ -113,10 +113,10 @@ export default function PortalResetPasswordPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Header</strong> — same <code>VerificationHeader</code> as verification flow (Dash logo + language select).</li>
           <li><strong>Main</strong> — light <code>bg-bg-weak-50</code>, content centered with <code>px-32 pt-12</code>.</li>
-          <li><strong>Card</strong> — <code>WidgetBox.Root</code> max-w-[560px] with p-5, centered illustration (88×88 SVG), title, subtitle, line-spacing divider, then form body.</li>
+          <li><strong>Card</strong> — <code>WidgetBox.Root</code> max-w-[560px] with p-6, centered illustration (88×88 SVG), title, subtitle, line-spacing divider, then form body.</li>
           <li><strong>Step illustrations</strong> — <code>reset-password-icon.svg</code> (step 1), <code>verification-icon.svg</code> (step 2), <code>forgot-password-icon.svg</code> (step 3).</li>
           <li><strong>Footer</strong> — full-width consumer-protection contact bar with PT Dash Platform Indonesia info.</li>
           <li><strong>Persistence</strong> — phone number cached in <code>localStorage.phoneNumber</code>, retry timestamp in <code>localStorage.nextAttemptAt</code>.</li>
@@ -124,7 +124,7 @@ export default function PortalResetPasswordPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>InputRoot</code> / <code>Input</code> / <code>InputIcon</code> — phone + password fields.</li>
           <li><code>Hint</code> — inline validation messages.</li>
           <li><code>FancyButton</code> — primary submit per step (Reset Password / Verify / Reset Password).</li>
@@ -147,7 +147,7 @@ function DocsTemplatePreview({ children }: { children: React.ReactNode }) {
 function ResetShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-[820px] flex-col bg-bg-white-0">
-      <div className="flex h-14 items-center justify-between border-b border-stroke-soft-200 bg-bg-white-0 px-5">
+      <div className="flex h-14 items-center justify-between border-b border-stroke-soft-200 bg-bg-white-0 px-6">
         <div className="flex items-center gap-2 text-label-md font-semibold text-text-strong-950">
           <span className="grid size-7 place-items-center rounded-md bg-(--dash-purple-600) text-white text-xs">D</span>
           dash
@@ -185,7 +185,7 @@ function ResetCardShell({
   children: React.ReactNode
 }) {
   return (
-    <div className="w-full max-w-[560px] rounded-2xl bg-bg-white-0 p-5 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
+    <div className="w-full max-w-[560px] rounded-2xl bg-bg-white-0 p-6 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex flex-col items-center justify-center gap-6">
         {illustration}
         <div className="flex flex-col gap-1 text-center">

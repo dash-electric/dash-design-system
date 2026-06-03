@@ -36,7 +36,7 @@ export default function ForgotPasswordBlock01DocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Single <code>InputRoot</code> + <code>Label</code> stack for email.</li>
           <li>Submit <code>Button</code> full-width primary.</li>
           <li>Back-to-login <code>LinkButton</code> in the footer.</li>
@@ -45,7 +45,7 @@ export default function ForgotPasswordBlock01DocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on <code>/forgot-password</code> in any Dash auth surface.</li>
           <li><strong>Use</strong> when the reset flow is email-link (not SMS OTP).</li>
           <li><strong>Don't</strong> use for SMS-based recovery — pair <code>Verification OTP</code> with a phone-input variant.</li>

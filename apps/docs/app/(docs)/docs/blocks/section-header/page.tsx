@@ -48,7 +48,7 @@ export default function SectionHeaderDocsPage() {
         title="Composition"
         description="Title row supports an inline compact action (e.g. chevron-down dropdown trigger)."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>leading</strong> — same axis as <code>PageHeader</code>: basic / avatar / icon / brand / company.</li>
           <li><strong>showTitleAction</strong> — renders inline button next to title.</li>
           <li><strong>actions</strong> — trailing action row.</li>

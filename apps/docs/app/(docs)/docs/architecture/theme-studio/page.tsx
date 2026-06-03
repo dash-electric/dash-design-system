@@ -201,7 +201,7 @@ function SampleBadges() {
 
 function SampleHeroCard({ theme }: { theme: ThemeManifest }) {
   return (
-    <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5">
+    <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6">
       <div className="text-xs font-medium uppercase tracking-wider text-text-soft-400 mb-3">
         Hero stat
       </div>
@@ -233,7 +233,7 @@ function SampleHeroCard({ theme }: { theme: ThemeManifest }) {
 
 function SampleStatusIndicator() {
   return (
-    <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5">
+    <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6">
       <div className="text-xs font-medium uppercase tracking-wider text-text-soft-400 mb-3">
         Status indicator
       </div>
@@ -260,7 +260,7 @@ function SampleStatusIndicator() {
 
 function SampleProductSnippet({ theme }: { theme: ThemeManifest }) {
   return (
-    <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5">
+    <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6">
       <div className="text-xs font-medium uppercase tracking-wider text-text-soft-400 mb-3">
         Product context · {theme.label.replace("Dash ", "")}
       </div>
@@ -306,7 +306,7 @@ function SampleProductSnippet({ theme }: { theme: ThemeManifest }) {
 
 function SampleInput({ theme }: { theme: ThemeManifest }) {
   return (
-    <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5">
+    <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6">
       <div className="text-xs font-medium uppercase tracking-wider text-text-soft-400 mb-3">
         Form field
       </div>
@@ -394,7 +394,7 @@ function ThemeTabs({
 
 function ThemeMetadata({ theme }: { theme: ThemeManifest }) {
   return (
-    <div className="rounded-xl border border-stroke-soft-200 bg-bg-weak-50 p-5">
+    <div className="rounded-xl border border-stroke-soft-200 bg-bg-weak-50 p-6">
       <div className="flex items-start gap-4 mb-4">
         <div
           aria-hidden
@@ -546,10 +546,10 @@ export default function ThemeStudioPage() {
           className="rounded-2xl border border-stroke-soft-200 bg-bg-weak-50/40 p-6 transition-colors"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5">
+            <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6">
               <SampleButtons />
             </div>
-            <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5">
+            <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6">
               <SampleBadges />
             </div>
             <SampleHeroCard theme={active} />

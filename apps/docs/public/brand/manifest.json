@@ -1,0 +1,2505 @@
+{
+  "count": 333,
+  "fileCount": 416,
+  "generatedAt": "GENERATED_AT",
+  "brands": [
+    {
+      "slug": "aave",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "aave"
+      ]
+    },
+    {
+      "slug": "adobe",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-acrobat-reader",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-aero",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-after-effects",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-animate",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-audition",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-dimension",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-dreamweaver",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-express",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-fill-sign",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-illustrator",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-incopy",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-indesign",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-lightroom",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-photoshop",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-photoshop-express",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-premiere-pro",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-premiere-rush",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-spark",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-stock",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "adobe-xd",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "airbnb",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "airtable",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "alfa-bank",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "algorand",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "algo"
+      ]
+    },
+    {
+      "slug": "amazon",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "amazon-pay",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "amazon-prime",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "amazon-web-service",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "amd",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "american-express",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "amex",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "android",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "android-studio",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "angular",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "app-store",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "apple",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "apple-music",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "apple-pay",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "arc",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "asana",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "askfm",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "atlassian",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "atom",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "autodesk",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "avalanche",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "avax"
+      ]
+    },
+    {
+      "slug": "badoo",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "bank-of-america",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "basecamp",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "behance",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "binance",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "binance-coin",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "bnb"
+      ]
+    },
+    {
+      "slug": "bitbucket",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "bitcoin",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": [
+        "btc"
+      ]
+    },
+    {
+      "slug": "bitcoin-cash",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "bch"
+      ]
+    },
+    {
+      "slug": "bitfinex",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "bitstamp",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "blackberry",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "bluetooth",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "booking.com",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "brave",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "bybit",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "c",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "canva",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "cardano",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "ada"
+      ]
+    },
+    {
+      "slug": "cardano-(ada)",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "chainlink",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "link"
+      ]
+    },
+    {
+      "slug": "chainlink-(link)",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "chatgpt",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "chrome",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "chrome-os",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "citadele",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "citibank",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "clickup",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "codepen",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "coinbase",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "compound",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "comp"
+      ]
+    },
+    {
+      "slug": "confluence",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "cosmos",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "atom"
+      ]
+    },
+    {
+      "slug": "creative-cloud",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "css-3",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "dai",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "dai"
+      ]
+    },
+    {
+      "slug": "deezer",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "dell",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "direct-debit",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "discord",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "disney",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "docker",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "dogecoin",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "doge"
+      ]
+    },
+    {
+      "slug": "dribbble",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "dropbox",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "drupal",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "edge",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "elementary",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "envato",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "eos",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "eos"
+      ]
+    },
+    {
+      "slug": "ethereum",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "eth"
+      ]
+    },
+    {
+      "slug": "ethereum-classic",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "etc"
+      ]
+    },
+    {
+      "slug": "evernote",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "excel",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "f-droid",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "facebook",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "facebook-messenger",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "facetime",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "figma",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "filecoin",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "fil"
+      ]
+    },
+    {
+      "slug": "finder",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "firefox",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "flickr",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "formcarry",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "framer",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "galaxy-store",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "gate.io",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "gemini",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "giphy",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "git",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "github",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "gitlab",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "gmail",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "gnome",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "godaddy",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-ads",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-analytics",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-authenticator",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-calendar",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-docs",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-drive",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-maps",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-meet",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-play",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "google-play-music",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "grammar.ly",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "grove-shark",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "hangouts",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "hedera",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "hbar"
+      ]
+    },
+    {
+      "slug": "hsbc",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "html-5",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "huawei-store",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "hulu",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "ibm",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "ig-tv",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "injective",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "inj"
+      ]
+    },
+    {
+      "slug": "instagram",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "intel",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "interac",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "internet-computer",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "icp"
+      ]
+    },
+    {
+      "slug": "invision",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "ios",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "iota",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "miota"
+      ]
+    },
+    {
+      "slug": "java",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-appcode",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-clion",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-datagrip",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-dotcover",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-dotmemory",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-dotpeek",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-dottace",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-goland",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-hub",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-intellij-idea",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-kotlin",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-phpstorm",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-pycharm",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-resharper",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-resharper-c",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-rider",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-rubymine",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-teamcity",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-toolbox",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-upsource",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-webstorm",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jb-youtrack",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jcb",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jira",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "joomla",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jpmorgan-chase",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "jquery",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "js",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "kakao-talk",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "klarna",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "kraken",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "kucoin",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "lemon-squeezy",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "line",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "linear",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "linkedin",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "linux",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "linux-mint",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "litecoin",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "ltc"
+      ]
+    },
+    {
+      "slug": "loom",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "lyft",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "macos",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "maestro",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "mailchimp",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "maker",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "mkr"
+      ]
+    },
+    {
+      "slug": "marvel",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "mastercard",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "maxthon",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "medium",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "messages",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "meta",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "microsoft",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "microsoft-authenticator",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "microsoft-office",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "microsoft-teams",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "monday.com",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "monero",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "xmr"
+      ]
+    },
+    {
+      "slug": "monero-(xmr)",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "nem",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "xem"
+      ]
+    },
+    {
+      "slug": "neo",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "neo"
+      ]
+    },
+    {
+      "slug": "netflix",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "node-js",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "notepad",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "notion",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "npm",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "ok",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "okb",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "okb"
+      ]
+    },
+    {
+      "slug": "okx",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "onedrive",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "onenote",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "ontology",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "ont"
+      ]
+    },
+    {
+      "slug": "openai",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "opensea",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "opera",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "outlook",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "patreon",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "paypal",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "pexels",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "php",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "pinterest",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "placeholder",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "playstation",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "polkadot",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "dot"
+      ]
+    },
+    {
+      "slug": "polkadot-(dot)",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "polygon",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "matic"
+      ]
+    },
+    {
+      "slug": "powerpoint",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "procreate",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "product-hunt",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "python",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "qiwi",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "quora",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "react",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "reddit",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "redux",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "revolut",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "ripple",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "xrp"
+      ]
+    },
+    {
+      "slug": "ruby",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "safari",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "sberbank",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "sharepoint",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "shazam",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "shiba-inu",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "shib"
+      ]
+    },
+    {
+      "slug": "shopify",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "signal",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "sketch",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "skype",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "slack",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "snapchat",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "solana",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "sol"
+      ]
+    },
+    {
+      "slug": "soundcloud",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "sourcetree",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "spotify",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "stack-overflow",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "steam",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "stellar",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "xlm"
+      ]
+    },
+    {
+      "slug": "stripe",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "sublime-text",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "swift",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "synthetix",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "snx"
+      ]
+    },
+    {
+      "slug": "tech-crunch",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "telegram",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "tether-usdt",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "tezos",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "xtz"
+      ]
+    },
+    {
+      "slug": "thread",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "tidal",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "tiktok",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "tinder",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "todoist",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "toncoin",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "ton"
+      ]
+    },
+    {
+      "slug": "trello",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "tripadvisor",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "tron",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "trx"
+      ]
+    },
+    {
+      "slug": "trustpilot",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "tumblr",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "twitch",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "twitter",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "twitter-x",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "uber",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "ubuntu",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "uc",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "uniswap",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "uni"
+      ]
+    },
+    {
+      "slug": "unity",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "unreal-engine",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "unsplash",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "usd-coin",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "usdc"
+      ]
+    },
+    {
+      "slug": "vechain",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "vet"
+      ]
+    },
+    {
+      "slug": "viber",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "vimeo",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "visa",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "visual-studio-code",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "vivaldi",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "vk",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "vs-code",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "vue",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "webflow",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "webmoney",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "wechat",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "weebly",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "weibo",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "western-union",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "whatsapp",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "windows",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "wise",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "word",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "wordpress",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "workflowy",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "world-pay",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "x-twitter",
+      "variants": [
+        "black",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "xbox",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "yahoo",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "yammer",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "yandex",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "yandex-kassa",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "yandex-music",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "yearn.finance",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "yfi"
+      ]
+    },
+    {
+      "slug": "youtube",
+      "variants": [
+        "black",
+        "default",
+        "original",
+        "white"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "youtube-music",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "zapier",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "zcash",
+      "variants": [
+        "default"
+      ],
+      "aliases": [
+        "zec"
+      ]
+    },
+    {
+      "slug": "zendesk",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    },
+    {
+      "slug": "zoom",
+      "variants": [
+        "default"
+      ],
+      "aliases": []
+    }
+  ]
+}

@@ -183,7 +183,7 @@ export default function HRStatusTrackerWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Group label</strong> — paragraph-xs sub-600.</li>
           <li><strong>Person row</strong> — 40px avatar w/ status indicator + name (label-sm) + caption (xs sub-600) + duration badge.</li>
           <li><strong>Badges</strong> — gray for Absent, orange for Away minutes.</li>

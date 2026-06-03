@@ -110,7 +110,7 @@ export default function BankCardsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Top row — chip glyph or brand mark, contactless wifi, Active badge (virtual only), Mastercard cluster.</li>
           <li>Bottom row — caption (Savings Card / Cardholder Name) + headline (balance / name).</li>
           <li>Virtual carousel — paginate between owned virtual cards via chevron buttons.</li>

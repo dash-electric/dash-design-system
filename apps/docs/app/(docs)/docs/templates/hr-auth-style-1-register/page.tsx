@@ -40,7 +40,7 @@ export default function HRAuthStyle1RegisterPage() {
         />
       </DocsSection>
       <DocsSection title="Anatomy">
-        <ul className="list-disc pl-5 space-y-1.5 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1.5 text-sm text-text-sub-600">
           <li><strong>HeroIcon</strong> — RiUserAddLine glyph.</li>
           <li><strong>Fields</strong> — Full Name, Email Address, Password.</li>
           <li><strong>Hint</strong> — "Must contain 1 uppercase letter, 1 number, min. 8 characters."</li>

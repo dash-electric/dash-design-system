@@ -141,8 +141,8 @@ export default function TotalSalesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
-          <li>Card shell: rounded-2xl + ring stroke-soft-200 + p-5 + gap-5.</li>
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
+          <li>Card shell: rounded-2xl + ring stroke-soft-200 + p-6 + gap-5.</li>
           <li>Header row: label "Total Sales" + title-h5 amount + trend Badge + neutral "Report" button.</li>
           <li>Range switcher: 5-segment SegmentedControl (1D / 1W / 1M / 3M / 1Y).</li>
           <li>Sparkline: 108px height, primary-base stroke, no dots, no axes.</li>
@@ -168,7 +168,7 @@ const TONE_BG: Record<WidgetTone, string> = {
 
 function WidgetShell({ className, children, tone = "neutral" }: { className?: string; children: React.ReactNode; tone?: WidgetTone }) {
   return (
-    <div className={cn("relative flex w-full flex-col gap-5 rounded-2xl p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200", TONE_BG[tone], className)}>
+    <div className={cn("relative flex w-full flex-col gap-6 rounded-2xl p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200", TONE_BG[tone], className)}>
       {children}
     </div>
   )

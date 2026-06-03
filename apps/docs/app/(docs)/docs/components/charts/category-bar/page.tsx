@@ -60,7 +60,7 @@ function CategoryBarChart({
   const total = data.reduce((acc, r) => acc + r.value, 0) || 1
   return (
     <div className="flex flex-col gap-4">
-      <div className={cn("flex gap-[5px]", wrapperClassName)}>
+      <div className={cn("flex gap-[4px]", wrapperClassName)}>
         {data.map((row, i) => (
           <div
             key={row.label}
@@ -91,7 +91,7 @@ function CategoryBarChart({
 function CategoryBarChartEmpty({ labels }: { labels: string[] }) {
   return (
     <div className="space-y-4">
-      <div className="flex gap-[5px]">
+      <div className="flex gap-[4px]">
         {labels.map((label) => (
           <div key={label} className="h-2.5 w-1/3 rounded-sm bg-bg-soft-200" />
         ))}
@@ -234,8 +234,8 @@ export default function CategoryBarChartPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
-          <li>Outer row: <code>flex gap-[5px]</code> for thin separators, or <code>gap-1</code> for fat segments.</li>
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
+          <li>Outer row: <code>flex gap-[4px]</code> for thin separators, or <code>gap-1</code> for fat segments.</li>
           <li>Each segment: outer shell (width %), inner cell (color class) — separation allows a staggered fade-in.</li>
           <li>Legend: <code>LegendDot</code> (size-3 circle with white 2px ring) + label text.</li>
           <li>Empty: 3 equal soft-200 slots + disabled-tone legend.</li>

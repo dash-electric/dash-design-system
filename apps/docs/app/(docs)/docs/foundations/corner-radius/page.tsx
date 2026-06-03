@@ -77,7 +77,7 @@ export default function CornerRadiusPage() {
             body: "Radius and shadow tier scale together. `--radius-12` Card pairs with `--shadow-card-xs`; `--radius-24` hero pairs with `--shadow-card-lg`.",
           },
         ].map((item) => (
-          <div key={item.title} className="rounded-lg border border-border bg-card p-5">
+          <div key={item.title} className="rounded-lg border border-border bg-card p-6">
             <div className="text-sm font-semibold text-foreground mb-1.5">{item.title}</div>
             <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
           </div>
@@ -96,7 +96,7 @@ export default function CornerRadiusPage() {
         </p>
         <div className="rounded-lg border border-border bg-card divide-y divide-border">
           {radiusScale.map((r) => (
-            <div key={r.token} className="grid grid-cols-1 sm:grid-cols-[140px_80px_80px_1fr_80px] items-center gap-4 px-5 py-4">
+            <div key={r.token} className="grid grid-cols-1 sm:grid-cols-[140px_80px_80px_1fr_80px] items-center gap-4 px-6 py-4">
               <code className="text-sm font-medium text-foreground">{r.token}</code>
               <div className="text-xs text-muted-foreground">{r.px}px</div>
               <div className="text-xs text-muted-foreground">{r.rem}</div>
@@ -119,7 +119,7 @@ export default function CornerRadiusPage() {
         </p>
         <div className="rounded-lg border border-border bg-card divide-y divide-border">
           {componentBindings.map((row) => (
-            <div key={row.component} className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4 px-5 py-3.5">
+            <div key={row.component} className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4 px-6 py-3.5">
               <div className="text-sm text-foreground">{row.component}</div>
               <code className="text-xs text-muted-foreground">{row.radius}</code>
             </div>

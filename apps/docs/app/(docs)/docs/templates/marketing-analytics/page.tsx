@@ -59,7 +59,7 @@ export default function MarketingAnalyticsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Header</b> — Avatar + greeting + Last 7 days dropdown + Feb 04 - Feb 11, 2024 date chip (ButtonGroup pair).</li>
           <li><b>Summary</b> — 3-col KPI row separated by 1px dividers: Current Sales 3,484 (+7.1%), Daily Average 486 (+2%), Conversion Rate 3.8% (-0.5%).</li>
           <li><b>Total Sales</b> — 8,944 + Badge +2.1% + period Select (Daily/Weekly/Monthly) + All Products dropdown, weekly area chart.</li>
@@ -69,7 +69,7 @@ export default function MarketingAnalyticsDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Avatar / AvatarImage / AvatarFallback.</li>
           <li>ButtonGroup — date range pair (Last 7 days · Feb 04 - Feb 11, 2024).</li>
           <li>Badge — +2.1% green lighter.</li>
@@ -131,7 +131,7 @@ function AnalyticsPreview() {
                 { label: "Daily Average", value: "486", delta: "+2%", up: true, suffix: "vs last week" },
                 { label: "Conversion Rate", value: "3.8%", delta: "-0.5%", up: false, suffix: "vs last week" },
               ].map((s, i) => (
-                <div key={s.label} className={"flex-1 " + (i === 0 ? "pr-7" : i === 2 ? "pl-7" : "px-7")}>
+                <div key={s.label} className={"flex-1 " + (i === 0 ? "pr-8" : i === 2 ? "pl-8" : "px-8")}>
                   <div className="text-xs text-text-sub-600">{s.label}</div>
                   <div className="mt-1 flex items-baseline gap-1.5">
                     <div className="text-xl font-semibold tracking-tight text-text-strong-950">{s.value}</div>
@@ -161,7 +161,7 @@ function AnalyticsPreview() {
                   <FakeButton>All Products <RiArrowDownSLine className="size-4" /></FakeButton>
                 </div>
               </div>
-              <div className="mt-4 rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5">
+              <div className="mt-4 rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6">
                 <TotalSalesAreaChart />
               </div>
             </div>

@@ -202,7 +202,7 @@ export default function BubbleChartPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Sort data descending by percentage before placement.</li>
           <li>Rank-based positioning — largest right-of-center, mid bottom-left, smallest top-left.</li>
           <li>Label is the percentage value, font-size = radius / 2, centered both axes.</li>

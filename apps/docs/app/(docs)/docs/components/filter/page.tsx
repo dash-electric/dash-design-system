@@ -160,7 +160,7 @@ export default function FilterDocsPage() {
           title="Members table"
           preview={
             <div className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 shadow-(--shadow-custom-sm)">
-              <header className="px-5 py-4 border-b border-stroke-soft-200">
+              <header className="px-6 py-4 border-b border-stroke-soft-200">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div>
                     <div className="text-sm font-semibold text-text-strong-950">Members</div>
@@ -182,7 +182,7 @@ export default function FilterDocsPage() {
                   ) : null}
                 </div>
               </header>
-              <div className="px-5 py-3 text-xs text-text-soft-400">
+              <div className="px-6 py-3 text-xs text-text-soft-400">
                 Showing {status.length || "all"} statuses · {role.length || "all"} roles · {senders.length || "all"} senders.
               </div>
             </div>

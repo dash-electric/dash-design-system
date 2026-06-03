@@ -46,7 +46,7 @@ const COMPANY_TABS = [
 function CompanySettingsPanel() {
   return (
     <SectionCard>
-      <div className="flex gap-5">
+      <div className="flex gap-6">
         <Avatar size="3xl">
           <AvatarFallback>SH</AvatarFallback>
         </Avatar>
@@ -334,7 +334,7 @@ export default function HrSettingsDeepCompanyPage() {
       </DocsSection>
 
       <DocsSection title="Differences vs Profile section">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong>Company Settings</strong> panel adds 2 extra fields (Website
             URL with <code>https://</code> affix, Slogan/Catchphrase).

@@ -40,7 +40,7 @@ export default function PortalAcceptInvitationPage() {
               </AcceptShell>
             </DocsTemplatePreview>
           }
-          code={`<WidgetBox className="max-w-[560px] p-5">
+          code={`<WidgetBox className="max-w-[560px] p-6">
   <Image src={ResetPasswordIcon} width={88} height={88} />
   <h1>Create a new account</h1>
   <p>Enter your details to register.</p>
@@ -73,10 +73,10 @@ export default function PortalAcceptInvitationPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Header</strong> — <code>VerificationHeader</code> (Dash logo + language). NO footer (unlike reset-password).</li>
           <li><strong>Main</strong> — <code>bg-bg-weak-50</code> + <code>px-32 pt-12</code>.</li>
-          <li><strong>Card</strong> — max-w-[560px] <code>WidgetBox.Root</code> p-5, 88×88 illustration (same SVG as reset-password Step 1).</li>
+          <li><strong>Card</strong> — max-w-[560px] <code>WidgetBox.Root</code> p-6, 88×88 illustration (same SVG as reset-password Step 1).</li>
           <li><strong>Email field</strong> — disabled, value sourced from temp-token API; placeholder “Enter user email” (this hardcoded source string, not i18n).</li>
           <li><strong>Phone field</strong> — disabled, Indonesian flag + +62 prefix, placeholder “-”.</li>
           <li><strong>Validation</strong> — minLength 8, uppercase, lowercase, number, match. Messages from <code>auth.acceptInvitation.validation.*</code>.</li>
@@ -85,7 +85,7 @@ export default function PortalAcceptInvitationPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>InputRoot</code> / <code>Input</code> / <code>InputIcon</code> — fields.</li>
           <li><code>Label</code> / <code>Hint</code> — labels + inline validation.</li>
           <li><code>FancyButton</code> — Register primary CTA.</li>
@@ -106,7 +106,7 @@ function DocsTemplatePreview({ children }: { children: React.ReactNode }) {
 function AcceptShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-[820px] flex-col bg-bg-white-0">
-      <div className="flex h-14 items-center justify-between border-b border-stroke-soft-200 bg-bg-white-0 px-5">
+      <div className="flex h-14 items-center justify-between border-b border-stroke-soft-200 bg-bg-white-0 px-6">
         <div className="flex items-center gap-2 text-label-md font-semibold text-text-strong-950">
           <span className="grid size-7 place-items-center rounded-md bg-(--dash-purple-600) text-white text-xs">D</span>
           dash
@@ -126,7 +126,7 @@ function AcceptCard() {
   const [showPwd, setShowPwd] = React.useState(false)
   const [showConfirm, setShowConfirm] = React.useState(false)
   return (
-    <div className="w-full max-w-[560px] rounded-2xl bg-bg-white-0 p-5 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
+    <div className="w-full max-w-[560px] rounded-2xl bg-bg-white-0 p-6 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex flex-col items-center justify-center gap-6">
         <div className="grid size-[88px] place-items-center rounded-full bg-(--primary-alpha-10) text-4xl">
           🔑

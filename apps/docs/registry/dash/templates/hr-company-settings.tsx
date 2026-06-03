@@ -71,7 +71,7 @@ export function HrCompanySettings({ className }: HrCompanySettingsProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <section className="flex items-start gap-5">
+            <section className="flex items-start gap-6">
               <Avatar size="xl">
                 <AvatarFallback>SH</AvatarFallback>
               </Avatar>

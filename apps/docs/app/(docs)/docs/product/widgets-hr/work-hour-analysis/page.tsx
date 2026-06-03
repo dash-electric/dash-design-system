@@ -51,7 +51,7 @@ export default function HRWorkHourAnalysisWidgetPage() {
                 action={<Button tone="neutral" style="stroke" size="xs">See All</Button>}
               >
                 <Divider />
-                <div className="space-y-5 pt-5">
+                <div className="space-y-5 pt-6">
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--primary-alpha-10)">
                       <RiTimeFill className="size-5 text-primary" />
@@ -102,7 +102,7 @@ export default function HRWorkHourAnalysisWidgetPage() {
             <div className="max-w-md">
               <WidgetShell title={<><RiFileChartLine className="size-4 text-icon-sub-600" /> Work Hour Analysis</>}>
                 <Divider />
-                <div className="space-y-5 pt-5">
+                <div className="space-y-5 pt-6">
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-10 items-center justify-center rounded-full bg-bg-white-0 border border-stroke-soft-200">
                       <RiTimeFill className="size-5 text-text-sub-600" />
@@ -138,7 +138,7 @@ export default function HRWorkHourAnalysisWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Headline</strong> — 40px primary-tinted circle + RiTimeFill + total label.</li>
           <li><strong>Range picker</strong> — 5-segment button group, xxs size, equal flex.</li>
           <li><strong>Chart</strong> — step-line series with primary-base stroke + primary-alpha-10 fill underneath.</li>

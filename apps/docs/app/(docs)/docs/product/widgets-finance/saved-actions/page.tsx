@@ -120,7 +120,7 @@ export default function FinanceSavedActionsWidgetPage() {
             <div className="max-w-md">
               <WidgetShell title={<><RiFlashlightLine className="size-4 text-icon-sub-600" /> Saved Actions</>}>
                 <Divider />
-                <div className="flex flex-col items-center gap-3 p-5 pt-8">
+                <div className="flex flex-col items-center gap-3 p-6 pt-8">
                   <RiFlashlightLine className="size-10 text-icon-soft-400" />
                   <p className="text-center text-sm text-text-soft-400">You do not have any saved actions.<br />Feel free to save one.</p>
                   <Button tone="neutral" style="stroke" size="xs"><RiAddLine /> Save a New Action</Button>
@@ -143,7 +143,7 @@ export default function FinanceSavedActionsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Row container</strong> — full-width rounded-xl button, hover bg-weak-50 + 12px horizontal pad.</li>
           <li><strong>Leading slot</strong> — 40px avatar (color=blue) OR 40px tinted bubble (per type).</li>
           <li><strong>Body</strong> — label-sm strong-950 name + paragraph-xs sub-600 description.</li>

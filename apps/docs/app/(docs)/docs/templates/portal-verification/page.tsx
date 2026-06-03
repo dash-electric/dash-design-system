@@ -58,7 +58,7 @@ export default function PortalVerificationPage() {
           code={`<WidgetBox>
   <Header>Business Detail</Header>
   <SolidDivider>Business Identity</SolidDivider>
-  <div className="grid grid-cols-2 gap-3 p-5">
+  <div className="grid grid-cols-2 gap-3 p-6">
     <Field label="Type of Business"><Select placeholder="Select Type" /></Field>
     <Field label="Industry"><Select placeholder="Select Industry" /></Field>
     <Field label="Business Name"><Input placeholder="Business Name" /></Field>
@@ -115,7 +115,7 @@ export default function PortalVerificationPage() {
           code={`<WidgetBox>
   <Header>Verification</Header>
   <SolidDivider>Let's confirm it's really you</SolidDivider>
-  <div className="p-5 space-y-6">
+  <div className="p-6 space-y-6">
     <h3>Verify your phone number</h3>
     <p>We've sent a 6-digit code to your WhatsApp number +62812... Enter the code below to verify your account.</p>
     <DigitInput numInputs={6} />
@@ -134,7 +134,7 @@ export default function PortalVerificationPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Top bar</strong> — `VerificationHeader` with Dash logo + language select.</li>
           <li><strong>Sidebar</strong> — fixed 272px, hidden under <code>lg</code>. “REGISTRATION” section title, vertical stepper, bottom “Log out” button (firebase signOut + localStorage cleanup).</li>
           <li><strong>Step labels</strong> — “Business Detail”, “Account Detail”, “Verification”.</li>
@@ -145,7 +145,7 @@ export default function PortalVerificationPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>InputRoot</code> / <code>Input</code> — single + phone-with-affix.</li>
           <li><code>Checkbox</code> — agreement gate.</li>
           <li><code>Button</code> — Back / Continue / Create Account / Verification.</li>
@@ -201,7 +201,7 @@ function VerificationShell({
 
 function VerificationHeader() {
   return (
-    <div className="flex h-14 items-center justify-between border-b border-stroke-soft-200 bg-bg-white-0 px-5">
+    <div className="flex h-14 items-center justify-between border-b border-stroke-soft-200 bg-bg-white-0 px-6">
       <div className="flex items-center gap-2 text-label-md font-semibold tracking-tight text-text-strong-950">
         <span className="grid size-7 place-items-center rounded-md bg-(--dash-purple-600) text-white text-xs">D</span>
         dash
@@ -217,7 +217,7 @@ function FlowSidebar({ activeStep }: { activeStep: 0 | 1 | 2 }) {
   return (
     <aside className="hidden h-full w-[272px] shrink-0 flex-col border-r border-stroke-soft-200 bg-bg-white-0 lg:flex">
       <div className="flex flex-1 flex-col overflow-auto">
-        <div className="flex flex-1 flex-col gap-5 px-5 pb-4 pt-5">
+        <div className="flex flex-1 flex-col gap-6 px-6 pb-4 pt-6">
           <div>
             <div className="mb-3 p-1 text-subheading-xs uppercase text-text-soft-400">
               Registration
@@ -254,7 +254,7 @@ function FlowSidebar({ activeStep }: { activeStep: 0 | 1 | 2 }) {
             </ol>
           </div>
         </div>
-        <div className="px-5">
+        <div className="px-6">
           <div className="h-px bg-stroke-soft-200" />
         </div>
         <div className="p-3">
@@ -285,12 +285,12 @@ function WidgetBoxRoot({ children, className }: { children: React.ReactNode; cla
 }
 
 function CardHeader({ children }: { children: React.ReactNode }) {
-  return <div className="px-5 py-4 text-label-xl font-medium">{children}</div>
+  return <div className="px-6 py-4 text-label-xl font-medium">{children}</div>
 }
 
 function CardFooter({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border-t border-stroke-soft-200 px-5 py-4">
+    <div className="border-t border-stroke-soft-200 px-6 py-4">
       <div className="flex justify-end gap-3">{children}</div>
     </div>
   )
@@ -302,7 +302,7 @@ function Step1Card() {
       <CardHeader>Business Detail</CardHeader>
       <ContentDivider variant="solid">Business Identity</ContentDivider>
 
-      <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 p-6 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
           <Label>Type of Business</Label>
           <Select>
@@ -362,7 +362,7 @@ function Step2Card() {
       <CardHeader>Account Detail</CardHeader>
       <ContentDivider variant="solid">Profile Information</ContentDivider>
 
-      <div className="flex flex-col gap-3 p-5">
+      <div className="flex flex-col gap-3 p-6">
         <div className="flex flex-col gap-1">
           <Label htmlFor="fullname">Full Name</Label>
           <InputRoot>
@@ -403,7 +403,7 @@ function Step3Card() {
       <CardHeader>Verification</CardHeader>
       <ContentDivider variant="solid">Let&apos;s confirm it&apos;s really you</ContentDivider>
 
-      <div className="flex flex-col gap-6 p-5">
+      <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-col gap-2">
           <p className="text-title-h6 text-text-strong-950">
             Verify your phone number

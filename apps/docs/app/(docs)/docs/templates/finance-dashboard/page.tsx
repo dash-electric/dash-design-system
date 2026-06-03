@@ -74,7 +74,7 @@ export default function FinanceDashboardDocsPage() {
         title="Composition"
         description="A 3-column dashboard composed entirely from @dash primitives."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Col 1 — My Cards: gradient virtual card preview with mask toggle (Eye/EyeOff) + Adjust Limit + More. Below: Recent Transactions list.</li>
           <li>Col 2 — Budget Overview: <code>Stat</code> tiles for Income / Expenses / Scheduled with deltas + lightweight 12-month stacked bar ghost.</li>
           <li>Col 3 — Spending Summary: <code>Stat</code> + <code>ProgressBar</code> + per-category list bound to weekly cap. Below: Exchange widget with USD→EUR rate, tax/fee breakdown, Exchange CTA.</li>
@@ -83,7 +83,7 @@ export default function FinanceDashboardDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> as the landing page for a personal/SMB banking product.</li>
           <li><strong>Use</strong> as the "Finance" tab inside a consolidated workspace.</li>
           <li><strong>Don&apos;t</strong> use for ops-level financial reconciliation — reach for a dense table template instead (see <code>finance-transactions</code>).</li>

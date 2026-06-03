@@ -65,7 +65,7 @@ export const NAV: { id: NavId; label: string; href: string }[] = [
 
 export function HrSettingsHeader() {
   return (
-    <div className="flex items-center gap-4 border-b border-stroke-soft-200 pb-5">
+    <div className="flex items-center gap-4 border-b border-stroke-soft-200 pb-6">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
         <RiSettings2Line className="size-6 text-text-sub-600" />
       </div>

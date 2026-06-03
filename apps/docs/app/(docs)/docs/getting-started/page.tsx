@@ -266,7 +266,7 @@ export default function MitraPage() {
         title="Verify it works"
         description="Sixty seconds of sanity checks. If any of these fail, jump to the deep references in the next section — they cover every edge case we&apos;ve hit so far."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-2 max-w-2xl">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-2 max-w-2xl">
           <li>
             <code className="text-xs">dashkit list</code> prints 200+ items grouped
             by category (components, blocks, templates).
@@ -302,7 +302,7 @@ export default function MitraPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link
             href="/docs/installation"
-            className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5 hover:border-(--dash-purple-400) hover:shadow-sm transition"
+            className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6 hover:border-(--dash-purple-400) hover:shadow-sm transition"
           >
             <div className="text-[10px] uppercase tracking-[0.18em] text-text-soft-400 mb-2">
               Reference
@@ -318,7 +318,7 @@ export default function MitraPage() {
 
           <Link
             href="/docs/quick-start"
-            className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5 hover:border-(--dash-purple-400) hover:shadow-sm transition"
+            className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6 hover:border-(--dash-purple-400) hover:shadow-sm transition"
           >
             <div className="text-[10px] uppercase tracking-[0.18em] text-text-soft-400 mb-2">
               Reference
@@ -334,7 +334,7 @@ export default function MitraPage() {
 
           <Link
             href="/docs/getting-started/testing-locally"
-            className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5 hover:border-(--dash-purple-400) hover:shadow-sm transition"
+            className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6 hover:border-(--dash-purple-400) hover:shadow-sm transition"
           >
             <div className="text-[10px] uppercase tracking-[0.18em] text-text-soft-400 mb-2">
               Pilot
@@ -352,7 +352,7 @@ export default function MitraPage() {
 
           <Link
             href="/docs/onboarding"
-            className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-5 hover:border-(--dash-purple-400) hover:shadow-sm transition"
+            className="group rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-6 hover:border-(--dash-purple-400) hover:shadow-sm transition"
           >
             <div className="text-[10px] uppercase tracking-[0.18em] text-text-soft-400 mb-2">
               Team

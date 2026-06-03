@@ -36,7 +36,7 @@ export default function SignupBlock03DocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Self-contained rounded card with a 50/50 grid on <code>lg</code>.</li>
           <li>Hero panel: Dash purple gradient + benefit list + tribe-lead testimonial.</li>
           <li>Form panel: SSO + email/password + terms + submit.</li>
@@ -45,7 +45,7 @@ export default function SignupBlock03DocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for public mitra/partner signup landing pages.</li>
           <li><strong>Use</strong> when conversion benefits from social proof + brand storytelling.</li>
           <li><strong>Don't</strong> use for internal-only signup — <code>Signup 01</code> ships faster.</li>
@@ -70,7 +70,7 @@ export default function SignupBlock03DocsPage() {
             preview: (
               <div className="grid grid-cols-2 gap-3 w-full max-w-md">
                 <div className="space-y-2"><div className="h-7 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /><div className="h-7 rounded-lg border border-stroke-soft-200 bg-bg-white-0" /><div className="h-7 rounded-lg bg-primary-base" /></div>
-                <div className="rounded-lg bg-[linear-gradient(135deg,#7C4FC4,#FF6B9D)] h-24" />
+                <div className="rounded-lg bg-[linear-gradient(135deg,var(--dash-purple-500),#FF6B9D)] h-24" />
               </div>
             ),
             caption: "Don't fill the right column with a decorative gradient. The user paid attention with their eyes — give them a reason to sign up.",

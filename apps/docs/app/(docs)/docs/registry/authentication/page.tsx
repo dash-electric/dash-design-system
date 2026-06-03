@@ -21,7 +21,7 @@ export default function RegistryAuthPage() {
         title="Why gated"
         description="Three reasons: licensed source assets, internal-only product code, and a low-effort first line of defense."
       >
-        <ul className="text-base text-text-sub-600 leading-relaxed list-disc pl-5 space-y-1.5">
+        <ul className="text-base text-text-sub-600 leading-relaxed list-disc pl-6 space-y-1.5">
           <li>
             <strong className="text-text-strong-950">Licensed source</strong> — the Figma file Dash
             builds on is paid-tier. Distributing the resulting TSX to the open internet is a TOS
@@ -42,7 +42,7 @@ export default function RegistryAuthPage() {
       </DocsSection>
 
       <DocsSection title="How the gate works">
-        <ul className="text-base text-text-sub-600 leading-relaxed list-disc pl-5 space-y-1.5">
+        <ul className="text-base text-text-sub-600 leading-relaxed list-disc pl-6 space-y-1.5">
           <li><strong className="text-text-strong-950">Single env var</strong> — <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">DASH_REGISTRY_TOKEN</code>. Set on Vercel + every consumer&apos;s <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">.env.local</code>.</li>
           <li><strong className="text-text-strong-950">Two endpoints gated</strong> — <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">/api/registry/[name]</code> (preferred) and <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">/r/*.json</code> (legacy static path, gated via Edge middleware).</li>
           <li><strong className="text-text-strong-950">Constant-time compare</strong> — XOR loop, not <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">===</code>. Avoids leaking the token via timing side-channels.</li>
@@ -252,7 +252,7 @@ curl -i \\
         title="Token rotation runbook"
         description="Rotate quarterly by default, or immediately on a leak."
       >
-        <ol className="text-base text-text-sub-600 leading-relaxed list-decimal pl-5 space-y-1.5">
+        <ol className="text-base text-text-sub-600 leading-relaxed list-decimal pl-6 space-y-1.5">
           <li>Generate new token: <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">openssl rand -base64 32</code>.</li>
           <li>Update Vercel env var <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">DASH_REGISTRY_TOKEN</code>. Redeploy.</li>
           <li>Post new token to 1Password / vault. Notify <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">#design-system</code> Slack with rotation deadline.</li>
@@ -265,7 +265,7 @@ curl -i \\
       </DocsSection>
 
       <DocsSection title="Failure modes">
-        <ul className="text-base text-text-sub-600 leading-relaxed list-disc pl-5 space-y-1.5">
+        <ul className="text-base text-text-sub-600 leading-relaxed list-disc pl-6 space-y-1.5">
           <li><code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">401</code> — token missing, header malformed, or token mismatch.</li>
           <li><code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">400</code> — item name fails regex (path traversal, unsupported chars).</li>
           <li><code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">404</code> — item not in <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">public/r/</code>. Check the name; run <code className="text-xs px-1 py-0.5 rounded bg-bg-weak-50 text-text-strong-950">pnpm dashkit build</code> if it&apos;s a freshly added item.</li>

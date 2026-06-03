@@ -178,7 +178,7 @@ export default function BatchDispatchGridDocsPage() {
           The block is FE-only. The consumer's <code>onAssignBatch</code> MUST
           persist:
         </p>
-        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-5">
+        <ol className="mt-3 text-sm text-text-sub-600 space-y-1.5 list-decimal pl-6">
           <li>One <code>t_batch_dispatch_audit_log</code> row containing the full assignment list.</li>
           <li>Dispatcher ID + timestamp.</li>
           <li>Capacity-warning flag per assignment, when over-capacity at submit time (legal hedge).</li>
@@ -187,7 +187,7 @@ export default function BatchDispatchGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> at shift start when a dispatcher needs to land 20-100 packages across the available roster.</li>
           <li><strong>Use</strong> as the canonical bulk-dispatch UI — tribes should not roll their own spreadsheet export/import flow.</li>
           <li><strong>Don't</strong> use for single ad-hoc reassignments — that's a row-level action in the packages table.</li>

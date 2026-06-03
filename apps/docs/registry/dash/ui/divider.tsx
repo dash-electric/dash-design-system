@@ -79,7 +79,7 @@ const ContentDivider = React.forwardRef<HTMLDivElement, ContentDividerProps>(
           data-slot="content-divider"
           data-variant="solid"
           className={cn(
-            "flex items-center justify-center bg-bg-weak-50 px-5 py-1.5 gap-1.5",
+            "flex items-center justify-center bg-bg-weak-50 px-6 py-1.5 gap-1.5",
             "text-xs leading-4 font-medium uppercase tracking-[0.04em] text-text-soft-400",
             className,
           )}

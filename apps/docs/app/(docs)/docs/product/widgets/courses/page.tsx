@@ -98,7 +98,7 @@ export default function CoursesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — title left + search input center + See All stroke button right.</li>
           <li><strong>Column header</strong> — Instructor / Course Name / Progress / Status row in soft-50 background.</li>
           <li><strong>Row</strong> — avatar + (name + role) | (course + dates) | (bar + %) | status badge | 3-dot menu.</li>

@@ -54,7 +54,7 @@ export default function ProductOverviewPage() {
           <li key={item.href}>
             <Link
               href={item.href}
-              className="group block h-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-5 py-4 transition-[border-color,box-shadow,transform] duration-150 ease-out hover:border-(--dash-purple-300) hover:shadow-custom-xs"
+              className="group block h-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-6 py-4 transition-[border-color,box-shadow,transform] duration-150 ease-out hover:border-(--dash-purple-300) hover:shadow-custom-xs"
             >
               <div className="flex items-center gap-3">
                 <div className="size-9 rounded-lg flex items-center justify-center bg-bg-weak-50 text-text-sub-600 [&_svg]:size-4 shrink-0 group-hover:text-(--dash-purple-600) transition-colors">

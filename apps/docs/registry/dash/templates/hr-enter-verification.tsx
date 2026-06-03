@@ -56,7 +56,7 @@ export function HrEnterVerification({
         </div>
 
         <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
-          <div className="mx-auto size-14 rounded-full bg-bg-weak-50 border border-stroke-soft-200 grid place-items-center mb-5">
+          <div className="mx-auto size-14 rounded-full bg-bg-weak-50 border border-stroke-soft-200 grid place-items-center mb-6">
             <MailCheck className="size-6 text-icon-sub-600" />
           </div>
 

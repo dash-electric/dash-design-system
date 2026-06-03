@@ -51,7 +51,7 @@ export default function PortalSigninPage() {
           }
           code={`<div className="grid lg:grid-cols-[40%,60%] min-h-screen bg-bg-weak-50">
   <div className="p-2 pr-0">
-    <div className="rounded-2xl bg-bg-white-0 px-11 py-6 flex flex-col flex-1">
+    <div className="rounded-2xl bg-bg-white-0 px-12 py-6 flex flex-col flex-1">
       <AuthHeader />
       <div className="mx-auto w-full max-w-[392px] flex flex-col gap-6 flex-1 justify-center">
         {/* Icon halo */}
@@ -92,7 +92,7 @@ export default function PortalSigninPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Shell</strong> — 40/60 grid; left = white panel <code>rounded-2xl</code> with header/footer + form column max-w-[392px]; right = testimonial carousel.</li>
           <li><strong>Header</strong> — Dash full logo on the left, <code>LanguageSelect</code> on the right.</li>
           <li><strong>Hero icon</strong> — 80px halo with gradient pseudo-element ring, inner 56px tile, <code>RiUserLine</code> 28px.</li>
@@ -107,7 +107,7 @@ export default function PortalSigninPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>InputRoot</code>, <code>Input</code>, <code>InputIcon</code> — email + password fields.</li>
           <li><code>Label</code> — field labels.</li>
           <li><code>LinkButton</code> — forgot-password link.</li>
@@ -138,7 +138,7 @@ export function PortalAuthShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-[820px] flex-col bg-bg-weak-50">
       <div className="grid flex-1 lg:grid-cols-[40%,60%]">
         <div className="flex flex-col p-2 lg:pr-0">
-          <div className="flex flex-1 flex-col rounded-2xl bg-bg-white-0 px-11 py-6">
+          <div className="flex flex-1 flex-col rounded-2xl bg-bg-white-0 px-12 py-6">
             <AuthHeader />
             <div className="mx-auto flex w-full max-w-[392px] flex-1 flex-col justify-center gap-6 py-10">
               {children}

@@ -109,7 +109,7 @@ export default function MotionPage() {
             body: "All Dash components honor `prefers-reduced-motion` — durations collapse to 0ms, springs disable.",
           },
         ].map((item) => (
-          <div key={item.title} className="rounded-lg border border-border bg-card p-5">
+          <div key={item.title} className="rounded-lg border border-border bg-card p-6">
             <div className="text-sm font-semibold text-foreground mb-1.5">{item.title}</div>
             <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
           </div>
@@ -124,7 +124,7 @@ export default function MotionPage() {
         </p>
         <div className="rounded-lg border border-border bg-card divide-y divide-border">
           {durations.map((d) => (
-            <div key={d.token} className="grid grid-cols-1 sm:grid-cols-[200px_80px_1fr] items-center gap-4 px-5 py-4">
+            <div key={d.token} className="grid grid-cols-1 sm:grid-cols-[200px_80px_1fr] items-center gap-4 px-6 py-4">
               <code className="text-sm font-medium text-foreground">{d.token}</code>
               <div className="text-xs text-muted-foreground">{d.ms}ms</div>
               <div className="text-sm text-muted-foreground">{d.use}</div>
@@ -141,7 +141,7 @@ export default function MotionPage() {
         </p>
         <div className="rounded-lg border border-border bg-card divide-y divide-border">
           {easings.map((e) => (
-            <div key={e.token} className="grid grid-cols-1 sm:grid-cols-[200px_1fr_220px] items-start gap-4 px-5 py-4">
+            <div key={e.token} className="grid grid-cols-1 sm:grid-cols-[200px_1fr_220px] items-start gap-4 px-6 py-4">
               <code className="text-sm font-medium text-foreground">{e.token}</code>
               <div className="text-sm text-muted-foreground">{e.use}</div>
               <code className="text-[10px] text-muted-foreground sm:text-right break-all">{e.value}</code>
@@ -166,7 +166,7 @@ export default function MotionPage() {
             { event: "Skeleton shimmer", pair: "slower + linear (loop)" },
             { event: "Route change fade", pair: "fast + ease-out" },
           ].map((row) => (
-            <div key={row.event} className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4 px-5 py-3.5">
+            <div key={row.event} className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4 px-6 py-3.5">
               <div className="text-sm text-foreground">{row.event}</div>
               <code className="text-xs text-muted-foreground">{row.pair}</code>
             </div>
@@ -177,7 +177,7 @@ export default function MotionPage() {
       {/* Usage */}
       <section>
         <h2 className="text-xl font-semibold tracking-tight mb-4">Usage</h2>
-        <div className="rounded-lg bg-(--dash-slate-950) text-(--dash-slate-100) p-5 text-sm overflow-x-auto">
+        <div className="rounded-lg bg-(--dash-slate-950) text-(--dash-slate-100) p-6 text-sm overflow-x-auto">
           <div className="text-(--dash-slate-400) mb-1"># Tailwind v4 — arbitrary token reference</div>
           <div>{`<div className="transition-transform duration-(--duration-base) ease-(--ease-out)" />`}</div>
           <div className="text-(--dash-slate-400) mt-3 mb-1"># inline style for one-off transitions</div>

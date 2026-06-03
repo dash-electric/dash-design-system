@@ -22,7 +22,7 @@ export default function McpServerPage() {
         title="What it does"
         description="MCP gives Claude / Cursor / Windsurf live read access to the registry. No more pasting JSON — the AI calls list_components and get_component itself."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li><strong className="text-text-strong-950">list_components</strong> — enumerate every shipped item with name, type, description, deps.</li>
           <li><strong className="text-text-strong-950">get_component(name)</strong> — return the full registry-item.json (TSX content baked in).</li>
           <li><strong className="text-text-strong-950">search(query)</strong> — full-text search across name, title, description.</li>
@@ -114,7 +114,7 @@ dashkit mcp init --check-only`}
       </DocsSection>
 
       <DocsSection title="Roadmap">
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li><strong className="text-text-strong-950">WK01</strong> — server shipped in the repo as <code className="text-xs">@dash/mcp-server</code> (6 tools, Bearer-gated registry queries).</li>
           <li><strong className="text-text-strong-950">WK02</strong> — Claude Code + Cursor wiring via <code className="text-xs">dashkit mcp init</code>. Both variants live.</li>
           <li><strong className="text-text-strong-950">WK03</strong> — Windsurf config docs, diff_versions tool, audit log integration.</li>

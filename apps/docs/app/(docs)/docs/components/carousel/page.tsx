@@ -282,7 +282,7 @@ useEffect(() => {
           <li>• <strong>Role</strong> — Carousel renders <code className="text-xs">role=&quot;region&quot;</code> + <code className="text-xs">aria-roledescription=&quot;carousel&quot;</code>. Each CarouselItem gets <code className="text-xs">role=&quot;group&quot;</code> + <code className="text-xs">aria-roledescription=&quot;slide&quot;</code>.</li>
           <li>• <strong>ARIA you add</strong> — pass <code className="text-xs">aria-label</code> on the root describing the carousel content (&quot;Tribe surge highlights&quot;).</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">←</code> / <code className="text-xs">→</code> when the carousel container has focus moves to previous/next slide.</li>
               <li><code className="text-xs">Tab</code> reaches the Prev/Next buttons. <code className="text-xs">Enter</code>/<code className="text-xs">Space</code> activate.</li>
               <li>Slides themselves are not focusable by default — wrap interactive content inside.</li>

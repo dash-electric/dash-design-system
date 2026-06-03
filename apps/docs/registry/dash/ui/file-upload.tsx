@@ -94,14 +94,14 @@ function chipForName(name: string): { bg: string; label: string } {
 
 const dropzoneVariants = cva(
   cn(
-    "relative flex flex-col items-center justify-center gap-5 rounded-xl border border-dashed bg-bg-white-0 text-center",
+    "relative flex flex-col items-center justify-center gap-6 rounded-xl border border-dashed bg-bg-white-0 text-center",
     "transition-colors duration-(--duration-fast) ease-(--ease-out)",
     "focus-within:ring-4 focus-within:ring-(--primary-alpha-10)",
   ),
   {
     variants: {
       size: {
-        sm: "p-5 min-h-32",
+        sm: "p-6 min-h-32",
         md: "p-8 min-h-[200px]",
         lg: "p-10 min-h-60",
       },

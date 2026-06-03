@@ -106,6 +106,16 @@
 
 - **Bar / Line / Area / Pie** → `@dash/chart` (Recharts wrapper, ChartConfig token wiring)
 
+## Shell / sidebar scope rule
+
+"Do not introduce a new sidebar, shell, or route pattern unless explicitly
+requested" applies to **consumer repos only** (`portal-v2`, `backoffice`,
+`basecamp`, `react-fleet`, `halo-dash`, tribe apps). Dash DS itself ships
+multiple preview shells (`auth-shell`, `dashboard-shell`, `hr-app-shell`,
+`finance-app-shell`, `marketing-settings-shell`, `marketing-add-product-shell`)
+so generated UI can render inside a realistic product chrome. These are
+DS-internal infrastructure, not consumer drift.
+
 ## Page templates (decision tree)
 
 - Backoffice with sidebar + topbar → `@dash/templates/dashboard-shell`
@@ -218,6 +228,7 @@ Avoid raw colors. Always reach for semantic tokens:
 ### Brand
 - `bg-primary` / `text-primary` — Dash brand purple (#5e2aac via `--dash-purple-500`)
 - **Canonical Dash Purple primary value: `#5e2aac`** (matches DS token `--dash-purple-500`). Any reference to `#7C4FC4` in older docs is **deprecated** — sync to `#5e2aac`.
+- **Layer 1 hex carve-outs** (per RULE-REALITY-AUDIT-2026-05-28 C2): external brand hex inside `SocialButton` (Facebook `#1977F3`, Google brand quad, LinkedIn `#0077B5`, GitHub `#24292F`, Dropbox `#3984FF`, etc.) is allowed — third-party brand identity is not Dash's to abstract. Chart override selectors (`[stroke='#ccc']`) hooking Recharts defaults are also allowed. Brand-logo constants (`DashLogo`) should migrate to Layer 0 foundation but are not blocked today.
 
 ### Shadows
 - `shadow-custom-xs/sm/md/lg` — card layering presets
@@ -226,6 +237,12 @@ Avoid raw colors. Always reach for semantic tokens:
 
 ### Radii
 - `rounded-md` (8) / `rounded-lg` (12) / `rounded-xl` (16) / `rounded-2xl` (20-24)
+- **Per-surface defaults (Figma canonical):**
+  - Card (default widget / content block): `rounded-2xl` (16px)
+  - Modal / Drawer / Sheet / Alert Dialog: `rounded-[20px]`
+  - Popover / Dropdown / Menu / Toast: `rounded-2xl` (16px)
+  - Inline table-row cards, chips, dense list rows: `rounded-md`/`rounded-lg` (6-8px) or full
+- Dense table-row cards may go tighter (6-8px). The 16px floor applies to standalone widget / content Cards.
 
 ## Workflow conventions
 
@@ -253,6 +270,59 @@ Avoid raw colors. Always reach for semantic tokens:
    - Common actors: Sigit P., Wei Chen, Fayzul A. (mitra names)
    - External signals: BMKG (weather), Lebaran rate freeze (holiday pricing)
    - Patterns: 3-miss auto-suspend, surge factor X.Y×, dispatch radius
+
+## External brand color allow-list
+
+Third-party OAuth / brand identity colors are sanctioned exceptions to the
+"no raw hex" rule. Allowed inside `SocialButton` and any other component
+representing an external brand:
+
+| Brand | Hex |
+|---|---|
+| Facebook | `#1977F3` |
+| Google | brand quad `#4285F4` / `#34A853` / `#FBBC05` / `#EA4335` |
+| LinkedIn | `#0077B5` |
+| GitHub | `#24292F` |
+| Dropbox | `#3984FF` |
+| Apple | `#000000` |
+| X / Twitter | `#000000` |
+| Microsoft | quad `#F25022` / `#7FBA00` / `#00A4EF` / `#FFB900` |
+
+These are not Dash's to abstract — third-party brand recognition matters more
+than token discipline. Inside `SocialButton` and OAuth-button surfaces, raw hex
+for the above brands is **allowed and expected**. Anywhere else, raw hex
+remains banned.
+
+## Border + shadow policy
+
+Default: hairline border OR shadow, not both. This keeps inline workspace cards
+flat and scannable.
+
+**Exception — floating surfaces above the workspace MAY combine border +
+shallow shadow** for elevation clarity. Allowed list:
+
+Modal, Drawer, Sheet, AlertDialog, Popover, Tooltip, HoverCard, DropdownMenu,
+ContextMenu, Menubar, NavigationMenu, Toaster, DatePicker, Carousel,
+BulkActionBar, fixed/sticky toolbars when scrolled.
+
+Inline workspace cards (Card primitive in a list, table row, dashboard widget)
+stay border-or-shadow, never both. The Card `elevated` variant is the one
+explicit Card exception — intentionally elevated above the page surface.
+
+## Decorative gradient policy
+
+No decorative `linear-gradient` / `radial-gradient` / `conic-gradient` /
+ornamental bokeh on in-app workflow surfaces (lists, tables, forms, detail
+screens, dashboards). Allowed carve-outs:
+
+- **Auth shells** (login / register / reset / verify) — gradients allowed per Figma.
+- **Chart fills** — SVG `<linearGradient>` / `<radialGradient>` / `conic-gradient`
+  inside Chart components is data-viz, not decoration.
+- **Brand showcase pages** — Foundation, Theme Studio, Brand Assets, color and
+  typography demo pages may use gradient backgrounds and gradient text.
+- **Dash Build's own dashboard** — control-tower meta-surface (not a consumer
+  ops product) may use radial-gradient body backgrounds.
+- **`FancyButton` sheen** — top-down white sheen on premium CTA is sanctioned.
 
 ## Anti-patterns
 
@@ -832,6 +902,17 @@ Examples:
 
 ## Audit Trail (MANDATORY for user-editable fields carrying legal/financial weight)
 
+> **Enforcement note (per RULE-REALITY-AUDIT-2026-05-28 A11):** rule is correct
+> but currently enforced by **naming convention + reviewer attention** only.
+> The DS ships audit-aware blocks (`inline-edit-with-audit`, `image-editor-with-audit`,
+> `bulk-upload-with-status`, `audit-history-table`). A machine lint
+> (`dash audit --rule audit-trail`) is planned to flag any form-block touching
+> `payment|signature|kyc|image-proof|legal` keywords without importing an audit
+> primitive. Until that lands, treat the rule as **advisory but mandatory in
+> review**; reviewers must reject PRs that touch these fields without the
+> audit primitive.
+
+
 Applies to **any field** whose mutation could be the subject of a mitra dispute, regulator audit, or financial reconciliation:
 - Image proof (POD = proof of delivery, POP = proof of pickup, KYC documents)
 - Payment amounts (top-up, payout, adjustment, refund)
@@ -907,7 +988,7 @@ Once a wrapper proves stable in one repo, it gets promoted to the DS registry as
 ### Banned categories (refuse on sight)
 
 - **Form libraries**: react-hook-form, Formik, Final Form, react-final-form (see Anti-pattern #1)
-- **Validation libraries**: zod, joi (FE-side), yup, ajv, valibot (see Anti-pattern #2)
+- **Validation libraries (UI / consumer code)**: zod, joi (FE-side), yup, ajv, valibot (see Anti-pattern #2). **Carve-out:** `packages/registry-schema/**` MAY use `zod` for runtime registry-JSON validation — this is a trust-boundary validator at the consumer-package edge, not a form-validation library. `dash audit` excepts this single path.
 - **Data-fetch libraries**: TanStack Query, SWR, react-query, Apollo Client (see Anti-pattern #3)
 - **Component libraries in greenfield**: MUI, antd, Chakra, Mantine, Radix-themes (backoffice tolerates legacy MUI+antd per Anti-pattern #8; do not add to new repos)
 

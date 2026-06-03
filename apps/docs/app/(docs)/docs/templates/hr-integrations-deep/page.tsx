@@ -223,7 +223,7 @@ function IntegrationsGrid({
   items: Integration[]
 }) {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       <div className="space-y-1">
         <div className="text-base font-medium text-text-strong-950">
           {title}
@@ -260,7 +260,7 @@ function HrIntegrationsPreview() {
       <div className="px-8">
         <Divider />
       </div>
-      <div className="flex flex-col gap-6 px-8 pb-8 pt-5">
+      <div className="flex flex-col gap-6 px-8 pb-8 pt-6">
         <IntegrationsFilters />
         <IntegrationsGrid
           title="Available Integrations"
@@ -296,7 +296,7 @@ export default function HrIntegrationsDeepDocsPage() {
         title="Anatomy"
         description="Two stacked grids share one filter bar. Cards are 3-up on desktop, brand-mark + name + 1-line description + Manage CTA, with the Switch toggle anchored top-right."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Header</strong> — circular Equalizer icon avatar + "Integrations"
             + tagline + primary <code>Add Integration</code> CTA.
@@ -318,7 +318,7 @@ export default function HrIntegrationsDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Badge</strong> — SOON pill (neutral · lighter · sm).</li>
           <li><strong>Button</strong> — Add Integration, Manage (per card), Filter.</li>
           <li><strong>InputRoot / Input / InputIcon</strong> — 300px search w/ kbd hint.</li>

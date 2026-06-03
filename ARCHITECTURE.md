@@ -61,7 +61,12 @@ The non-negotiable substrate. Touching Layer 0 is a Head of Design decision, not
 - **Motion curves** — `--ease-standard`, `--ease-emphasized`, `--ease-decelerate`
 - **Semantic token tiers** — `bg-*`, `text-*`, `stroke-*`, `icon-*` × strong / sub / soft / disabled / weak / white
 - **State palette** — 8 states × 4 levels (lighter / light / base / dark)
-- **Accessibility floor** — WCAG 2.2 AA contrast, 44-pt minimum touch target, focus ring spec
+- **Brand mark + logo colors** — `primaryBrand` (`#5e2aac` Dash Purple) and any
+  logo-specific color constants (`DashLogo` etc.) live in Layer 0 foundation
+  tokens. Per RULE-REALITY-AUDIT-2026-05-28 C2, the interim `DASH_PURPLE`
+  constant inside `apps/docs/registry/dash/ui/dash-logo.tsx` is a known
+  migration item — it belongs in Layer 0, not Layer 1.
+- **Accessibility floor** — WCAG 2.2 AA contrast, 44-pt minimum touch target, focus ring spec, skip-link in every app shell layout (`<a href="#main">Skip to main content</a>` as first focusable child of `<body>`), semantic landmarks (`<header role="banner">`, `<nav aria-label="...">`, `<main>`, `<footer role="contentinfo">`), `prefers-reduced-motion` respected via global `globals.css` block
 
 ### Layer 1 — Common Primitives (shared, atom-level)
 
@@ -70,6 +75,14 @@ The building blocks every product uses. ~76 components. **Never** hard-code bran
 Button, Input, Select, Checkbox, Radio, Switch, Badge, Avatar, Tag, Chip, Modal, Drawer, Popover, Tooltip, Tabs, Accordion, Toast, Banner, Alert, Skeleton, Spinner, Progress, Slider, DatePicker, FileUpload, Combobox, Command, Breadcrumb, Pagination, Table, Card, Divider, …
 
 A primitive that breaks the contract — e.g. `<Button>` referencing `#5e2aac` directly instead of `--accent-base` — is rejected at CI by `dashkit audit`.
+
+**Hex carve-outs for Layer 1** (per RULE-REALITY-AUDIT-2026-05-28 C2):
+
+- **External brand hex** in `SocialButton` (Facebook `#1977F3`, Google brand quad, LinkedIn `#0077B5`, GitHub `#24292F`, Dropbox `#3984FF`, etc.) is **allowed and expected** — third-party brand identity is not Dash's to abstract. These are sanctioned external-brand colors.
+- **Brand-logo hex** (`DashLogo`, `DashPurple` constants) should architecturally live in Layer 0 foundation tokens, not Layer 1. The interim `DASH_PURPLE = "#5E2AAC"` constant inside `dash-logo.tsx` is a known migration item — flag but do not block.
+- **Chart override selectors** (e.g. `[stroke='#ccc']` hooks to override Recharts defaults) are tool-bridging selectors, not hard-coded brand colors. Allowed.
+
+All other Layer 1 raw hex remains rejected by `dash audit`.
 
 ### Layer 2 — Product / Tenant Theme (divergent)
 
@@ -108,13 +121,23 @@ The layered model is the only approach that lets Layer 3 (`ride-dispatch-board`)
 
 ### Internal: Dash product family
 
-| Theme key | Product | Accent | Voice | Status |
-| --- | --- | --- | --- | --- |
-| `ride` | Dash Ride | `#5e2aac` purple | formal Anda | shipped |
-| `logistic` | Dash Logistic | `#1f6feb` industrial blue | formal Anda | wip |
-| `travel` | Dash Travel | `#c79a2b` warm gold | mixed | planned |
-| `marketplace` | Dash Marketplace | `#0f9d58` market green | mixed | planned |
-| `outsourcing` | Dash Outsourcing | `#475569` operations slate | formal Anda | planned |
+> **Canonical source for accent values:** `apps/docs/registry/dash/themes/manifest.json`.
+> The table below mirrors that manifest (verified 2026-05-28 per
+> RULE-REALITY-AUDIT C5). Dash Purple `#5e2aac` is the **brand** color in
+> `primaryBrand`; per-product **accent** colors differ from brand to give each
+> vertical its own surface identity while sharing the same chrome / foundation.
+
+| Theme key | Product | Accent | Accent name | Voice | Status |
+| --- | --- | --- | --- | --- | --- |
+| `ride` | Dash Ride | `#16a34a` | mobility-green | formal Anda | shipped (default) |
+| `logistic` | Dash Logistic | `#ea580c` | delivery-orange | formal Anda | wip |
+| `travel` | Dash Travel | `#0284c7` | ocean-blue | mixed | planned |
+| `marketplace` | Dash Marketplace | `#ca8a04` | commerce-yellow | mixed | planned |
+| `trellis-tenant` | Trellis tenant (template) | `#6b7280` | neutral-placeholder | per-tenant | template |
+| `outsourcing` | Dash Outsourcing | TBD | operations-slate | formal Anda | planned (no manifest entry yet) |
+
+Brand purple `#5e2aac` remains the cross-product brand mark (logo, primary CTA
+hover state, chrome accents) via the `primaryBrand` field of the manifest.
 
 ### External: Trellis SaaS
 
@@ -209,7 +232,7 @@ Compare to the alternative — forking the DS — which would burn 2–3 weeks b
 
 **Hard rules carried over from `CLAUDE.md`:**
 
-- No external form libraries (no RHF / zod / @hookform / @tanstack/react-query / swr)
+- No external form / data-fetch libraries in UI / consumer code (no RHF / @hookform / @tanstack/react-query / swr / zod). Carve-out: `packages/registry-schema/**` MAY use `zod` for runtime registry-JSON validation at the consumer trust boundary.
 - Audit trail mandatory for legal/financial editable fields
 - Mitra-facing voice = formal "Anda"
 - Dash Purple canonical = `#5e2aac` (no `#7C4FC4`)

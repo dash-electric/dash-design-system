@@ -37,7 +37,7 @@ export default function LoginBlock03DocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Self-contained — wraps its own rounded card; no <code>AuthShell</code> wrapper needed.</li>
           <li>Hero panel uses Dash purple gradient (<code>--dash-purple-700</code> → <code>--dash-purple-900</code>) with blurred-circle accents.</li>
           <li>Includes a <code>Badge</code> for promo labels (e.g. "Lebaran rate freeze").</li>
@@ -47,7 +47,7 @@ export default function LoginBlock03DocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for public-facing Dash routes — mitra recruitment landing, partner portal.</li>
           <li><strong>Use</strong> when brand storytelling matters more than speed-to-form.</li>
           <li><strong>Use</strong> when you can ship a testimonial / social proof on the hero.</li>

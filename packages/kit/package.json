@@ -1,0 +1,31 @@
+{
+  "name": "@dash/kit",
+  "version": "0.0.2",
+  "description": "Dash UI kit — curated, ban-gated @dash/ui atom source bundle for AI generation + Sandpack preview + consumer apps (dash-dashboard, dash-build).",
+  "type": "module",
+  "private": true,
+  "files": [
+    "*.tsx",
+    "lib",
+    "index.tsx",
+    "manifest.json"
+  ],
+  "exports": {
+    ".": "./index.tsx",
+    "./lib/utils": "./lib/utils.tsx",
+    "./*": "./*.tsx"
+  },
+  "scripts": {
+    "build": "node ./build.mjs",
+    "prepare": "node ./build.mjs"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0 || ^19.0.0",
+    "@remixicon/react": "^4.9.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "author": "Dash Tech (PT Dash Elektrik Indonesia)",
+  "license": "MIT"
+}

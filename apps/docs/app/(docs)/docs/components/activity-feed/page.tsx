@@ -185,7 +185,7 @@ export default function ActivityFeedDocsPage() {
         <DocsExample
           title="Comprehensive SynergyHR panel"
           preview={
-            <div className="max-w-2xl space-y-5 p-5 rounded-xl border border-stroke-soft-200 bg-bg-white-0">
+            <div className="max-w-2xl space-y-5 p-6 rounded-xl border border-stroke-soft-200 bg-bg-white-0">
               <header className="flex items-center justify-between">
                 <h3 className="text-base font-medium text-text-strong-950">Activities</h3>
                 <div className="flex items-center gap-4">
@@ -398,7 +398,7 @@ export default function ActivityFeedDocsPage() {
                     { Icon: ClockIcon, txt: <>Reminder sent to <strong>james@dash.com</strong></>,                   ts: "Mar 25, 2024, 3:12 AM" },
                     { Icon: ClockIcon, txt: <>Processing period <strong>extended Q2</strong></>,                     ts: "Mar 28, 2024, 2:30 PM" },
                   ].map((row, i) => (
-                    <li key={i} className="relative pl-7">
+                    <li key={i} className="relative pl-8">
                       <span className="absolute left-0 top-0.5 size-[15px] rounded-full bg-bg-white-0 inline-flex items-center justify-center">
                         <row.Icon className="size-[14px] text-icon-soft-400" />
                       </span>
@@ -412,7 +412,7 @@ export default function ActivityFeedDocsPage() {
           }
           code={`<ol className="relative before:absolute before:left-[7px] before:top-1.5 before:bottom-1.5 before:w-px before:bg-stroke-soft-200">
   {events.map(e => (
-    <li className="relative pl-7">
+    <li className="relative pl-8">
       <span className="absolute left-0 top-0.5"><Icon /></span>
       <div className="text-sm">{e.text}</div>
       <div className="text-xs text-text-soft-400">{e.ts}</div>

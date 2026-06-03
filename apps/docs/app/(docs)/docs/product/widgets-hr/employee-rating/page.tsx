@@ -114,7 +114,7 @@ export default function HREmployeeRatingWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Star + score</strong> — yellow-500 RiStarFill + label-lg score + xs sub-400 overall.</li>
           <li><strong>Sparkline</strong> — 136×40 area chart, primary-base stroke + alpha-16 fill.</li>
           <li><strong>Footnote pill</strong> — boxed micro-caption with leading info icon (soft-400 in normal, disabled in empty).</li>

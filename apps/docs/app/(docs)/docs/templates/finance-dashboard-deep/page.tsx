@@ -83,7 +83,7 @@ function WidgetCard({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200",
+        "flex flex-col gap-4 rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200",
         className,
       )}
     >
@@ -130,7 +130,7 @@ function WidgetMyCards({ className }: { className?: string }) {
       }
     >
       {/* Virtual Card (light surface, Apex logo) */}
-      <div className="relative flex h-[188px] flex-col gap-3 overflow-hidden rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+      <div className="relative flex h-[188px] flex-col gap-3 overflow-hidden rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -1005,7 +1005,7 @@ export default function FinanceDashboardDeepDocsPage() {
         title="Anatomy"
         description="Two zones — 272px sidebar (fixed) and a flex content column that opens with an 88px Header and a 3-column widget grid spanning up to ~1280px before the outer container scrolls."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Sidebar (272px)</strong> — Apex CompanySwitch → Main nav
             (Dashboard active, My Cards, Transfer, Transactions, Payments,
@@ -1026,7 +1026,7 @@ export default function FinanceDashboardDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Sample data (verbatim from source)">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Savings Card</strong> — •••• 1234 · Expiry 06/27 · CVC •••
             · Balance $16,058.94 · Spending limit $12,000.
@@ -1054,7 +1054,7 @@ export default function FinanceDashboardDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Avatar / AvatarGroup / AvatarFallback</strong> — Arthur
             avatar (xl), Quick Transfer contacts, Transactions Table rows.

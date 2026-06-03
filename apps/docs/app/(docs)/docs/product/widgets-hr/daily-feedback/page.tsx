@@ -112,7 +112,7 @@ export default function HRDailyFeedbackWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — RiDiscussLine + "Daily Feedback" + "Question N/4" micro-label.</li>
           <li><strong>Step badge</strong> — 40px disc, primary-alpha-16 fill, "01" mono.</li>
           <li><strong>Prompt</strong> — sm-medium title + xs sub-600 helper.</li>

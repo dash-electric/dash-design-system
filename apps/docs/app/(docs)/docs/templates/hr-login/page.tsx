@@ -42,7 +42,7 @@ export default function HrLoginDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for full-page HR / employee portal login.</li>
           <li><strong>Use</strong> the centered <code>AuthShell</code> variant if you need a single card layout.</li>
           <li>Illustration column = placeholder gradient + Time Off promo card (real Figma asset on hold).</li>

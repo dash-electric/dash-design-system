@@ -115,7 +115,7 @@ SheetContent.displayName = "SheetContent"
 const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="sheet-header"
-    className={cn("flex flex-col gap-1 p-5 border-b border-stroke-soft-200", className)}
+    className={cn("flex flex-col gap-1 p-6 border-b border-stroke-soft-200", className)}
     {...props}
   />
 )
@@ -149,7 +149,7 @@ SheetDescription.displayName = "SheetDescription"
 const SheetBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="sheet-body"
-    className={cn("flex-1 overflow-y-auto p-5", className)}
+    className={cn("flex-1 overflow-y-auto p-6", className)}
     {...props}
   />
 )
@@ -158,7 +158,7 @@ const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   <div
     data-slot="sheet-footer"
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-5 border-t border-stroke-soft-200",
+      "flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-6 border-t border-stroke-soft-200",
       className,
     )}
     {...props}

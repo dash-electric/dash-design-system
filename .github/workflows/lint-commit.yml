@@ -64,7 +64,7 @@ jobs:
             echo "No commitlint config — skipping per-commit validation."
             exit 0
           fi
-          npx --yes @commitlint/cli@latest \
+          npx --yes @commitlint/cli@19 \
             --from "${{ github.event.pull_request.base.sha }}" \
             --to "${{ github.event.pull_request.head.sha }}" \
             --verbose

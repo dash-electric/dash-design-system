@@ -46,4 +46,35 @@ describe("get_rules tool registration", () => {
     expect(a).toBe("# rules body");
     expect(b).toBe(a);
   });
+
+  it("declares the `variant` enum (full | compressed)", () => {
+    const variant = GET_RULES_TOOL.inputSchema.properties.variant;
+    expect(variant.enum).toEqual(["full", "compressed"]);
+    expect(variant.default).toBe("full");
+  });
+});
+
+describe("get_rules variant", () => {
+  it("defaults to the full dash-ai-rules.md", async () => {
+    const client = mockClient({
+      rawFiles: {
+        "dash-ai-rules.md": "# full rules",
+        "dash-ai-rules.compressed.md": "# compressed rules",
+      },
+    });
+    expect(await runGetAiRules(client)).toBe("# full rules");
+    expect(await runGetAiRules(client, { variant: "full" })).toBe("# full rules");
+  });
+
+  it("variant:compressed reads dash-ai-rules.compressed.md", async () => {
+    const client = mockClient({
+      rawFiles: {
+        "dash-ai-rules.md": "# full rules",
+        "dash-ai-rules.compressed.md": "# compressed rules",
+      },
+    });
+    expect(await runGetAiRules(client, { variant: "compressed" })).toBe(
+      "# compressed rules",
+    );
+  });
 });

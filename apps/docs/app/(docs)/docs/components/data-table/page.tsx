@@ -284,7 +284,7 @@ const columns: ColumnDef<Mitra>[] = [
           <li>• <strong>Sortable headers</strong> — render <code className="text-xs">role=&quot;columnheader&quot;</code> with <code className="text-xs">aria-sort</code> set to <code className="text-xs">ascending</code>, <code className="text-xs">descending</code>, or <code className="text-xs">none</code>. The clickable header is a button — Enter/Space toggles sort.</li>
           <li>• <strong>ARIA you add</strong> — wrap DataTable in an outer region with <code className="text-xs">aria-label=&quot;Mitra list&quot;</code> when multiple tables share a page.</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">Tab</code> walks header buttons + interactive cells (selection checkbox, row actions).</li>
               <li>Use SR table-navigation gestures to read row-by-row (data cells themselves aren&apos;t focusable by design).</li>
             </ul>

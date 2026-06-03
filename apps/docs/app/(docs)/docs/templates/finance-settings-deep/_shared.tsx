@@ -92,7 +92,7 @@ export const NAV: {
 /** 264px left rail — mirrors `lg:flex` settings-menu desktop view. */
 export function SettingsNavRail({ active }: { active: NavId }) {
   return (
-    <aside className="hidden w-[264px] shrink-0 flex-col gap-5 border-r border-stroke-soft-200 p-5 lg:flex">
+    <aside className="hidden w-[264px] shrink-0 flex-col gap-6 border-r border-stroke-soft-200 p-6 lg:flex">
       <div>
         <div className="text-base font-medium text-text-strong-950">
           Settings

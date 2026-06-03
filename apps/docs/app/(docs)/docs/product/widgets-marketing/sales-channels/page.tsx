@@ -97,7 +97,7 @@ function SalesChannelsWidget() {
   const total = current.reduce((a, b) => a + b.value, 0)
 
   return (
-    <div className="relative flex w-full flex-col gap-4 rounded-2xl bg-bg-white-0 p-5 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
+    <div className="relative flex w-full flex-col gap-4 rounded-2xl bg-bg-white-0 p-6 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex items-start gap-2">
         <div className="flex-1">
           <div className="flex items-center gap-1">
@@ -185,7 +185,7 @@ export default function SalesChannelsWidgetPage() {
         <DocsExample
           title="No channels yet"
           preview={
-            <div className="max-w-md mx-auto rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200 space-y-3">
+            <div className="max-w-md mx-auto rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200 space-y-3">
               <div className="text-sm font-medium text-text-sub-600">Sales Channels</div>
               <div className="flex gap-1">
                 {[1, 1, 1].map((_, i) => (
@@ -210,7 +210,7 @@ export default function SalesChannelsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card: rounded-2xl, padding 20, ring stroke-soft-200, shadow-regular-xs.</li>
           <li>Header: 14px label + info icon, 24px KPI + sub-line delta, period Select on the right.</li>
           <li>Range row: start / end dates pulled from period offset (today – 1d / 7d / 1mo).</li>

@@ -130,7 +130,7 @@ export default function ListDetailPageDocs() {
         title="Composition"
         description="Two resizable columns glued by the @dash Resizable primitive. State (selection, filters) is fully parent-owned."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>list</code> — your scrollable list of rows. Each row should call back into parent state on click.</li>
           <li><code>listToolbar</code> — search input, filter chips, "+ Add" button. Sticky at the top of the list pane.</li>
           <li><code>detail</code> — read-only or editable view of the selected entity.</li>
@@ -140,7 +140,7 @@ export default function ListDetailPageDocs() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for any resource-browser screen — mitra, trips, dispatch queue, payouts, tickets.</li>
           <li><strong>Use</strong> when users primarily scan and select, then act on one item at a time.</li>
           <li><strong>Use</strong> when the detail panel is small-to-medium (fits within 65% width).</li>

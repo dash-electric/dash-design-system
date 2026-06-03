@@ -13,8 +13,11 @@ export function DocsSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden lg:block w-64 shrink-0 border-r border-border h-[calc(100vh-3.5rem)] sticky top-14 overflow-y-auto">
-      <nav className="px-4 py-6 space-y-7">
+    <aside
+      aria-label="Docs navigation"
+      className="hidden lg:block w-64 shrink-0 border-r border-border h-[calc(100vh-3.5rem)] sticky top-14 overflow-y-auto"
+    >
+      <nav aria-label="Documentation sections" className="px-4 py-6 space-y-7">
         {navSections.map((section) => (
           <div key={section.title}>
             <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-2">

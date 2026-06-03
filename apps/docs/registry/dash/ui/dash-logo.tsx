@@ -20,7 +20,18 @@ import { cn } from "@/registry/dash/lib/utils"
  *   - "white"    : mono-light fill on dark surface
  */
 
-const DASH_PURPLE = "#5E2AAC"
+/**
+ * Brand constants — MUST stay in lock-step with Layer-0 CSS tokens:
+ *   DASH_PURPLE === --dash-purple-500 (apps/docs/registry/dash/foundation/tokens/colors.css)
+ *   DASH_BLACK  === literal #010101 logo-wordmark ink (Figma 254:96)
+ *
+ * Architectural note (audit C2): the canonical source-of-truth for brand
+ * color is the CSS token. These TS consts are a derived mirror used by
+ * the swatch display on the dash-logo docs page (where the user copy-
+ * pastes a hex into Figma / non-web contexts). If the foundation CSS
+ * value moves, update BOTH this constant AND --dash-purple-500.
+ */
+const DASH_PURPLE = "#5E2AAC" // = var(--dash-purple-500)
 const DASH_BLACK = "#010101"
 
 type DashLogoStyle = "original" | "black" | "white"

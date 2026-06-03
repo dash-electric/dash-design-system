@@ -574,7 +574,7 @@ export default function ProductWidgetsDocsPage() {
           ].map((p) => (
             <div
               key={p.title}
-              className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-dashed border-(--primary-alpha-24) bg-(--primary-alpha-10)/40 p-5 min-h-[160px]"
+              className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-dashed border-(--primary-alpha-24) bg-(--primary-alpha-10)/40 p-6 min-h-[160px]"
             >
               <div className="space-y-1.5">
                 <span className="inline-flex items-center gap-1 rounded-full bg-(--primary-alpha-16) px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-(--primary-base)">
@@ -919,7 +919,7 @@ function WidgetShell({
   showInstall?: boolean
 }) {
   return (
-    <div className="group/widget relative flex h-full flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5 shadow-regular-xs transition-all duration-150 hover:border-stroke-strong-950 hover:shadow-card-sm hover:ring-1 hover:ring-(--primary-alpha-16)">
+    <div className="group/widget relative flex h-full flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6 shadow-regular-xs transition-all duration-150 hover:border-stroke-strong-950 hover:shadow-card-sm hover:ring-1 hover:ring-(--primary-alpha-16)">
       <div className="flex items-center gap-2">
         {headerNoTitle ? title : <div className="text-sm font-semibold text-text-strong-950 tracking-tight">{title}</div>}
         <div className="ml-auto inline-flex items-center gap-1.5">

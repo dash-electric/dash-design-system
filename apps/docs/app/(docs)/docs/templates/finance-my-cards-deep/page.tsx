@@ -87,7 +87,7 @@ function VirtualCard({
   logo: { letter: string; bg: string; fg: string }
 }) {
   return (
-    <div className="relative h-[188px] w-full overflow-hidden rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+    <div className="relative h-[188px] w-full overflow-hidden rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -129,7 +129,7 @@ function VirtualCard({
 /* ──────────────────────────── Physical Card ─────────────────────────────── */
 function PhysicalCard({ name }: { name: string }) {
   return (
-    <div className="relative h-[188px] w-full overflow-hidden rounded-2xl bg-text-strong-950 p-5">
+    <div className="relative h-[188px] w-full overflow-hidden rounded-2xl bg-text-strong-950 p-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -397,7 +397,7 @@ function Filters({
 /* ─────────────────────── Transaction history side panel ─────────────────── */
 function TransactionHistoryPanel({ card }: { card: CardLike }) {
   return (
-    <aside className="flex w-[400px] shrink-0 flex-col gap-4 rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+    <aside className="flex w-[400px] shrink-0 flex-col gap-4 rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex items-center justify-between">
         <div className="text-sm font-semibold text-text-strong-950">
           {card.type === "physical" ? "Physical" : "Virtual"} Card
@@ -628,7 +628,7 @@ export default function FinanceMyCardsDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Header (88px)</strong> — RiBankCardLine icon tile · title
             "My Cards" · subtitle "Organize and access your payment cards." ·
@@ -653,7 +653,7 @@ export default function FinanceMyCardsDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Sample data (verbatim from source)">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Savings Card</strong> (virtual · Active) — •••• 1234 ·
             06/27 · CVC ••• · Balance $16,058.94 · Limit $12,000.00 · Apex logo.
@@ -685,7 +685,7 @@ export default function FinanceMyCardsDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Badge / StatusBadge</strong> — Active / Inactive virtual
             card pills, Selected side-panel chip.

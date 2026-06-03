@@ -238,7 +238,7 @@ export default function PieChartPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Sweep starts at 12 o'clock, runs clockwise.</li>
           <li>Slice path = outer arc + radial line in + inner arc back + close.</li>
           <li>1px stroke <code>var(--stroke-white-0)</code> separates slices.</li>

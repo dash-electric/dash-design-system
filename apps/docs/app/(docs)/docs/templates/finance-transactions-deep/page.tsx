@@ -351,7 +351,7 @@ function TransactionsTable({
 function TransactionDetailDrawer({ row }: { row: Row }) {
   const Icon = row.toFrom.icon
   return (
-    <aside className="flex w-[380px] shrink-0 flex-col gap-4 rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200">
+    <aside className="flex w-[380px] shrink-0 flex-col gap-4 rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex items-center justify-between">
         <div className="text-sm font-semibold text-text-strong-950">
           Transaction Detail
@@ -562,7 +562,7 @@ export default function FinanceTransactionsDeepDocsPage() {
         </DocsSection>
 
         <DocsSection title="Anatomy">
-          <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+          <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
             <li>
               <strong>Header (88px)</strong> — History icon tile · "Transactions"
               · subtitle "Track your financial transactions to stay in control
@@ -596,7 +596,7 @@ export default function FinanceTransactionsDeepDocsPage() {
         </DocsSection>
 
         <DocsSection title="Sample data (verbatim from source)">
-          <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+          <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
             <li>326860a3 — Investment Return · +$560 · Checking · Wire</li>
             <li>326860b3 — James Brown · -$35.20 · Ops Payroll · Transfer (Out)</li>
             <li>326860c3 — Stock Dividend · +$1,250 · AP · ACH</li>
@@ -610,7 +610,7 @@ export default function FinanceTransactionsDeepDocsPage() {
         </DocsSection>
 
         <DocsSection title="Components used">
-          <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+          <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
             <li>
               <strong>Avatar / AvatarFallback</strong> — James Brown, Sophia
               Williams, Emma Wright, Matthew Johnson rows + 2xl hero in drawer.

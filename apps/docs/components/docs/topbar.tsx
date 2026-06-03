@@ -69,7 +69,10 @@ export function DocsTopbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 h-14 border-b border-stroke-soft-200 bg-bg-white-0/95 backdrop-blur supports-[backdrop-filter]:bg-bg-white-0/80 text-text-strong-950">
+    <header
+      role="banner"
+      className="sticky top-0 z-40 h-14 border-b border-stroke-soft-200 bg-bg-white-0/95 backdrop-blur supports-[backdrop-filter]:bg-bg-white-0/80 text-text-strong-950"
+    >
       <div className="h-full px-4 lg:px-6 flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2 mr-2" aria-label="Dash Design System home">
           {/* Official Dash mark — registry/dash/ui/dash-logo.tsx, viewBox 32×28.8 */}
@@ -82,7 +85,7 @@ export function DocsTopbar() {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-0">
+        <nav aria-label="Primary" className="flex items-center gap-0">
           {TOP_LINKS.map((link) => {
             const active = link.match.test(pathname ?? "")
             return (

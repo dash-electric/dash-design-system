@@ -94,7 +94,7 @@ const fancyButtonVariants = cva(
         md: "h-10 px-3.5 text-sm rounded-[10px] gap-1 [&_svg]:size-5", // Medium (40) r=10 pad=10 (default)
         // Dash extensions
         lg: "h-11 px-4 text-sm rounded-[10px] gap-1.5 [&_svg]:size-5",
-        xl: "h-12 px-5 text-base rounded-[10px] gap-2 [&_svg]:size-5",
+        xl: "h-12 px-6 text-base rounded-[10px] gap-2 [&_svg]:size-5",
       },
     },
     defaultVariants: { tone: "primary", size: "md" },

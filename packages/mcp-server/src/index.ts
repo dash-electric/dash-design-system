@@ -31,7 +31,9 @@ import {
   formatCategoryList,
   formatComponentDetail,
   formatComponentList,
+  formatDesignContext,
   formatError,
+  formatGlossary,
   formatTemplateList,
   formatTokenList,
 } from "./lib/markdown-response.js";
@@ -41,7 +43,17 @@ import {
   GET_AI_RULES_TOOL,
   GET_RULES_TOOL,
   runGetAiRules,
+  type GetRulesInput,
 } from "./tools/get-ai-rules.js";
+import {
+  GET_DESIGN_CONTEXT_TOOL,
+  runGetDesignContext,
+} from "./tools/get-design-context.js";
+import {
+  GET_GLOSSARY_TOOL,
+  runGetGlossary,
+  type GetGlossaryInput,
+} from "./tools/get-glossary.js";
 import {
   GET_AUDIT_CHECKLIST_TOOL,
   runGetAuditChecklist,
@@ -81,6 +93,8 @@ const TOOLS = [
   // Deprecated alias — same handler. Remove in v0.3.
   GET_AI_RULES_TOOL,
   GET_AUDIT_CHECKLIST_TOOL,
+  GET_DESIGN_CONTEXT_TOOL,
+  GET_GLOSSARY_TOOL,
 ];
 
 async function main(): Promise<void> {
@@ -165,16 +179,25 @@ async function dispatch(
       process.stderr.write(
         `[${SERVER_NAME}] DEPRECATED: tool "get_ai_rules" renamed to "get_rules" — will be removed in v0.3\n`,
       );
-      const markdown = await runGetAiRules(client);
+      const markdown = await runGetAiRules(client, args as unknown as GetRulesInput);
       return formatAiRules(markdown);
     }
     case "get_rules": {
-      const markdown = await runGetAiRules(client);
+      const markdown = await runGetAiRules(client, args as unknown as GetRulesInput);
       return formatAiRules(markdown);
     }
     case "get_audit_checklist": {
       const markdown = await runGetAuditChecklist(client);
       return formatAuditChecklist(markdown);
+    }
+    case "get_design_context": {
+      const result = await runGetDesignContext(client);
+      return formatDesignContext(result);
+    }
+    case "get_glossary": {
+      const input = args as unknown as GetGlossaryInput;
+      const result = await runGetGlossary(client, input);
+      return formatGlossary(result.glossary);
     }
     default:
       throw new Error(`Unknown tool: ${name}`);

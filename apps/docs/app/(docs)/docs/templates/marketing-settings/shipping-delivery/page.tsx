@@ -49,10 +49,10 @@ const PROC_TIMES = [
 function ShippingMethodsForm() {
   const methodRow = (label: string, sub: string, price: string, on: boolean) => (
     <div
-      className="grid items-center gap-4 sm:gap-5"
+      className="grid items-center gap-4 sm:gap-6"
       style={{ gridTemplateColumns: "minmax(0, 1fr) 312px" }}
     >
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-6">
         <Switch defaultChecked={on} />
         <div>
           <div className="text-sm font-medium text-text-strong-950">{label}</div>
@@ -217,7 +217,7 @@ export default function MarketingSettingsShippingDeliveryPage() {
           description="Three method rows. Each: Switch + label/hint + editable price Input (312px). Standard $29.90, Express $49.90, Free $0 (off by default)."
           preview={<ShippingDeliveryPreview tab="Shipping Methods" />}
           code={`<div className="grid grid-cols-[minmax(0,1fr),312px]">
-  <div className="flex items-center gap-5">
+  <div className="flex items-center gap-6">
     <Switch defaultChecked />
     <div>
       <div>Standard Shipping</div>

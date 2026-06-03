@@ -40,7 +40,7 @@ export default function HRAuthStyle1ResetPasswordPage() {
         />
       </DocsSection>
       <DocsSection title="Anatomy">
-        <ul className="list-disc pl-5 space-y-1.5 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1.5 text-sm text-text-sub-600">
           <li><strong>HeroIcon</strong> — RiDoorLockLine glyph.</li>
           <li><strong>Field</strong> — Email Address with hint "Enter the email with which you&apos;ve registered."</li>
           <li><strong>Submit</strong> — FancyButton primary "Reset Password".</li>

@@ -95,8 +95,8 @@ export default function TotalVisitorsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
-          <li>Card shell: rounded-2xl + ring stroke-soft-200 + p-5 + gap-5.</li>
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
+          <li>Card shell: rounded-2xl + ring stroke-soft-200 + p-6 + gap-5.</li>
           <li>Header: label "Total Visitors" + title amount + trend Badge + Report button.</li>
           <li>Line divider between header and grid.</li>
           <li>3 columns separated by dashed vertical dividers. Each column: label + % value + delta + 8px colored bar.</li>
@@ -122,7 +122,7 @@ const TONE_BG: Record<WidgetTone, string> = {
 
 function WidgetShell({ className, children, tone = "neutral" }: { className?: string; children: React.ReactNode; tone?: WidgetTone }) {
   return (
-    <div className={cn("relative flex w-full flex-col gap-5 rounded-2xl p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200", TONE_BG[tone], className)}>
+    <div className={cn("relative flex w-full flex-col gap-6 rounded-2xl p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200", TONE_BG[tone], className)}>
       {children}
     </div>
   )

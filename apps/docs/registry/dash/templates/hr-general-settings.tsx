@@ -163,7 +163,7 @@ export function HrGeneralSettings({ className }: HrGeneralSettingsProps) {
                       aria-checked={selected}
                       onClick={() => setTheme(t.id)}
                       className={cn(
-                        "flex flex-col items-center gap-2 rounded-xl border bg-bg-white-0 px-4 py-5 text-center transition-colors",
+                        "flex flex-col items-center gap-2 rounded-xl border bg-bg-white-0 px-4 py-6 text-center transition-colors",
                         selected
                           ? "border-(--primary-base) ring-2 ring-(--primary-alpha-16)"
                           : "border-stroke-soft-200 hover:border-stroke-sub-300",

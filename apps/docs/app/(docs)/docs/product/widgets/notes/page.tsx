@@ -129,7 +129,7 @@ export default function NotesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Leading checkbox</strong> — 16×16 circle, success-base fill when done, soft stroke when active.</li>
           <li><strong>Title + description</strong> — 14/12 type pair. Both mute to soft-400 on completion (no strikethrough — Figma 3872:24015).</li>
           <li><strong>Trailing date</strong> — calendar icon + short month/day text, sub-600 tone (soft-400 on done).</li>
@@ -138,7 +138,7 @@ export default function NotesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Usage">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Cap the widget at 3–4 rows in the dashboard — link to a fuller list via See&nbsp;All.</li>
           <li>Sort active items above completed; let completed fade beneath the fold.</li>
           <li>Reserve the first tag slot for urgency (Today / Overdue), second slot for status.</li>

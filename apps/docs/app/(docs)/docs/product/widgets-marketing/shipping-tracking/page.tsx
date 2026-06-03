@@ -121,7 +121,7 @@ function ShippingTrackingWidget() {
 
   return (
     <div className="relative flex w-full flex-col rounded-2xl bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
-      <div className="flex flex-col gap-4 p-5">
+      <div className="flex flex-col gap-4 p-6">
         <div className="flex items-start gap-2">
           <div className="flex-1">
             <div className="flex items-center gap-1">
@@ -164,7 +164,7 @@ function ShippingTrackingWidget() {
         </div>
       </div>
 
-      <div className="flex h-12 items-center gap-2 border-y border-stroke-soft-200 px-5">
+      <div className="flex h-12 items-center gap-2 border-y border-stroke-soft-200 px-6">
         <div className="flex flex-1 items-center gap-2">
           <span className="inline-flex size-6 shrink-0 items-center justify-center rounded bg-bg-weak-50 text-[10px] text-text-soft-400">
             {product.name[0]}
@@ -192,7 +192,7 @@ function ShippingTrackingWidget() {
       </div>
 
       <div
-        className="flex items-center px-[38px]"
+        className="flex items-center px-[40px]"
         style={{
           height: 152,
           background: `
@@ -265,7 +265,7 @@ export default function ShippingTrackingWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card: rounded-2xl, ring-1 stroke-soft-200, shadow-regular-xs.</li>
           <li>Header column: 14px label + info tooltip, 24px KPI + success badge, period Select.</li>
           <li>Pills: 28px h, bg-weak-50 default, primary-alpha-10 + primary-base active.</li>

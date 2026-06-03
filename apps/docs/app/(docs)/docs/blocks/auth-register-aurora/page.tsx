@@ -35,7 +35,7 @@ export default function AuthRegisterAuroraDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>BrandMark</code> 56×56 round, primary tone.</li>
           <li><code>SocialButton brand="google" block</code> as single full-width SSO.</li>
           <li><code>ContentDivider</code> with "atau" centred between SSO and form.</li>

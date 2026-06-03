@@ -143,7 +143,7 @@ export default function MarketingChannelsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Header: label + tooltip info icon + KPI + "+2.1% vs last week" copy + Details button.</li>
           <li>3-color category bar (Organic Search 45 / Social Media 40 / Direct 15).</li>
           <li>Dashed divider.</li>
@@ -169,8 +169,8 @@ function WidgetShell({
   return (
     <div
       className={cn(
-        "relative flex w-full flex-col gap-5",
-        card && "rounded-2xl bg-bg-white-0 p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200",
+        "relative flex w-full flex-col gap-6",
+        card && "rounded-2xl bg-bg-white-0 p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200",
         className,
       )}
     >

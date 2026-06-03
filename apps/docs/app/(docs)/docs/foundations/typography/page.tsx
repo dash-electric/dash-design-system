@@ -45,7 +45,7 @@ const subheadingStyles: TypeStyle[] = [
 
 function StyleRow({ style }: { style: TypeStyle }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr_220px] items-center gap-4 px-5 py-5">
+    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr_220px] items-center gap-4 px-6 py-6">
       <div>
         <div className="text-sm font-medium text-foreground">{style.name}</div>
         <div className="text-[10px] text-muted-foreground mt-0.5">
@@ -145,7 +145,7 @@ export default function TypographyPage() {
             body: "Plus Jakarta Sans is the sole Dash typeface — brand, product UI, dashboards, code, kbd, and tokens all share it.",
           },
         ].map((item) => (
-          <div key={item.title} className="rounded-lg border border-border bg-card p-5">
+          <div key={item.title} className="rounded-lg border border-border bg-card p-6">
             <div className="text-sm font-semibold text-foreground mb-1.5">{item.title}</div>
             <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
           </div>
@@ -155,7 +155,7 @@ export default function TypographyPage() {
       {/* Font stacks */}
       <section>
         <h2 className="text-xl font-semibold tracking-tight mb-4">Font stack</h2>
-        <div className="rounded-lg border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-6">
           <div className="text-xs text-muted-foreground mb-1">--font-sans</div>
           <div className="text-2xl font-medium mb-1">Plus Jakarta Sans</div>
           <div className="text-sm text-muted-foreground">

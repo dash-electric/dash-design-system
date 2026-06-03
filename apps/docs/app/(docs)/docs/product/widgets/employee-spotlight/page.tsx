@@ -143,7 +143,7 @@ export default function EmployeeSpotlightWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Tab strip</strong> — full-width SegmentedControl in the header slot. Three equal-flex tabs.</li>
           <li><strong>Ribbon medallion</strong> — scalloped primary-alpha-24 ring around a centred bg-white-0 disc.</li>
           <li><strong>Comment row</strong> — 32px avatar + name (xs strong) + body (sm) + trailing heart toggle.</li>
@@ -152,7 +152,7 @@ export default function EmployeeSpotlightWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Usage">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Refresh the spotlight monthly — the caption should always name the recognition window ("…of January").</li>
           <li>Comments tab caps at 3 visible rows; longer threads should scroll inside the body region.</li>
           <li>Rewards tab is optional — only render when an actual reward has been issued for the period.</li>

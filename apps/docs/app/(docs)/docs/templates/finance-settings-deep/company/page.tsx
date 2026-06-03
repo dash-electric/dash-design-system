@@ -27,12 +27,12 @@ function CompanySectionBody() {
       <div className="px-4 lg:px-8">
         <Divider />
       </div>
-      <div className="flex w-full flex-col gap-5 px-4 py-6 lg:px-8">
+      <div className="flex w-full flex-col gap-6 px-4 py-6 lg:px-8">
         <FieldRow
           label="Upload Logo"
           description="Min 400x400px, PNG or JPEG formats."
         >
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6">
             <Avatar size="2xl" shape="rounded">
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
@@ -132,7 +132,7 @@ export default function FinanceSettingsDeepCompanyPage() {
       </DocsSection>
 
       <DocsSection title="Field inventory">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Upload Logo</strong> —
             56px rounded Avatar with "A" fallback (source uses

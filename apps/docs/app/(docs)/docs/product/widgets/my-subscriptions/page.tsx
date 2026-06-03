@@ -203,7 +203,7 @@ export default function MySubscriptionsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — title + See All stroke button.</li>
           <li><strong>Promo banner</strong> — soft tinted card, brand circle on the left, headline + Learn More link.</li>
           <li><strong>Row</strong> — brand circle + (name + price) + status badge + 3-dot menu.</li>

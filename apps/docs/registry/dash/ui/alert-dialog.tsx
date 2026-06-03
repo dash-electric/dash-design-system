@@ -67,7 +67,7 @@ AlertDialogContent.displayName = "AlertDialogContent"
 const AlertDialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="alert-dialog-header"
-    className={cn("flex flex-col gap-1 p-5 pb-3", className)}
+    className={cn("flex flex-col gap-1 p-6 pb-3", className)}
     {...props}
   />
 )
@@ -102,7 +102,7 @@ const AlertDialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDiv
   <div
     data-slot="alert-dialog-footer"
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-5 pt-3 border-t border-stroke-soft-200",
+      "flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-6 pt-3 border-t border-stroke-soft-200",
       className,
     )}
     {...props}

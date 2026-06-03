@@ -53,20 +53,30 @@ export default function DashLogoDocsPage() {
           title="Dash Electric — full brand card"
           preview={
             <div className="rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6 max-w-4xl">
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center gap-3 mb-6">
                 <DashLogo variant="mark" style="original" size="lg" />
                 <div>
                   <div className="text-base font-semibold text-text-strong-950">Dash Electric</div>
                   <div className="text-xs text-text-sub-600">Full power of fleet logistics</div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-                {STYLES.map((s) => (
-                  <VariantChip key={`mark-${s}`} variant="mark" style={s} />
-                ))}
-                {STYLES.map((s) => (
-                  <VariantChip key={`wordmark-${s}`} variant="wordmark" style={s} />
-                ))}
+              <div className="space-y-4">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-text-soft-400 mb-2">Symbol</div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {STYLES.map((s) => (
+                      <VariantChip key={`mark-${s}`} variant="mark" style={s} />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-text-soft-400 mb-2">Wordmark</div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {STYLES.map((s) => (
+                      <VariantChip key={`wordmark-${s}`} variant="wordmark" style={s} />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           }

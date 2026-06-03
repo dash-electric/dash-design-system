@@ -1,0 +1,59 @@
+{
+  "_comment": "Allowlist for apps/docs/scripts/audit-tokens.mjs. Each entry: file (path from apps/docs/), category, optional line, and reason. Omit line to allow file-wide for that category.",
+  "_categories": [
+    "spacing-off-grid",
+    "radius-off-grid",
+    "font-size",
+    "tw-arbitrary",
+    "tw-offgrid-class",
+    "inline-style"
+  ],
+  "allowed": [
+    {
+      "file": "registry/dash/foundation/tokens/typography.css",
+      "category": "font-size",
+      "reason": "This file DEFINES the typography scale. Each --text-* var declares its px value — auditor sees the line as a property assignment not a var definition because the value sits on a separate line."
+    },
+    {
+      "file": "registry/dash/ui/shield-crown.tsx",
+      "category": "tw-arbitrary",
+      "reason": "pb-[1px] is hairline kerning for crown-tip vertical alignment over the shield. Sub-token micro-adjust, not spacing rhythm."
+    },
+    {
+      "file": "app/globals.css",
+      "category": "font-size",
+      "reason": "Global docs typography scale (h1..h6 + .text-* utility classes mirror typography.css). Definitional, not consumption."
+    },
+    {
+      "file": "app/(docs)/docs/templates/_hr-auth-shared.tsx",
+      "category": "tw-arbitrary",
+      "reason": "Marketing-auth hero illustration uses large decorative whitespace (py-[72px], pl-[76px], py-[120px]) beyond Dash component-rhythm grid (caps at 48). Layout-decoration, not component spacing."
+    },
+    {
+      "file": "app/(docs)/docs/templates/marketing-auth-login/page.tsx",
+      "category": "tw-arbitrary",
+      "reason": "py-[100px] marketing-auth hero whitespace beyond Dash grid (48). Layout-decoration."
+    },
+    {
+      "file": "app/(docs)/docs/templates/marketing-auth-register/page.tsx",
+      "category": "tw-arbitrary",
+      "reason": "py-[100px] marketing-auth hero whitespace beyond Dash grid (48). Layout-decoration."
+    },
+    {
+      "file": "app/(docs)/docs/templates/marketing-auth-reset-password/page.tsx",
+      "category": "tw-arbitrary",
+      "reason": "py-[100px] marketing-auth hero whitespace beyond Dash grid (48). Layout-decoration."
+    },
+    {
+      "file": "app/(docs)/docs/templates/marketing-auth-verification/page.tsx",
+      "category": "tw-arbitrary",
+      "reason": "py-[100px] marketing-auth hero whitespace beyond Dash grid (48). Layout-decoration."
+    },
+    {
+      "file": "app/(docs)/docs/components/tooltip/page.tsx",
+      "category": "tw-arbitrary",
+      "line": 747,
+      "reason": "pl-[68px] aligns chart x-axis labels with a custom chart canvas (data-driven offset, not spacing rhythm)."
+    }
+  ]
+}

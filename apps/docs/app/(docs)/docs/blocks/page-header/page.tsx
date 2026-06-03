@@ -48,7 +48,7 @@ export default function PageHeaderDocsPage() {
         title="Composition"
         description="Title + description + leading slot + actions slot."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>leading</strong> — <code>basic</code> | <code>avatar</code> | <code>icon</code> | <code>brand</code> | <code>company</code>.</li>
           <li><strong>actions</strong> — slot for buttons / icon-buttons / dropdowns.</li>
           <li><code>PageHeaderDefaultActions</code> — convenience trailing-actions cluster.</li>

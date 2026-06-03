@@ -339,7 +339,7 @@ export default function AlertDialogDocsPage() {
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• <strong>Role</strong> — content surface has <code className="text-xs">role=&quot;alertdialog&quot;</code>, title gets <code className="text-xs">aria-labelledby</code>, description gets <code className="text-xs">aria-describedby</code> — all auto-wired.</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">Tab</code> / <code className="text-xs">Shift+Tab</code> cycles inside the dialog (focus is trapped).</li>
               <li><code className="text-xs">Esc</code> closes — same as clicking Cancel. Override via <code className="text-xs">onEscapeKeyDown</code> for truly mandatory confirmations.</li>
               <li><code className="text-xs">Enter</code> / <code className="text-xs">Space</code> activates the focused button.</li>

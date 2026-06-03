@@ -74,7 +74,7 @@ export default function RegistryExamplesPage() {
         <p className="text-sm text-text-sub-600 mt-3">
           When you run <code className="text-xs">dashkit add badge</code>:
         </p>
-        <ol className="text-sm text-text-sub-600 list-decimal pl-5 space-y-1 mt-2">
+        <ol className="text-sm text-text-sub-600 list-decimal pl-6 space-y-1 mt-2">
           <li>CLI fetches <code className="text-xs">/r/badge.json</code>.</li>
           <li>Sees <code className="text-xs">registryDependencies: [&quot;utils&quot;]</code> — fetches <code className="text-xs">/r/utils.json</code> too.</li>
           <li>Topo-sorts: utils → badge.</li>

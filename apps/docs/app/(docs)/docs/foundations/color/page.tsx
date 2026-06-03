@@ -276,6 +276,7 @@ export default function ColorPage() {
           dont={{
             preview: (
               <div className="space-y-2">
+                {/* INTENTIONAL deprecated hex — this is a "Don't" example illustrating CR-4 (Dash Purple canonical = #5e2aac, NOT #7C4FC4). Do not replace. */}
                 <div className="flex items-center gap-2"><div className="size-8 rounded-md" style={{background: "#7C4FC4"}} /><code className="text-[10px]">bg-[#7C4FC4]</code></div>
                 <div className="flex items-center gap-2"><div className="size-8 rounded-md" style={{background: "#38C793"}} /><code className="text-[10px]">bg-[#38C793]</code></div>
                 <div className="flex items-center gap-2"><div className="size-8 rounded-md" style={{background: "#F75D5F"}} /><code className="text-[10px]">bg-[#F75D5F]</code></div>

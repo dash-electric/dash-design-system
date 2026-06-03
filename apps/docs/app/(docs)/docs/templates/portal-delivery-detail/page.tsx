@@ -102,7 +102,7 @@ export default function PortalDeliveryDetailDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Top bar</b> — Back link (←) + page title &ldquo;Delivery DE-1748581212497&rdquo; + StatusBadge + right cluster: Cancel · Download (dropdown: Shipping label + Shipping doc) · Share live tracking.</li>
           <li><b>Left widget-box</b> — Header &ldquo;Details&rdquo; · Delivery route section (Total distance 4.8 km, Pickup card, Drop-off card) · Package details (name, protection, weight, size, service type, pickup time, type) · Payment detail · Driver details (Avatar 40 + name + WhatsApp chat button) · Live tracking (blurred map placeholder + button).</li>
           <li><b>Right widget-box</b> — Header &ldquo;Delivery status&rdquo; · Optional SLA badge (On-time / Late) · Timeline with 4 events (Order placed → Driver assigned → Picked up → Out for delivery).</li>
@@ -112,7 +112,7 @@ export default function PortalDeliveryDetailDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>WidgetBox.Root / Header (matches `components/widget-box.tsx`).</li>
           <li>Divider.Root (variant `solid-text` / `line`).</li>
           <li>Badge.Root (size medium, variant lighter, color green/red for SLA).</li>
@@ -195,7 +195,7 @@ function DetailPreview() {
       <div className="flex-1 self-stretch bg-bg-white-0">
         <PortalHeader />
 
-        <div className="flex flex-col gap-5 px-8 py-6">
+        <div className="flex flex-col gap-6 px-8 py-6">
           {/* Back + title row */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -235,7 +235,7 @@ function DetailPreview() {
           </div>
 
           {/* 2-col body */}
-          <div className="grid grid-cols-[1fr_420px] gap-5">
+          <div className="grid grid-cols-[1fr_420px] gap-6">
             <DetailsCard />
             <StatusTimeline />
           </div>
@@ -252,13 +252,13 @@ function DetailPreview() {
 function DetailsCard() {
   return (
     <aside className="flex h-fit flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 shadow-regular-xs">
-      <header className="flex items-center justify-between px-5 py-4">
+      <header className="flex items-center justify-between px-6 py-4">
         <h2 className="text-base font-medium text-text-strong-950">Details</h2>
         <span className="text-xs text-text-soft-400">Last updated 11:48</span>
       </header>
 
       <SectionDivider>DELIVERY ROUTE</SectionDivider>
-      <div className="flex flex-col gap-3 px-5 py-4">
+      <div className="flex flex-col gap-3 px-6 py-4">
         <div className="text-sm text-text-sub-600">
           Total distance: <span className="text-text-strong-950">{DELIVERY.quote.distance}</span>
         </div>
@@ -300,7 +300,7 @@ function DetailsCard() {
       </div>
 
       <SectionDivider>PACKAGE DETAILS</SectionDivider>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 py-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-4 px-6 py-4">
         <FieldRow icon={<RiBox3Line className="size-4 text-text-soft-400" />} label="Package" value={DELIVERY.quote.packageName} />
         <FieldRow icon={<RiShieldCheckLine className="size-4 text-text-soft-400" />} label="Protection" value={`${DELIVERY.insurance.tier} — Coverage up to ${DELIVERY.insurance.coverage}`} />
         <RowDivider />
@@ -315,7 +315,7 @@ function DetailsCard() {
       </div>
 
       <SectionDivider>PAYMENT DETAIL</SectionDivider>
-      <div className="flex items-center justify-between gap-4 px-5 py-4">
+      <div className="flex items-center justify-between gap-4 px-6 py-4">
         <div>
           <div className="text-sm text-text-sub-600">Payment info available</div>
           <div className="mt-0.5 text-xs text-text-soft-400">{DELIVERY.billing.paymentMethod} · {DELIVERY.billing.reference}</div>
@@ -327,7 +327,7 @@ function DetailsCard() {
       </div>
 
       <SectionDivider>DRIVER DETAILS</SectionDivider>
-      <div className="flex items-center justify-between gap-4 px-5 py-4">
+      <div className="flex items-center justify-between gap-4 px-6 py-4">
         <div className="flex items-center gap-3">
           <span className="inline-flex size-10 items-center justify-center overflow-hidden rounded-full bg-(--state-feature-lighter) text-sm font-semibold text-(--state-feature-base)">
             DS
@@ -344,7 +344,7 @@ function DetailsCard() {
       </div>
 
       <SectionDivider>LIVE TRACKING</SectionDivider>
-      <div className="p-5">
+      <div className="p-6">
         <MapPlaceholder />
       </div>
     </aside>
@@ -373,7 +373,7 @@ function RowDivider() {
 
 function SectionDivider({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 border-y border-stroke-soft-200 bg-bg-weak-50 px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">
+    <div className="flex items-center gap-3 border-y border-stroke-soft-200 bg-bg-weak-50 px-6 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">
       {children}
     </div>
   )
@@ -425,7 +425,7 @@ function MapPlaceholder() {
 function StatusTimeline() {
   return (
     <aside className="flex h-fit flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 shadow-regular-xs">
-      <header className="flex items-center justify-between px-5 py-4">
+      <header className="flex items-center justify-between px-6 py-4">
         <h2 className="text-base font-medium text-text-strong-950">Delivery status</h2>
         <span className="inline-flex items-center gap-1 rounded-md bg-(--state-success-lighter) px-2 py-0.5 text-[11px] font-medium text-(--state-success-base)">
           <RiCheckboxCircleFill className="size-3.5" />
@@ -441,7 +441,7 @@ function StatusTimeline() {
           const last = index === arr.length - 1
           const Icon = STATUS_META[item.status as keyof typeof STATUS_META]?.icon ?? RiCheckboxCircleFill
           return (
-            <div className="flex w-full gap-4 px-5" key={index}>
+            <div className="flex w-full gap-4 px-6" key={index}>
               <div className="flex flex-col items-center">
                 {isFirst ? (
                   <span className="inline-flex size-7 items-center justify-center rounded-full border border-(--state-feature-base) bg-(--state-feature-lighter)">
@@ -472,7 +472,7 @@ function StatusTimeline() {
         })}
       </div>
 
-      <div className="border-t border-stroke-soft-200 p-5">
+      <div className="border-t border-stroke-soft-200 p-6">
         <FakeButton tone="primary">
           <RiReceiptLine className="size-4" /> View shipping label
         </FakeButton>

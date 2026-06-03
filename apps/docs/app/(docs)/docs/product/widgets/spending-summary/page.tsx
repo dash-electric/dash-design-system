@@ -139,7 +139,7 @@ export default function SpendingSummaryWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — title + pie icon + period dropdown (stroke neutral xs).</li>
           <li><strong>Gauge</strong> — half-donut, soft track + primary fill, "SPEND" caption above the headline.</li>
           <li><strong>Headline</strong> — total spend rendered tabular-nums xl, centered under the gauge.</li>

@@ -31,7 +31,7 @@ function ProfileSectionBody() {
       <div className="px-4 lg:px-8">
         <Divider />
       </div>
-      <div className="flex w-full flex-col gap-5 px-4 py-6 lg:px-8">
+      <div className="flex w-full flex-col gap-6 px-4 py-6 lg:px-8">
         <FieldRow
           label="Apex ID"
           description="A-12341234"
@@ -54,7 +54,7 @@ function ProfileSectionBody() {
           label="Profile Photo"
           description="Min 400x400px, PNG or JPEG formats."
         >
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6">
             <Avatar size="2xl">
               <AvatarFallback>AT</AvatarFallback>
             </Avatar>
@@ -126,7 +126,7 @@ export default function FinanceSettingsDeepProfilePage() {
       </DocsSection>
 
       <DocsSection title="Field inventory">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Apex ID</strong> — value
             <em> A-12341234</em>, right slot = Copy ID + Share ID xs stroke

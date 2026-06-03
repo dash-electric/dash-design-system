@@ -63,14 +63,14 @@ export default function FancyButtonDocsPage() {
         <DocsExample
           title="Pricing card CTA"
           preview={
-            <div className="rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-5 max-w-xs space-y-3">
+            <div className="rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-6 max-w-xs space-y-3">
               <div className="text-xs uppercase tracking-wider text-text-soft-400">Halo-dash Pro</div>
               <div className="text-3xl font-semibold tracking-tighter">Rp 1.2jt<span className="text-base text-text-sub-600">/bln</span></div>
               <p className="text-sm text-text-sub-600">Unlimited tribes · audit log · 99.9% SLA</p>
               <FancyButton size="lg" tone="primary" className="w-full"><Sparkles /> Upgrade Pro</FancyButton>
             </div>
           }
-          code={`<div className="rounded-2xl border p-5 space-y-3">
+          code={`<div className="rounded-2xl border p-6 space-y-3">
   <div>Halo-dash Pro</div>
   <div className="text-3xl">Rp 1.2jt/bln</div>
   <FancyButton size="lg" className="w-full">

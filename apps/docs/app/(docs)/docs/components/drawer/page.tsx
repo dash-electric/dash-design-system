@@ -315,7 +315,7 @@ export default function DrawerDocsPage() {
                   </div>
                 </DrawerHeader>
                 <DrawerBody className="p-0">
-                  <div className="flex items-center border-b border-stroke-soft-200 px-5">
+                  <div className="flex items-center border-b border-stroke-soft-200 px-6">
                     {[
                       { id: "monthly", label: "Monthly Fee" },
                       { id: "onetime", label: "One-time Fee" },
@@ -336,7 +336,7 @@ export default function DrawerDocsPage() {
                       </button>
                     ))}
                   </div>
-                  <div className="p-5 space-y-3">
+                  <div className="p-6 space-y-3">
                     <label className="text-sm font-medium text-text-strong-950">Amount</label>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 inline-flex items-center gap-2 h-10 px-3 rounded-md border border-stroke-soft-200 text-sm text-text-soft-400">
@@ -348,7 +348,7 @@ export default function DrawerDocsPage() {
                     </div>
                   </div>
                   <ContentDivider variant="solid">Eligibility Criteria</ContentDivider>
-                  <div className="p-5 space-y-3">
+                  <div className="p-6 space-y-3">
                     <label className="text-sm font-medium text-text-strong-950">Prequisites</label>
                     <div className="flex items-center gap-2 h-10 px-3 rounded-md border border-stroke-soft-200 text-sm text-text-soft-400">
                       Prequisites
@@ -359,7 +359,7 @@ export default function DrawerDocsPage() {
                     </label>
                   </div>
                   <ContentDivider variant="solid">Payment Methods</ContentDivider>
-                  <div className="p-5 space-y-3">
+                  <div className="p-6 space-y-3">
                     {[
                       { name: "Bank Transfer", hint: "(1-3 business days)", desc: "Direct bank to bank transfers", checked: true },
                       { name: "Credit Card",   hint: "(Instant)",            desc: "All major cards accepted",      checked: false },
@@ -378,7 +378,7 @@ export default function DrawerDocsPage() {
                     ))}
                   </div>
                   <ContentDivider variant="solid">Service Availability</ContentDivider>
-                  <div className="p-5 space-y-3">
+                  <div className="p-6 space-y-3">
                     {[
                       { id: "public",  label: "Public Service",  hint: "(Recommended)", desc: "Visible to all users in the marketplace" },
                       { id: "private", label: "Private Service", hint: "",              desc: "Limited visibility for select clients"    },
@@ -447,7 +447,7 @@ export default function DrawerDocsPage() {
                   </div>
                 </DrawerHeader>
                 <DrawerBody className="p-0">
-                  <div className="px-5 pt-4">
+                  <div className="px-6 pt-4">
                     <div className="inline-flex items-center gap-2 w-full h-9 px-3 rounded-md border border-stroke-soft-200 bg-bg-white-0 text-sm text-text-soft-400">
                       <Search className="size-4" />
                       Search for help...
@@ -455,7 +455,7 @@ export default function DrawerDocsPage() {
                     </div>
                   </div>
                   <ContentDivider variant="solid" className="mt-4">Unable to Access Wallet</ContentDivider>
-                  <ul className="px-5 py-3 space-y-2">
+                  <ul className="px-6 py-3 space-y-2">
                     {[
                       ["1", "Two-Factor Authentication Issues"],
                       ["2", "Incorrect Login Information"],
@@ -466,11 +466,11 @@ export default function DrawerDocsPage() {
                       </li>
                     ))}
                   </ul>
-                  <div className="px-5 pb-4">
+                  <div className="px-6 pb-4">
                     <Button size="sm" tone="neutral" style="stroke" className="w-full">How to resolve?</Button>
                   </div>
                   <ContentDivider variant="solid">You might be looking for</ContentDivider>
-                  <ul className="px-5 py-3 space-y-2">
+                  <ul className="px-6 py-3 space-y-2">
                     {[
                       [<File key="f" className="size-4 text-icon-soft-400" />,  "Generate monthly statement?"],
                       [<Q key="q" className="size-4 text-icon-soft-400" />,     "Want to automate your bill payments?"],
@@ -480,7 +480,7 @@ export default function DrawerDocsPage() {
                     ))}
                   </ul>
                   <ContentDivider variant="solid">Self Service</ContentDivider>
-                  <ul className="px-5 py-3 divide-y divide-stroke-soft-200">
+                  <ul className="px-6 py-3 divide-y divide-stroke-soft-200">
                     {[
                       { Icon: Lock,   tone: "bg-(--state-success-light) text-(--state-success-dark)",       title: "Reset Password",   desc: "Reset your online banking password." },
                       { Icon: Shield, tone: "bg-(--state-information-light) text-(--state-information-dark)", title: "Account Security", desc: "Update authentication settings." },
@@ -540,7 +540,7 @@ export default function DrawerDocsPage() {
             { name: "DrawerHeader", type: "div", description: "Container for DrawerTitle + DrawerDescription + close button. Apply your own padding override via className." },
             { name: "DrawerTitle", type: "Dialog.Title", description: "Required for a11y. text-base font-medium tracking-tight." },
             { name: "DrawerDescription", type: "Dialog.Description", description: "Optional sub-text below the title." },
-            { name: "DrawerBody", type: "div", description: "Scrollable middle region (flex-1 overflow-y-auto p-5). Override padding for full-bleed sections." },
+            { name: "DrawerBody", type: "div", description: "Scrollable middle region (flex-1 overflow-y-auto p-6). Override padding for full-bleed sections." },
             { name: "DrawerFooter", type: "div", description: "Action row pinned at the bottom. Stacks reverse on mobile, row-justify-end on sm+." },
             { name: "DrawerClose", type: "Dialog.Close", description: "Apply asChild to a Button/CompactButton trigger." },
           ]}

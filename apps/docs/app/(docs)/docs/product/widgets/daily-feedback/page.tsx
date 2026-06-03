@@ -193,7 +193,7 @@ export default function DailyFeedbackWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Question prompt</strong> — sm body, text-strong-950, centred above the rating row.</li>
           <li><strong>Mood row</strong> — 5 emoji buttons, gap-2, 2xl emoji size. Active disc = primary-alpha-10.</li>
           <li><strong>Submit CTA</strong> — filled primary Button (sm). Disabled when value is null.</li>
@@ -202,7 +202,7 @@ export default function DailyFeedbackWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Usage">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Stage one question per session; don&apos;t chain &gt; 3 questions a day.</li>
           <li>Roll over to aggregate state only once your team has at least 5 responses for the period.</li>
           <li>Preserve emoji order — left-to-right intensity grows. Do not localise or swap glyphs without research.</li>

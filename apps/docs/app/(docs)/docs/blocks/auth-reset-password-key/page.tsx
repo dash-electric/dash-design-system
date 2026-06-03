@@ -35,7 +35,7 @@ export default function AuthResetPasswordKeyDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>One-step request flow — pair with a success state screen after submit.</li>
           <li>Support link sits in the footer for users locked out beyond reset.</li>
         </ul>

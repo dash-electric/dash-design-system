@@ -124,7 +124,7 @@ const NotificationItem = React.forwardRef<HTMLDivElement, NotificationItemProps>
       data-slot="notification-item"
       data-unread={unread ? "true" : undefined}
       className={cn(
-        "relative flex gap-[15px] px-3 py-3 rounded-xl transition-colors",
+        "relative flex gap-4 px-3 py-3 rounded-xl transition-colors",
         "hover:bg-bg-weak-50",
         unread && "bg-(--dash-purple-50)/40",
         className,

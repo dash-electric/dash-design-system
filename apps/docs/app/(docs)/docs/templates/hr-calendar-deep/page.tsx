@@ -539,7 +539,7 @@ function HrCalendarPreview() {
       <div className="px-8">
         <Divider />
       </div>
-      <div className="flex flex-col gap-5 px-8 pb-8 pt-4">
+      <div className="flex flex-col gap-6 px-8 pb-8 pt-4">
         <CalendarFilters />
         <CalendarTabs />
         <BigCalendar />
@@ -567,7 +567,7 @@ export default function HrCalendarDeepDocsPage() {
         title="Anatomy"
         description="Four stacked zones inside the content column. Header is divided from the body by a full-width Divider — the source pattern across Calendar / Teams / Integrations."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Header</strong> — circular calendar-icon avatar + bold date
             "February 04, 2024" + subheading "You have 2 meetings and 1 events
@@ -590,7 +590,7 @@ export default function HrCalendarDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Button</strong> — Schedule, Create Request, Today, Filter, settings icon-only.</li>
           <li><strong>InputRoot / Input / InputIcon</strong> — search 300px w/ kbd hint.</li>
           <li><strong>Kbd</strong> — ⌘1 search hint.</li>

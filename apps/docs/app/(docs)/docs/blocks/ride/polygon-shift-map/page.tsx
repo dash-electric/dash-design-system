@@ -62,10 +62,10 @@ const DEMO_MITRAS: MitraPosition[] = [
   { id: "m-3", name: "Andi Wijaya", lat: -6.220, lng: 106.823, status: "delivering", vehicleType: "premium" },
   // Kemang
   { id: "m-4", name: "Bayu Saputra", lat: -6.260, lng: 106.820, status: "idle", vehicleType: "motor" },
-  { id: "m-5", name: "Dewi Lestari", lat: -6.258, lng: 106.822, status: "active", vehicleType: "car" },
+  { id: "m-6", name: "Dewi Lestari", lat: -6.258, lng: 106.822, status: "active", vehicleType: "car" },
   // Senayan
   { id: "m-6", name: "Reza Tamara", lat: -6.222, lng: 106.802, status: "idle", vehicleType: "car" },
-  { id: "m-7", name: "Maya Damayanti", lat: -6.225, lng: 106.805, status: "active", vehicleType: "motor" },
+  { id: "m-8", name: "Maya Damayanti", lat: -6.225, lng: 106.805, status: "active", vehicleType: "motor" },
   { id: "m-8", name: "Faisal Rahman", lat: -6.220, lng: 106.808, status: "delivering", vehicleType: "premium" },
 ]
 
@@ -149,7 +149,7 @@ export default function PolygonShiftMapDocsPage() {
           Each zone is classified by the ratio of <code>currentDrivers</code>{" "}
           to <code>requiredDrivers</code>:
         </p>
-        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-5 max-w-3xl">
+        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-6 max-w-3xl">
           <li><strong>Under</strong> — ratio &lt; 0.8 (red badge, broadcast action enabled)</li>
           <li><strong>Balanced</strong> — 0.8 ≤ ratio ≤ 1.2 (green badge)</li>
           <li><strong>Over</strong> — ratio &gt; 1.2 (blue badge, signals you can pull mitras to under zones)</li>
@@ -199,7 +199,7 @@ export default function PolygonShiftMapDocsPage() {
           Trail, the caller MUST persist when <code>onBroadcastBonus</code>{" "}
           fires:
         </p>
-        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-5 max-w-3xl">
+        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-6 max-w-3xl">
           <li><code>dispatcherId</code> + <code>zoneId</code></li>
           <li><code>zoneSnapshot</code> (required / current driver counts at the moment of broadcast)</li>
           <li><code>broadcastAt</code> ISO timestamp (server-side)</li>

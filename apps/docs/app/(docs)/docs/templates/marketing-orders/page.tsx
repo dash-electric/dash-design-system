@@ -66,7 +66,7 @@ export default function MarketingOrdersDocsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><b>Header</b> — History icon disc + “Orders” + subtitle + New Product CTA.</li>
           <li><b>Summary</b> — 4 KPI tiles: Total Orders 1,248 (+12), Total Revenue $48,294 (+8%), Average Order Value $86.45 (-2%), Pending Orders 28.</li>
           <li><b>Toolbar</b> — Search orders… input + Last 7 days · Feb 04 - Feb 11, 2024 ButtonGroup + All Status + Filter + Export.</li>
@@ -77,7 +77,7 @@ export default function MarketingOrdersDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Checkbox — header + row select.</li>
           <li>Avatar — customer 24px.</li>
           <li>StatusBadge — Paid (icon-light success).</li>
@@ -169,7 +169,7 @@ function OrdersPreview() {
 
 function SummaryTile({ label, value, delta, suffix, up, muted }: { label: string; value: string; delta?: string; suffix: string; up?: boolean; muted?: boolean }) {
   return (
-    <div className="px-7 first:pl-0 last:pr-0">
+    <div className="px-8 first:pl-0 last:pr-0">
       <div className="text-xs text-text-sub-600">{label}</div>
       <div className="mt-1 flex items-baseline gap-1.5">
         <div className="text-xl font-semibold tracking-tight text-text-strong-950">{value}</div>
@@ -318,7 +318,7 @@ function PageBtn({ children, current }: { children: React.ReactNode; current?: b
 function OrderDetailPanel() {
   return (
     <aside className="flex h-fit flex-col self-start rounded-2xl border border-stroke-soft-200 bg-bg-white-0 shadow-regular-xs">
-      <header className="flex items-start gap-4 p-5">
+      <header className="flex items-start gap-4 p-6">
         <div className="flex-1">
           <div className="text-base font-semibold text-text-strong-950">Order #98745</div>
           <div className="mt-1 text-sm text-text-sub-600">Oct 29, 2024 • $478.80</div>
@@ -334,7 +334,7 @@ function OrderDetailPanel() {
 
       <SectionDivider>ORDER SUMMARY</SectionDivider>
 
-      <div className="flex flex-col gap-4 p-5">
+      <div className="flex flex-col gap-4 p-6">
         <div className="flex items-center gap-4">
           <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-bg-weak-50">
             <RiShoppingBag2Line className="size-6 text-text-sub-600" />
@@ -354,7 +354,7 @@ function OrderDetailPanel() {
 
       <SectionDivider>CUSTOMER</SectionDivider>
 
-      <div className="p-5">
+      <div className="p-6">
         <div className="flex items-center gap-4">
           <span className="inline-flex size-12 items-center justify-center rounded-full bg-(--state-warning-lighter) text-sm font-semibold text-(--state-warning-base)">SW</span>
           <div>
@@ -366,7 +366,7 @@ function OrderDetailPanel() {
 
       <SectionDivider>TIMELINE</SectionDivider>
 
-      <div className="flex flex-col gap-6 p-5">
+      <div className="flex flex-col gap-6 p-6">
         <TimelineRow icon={<RiShoppingBag2Line className="size-4 text-success-base" />} title="Order confirmed" subtitle="Order placed and confirmed" date="4 Nov 2024, 05:16" />
         <TimelineRow icon={<RiGiftLine className="size-4 text-(--state-feature-base)" />} title="Package prepared" subtitle="Packed and handed to DHL Express" date="4 Nov 2024, 09:45" />
         <TimelineRow icon={<RiTimeLine className="size-4 text-warning-base" />} title="In transit" subtitle="Package in transit" date="4 Nov 2024, 14:30" />
@@ -374,7 +374,7 @@ function OrderDetailPanel() {
       </div>
 
       <div className="mt-auto border-t border-stroke-soft-200">
-        <div className="grid grid-cols-2 gap-4 p-5">
+        <div className="grid grid-cols-2 gap-4 p-6">
           <FakeButton>Cancel</FakeButton>
           <FakeButton tone="primary">Save Changes</FakeButton>
         </div>
@@ -385,7 +385,7 @@ function OrderDetailPanel() {
 
 function SectionDivider({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex items-center gap-3 border-y border-stroke-soft-200 bg-bg-weak-50 px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">
+    <div className="relative flex items-center gap-3 border-y border-stroke-soft-200 bg-bg-weak-50 px-6 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">
       {children}
     </div>
   )

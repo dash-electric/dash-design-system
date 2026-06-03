@@ -155,7 +155,7 @@ export function HaloDash3Pane({
           {/* PANE 2: Conversation */}
           <ResizablePanel defaultSize={45} minSize={30}>
             <div className="flex h-full flex-col bg-bg-white-0">
-              <header className="border-b border-stroke-soft-200 px-5 py-3">
+              <header className="border-b border-stroke-soft-200 px-6 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <div className="text-base font-semibold text-text-strong-950">{selected.subject}</div>
@@ -174,7 +174,7 @@ export function HaloDash3Pane({
                 </div>
               </header>
 
-              <ScrollArea className="flex-1 px-5 py-4">
+              <ScrollArea className="flex-1 px-6 py-4">
                 <div className="space-y-4 max-w-2xl">
                   {/* Customer message */}
                   <div className="flex gap-3">

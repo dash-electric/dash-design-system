@@ -109,7 +109,7 @@ export function HrProfileSettings({
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Photo */}
-            <section className="flex items-start gap-5">
+            <section className="flex items-start gap-6">
               <Avatar size="xl">
                 <AvatarFallback>
                   {userName.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase()}

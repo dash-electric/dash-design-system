@@ -93,7 +93,7 @@ export default function ExchangeWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — title + refresh icon + Currencies stroke button.</li>
           <li><strong>Pair selector</strong> — left currency pill + central swap action + right currency pill.</li>
           <li><strong>Headline</strong> — large tabular-nums amount + Available subtitle.</li>

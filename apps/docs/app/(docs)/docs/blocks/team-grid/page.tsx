@@ -37,7 +37,7 @@ export default function TeamGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Each card: <code>Avatar</code> + name + role + email + status <code>Badge</code>.</li>
           <li>Footer — Message <code>Button</code> + overflow <code>IconButton</code>.</li>
           <li>Grid responsive: 1 mobile / 2 tablet / 3 desktop.</li>
@@ -46,7 +46,7 @@ export default function TeamGridDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on Settings → Team tab.</li>
           <li><strong>Use</strong> for tribe-leadership directory pages.</li>
           <li><strong>Use</strong> when each member has a clear primary action (Message, Invite, Manage).</li>

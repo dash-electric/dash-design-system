@@ -82,7 +82,7 @@ export default function SubscriptionRowsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Leading slot is always 28 × 28 (rounded full).</li>
           <li>Title 13px medium, description 11px sub-text. Both single-line + truncate.</li>
           <li>Trailing column right-aligns price (13px medium) + date (11px sub-text).</li>

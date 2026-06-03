@@ -1,0 +1,832 @@
+{
+  "generatedAt": "2026-06-03T10:17:24.556Z",
+  "includedCount": 51,
+  "skippedCount": 46,
+  "included": [
+    {
+      "slug": "alert",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "animated-alert",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": [
+        "alert"
+      ]
+    },
+    {
+      "slug": "announcement-bar",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "badge",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "banner",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "brand-logo",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "brand-mark",
+      "externals": [
+        "react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "breadcrumb",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "button",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "button-group",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "card",
+      "externals": [
+        "react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "compact-button",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "dash-logo",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "discount-line-item",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "dot-stepper",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "empty-state",
+      "externals": [
+        "react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "empty-state-illustration",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "fancy-button",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "fancy-loader",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "field",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "file-upload",
+      "externals": [
+        "react",
+        "class-variance-authority",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "flag",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "form",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot"
+      ],
+      "siblingDeps": [
+        "label",
+        "hint"
+      ]
+    },
+    {
+      "slug": "hint",
+      "externals": [
+        "react",
+        "@remixicon/react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "icon-button",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "information-banner",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": [
+        "icon-button"
+      ]
+    },
+    {
+      "slug": "input",
+      "externals": [
+        "react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "kbd",
+      "externals": [
+        "react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "label",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "link-button",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "notification-onboarding",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": [
+        "icon-button",
+        "button"
+      ]
+    },
+    {
+      "slug": "pagination",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "password-input",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": [
+        "input"
+      ]
+    },
+    {
+      "slug": "price-with-discount",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "progress-circle",
+      "externals": [
+        "react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "rating",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "rich-editor",
+      "externals": [
+        "react",
+        "@tiptap/react",
+        "@tiptap/starter-kit",
+        "@tiptap/extension-link",
+        "@tiptap/extension-placeholder",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "shield-crown",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "shimmer",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "sidebar",
+      "externals": [
+        "react",
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "skeleton",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "social-button",
+      "externals": [
+        "react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "spinner",
+      "externals": [
+        "react",
+        "@remixicon/react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "spinner-loader",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "stat",
+      "externals": [
+        "react",
+        "@remixicon/react",
+        "class-variance-authority"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "step-indicator",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "table",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "tag",
+      "externals": [
+        "react",
+        "class-variance-authority",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "textarea",
+      "externals": [
+        "react"
+      ],
+      "siblingDeps": []
+    },
+    {
+      "slug": "time-picker",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": [
+        "input"
+      ]
+    },
+    {
+      "slug": "widget-shell",
+      "externals": [
+        "react",
+        "@remixicon/react"
+      ],
+      "siblingDeps": []
+    }
+  ],
+  "skipped": [
+    {
+      "slug": "accordion",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-accordion",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "activity-feed",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-avatar",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "alert-dialog",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-alert-dialog"
+      ]
+    },
+    {
+      "slug": "aspect-ratio",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "@radix-ui/react-aspect-ratio"
+      ]
+    },
+    {
+      "slug": "avatar",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-avatar",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "calendar",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@remixicon/react",
+        "react-day-picker"
+      ]
+    },
+    {
+      "slug": "carousel",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "embla-carousel-react",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "chart",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "recharts"
+      ]
+    },
+    {
+      "slug": "checkbox",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-checkbox",
+        "class-variance-authority",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "collapsible",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-collapsible"
+      ]
+    },
+    {
+      "slug": "color-picker",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "react-colorful",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "command",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "cmdk",
+        "@radix-ui/react-dialog",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "context-menu",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-context-menu",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "data-table",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@tanstack/react-table",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "date-picker",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-popover",
+        "date-fns",
+        "@remixicon/react",
+        "react-day-picker"
+      ]
+    },
+    {
+      "slug": "divider",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-separator",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "drawer",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-dialog",
+        "class-variance-authority",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "dropdown-menu",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-dropdown-menu",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "hover-card",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-hover-card"
+      ]
+    },
+    {
+      "slug": "input-otp",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "input-otp",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "menubar",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-menubar",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "modal",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-dialog",
+        "class-variance-authority",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "navigation-menu",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-navigation-menu",
+        "@remixicon/react",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "notification-feed",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-avatar"
+      ]
+    },
+    {
+      "slug": "popover",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-popover"
+      ]
+    },
+    {
+      "slug": "progress-bar",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-progress",
+        "class-variance-authority",
+        "Progress Bar Line"
+      ]
+    },
+    {
+      "slug": "radio",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-radio-group",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "resizable",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@remixicon/react",
+        "react-resizable-panels"
+      ]
+    },
+    {
+      "slug": "scroll-area",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-scroll-area"
+      ]
+    },
+    {
+      "slug": "segmented-control",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-toggle-group",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "select",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-select",
+        "@remixicon/react",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "sheet",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-dialog",
+        "class-variance-authority",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "slider",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-slider"
+      ]
+    },
+    {
+      "slug": "switch",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-switch",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "tabs",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-tabs",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "toaster",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "sonner",
+        "@remixicon/react"
+      ]
+    },
+    {
+      "slug": "toggle-group",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-toggle-group",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "toggle",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-toggle",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "tooltip",
+      "reason": "banned-or-heavy-external",
+      "details": [
+        "react",
+        "@radix-ui/react-tooltip",
+        "class-variance-authority"
+      ]
+    },
+    {
+      "slug": "availability-status",
+      "reason": "transitive-skip",
+      "details": [
+        "tooltip"
+      ]
+    },
+    {
+      "slug": "bulk-action-bar",
+      "reason": "transitive-skip",
+      "details": [
+        "dropdown-menu"
+      ]
+    },
+    {
+      "slug": "combobox",
+      "reason": "transitive-skip",
+      "details": [
+        "popover"
+      ]
+    },
+    {
+      "slug": "filter",
+      "reason": "transitive-skip",
+      "details": [
+        "popover"
+      ]
+    },
+    {
+      "slug": "language-select",
+      "reason": "transitive-skip",
+      "details": [
+        "select"
+      ]
+    },
+    {
+      "slug": "theme-switch",
+      "reason": "transitive-skip",
+      "details": [
+        "segmented-control"
+      ]
+    },
+    {
+      "slug": "upload-card",
+      "reason": "transitive-skip",
+      "details": [
+        "progress-bar"
+      ]
+    }
+  ]
+}

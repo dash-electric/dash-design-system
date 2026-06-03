@@ -21,7 +21,7 @@ export default function DashSkillPage() {
         title="What it does"
         description="Skills are versioned knowledge packs. Dash Skill installs into Claude Code / Cursor / Windsurf and teaches the AI:"
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li><strong className="text-text-strong-950">Naming conventions</strong> — when to say Field vs FormField, IconButton vs Button, etc.</li>
           <li><strong className="text-text-strong-950">Decision tree</strong> — &quot;need a status badge → use Badge with status prop, not raw bg-color&quot;.</li>
           <li><strong className="text-text-strong-950">Token discipline</strong> — semantic over raw, dark-mode pitfalls, custom override patterns.</li>
@@ -72,7 +72,7 @@ dashkit skill install`}
       </DocsSection>
 
       <DocsSection title="Roadmap">
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li><strong className="text-text-strong-950">WK01</strong> — Skill Phase 2 scaffold shipped as <code className="text-xs">@dash/skill</code> (SKILL.md + frontmatter, content pending pilot).</li>
           <li><strong className="text-text-strong-950">WK02</strong> — <code className="text-xs">dashkit info --json</code> introspection wired into the scaffold.</li>
           <li><strong className="text-text-strong-950">WK03</strong> — beta with 2 internal teams (Halo-dash + Express), measure correct &quot;reach for X&quot; rate.</li>

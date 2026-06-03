@@ -159,7 +159,7 @@ export default function FinanceSendMoneyWizardPage() {
         </DocsSection>
 
         <DocsSection title="Anatomy">
-          <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+          <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
             <li>
               <strong>Layout</strong> — desktop: 264px sidebar + 1392px content
               max; mobile: pager strip + progress bar + step indicator pill.
@@ -218,7 +218,7 @@ export default function FinanceSendMoneyWizardPage() {
         </DocsSection>
 
         <DocsSection title="Primitive substitutions">
-          <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+          <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
             <li>
               <code>VerticalStepper.Root</code> /{" "}
               <code>VerticalStepper.Item</code> /{" "}
@@ -344,7 +344,7 @@ function SendMoneyWizard() {
 
       {/* Desktop sidebar */}
       <div className="hidden flex-1 flex-col self-stretch p-2 lg:flex">
-        <div className="flex w-[264px] flex-1 shrink-0 flex-col gap-3 rounded-2xl bg-bg-weak-50 px-4 pb-4 pt-5">
+        <div className="flex w-[264px] flex-1 shrink-0 flex-col gap-3 rounded-2xl bg-bg-weak-50 px-4 pb-4 pt-6">
           <div className="w-full flex-1">
             <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-soft-400">
               Transfer Sequence
@@ -753,7 +753,7 @@ function Step3() {
       />
 
       <div className="w-full shrink-0 rounded-[20px] bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200 min-[420px]:w-[400px]">
-        <div className="flex items-center gap-3.5 py-4 pl-5 pr-6">
+        <div className="flex items-center gap-3.5 py-4 pl-6 pr-6">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
             <RiBankLine className="size-5 text-text-sub-600" />
           </div>
@@ -815,7 +815,7 @@ function Step3() {
 
         <Divider />
 
-        <div className="flex items-center gap-2 px-5 py-4">
+        <div className="flex items-center gap-2 px-6 py-4">
           <Switch id="recurring" />
           <label htmlFor="recurring" className="text-sm text-text-strong-950">
             Recurring payment
@@ -824,7 +824,7 @@ function Step3() {
 
         <Divider />
 
-        <div className="grid grid-cols-2 gap-4 px-5 py-4">
+        <div className="grid grid-cols-2 gap-4 px-6 py-4">
           <Button tone="neutral" style="stroke" size="md">
             Back
           </Button>
@@ -893,7 +893,7 @@ function Step4() {
 
         <Divider />
 
-        <div className="grid grid-cols-2 gap-4 px-5 py-4">
+        <div className="grid grid-cols-2 gap-4 px-6 py-4">
           <Button tone="neutral" style="stroke" size="md">
             Discard
           </Button>

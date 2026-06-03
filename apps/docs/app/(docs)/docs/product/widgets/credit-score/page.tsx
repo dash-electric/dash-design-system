@@ -116,7 +116,7 @@ export default function CreditScoreWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Header</strong> — title + trailing stroke button (Details or + Apply).</li>
           <li><strong>Headline</strong> — "Your credit score is" sub copy + bold tabular-nums score, inline on one line.</li>
           <li><strong>Subtitle</strong> — single sentence with the tier verdict ("is considered to be Excellent").</li>
@@ -157,7 +157,7 @@ function GaugeTicks({ score, max = 850, empty = false }: { score: number; max?: 
   const ratio = empty ? 0 : Math.max(0, Math.min(1, (score - 300) / (max - 300)))
   const filled = Math.round(total * ratio)
   return (
-    <div className="flex items-end gap-[3px]" aria-hidden>
+    <div className="flex items-end gap-[2px]" aria-hidden>
       {Array.from({ length: total }).map((_, i) => (
         <span
           key={i}

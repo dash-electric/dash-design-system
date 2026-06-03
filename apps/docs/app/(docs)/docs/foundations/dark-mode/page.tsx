@@ -135,7 +135,7 @@ export function ThemeToggle() {
         title="Testing dark mode"
         description="Three ways to verify your build looks right both directions."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-2">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-2">
           <li>
             <strong className="text-text-strong-950">Toggle in-app:</strong>{" "}
             click the theme toggle (above). Halo-dash topbar ships one out of the box.
@@ -243,6 +243,8 @@ export function ThemeToggle() {
             caption: "Dark surface paired with high-contrast text passes WCAG-AAA. Numbers, status badges, axis labels all readable.",
           }}
           dont={{
+            // INTENTIONAL deprecated hex below — this is a "Don't" example showing
+            // why brand purple as dark-mode body text fails WCAG-AA. Do not replace.
             preview: (
               <div className="rounded-lg p-3 text-xs space-y-1" style={{background: "#1A1422", color: "#7C4FC4"}}>
                 <p className="font-semibold">Mitra aktif</p>

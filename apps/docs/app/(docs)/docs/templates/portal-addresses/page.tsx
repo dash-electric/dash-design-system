@@ -88,7 +88,7 @@ export default function PortalAddressesPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Title block</strong> — verbatim source: title <code>{`t('title')`}</code> = “Address”, subtitle = “Manage your pickup and delivery addresses”.</li>
           <li><strong>Primary CTA</strong> — Dropdown with trigger “Create Address” (<code>RiAddFill</code>), hidden on mobile.</li>
           <li><strong>Dropdown items</strong> — “Add Manual” (<code>RiAddFill</code>) and “Upload CSV” (<code>RiUpload2Line</code>) — each opens a modal.</li>
@@ -101,7 +101,7 @@ export default function PortalAddressesPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>Button</code> + <code>DropdownMenu</code> — Create Address picker.</li>
           <li><code>IconButton</code> — row actions (kebab).</li>
           <li><code>InputRoot</code> / <code>Input</code> / <code>InputIcon</code> — search.</li>

@@ -222,7 +222,7 @@ export default function DriverAssignmentBoardDocsPage() {
           <code>onAssign</code>. Per Dash AI Rules § Audit Trail, every
           assignment for a Ride request MUST persist:
         </p>
-        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-5 max-w-3xl">
+        <ul className="text-sm text-text-sub-600 space-y-1 list-disc pl-6 max-w-3xl">
           <li><code>requestId</code> + <code>driverId</code></li>
           <li><code>dispatcherId</code> (passed as a prop, included in the audit payload)</li>
           <li><code>method</code> — <code>"manual"</code> or <code>"bulk"</code> (caller derives from UX context)</li>

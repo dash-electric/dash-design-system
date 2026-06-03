@@ -69,7 +69,7 @@ export default function FinanceMyCardsCompactWidgetPage() {
                     </ButtonGroupItem>
                   ))}
                 </ButtonGroup>
-                <div className="mt-5 flex items-center gap-4">
+                <div className="mt-6 flex items-center gap-4">
                   <ProgressCircle value={50} size={48} showLabel={false} />
                   <div className="flex-1">
                     <div className="text-xs text-text-sub-600">Spending Limit</div>
@@ -111,7 +111,7 @@ export default function FinanceMyCardsCompactWidgetPage() {
                 title={<><RiBankCardLine className="size-4 text-icon-sub-600" /> My Cards</>}
                 action={<Button tone="neutral" style="stroke" size="xs"><RiAddLine /> Add Card</Button>}
               >
-                <div className="flex flex-col items-center gap-3 p-5">
+                <div className="flex flex-col items-center gap-3 p-6">
                   <RiBankCardLine className="size-10 text-icon-soft-400" />
                   <p className="text-center text-sm text-text-soft-400">You do not have any cards yet.<br />Click the button to add one.</p>
                   <Button tone="neutral" style="stroke" size="xs"><RiAddLine /> Add Card</Button>
@@ -135,7 +135,7 @@ export default function FinanceMyCardsCompactWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Virtual card</strong> — 188px tall, max-w-96. Top row = card brand logo + RiWifiLine (rotated 90°) + Active/Inactive StatusBadge + mastercard glyph (right). Bottom = card name + title-h4 balance.</li>
           <li><strong>ButtonGroup</strong> — 3 segments xxsmall, full-width, default active = Weekly.</li>
           <li><strong>Bottom row</strong> — 48px ProgressCircle (50%) + "Spending Limit" $1,500.00 / week + Compact stroke chevron CompactButton.</li>
@@ -157,7 +157,7 @@ function WidgetShell({
   className?: string
 }) {
   return (
-    <div className={cn("rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-4 pb-5 shadow-sm", className)}>
+    <div className={cn("rounded-2xl border border-stroke-soft-200 bg-bg-white-0 p-4 pb-6 shadow-sm", className)}>
       <div className="flex items-center gap-2 min-h-8 mb-3">
         <div className="flex flex-1 items-center gap-2 text-sm font-medium text-text-strong-950">{title}</div>
         {action}
@@ -214,7 +214,7 @@ function VirtualCard({
     <div
       data-card-id={id}
       className={cn(
-        "relative mx-auto flex h-[188px] w-full max-w-96 shrink-0 flex-col gap-3 rounded-2xl bg-bg-white-0 p-5 pb-4 ring-1 ring-inset ring-stroke-soft-200",
+        "relative mx-auto flex h-[188px] w-full max-w-96 shrink-0 flex-col gap-3 rounded-2xl bg-bg-white-0 p-6 pb-4 ring-1 ring-inset ring-stroke-soft-200",
       )}
     >
       <div className="flex items-center justify-between">

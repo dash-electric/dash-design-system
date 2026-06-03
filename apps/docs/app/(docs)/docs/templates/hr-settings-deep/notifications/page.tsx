@@ -237,7 +237,7 @@ export default function HrSettingsDeepNotificationsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong>Row layout</strong> — control on the left (Switch or
             Checkbox aligned to the top), label + helper text on the right.

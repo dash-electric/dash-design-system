@@ -60,7 +60,7 @@ export default function FinanceTotalExpensesWidgetPage() {
           title="$0.00"
           preview={
             <div className="max-w-sm">
-              <div className="relative flex h-[178px] flex-col rounded-2xl bg-bg-white-0 p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
+              <div className="relative flex h-[178px] flex-col rounded-2xl bg-bg-white-0 p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
                 <div className="flex size-10 items-center justify-center rounded-full bg-bg-white-0 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
                   <RiArrowLeftDownLine className="size-5 text-text-sub-600" />
                 </div>
@@ -89,7 +89,7 @@ export default function FinanceTotalExpensesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Container</strong> — 178px tall rounded-2xl card; only padding/shadow differ from TotalBalance.</li>
           <li><strong>Avatar</strong> — top-left 40px circular icon ring (RiArrowLeftDownLine in sub-600).</li>
           <li><strong>Sparkline</strong> — absolute top-right, 120×40 area chart with a single colored stroke + light fill.</li>
@@ -102,7 +102,7 @@ export default function FinanceTotalExpensesWidgetPage() {
 
 function TotalExpensesCard() {
   return (
-    <div className="relative flex h-[178px] flex-col rounded-2xl bg-gradient-to-br from-error-lighter to-bg-white-0 p-5 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
+    <div className="relative flex h-[178px] flex-col rounded-2xl bg-gradient-to-br from-error-lighter to-bg-white-0 p-6 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex size-10 items-center justify-center rounded-full bg-bg-white-0 shadow-sm ring-1 ring-inset ring-stroke-soft-200">
         <RiArrowLeftDownLine className="size-5 text-text-sub-600" />
       </div>

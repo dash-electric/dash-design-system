@@ -262,7 +262,7 @@ export default function ContextMenuDocsPage() {
           <li>• <strong>Trigger</strong> — listens for <code className="text-xs">contextmenu</code> event (right-click on desktop, long-press on touch).</li>
           <li>• <strong>Role</strong> — Content is <code className="text-xs">role=&quot;menu&quot;</code>; items are <code className="text-xs">role=&quot;menuitem&quot;</code> / <code className="text-xs">menuitemcheckbox</code> / <code className="text-xs">menuitemradio</code>.</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li>Open via <code className="text-xs">Shift+F10</code> or <code className="text-xs">Menu</code> key when the trigger has focus.</li>
               <li><code className="text-xs">↑</code> / <code className="text-xs">↓</code> walks items. <code className="text-xs">→</code> opens submenu, <code className="text-xs">←</code> closes it.</li>
               <li><code className="text-xs">Enter</code> / <code className="text-xs">Space</code> activates the focused item.</li>

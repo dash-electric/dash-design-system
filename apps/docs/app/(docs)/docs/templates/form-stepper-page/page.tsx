@@ -114,7 +114,7 @@ export default function FormStepperPageDocs() {
         title="Composition"
         description="Pure layout — the template renders chrome (indicator + footer), you render fields."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Step indicator — driven by <code>steps</code> + <code>currentIndex</code>. Use <code>{`step.description`}</code> for the short subtext under each label.</li>
           <li>Body — render whatever fields you want. Inside, prefer <code>FieldGroup</code> + <code>Field</code> + <code>Label</code> + <code>InputRoot</code> stacks.</li>
           <li>Footer — Prev/Next/Complete buttons are auto-disabled at the boundaries. Override labels via <code>nextLabel</code> / <code>prevLabel</code> / <code>completeLabel</code>.</li>
@@ -124,7 +124,7 @@ export default function FormStepperPageDocs() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for any onboarding flow ≥ 3 steps where progress visibility helps completion.</li>
           <li><strong>Use</strong> for dispute / appeal / override flows where the user is committing to a decision.</li>
           <li><strong>Use</strong> when each step has a clear "next" action — not exploratory.</li>

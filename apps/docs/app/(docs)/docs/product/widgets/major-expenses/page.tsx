@@ -116,7 +116,7 @@ export default function MajorExpensesWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li>Card shell with title left + range dropdown trigger right (stroke button with ChevronDown).</li>
           <li>Three rows, one per category: 64px label + flexible track + amount.</li>
           <li>Each bar uses its category color from the 3-color stack legend (Housing blue, Utilities cyan, Food purple).</li>

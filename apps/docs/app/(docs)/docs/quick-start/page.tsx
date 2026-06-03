@@ -261,7 +261,7 @@ gh pr create --fill`}
             imagePlaceholder="Claude /mcp output showing dash-ds in 'connected' state with green dot — what success looks like."
             imageHeight="sm"
           >
-            <ol className="text-sm text-text-sub-600 list-decimal pl-5 space-y-1">
+            <ol className="text-sm text-text-sub-600 list-decimal pl-6 space-y-1">
               <li>
                 Check <code className="text-xs">/mcp</code> in Claude Code. Is{" "}
                 <code className="text-xs">dash-ds</code> listed?
@@ -286,7 +286,7 @@ gh pr create --fill`}
             imagePlaceholder="Terminal showing a 401 Unauthorized error from dashkit add — with the highlighted line for token mismatch."
             imageHeight="sm"
           >
-            <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+            <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
               <li>
                 <strong>401 Unauthorized</strong> — Token expired or wrong. Re-export{" "}
                 <code className="text-xs">DASH_REGISTRY_TOKEN</code> or ping #dash-ds for a fresh one.
@@ -331,7 +331,7 @@ export default {
             imagePlaceholder="dashkit add prompt showing the three-option dialog: Overwrite / Skip / Rename (with arrow keys hint)."
             imageHeight="sm"
           >
-            <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+            <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
               <li>
                 <strong>Overwrite</strong> — accept the Dash version, port repo-specific logic on top in a follow-up commit.
               </li>
@@ -348,7 +348,7 @@ export default {
       </DocsSection>
 
       <DocsSection title="Next steps">
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
             <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/components/button">
               Components → Button

@@ -198,7 +198,7 @@ function TeamMembersTable() {
             <TableHead>
               <SortHeader>Role</SortHeader>
             </TableHead>
-            <TableHead className="w-[60px] px-5" />
+            <TableHead className="w-[60px] px-6" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -232,7 +232,7 @@ function TeamMembersTable() {
                   {m.role}
                 </StatusBadge>
               </TableCell>
-              <TableCell className="h-12 w-0 px-5">
+              <TableCell className="h-12 w-0 px-6">
                 <Button
                   tone="neutral"
                   style="ghost"
@@ -289,7 +289,7 @@ export default function FinanceSettingsDeepTeamPage() {
       </DocsSection>
 
       <DocsSection title="Members">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Arthur Taylor</strong>{" "}
             (CEO) · arthur@alignui.com · Today, 3:52 PM
@@ -314,7 +314,7 @@ export default function FinanceSettingsDeepTeamPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Filters</strong> —
             mobile-only InputRoot with inline filter button, then a 3-segment

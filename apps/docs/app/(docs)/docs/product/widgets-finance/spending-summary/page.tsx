@@ -135,7 +135,7 @@ export default function FinanceSpendingSummaryWidgetPage() {
             <div className="max-w-md">
               <WidgetShell title={<><RiPieChartLine className="size-4 text-icon-sub-600" /> Spending Summary</>}>
                 <Divider />
-                <div className="flex flex-col items-center gap-3 p-5 pt-8">
+                <div className="flex flex-col items-center gap-3 p-6 pt-8">
                   <RiPieChartLine className="size-10 text-icon-soft-400" />
                   <p className="text-center text-sm text-text-soft-400">No records of spendings yet.<br />Please check back later.</p>
                 </div>
@@ -158,7 +158,7 @@ export default function FinanceSpendingSummaryWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Donut chart</strong> — outer ring with 4-color slices. Center stack = uppercase SPEND caption + title-h5 amount.</li>
           <li><strong>Category row</strong> — 3-up grid divided by vertical dividers; each cell = 32px tinted bubble + name + amount.</li>
           <li><strong>Info pill</strong> — boxed paragraph-xs caption with trailing info icon (disabled-300 tone).</li>

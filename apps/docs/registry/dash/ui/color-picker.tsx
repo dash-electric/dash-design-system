@@ -162,7 +162,7 @@ const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
       <style>{`
         .dash-color-picker.react-colorful { width: 224px; height: 200px; gap: 10px; }
         .dash-color-picker .react-colorful__saturation { border-radius: 8px; border-bottom: 0; }
-        .dash-color-picker .react-colorful__hue { height: 14px; border-radius: 999px; }
+        .dash-color-picker .react-colorful__hue { height: 14px; border-radius: 9999px; }
         .dash-color-picker .react-colorful__pointer { width: 16px; height: 16px; border-width: 2px; }
       `}</style>
       <div className="flex items-center gap-2">

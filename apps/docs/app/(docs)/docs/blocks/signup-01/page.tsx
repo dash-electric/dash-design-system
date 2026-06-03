@@ -36,7 +36,7 @@ export default function SignupBlock01DocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Standard <code>InputRoot</code> + <code>Label</code> stack: nama, email kerja, password.</li>
           <li>Terms agreement uses <code>Checkbox</code> with inline <code>LinkButton</code> for ToS + Privacy.</li>
           <li>Submit <code>Button</code> is full width, primary tone.</li>
@@ -45,7 +45,7 @@ export default function SignupBlock01DocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for internal Dash account creation (developer invitations).</li>
           <li><strong>Use</strong> when KYC is handled later in a separate flow.</li>
           <li><strong>Don't</strong> use for mitra signup — they need tribe selection inline; reach for <code>FormStepperPage</code>.</li>

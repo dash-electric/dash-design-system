@@ -123,7 +123,7 @@ export default function HROnboardingWizardPage() {
       ))}
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc pl-5 space-y-1.5 text-sm text-text-sub-600">
+        <ul className="list-disc pl-6 space-y-1.5 text-sm text-text-sub-600">
           <li><strong>Header</strong> — brand mark (left), horizontal step indicator (center), close button (right).</li>
           <li><strong>Stepper</strong> — 5 indices (Personal · Role · Position · Password · Summary).</li>
           <li><strong>Back button</strong> — absolute-positioned at top-left of the content frame; "Back" → previous step.</li>
@@ -155,7 +155,7 @@ function GetStartedShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-[860px] flex-col bg-bg-white-0">
       <div className="border-b border-stroke-soft-200 bg-bg-white-0 lg:h-[88px]">
-        <div className="mx-auto flex h-full w-full max-w-[1392px] items-center justify-between gap-6 px-5 lg:py-0">
+        <div className="mx-auto flex h-full w-full max-w-[1392px] items-center justify-between gap-6 px-6 lg:py-0">
           <BrandMark />
           <div className="flex gap-3">
             <div className="flex items-center gap-4">
@@ -171,7 +171,7 @@ function GetStartedShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <div className="relative isolate mx-auto flex w-full max-w-[1392px] flex-1 flex-col">
-        <div className="w-full px-5">{children}</div>
+        <div className="w-full px-6">{children}</div>
         <OnboardingFooterRow />
       </div>
     </div>
@@ -188,7 +188,7 @@ function WizardShell({
   return (
     <div className="flex min-h-[860px] flex-col bg-bg-white-0">
       <div className="border-b border-stroke-soft-200 bg-bg-white-0 lg:h-[88px]">
-        <div className="mx-auto grid h-full w-full max-w-[1392px] grid-cols-[minmax(0,1fr),auto,minmax(0,1fr)] items-center gap-6 px-5">
+        <div className="mx-auto grid h-full w-full max-w-[1392px] grid-cols-[minmax(0,1fr),auto,minmax(0,1fr)] items-center gap-6 px-6">
           <BrandMark />
           <WizardStepper activeStep={activeStep} />
           <Button
@@ -208,7 +208,7 @@ function WizardShell({
             Back
           </Button>
         </div>
-        <div className="w-full px-5 py-12">{children}</div>
+        <div className="w-full px-6 py-12">{children}</div>
         <OnboardingFooterRow />
       </div>
     </div>
@@ -248,7 +248,7 @@ function BrandMark() {
 
 function OnboardingFooterRow() {
   return (
-    <div className="mt-auto flex items-center justify-between gap-4 px-5 py-6">
+    <div className="mt-auto flex items-center justify-between gap-4 px-6 py-6">
       <div className="text-sm text-text-sub-600">© 2024 Synergy HR</div>
       <div className="text-sm text-text-sub-600">English (UK)</div>
     </div>
@@ -696,7 +696,7 @@ function StepSummary() {
         </div>
       </div>
 
-      <div className="space-y-4 rounded-2xl bg-bg-white-0 px-4 py-[15px] ring-1 ring-inset ring-stroke-soft-200">
+      <div className="space-y-4 rounded-2xl bg-bg-white-0 px-4 py-[16px] ring-1 ring-inset ring-stroke-soft-200">
         <SummaryRow icon={RiAccountPinBoxLine} label="Full Name" value="James Brown" />
         <Divider />
         <SummaryRow icon={RiAtLine} label="Username" value="@jamesbrown" />

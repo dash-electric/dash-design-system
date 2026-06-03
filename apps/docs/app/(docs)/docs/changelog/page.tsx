@@ -220,7 +220,7 @@ export default function ChangelogPage() {
                 <div className={`text-xs uppercase tracking-wider mb-1.5 ${kindStyle[g.kind]}`}>
                   {g.kind}
                 </div>
-                <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+                <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
                   {g.items.map((item, i) => (
                     <li key={i}>{item}</li>
                   ))}

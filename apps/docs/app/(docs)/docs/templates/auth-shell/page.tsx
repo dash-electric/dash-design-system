@@ -154,7 +154,7 @@ export default function AuthShellDocsPage() {
         title="Composition"
         description="AuthShell is a pure layout — no business logic. You compose your own form inside, then swap variant for the page-level look."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>variant="centered"</code> wraps children in a max-w-md card on neutral background.</li>
           <li><code>variant="split"</code> renders a 50/50 grid with branded hero panel + form panel.</li>
           <li><code>brand</code>, <code>title</code>, <code>description</code>, and <code>footer</code> are all <code>ReactNode</code> — pass anything from text to <code>&lt;LinkButton&gt;</code> nodes.</li>
@@ -164,7 +164,7 @@ export default function AuthShellDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> for any unauthenticated route — <code>/login</code>, <code>/signup</code>, <code>/forgot-password</code>, <code>/verify</code>.</li>
           <li><strong>Use</strong> centered variant for internal tools where speed-to-form matters (Halo-dash, developer backoffice).</li>
           <li><strong>Use</strong> split variant for public-facing signup where brand storytelling helps conversion (Tribe-Express mitra recruitment).</li>
@@ -202,7 +202,7 @@ export default function AuthShellDocsPage() {
           dont={{
             preview: (
               <div className="w-full max-w-md h-32 rounded-lg border border-stroke-soft-200 bg-bg-white-0 overflow-hidden relative">
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,#7C4FC4,#FF6B9D)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,var(--dash-purple-500),#FF6B9D)]" />
                 <div className="absolute inset-4 rounded bg-bg-white-0 p-2 space-y-1"><div className="h-4 rounded bg-bg-soft-200 w-16" /><div className="h-5 rounded border border-stroke-soft-200" /></div>
               </div>
             ),

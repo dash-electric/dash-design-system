@@ -205,7 +205,7 @@ export default function ScheduleWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><span className="font-medium">Card</span> — `rounded-lg border bg-bg-white-0 p-2.5 space-y-1.5`.</li>
           <li><span className="font-medium">Header</span> — title `text-sm font-medium` + time `text-xs text-text-sub-600` stacked; badge or chevron right-aligned.</li>
           <li><span className="font-medium">Avatars</span> — `flex -space-x-1.5`, xs avatars, overflow pill `+N` border-2 white.</li>

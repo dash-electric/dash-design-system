@@ -105,7 +105,7 @@ function ModalShellPreview({ activeId = "account" }: { activeId?: string }) {
 
       {/* Right pane placeholder */}
       <div className="flex w-full min-w-0 flex-col">
-        <div className="flex w-full items-center justify-between gap-3.5 border-b border-stroke-soft-200 px-5 py-4">
+        <div className="flex w-full items-center justify-between gap-3.5 border-b border-stroke-soft-200 px-6 py-4">
           <div>
             <div className="text-base font-medium text-text-strong-950">Account Settings</div>
             <div className="mt-1 text-sm text-text-sub-600">
@@ -121,7 +121,7 @@ function ModalShellPreview({ activeId = "account" }: { activeId?: string }) {
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-6 border-b border-stroke-soft-200 px-5">
+        <div className="flex items-center gap-6 border-b border-stroke-soft-200 px-6">
           <span className="-mb-px border-b-2 border-primary-base py-3 text-sm font-medium text-text-strong-950">
             Profile
           </span>
@@ -215,7 +215,7 @@ export default function MarketingSettingsOverviewPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li><strong className="text-text-strong-950">Dialog overlay</strong> — fixed inset, 50% black overlay, fade in/out.</li>
           <li><strong className="text-text-strong-950">Dialog content</strong> — centered card, max-w 980px, min-h 680px, rounded-3xl, slide-in-from-top-6.</li>
           <li><strong className="text-text-strong-950">Sidebar (lg+)</strong> — 256px wide, 4px padding, two ContentDivider-grouped sections with a divider between.</li>

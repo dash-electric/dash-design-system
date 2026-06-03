@@ -71,7 +71,7 @@ function EmptyWidget({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 rounded-2xl bg-bg-white-0 p-5 ring-1 ring-inset ring-stroke-soft-200",
+        "flex flex-col gap-4 rounded-2xl bg-bg-white-0 p-6 ring-1 ring-inset ring-stroke-soft-200",
         className,
       )}
     >
@@ -256,7 +256,7 @@ export default function HrDashboardEmptyDocsPage() {
         title="Anatomy"
         description="Empty states share the same WidgetCard frame as the populated dashboard, replacing the data region with illustration + 1 headline line + 2 lines of body copy + a primary action."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Illustration zone</strong> — 80×80 stack of bg-weak-50
             shape + central card + accent dot. Maps to the `empty-state-illustrations/`
@@ -278,7 +278,7 @@ export default function HrDashboardEmptyDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Avatar / AvatarFallback</strong> — Sophia avatar in header + sidebar user card.</li>
           <li><strong>Button</strong> — Schedule, Create Request (header) + each widget CTA.</li>
           <li><strong>Kbd</strong> — ⌘K search hint, sidebar fav shortcuts.</li>
@@ -287,7 +287,7 @@ export default function HrDashboardEmptyDocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> on first login, after data reset, or when a feature has not yet been connected.</li>
           <li><strong>Use</strong> as a copy-deck reference for empty-state voice across HR modules.</li>
           <li><strong>Don&apos;t</strong> use partial empty states — keep the entire dashboard in one mode for predictability.</li>

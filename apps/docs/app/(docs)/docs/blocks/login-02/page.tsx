@@ -37,7 +37,7 @@ export default function LoginBlock02DocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>Uses <code>SocialButton</code> for Google + Apple brand-correct CTAs.</li>
           <li><code>Divider</code> with absolute-positioned "atau" caption separates SSO from credentials.</li>
           <li>Same <code>InputRoot</code> + <code>Label</code> + <code>Button</code> stack as Login 01 for the fallback.</li>
@@ -46,7 +46,7 @@ export default function LoginBlock02DocsPage() {
       </DocsSection>
 
       <DocsSection title="When to use">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Use</strong> when Dash users are on Google Workspace (default for developers + Ops).</li>
           <li><strong>Use</strong> when password fatigue is a known support issue — SSO cuts password reset tickets.</li>
           <li><strong>Don't</strong> use when SSO infra isn't yet wired — show only what works.</li>

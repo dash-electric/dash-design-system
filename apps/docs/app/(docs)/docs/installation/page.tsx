@@ -53,7 +53,7 @@ export default function InstallationPage() {
         title="Prerequisites"
         description="Confirm your environment hits these versions before you start. Most issues we triage in #dash-ds are version mismatches caught at this step."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>Next.js 15+ (App Router), Vite, or Remix consumer project</li>
           <li>
             Tailwind CSS v4 (uses <code className="text-xs">@theme inline</code> directive)
@@ -173,7 +173,7 @@ DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
         title="Multi-registry namespaces"
         description="Dash supports shadcn's @namespace/item protocol so one CLI can install from many registries. Bare names default to @dash (canonical); namespaced names (@trellis/foo, @logistic/bar) route to per-tenant or per-product registries declared in components.json."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
             <code className="text-xs">dashkit add button</code> — installs <code className="text-xs">@dash/button</code> (default namespace, backward compatible)
           </li>
@@ -218,7 +218,7 @@ DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
         title="Troubleshooting"
         description="If dashkit list returns 0 items: check that the bearer token isn't URL-encoded, your registry URL matches https://ds.dash.com/r/{name}.json, and your shell environment exports the token (not just the .env.local file — Next.js loads .env.local, but the CLI reads process.env)."
       >
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
             <code className="text-xs">echo $DASH_REGISTRY_TOKEN</code> — confirms shell env
           </li>
@@ -233,7 +233,7 @@ DASH_REGISTRY_TOKEN=sk-dash-xxxx`}
       </DocsSection>
 
       <DocsSection title="Next steps">
-        <ul className="text-sm text-text-sub-600 list-disc pl-5 space-y-1">
+        <ul className="text-sm text-text-sub-600 list-disc pl-6 space-y-1">
           <li>
             <Link className="text-(--dash-purple-600) underline-offset-4 hover:underline" href="/docs/quick-start">
               Quick Start

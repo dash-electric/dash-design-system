@@ -41,7 +41,7 @@ export default function BadgeUpvoteCardDocsPage() {
       </DocsSection>
 
       <DocsSection title="Composition">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><code>Card</code> wrapper + heading.</li>
           <li>Per row: rank <code>Badge</code> + <code>Avatar</code> + name + upvote <code>Button</code>.</li>
         </ul>

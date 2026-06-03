@@ -161,7 +161,7 @@ export default function FinanceExchangeWidgetPage() {
                 action={<Button tone="neutral" style="stroke" size="xs" disabled>Currencies</Button>}
               >
                 <Divider />
-                <div className="flex h-[260px] flex-col items-center justify-center gap-3 p-5">
+                <div className="flex h-[260px] flex-col items-center justify-center gap-3 p-6">
                   <RiRefreshLine className="size-10 text-icon-soft-400" />
                   <p className="text-center text-sm text-text-soft-400">Exchange feature is unavailable now. Please check back later.</p>
                   <Button tone="neutral" style="stroke" size="xs">Refresh</Button>
@@ -188,7 +188,7 @@ export default function FinanceExchangeWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Pair row</strong> — left chip + 1px divider + ghost CompactButton swap icon + 1px divider + right chip.</li>
           <li><strong>Amount block</strong> — title-h4 amount + 1-line Available row with tabular numerics.</li>
           <li><strong>Rate strip</strong> — bg-weak-50 footer band with <code>1 from = X to</code>.</li>

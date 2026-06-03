@@ -150,7 +150,7 @@ function IntegrationsFilters() {
 
 function AppsList() {
   return (
-    <div className="flex flex-col gap-5 py-5">
+    <div className="flex flex-col gap-6 py-6">
       {apps.map((app, i) => (
         <div key={app.name}>
           <div className="grid gap-4 sm:flex sm:items-center sm:gap-3">
@@ -182,7 +182,7 @@ function AppsList() {
             </Button>
           </div>
           {i < apps.length - 1 ? (
-            <div className="mt-5">
+            <div className="mt-6">
               <Divider />
             </div>
           ) : null}
@@ -208,11 +208,11 @@ function IntegrationsSectionBody() {
         <Divider />
       </div>
       <div className="flex w-full flex-1 flex-col px-4 py-6 lg:px-8">
-        <div className="pb-5">
+        <div className="pb-6">
           <IntegrationsFilters />
         </div>
         <Divider />
-        <div className="pb-5 pt-6">
+        <div className="pb-6 pt-6">
           <div className="text-base font-medium text-text-strong-950">
             All Apps
           </div>
@@ -244,7 +244,7 @@ export default function FinanceSettingsDeepIntegrationsPage() {
       </DocsSection>
 
       <DocsSection title="App inventory">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">
               Microsoft Office 365
@@ -278,7 +278,7 @@ export default function FinanceSettingsDeepIntegrationsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>
             <strong className="text-text-strong-950">Brand chip</strong> — 48px
             <code> ring-stroke-soft-200</code> circle with a 32px colored box

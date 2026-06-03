@@ -58,7 +58,7 @@ function ThemeForm() {
         <RadioGroup
           value={theme}
           onValueChange={setTheme}
-          className="flex flex-row items-center gap-5 text-sm text-text-sub-600"
+          className="flex flex-row items-center gap-6 text-sm text-text-sub-600"
         >
           <label className="flex cursor-pointer items-center gap-1.5">
             <RadioItem value="light" /> Light
@@ -187,7 +187,7 @@ export default function MarketingSettingsAppearancePage() {
           title="Interface theme, brand color, sidebar feature"
           description="RadioGroup (Light / Dark / System), 9-color brand swatch picker, and a Sidebar Feature select."
           preview={<AppearancePreview tab="Theme" />}
-          code={`<RadioGroup defaultValue="light" className="flex items-center gap-5">
+          code={`<RadioGroup defaultValue="light" className="flex items-center gap-6">
   <label className="flex items-center gap-1.5"><RadioItem value="light" /> Light</label>
   <label className="flex items-center gap-1.5"><RadioItem value="dark" /> Dark</label>
   <label className="flex items-center gap-1.5"><RadioItem value="system" /> System</label>
@@ -229,7 +229,7 @@ export default function MarketingSettingsAppearancePage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>Theme: row spans full width with label/hint on left, RadioGroup or ColorSwatch row on right.</li>
           <li>Brand color: 9 round swatches at size 28 with a 2px ring when selected (ring color = swatch).</li>
           <li>Preferences: control-then-label flex row; Checkbox aligned with label baseline.</li>

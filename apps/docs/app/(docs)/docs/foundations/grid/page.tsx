@@ -111,7 +111,7 @@ export default function GridPage() {
             body: "Gaps and paddings step on a 4px base (gap-1=4, gap-2=8, gap-3=12, gap-4=16…). No arbitrary px on layout.",
           },
         ].map((item) => (
-          <div key={item.title} className="rounded-lg border border-border bg-card p-5">
+          <div key={item.title} className="rounded-lg border border-border bg-card p-6">
             <div className="text-sm font-semibold text-foreground mb-1.5">{item.title}</div>
             <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
           </div>
@@ -127,7 +127,7 @@ export default function GridPage() {
         </p>
         <div className="rounded-lg border border-border bg-card divide-y divide-border">
           {breakpoints.map((bp) => (
-            <div key={bp.name} className="grid grid-cols-1 sm:grid-cols-[100px_120px_1fr] items-center gap-4 px-5 py-4">
+            <div key={bp.name} className="grid grid-cols-1 sm:grid-cols-[100px_120px_1fr] items-center gap-4 px-6 py-4">
               <code className="text-sm font-medium text-foreground">{bp.name}</code>
               <div className="text-xs text-muted-foreground">≥ {bp.min}px</div>
               <div className="text-sm text-muted-foreground">{bp.target}</div>
@@ -144,7 +144,7 @@ export default function GridPage() {
         </p>
         <div className="rounded-lg border border-border bg-card divide-y divide-border">
           {containers.map((c) => (
-            <div key={c.name} className="grid grid-cols-1 sm:grid-cols-[200px_120px_1fr] items-center gap-4 px-5 py-4">
+            <div key={c.name} className="grid grid-cols-1 sm:grid-cols-[200px_120px_1fr] items-center gap-4 px-6 py-4">
               <code className="text-sm font-medium text-foreground">{c.name}</code>
               <div className="text-xs text-muted-foreground">{c.px}px</div>
               <div className="text-sm text-muted-foreground">{c.use}</div>
@@ -161,7 +161,7 @@ export default function GridPage() {
         </p>
         <div className="rounded-lg border border-border bg-card divide-y divide-border">
           {gutters.map((g) => (
-            <div key={g.token} className="grid grid-cols-1 sm:grid-cols-[120px_80px_1fr_120px] items-center gap-4 px-5 py-4">
+            <div key={g.token} className="grid grid-cols-1 sm:grid-cols-[120px_80px_1fr_120px] items-center gap-4 px-6 py-4">
               <code className="text-sm font-medium text-foreground">{g.token}</code>
               <div className="text-xs text-muted-foreground">{g.px}px</div>
               <div className="text-sm text-muted-foreground">{g.use}</div>

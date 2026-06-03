@@ -210,7 +210,7 @@ export default function CollapsibleDocsPage() {
         <ul className="space-y-2 text-sm text-text-strong-950/90">
           <li>• <strong>Role</strong> — Trigger renders a real <code className="text-xs">button</code> with <code className="text-xs">aria-expanded</code> + <code className="text-xs">aria-controls</code> auto-wired to content.</li>
           <li>• <strong>Keyboard</strong>
-            <ul className="ml-5 mt-1 space-y-1 text-text-sub-600 list-disc">
+            <ul className="ml-6 mt-1 space-y-1 text-text-sub-600 list-disc">
               <li><code className="text-xs">Tab</code> moves focus to the trigger.</li>
               <li><code className="text-xs">Space</code> / <code className="text-xs">Enter</code> toggles the content.</li>
             </ul>

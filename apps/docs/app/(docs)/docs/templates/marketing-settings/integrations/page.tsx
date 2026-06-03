@@ -126,7 +126,7 @@ const API_KEYS = [
 
 function ApiSettingsForm() {
   return (
-    <div className="flex w-full min-w-0 flex-col gap-5 p-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between md:gap-6">
         <div>
           <div className="text-sm font-medium text-text-strong-950">Production Key</div>
@@ -279,7 +279,7 @@ export default function MarketingSettingsIntegrationsPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="list-disc space-y-1.5 pl-5 text-sm text-text-sub-600">
+        <ul className="list-disc space-y-1.5 pl-6 text-sm text-text-sub-600">
           <li>Connection row: 40px circle icon (ring-inset stroke-soft-200) + name (label-sm) + description (paragraph-xs) + trailing Button.</li>
           <li>API table: 532px min table width, 64px row height, Description + Key + actions columns.</li>
           <li>Connect / Disconnect / Manage all use xsmall stroke buttons (destructive tone for Disconnect).</li>

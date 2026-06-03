@@ -209,7 +209,7 @@ export default function FinanceMyCardsWidgetPage() {
                   <SegmentedItem size="sm" value="virtual">Virtual</SegmentedItem>
                   <SegmentedItem size="sm" value="physical">Physical</SegmentedItem>
                 </SegmentedControl>
-                <div className="flex flex-col items-center gap-3 p-5 pt-8">
+                <div className="flex flex-col items-center gap-3 p-6 pt-8">
                   <RiBankCardLine className="size-10 text-icon-soft-400" />
                   <p className="text-center text-sm text-text-soft-400">You do not have any cards yet.<br />Click the button to add one.</p>
                   <Button tone="neutral" style="stroke" size="xs"><RiAddLine /> Add Card</Button>
@@ -233,7 +233,7 @@ export default function FinanceMyCardsWidgetPage() {
       </DocsSection>
 
       <DocsSection title="Anatomy">
-        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-5">
+        <ul className="space-y-2 text-sm text-text-strong-950/90 list-disc pl-6">
           <li><strong>Segmented control</strong> — 2 segments with a count chip on Virtual: <code>Virtual (2)</code>.</li>
           <li><strong>Card details rows</strong> — 4 rows: Card Number / Expiry Date / CVC / Spending Limit. sub-600 label + label-sm strong-950 value.</li>
           <li><strong>Action row</strong> — 3-up `Unhide / Adjust Limit / More` xsmall neutral-stroke buttons, equal basis.</li>
@@ -309,7 +309,7 @@ function VirtualCard({
   balance: number
 }) {
   return (
-    <div className="relative mx-auto flex h-[188px] w-full max-w-96 shrink-0 flex-col gap-3 rounded-2xl bg-bg-white-0 p-5 pb-4 ring-1 ring-inset ring-stroke-soft-200">
+    <div className="relative mx-auto flex h-[188px] w-full max-w-96 shrink-0 flex-col gap-3 rounded-2xl bg-bg-white-0 p-6 pb-4 ring-1 ring-inset ring-stroke-soft-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -334,7 +334,7 @@ function VirtualCard({
 
 function PhysicalCard({ name }: { name: string }) {
   return (
-    <div className="relative mx-auto flex h-[188px] w-full max-w-96 shrink-0 flex-col justify-between rounded-2xl bg-gradient-to-br from-bg-strong-950 to-bg-surface-800 p-5 text-static-white shadow-lg">
+    <div className="relative mx-auto flex h-[188px] w-full max-w-96 shrink-0 flex-col justify-between rounded-2xl bg-gradient-to-br from-bg-strong-950 to-bg-surface-800 p-6 text-static-white shadow-lg">
       <div className="flex items-center justify-between">
         <span className="text-xs uppercase tracking-wider opacity-70">{name}</span>
         <span className="inline-flex h-5 items-center rounded-sm bg-static-white/15 px-1.5 text-[10px] font-bold uppercase">MC</span>

@@ -484,7 +484,7 @@ export default function HrTeamsDeepDocsPage() {
         title="Anatomy"
         description="Page-level header is mirrored by an in-body section header so the table has its own h2 once you scroll past the page top."
       >
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li>
             <strong>Header</strong> — circular Group icon avatar + "Teams" +
             "Manage and collaborate within your organization's teams." +
@@ -514,7 +514,7 @@ export default function HrTeamsDeepDocsPage() {
       </DocsSection>
 
       <DocsSection title="Components used">
-        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-5">
+        <ul className="text-sm text-text-sub-600 space-y-1.5 list-disc pl-6">
           <li><strong>Avatar / AvatarFallback</strong> — Member rows (each unique initials), brand marks.</li>
           <li><strong>StatusBadge</strong> — Active (success / icon-light) and Absent (faded / icon-light).</li>
           <li><strong>Button</strong> — Export, Invite Member, Filter, row ellipsis.</li>
