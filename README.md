@@ -34,16 +34,11 @@ for the full spec, migration case studies, and visual showcase.
 - **`@dash/skill`** — Per-prompt context injection (v4 freshness cache).
   Priority-pinned context blocks + per-repo scoping.
 - **`@dash/worker`** — Hermes autonomous generation pipeline.
-- **`@dash/build`** ⭐ — **Browser-based AI builder. Lovable-for-Dash internal.**
-  - `pnpm i -g @dash/build && dash-build`
-  - Daemon at localhost:7777, 9router-style multi-interface menu
-  - OpenAI connection via official Codex CLI login, with BYO OpenAI API key fallback
-  - GitHub App PR creation; local pilot can fall back to a stub callback while app credentials are being wired
-  - Skill chain: dash-prd → `design.md` → Layer 0 rules → Skill v4 → OpenAI/Codex
-  - Sandboxed iframe preview, foundation match score (0-100)
-  - Lovable-style split dashboard, toast notifications, skeleton states
-  - 263 tests, cross-platform path support (macOS / Linux / Windows)
-  - See [`packages/dash-build/README.md`](./packages/dash-build/README.md)
+
+> **Note:** Dash Build (browser-based AI builder, Lovable-for-Dash internal)
+> was carved out of this monorepo on 2026-05-29 and now lives in its own
+> sister repo. See the dedicated `dash-build` repo for install, daemon
+> ops, codex orchestration, and Sandpack preview specs.
 
 ## Why this repo
 

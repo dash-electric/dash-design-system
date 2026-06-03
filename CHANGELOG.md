@@ -7,6 +7,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`dash` CLI 0.4.0 → 0.4.1** — patch bump alongside `@dash/kit` 0.0.2 to keep
+  package versions monotonic for the consumer push window. No behavior change
+  inside the CLI itself; 211 vitest specs all pass.
+  ([packages/cli/package.json](packages/cli/package.json))
+- **Registry build refreshed** — 230 items emitted to `apps/docs/public/r/`
+  (incl. updated `button.json` reflecting the new `shadow-xs` source + freshly
+  built `brand-logo.json` and `flag.json` that lacked persisted JSON before
+  this push).
+- **`@dash/kit` 0.0.1 → 0.0.2** — peer dep `react` widened to `^18.3.0 || ^19.0.0`
+  so consumers on React 19 (e.g. `dash-dashboard`) can install without a
+  peer warning. Description clarified to call out consumer apps (dash-dashboard,
+  dash-build) in addition to Sandpack runtime.
+  ([packages/kit/package.json](packages/kit/package.json))
+- **Button (neutral / stroke)** shadow downgraded from `shadow-regular-xs`
+  (5-layer custom shadow) to Tailwind v4 `shadow-xs` (single hairline). Lifts
+  the button without feeling card-like. Affects every "Cancel"-style button
+  across the DS. Rebuild `@dash/kit` (`pnpm --filter @dash/kit build`) to
+  propagate to consumers.
+  ([apps/docs/registry/dash/ui/button.tsx](apps/docs/registry/dash/ui/button.tsx))
+
+### Deprecated — admin pages migrating to dash-dashboard
+
+- `/docs/admin/usage`, `/docs/admin/pilot`, `/docs/admin/pilot-detail` —
+  added a yellow deprecation banner at the top of each page pointing to
+  the new dash-dashboard URLs. Pages still functional; deletion scheduled
+  for **2026-06-10** (1-week deprecation window). See
+  [_shared-contracts/HANDOFF-admin-migration-2026-06-03.md](../../_shared-contracts/HANDOFF-admin-migration-2026-06-03.md)
+  for the cross-repo migration plan.
+- **Sidebar nav entries removed** — `Usage Dashboard`, `Pilot Dashboard`,
+  and `Pilot Ops Manual` dropped from the public docs sidebar (Tools
+  section). URLs remain accessible during the deprecation window so any
+  bookmarked links still resolve and surface the banner. Public discovery
+  via nav is closed effective immediately.
+  ([apps/docs/components/docs/nav-config.ts](apps/docs/components/docs/nav-config.ts))
+
+### Removed — stale post-split residue
+
+- **`/docs/tools/dash-build` doc page** — Dash Build (browser-based AI builder)
+  was carved out to its own sister repo on 2026-05-29 (commit `dbb1e64`). The
+  doc page in this repo was a frozen snapshot referencing
+  `packages/dash-build/` which no longer exists here. Deleted directory +
+  removed the matching `Dash Build` entry from
+  `apps/docs/components/docs/nav-config.ts` (Tools section).
+- **README.md `@dash/build` tooling bullet** — replaced with a short note
+  pointing to the sister repo. The previous bullet still referenced
+  `packages/dash-build/README.md` which no longer exists.
+- **CLAUDE.md `Dash Build (Lovable-for-Dash Internal)` section** — replaced
+  with a short "moved to sister repo" pointer + cross-repo etiquette reminder
+  (do not edit dash-build sources from within this repo).
+
+Audit also surveyed `admin/pilot`, `admin/pilot-detail`, `admin/usage`,
+`packages/worker`, and confirmed they STAY in `dash-ds` — they track
+DS-internal adoption metrics (CLI installs per component, Wave 5 pilot
+rollout, Hermes generation queue) which is a different domain from
+dash-dashboard's owner-cost / tribe-health / build-health concerns.
+Cross-checked via `~/Work/dash/dash-dashboard/app/api/v1/owner/*` —
+no overlap with admin/* endpoints here.
+
+### Added — missing component doc pages
+
+- **Brand Logo** — full doc page at `/docs/components/brand-logo` (Install, Anatomy, 5 examples incl. multi-variant + login provider button, API, Accessibility, Vendor + manifest). Added to nav under Components / Displaying Data, after Brand Mark.
+- **Empty State Illustration** — full doc page at `/docs/components/empty-state-illustration` (Install, Anatomy, 4 examples incl. full 34-kind catalog, API, Accessibility, Asset source). Added to nav under Components / Displaying Data, after Empty State.
+- **Widget Shell** — full doc page at `/docs/components/widget-shell` (Install, Anatomy, 5 examples incl. minimal + headerExtra + seeAll + custom title + grid, Don't card, API, Accessibility, Theming). Added to nav under Components / Displaying Data.
+
+Audit pass: 97 UI sources × 95 doc pages → 3 components were genuinely missing doc + nav entry. `dash-logo` doc page lives under `/docs/foundations/dash-logo` (foundation, not component) and `progress-bar` is documented at `/docs/components/progress` alongside `progress-circle` — both are aliased and don't need additional pages.
+
+### Docs
+
+- **Button doc page** — removed empty Usage / Spec / Status sub-tabs row from
+  the hero (was decorative-only, no content switching). Single continuous
+  page flow now.
+  ([apps/docs/app/(docs)/docs/components/button/page.tsx](apps/docs/app/\(docs\)/docs/components/button/page.tsx))
+- **Dash Logo doc page** — Brand card preview grid restructured from
+  `md:grid-cols-6` (forced 1 row, badges overflowed at narrow container) to
+  two stacked 3-col groups (Symbol row + Wordmark row) with explicit labels.
+  ([apps/docs/app/(docs)/docs/foundations/dash-logo/page.tsx](apps/docs/app/\(docs\)/docs/foundations/dash-logo/page.tsx))
+- **App Store Badges doc page** — Brand card chip preview switched from
+  `grid-cols-2` (chips ~140px, badges overflowed) to single column inside
+  280px sidebar with Black / White labels. All-8-stores rows switched from
+  `flex flex-wrap` to `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` for
+  consistent 2-row layout.
+  ([apps/docs/app/(docs)/docs/foundations/app-store-badges/page.tsx](apps/docs/app/\(docs\)/docs/foundations/app-store-badges/page.tsx))
+
 ### Fixed
 
 - `dash audit` (and any `dash` CLI command that touches the registry) crashed
@@ -16,6 +101,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the built `.js` artifacts so Node can load them at runtime.
   ([packages/registry-schema/package.json](packages/registry-schema/package.json),
   [packages/registry-schema/tsconfig.json](packages/registry-schema/tsconfig.json))
+
+### Consumer sync ritual
+
+When you edit a component source under `apps/docs/registry/dash/ui/*.tsx`, the
+change does NOT auto-propagate to `@dash/kit` consumers (`dash-dashboard`,
+`dash-build`, Sandpack preview). After editing, run:
+
+```bash
+pnpm --filter @dash/kit build
+```
+
+pnpm uses hard-links for `file:` deps, so consumers pick up the new content
+immediately (no `pnpm install` needed on the consumer side). For development
+loop, run `pnpm --filter @dash/kit dev` (or watch mode if added) in another
+terminal.
 
 ## [0.6.0] - 2026-05-21
 

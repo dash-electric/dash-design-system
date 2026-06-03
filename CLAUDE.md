@@ -59,37 +59,17 @@ Full spec: [`LAYERED-ARCHITECTURE.md`](./LAYERED-ARCHITECTURE.md). Visual showca
 
 **Registry URL defaults:** CLI + MCP both resolve via `process.env.DASH_REGISTRY_URL ?? "http://localhost:3000"` (local-dev mode). For production consumer repos, export `DASH_REGISTRY_URL=https://ds.dash.com` in shell rc, or pass `--registry-url` per command. Docs site (`pnpm --filter @dash/docs dev`, port 3000) must be running when consuming the local registry.
 
-## Dash Build (Lovable-for-Dash Internal)
+## Dash Build (moved to sister repo)
 
-Browser-based AI workflow at `packages/dash-build/`. Day 1-3 shipped 2026-05-21.
+Browser-based AI builder (Lovable-for-Dash internal) was carved out of this
+monorepo on 2026-05-29 (commit `dbb1e64`). It now lives in its own sister
+repo at `~/Work/dash/dash-build`. Cross-repo coordination contracts live in
+`~/Work/dash/_shared-contracts/`.
 
-**Install + use:**
-```bash
-npm install -g @dash/build
-dash-build
-# → opens browser at http://localhost:7777/dashboard
-```
-
-**Auth:** OpenAI via official Codex CLI login, with BYO OpenAI API key fallback. GitHub App handles PR creation; local pilot mode may use a stub callback until real app credentials are present.
-
-**Capabilities (Day 1-3 shipped):**
-- 9router-style multi-interface menu (Web UI / Terminal / Tray / Exit)
-- Skill chain: dash-prd → `design.md` → Layer 0 rules → Skill v4 → OpenAI/Codex
-- AI clarification gate (multi-turn questions when uncertain)
-- Component preview via Sandpack (browser-resident; mounts the generated component inside a Dash-DS-tokened template with mock fixtures). NOTE: the legacy full-app iframe path (esbuild + clone dev-server) is superseded by the 2026-05-28 Sandpack pivot and now lives behind the "Activate clone preview" button only — see `packages/dash-build/docs/specs/component-preview-architecture-2026-05-28.md`.
-- Foundation match score (0-100)
-- GitHub PR creation via Dash Build App
-- Lovable-style split dashboard + toast notifications + skeleton states
-- 263 tests, 6 packages typecheck clean
-
-**Architecture:** see `packages/dash-build/README.md`
-
-**Planning workflow:** Dash Build uses a gstack-inspired artifact pipeline:
-`dash-intake -> dash-prd -> dash-design-review? -> dash-trd -> Skill v4 + Codex -> dash-review -> dash-qa`.
-See `packages/dash-build/docs/gstack-adoption.md` and
-`packages/dash-build/docs/artifact-contracts.md`.
-
-**Pilot use case:** any Dash team member (PM, finance ops, designer, dev) can prompt feature → AI ships PR.
+When working on `dash-ds`, treat dash-build as a downstream consumer — it
+pulls components via `@dash/kit` (`file:` workspace dep) and design metadata
+via the MCP server in `packages/mcp-server/`. Do NOT edit dash-build sources
+from within this repo.
 
 ## When generating code
 

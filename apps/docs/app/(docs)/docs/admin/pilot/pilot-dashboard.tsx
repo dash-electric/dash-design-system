@@ -159,6 +159,24 @@ export function PilotDashboard({
 
   return (
     <DocsPageShell>
+      <div className="rounded-lg border border-warning-base/40 bg-warning-lighter/40 px-4 py-3 mb-6 text-sm">
+        <div className="font-semibold text-warning-dark mb-0.5">
+          Moved to dash-dashboard
+        </div>
+        <div className="text-text-sub-600">
+          This page will be removed from <code className="text-xs">dash-ds</code> on{" "}
+          <strong>2026-06-10</strong>. The control-tower version lives at{" "}
+          <a
+            href="https://dashboard.dash.com/admin/pilot"
+            className="underline text-(--primary-base) font-medium"
+          >
+            dashboard.dash.com/admin/pilot
+          </a>{" "}
+          (private, NextAuth-gated). Kill switch + cohort + feedback feed all
+          ported. Update your bookmarks.
+        </div>
+      </div>
+
       <DocsHeader
         category="Admin / Pilot"
         title="Wave 5 Pilot"
