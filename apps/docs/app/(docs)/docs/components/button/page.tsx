@@ -31,11 +31,6 @@ export default function ButtonDocsPage() {
         status="stable"
         kind="atom"
         description="The most-reached-for primitive. Three tones, six styles, five sizes, plus icon-only variants. Use it for every action trigger across Dash — dispatch confirms, mitra suspensions, settings saves, navigation jumps."
-        tabs={[
-          { label: "Usage", active: true },
-          { label: "Spec" },
-          { label: "Status" },
-        ]}
       />
 
       <DocsShadcnTemplate

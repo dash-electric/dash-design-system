@@ -60,13 +60,23 @@ export default function DashLogoDocsPage() {
                   <div className="text-xs text-text-sub-600">Full power of fleet logistics</div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-                {STYLES.map((s) => (
-                  <VariantChip key={`mark-${s}`} variant="mark" style={s} />
-                ))}
-                {STYLES.map((s) => (
-                  <VariantChip key={`wordmark-${s}`} variant="wordmark" style={s} />
-                ))}
+              <div className="space-y-4">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-text-soft-400 mb-2">Symbol</div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {STYLES.map((s) => (
+                      <VariantChip key={`mark-${s}`} variant="mark" style={s} />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-text-soft-400 mb-2">Wordmark</div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {STYLES.map((s) => (
+                      <VariantChip key={`wordmark-${s}`} variant="wordmark" style={s} />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           }
