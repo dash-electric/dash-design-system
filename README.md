@@ -4,8 +4,8 @@
 > foundation + AI-native developer workflow.
 
 The single repository for everything Dash Design System: docs site +
-registry, install CLI, MCP server, AI editor skill, autonomous Hermes
-generation pipeline, and the browser-based Dash Build workflow.
+registry, install CLI, MCP server, AI editor skill, and the autonomous
+Hermes generation pipeline.
 
 Built for internal use by 10+ engineers across Dash product engineering
 teams (Ride, Logistic, Travel, Marketplace, Trellis tenants).
@@ -27,7 +27,7 @@ for the full spec, migration case studies, and visual showcase.
 
 ### Tooling
 
-- **`@dash-tech/dashkit`** — Component install, audit, sync. Published to GitHub Packages (org-restricted).
+- **`@dash-electric/dashkit`** — Component install, audit, sync. Published to GitHub Packages (org-restricted).
   Commands: `init`, `add`, `audit`, `build`, `diff`, `doctor`, `info`,
   `list`, `login`, `mcp`, `search`, `sync`. 49 vitest specs.
 - **`@dash/mcp-server`** — AI editor integration. 7 MCP tools, bearer-gated.
@@ -56,17 +56,13 @@ generation pipeline all live one directory hop apart.
 
 ## Quick start
 
-> **First time?** Follow [Step 1 of the onboarding playbook](./docs/pilot/ONBOARDING-PLAYBOOK.md#step-1--install-the-cli) to configure `~/.npmrc` with your GitHub Packages PAT — the CLI is published org-restricted to `@dash-tech`.
+> **First time?** Follow [Step 1 of the onboarding playbook](./docs/pilot/ONBOARDING-PLAYBOOK.md#step-1--install-the-cli) to configure `~/.npmrc` with your GitHub Packages PAT — the CLI is published org-restricted to `@dash-electric`.
 
 ```bash
 # In any Dash product repo (after one-time .npmrc setup):
-pnpm i -g @dash-tech/dashkit
+pnpm i -g @dash-electric/dashkit
 dashkit init           # bootstrap dash.config + tailwind tokens
 dashkit add button     # install a registry component
-
-# Or kick off the browser-based AI builder:
-pnpm i -g @dash/build
-dash-build          # → http://localhost:7777/dashboard
 ```
 
 Local development of the repo itself:
@@ -89,7 +85,7 @@ dash-ds/
 │   ├── mcp-server/            # @dash/mcp-server — MCP server exposing the registry to AI
 │   ├── skill/                 # @dash/skill — Claude Code skill (v4)
 │   ├── worker/                # @dash/worker — Hermes generation pipeline
-│   ├── dash-build/            # @dash/build — browser-based AI builder
+│   ├── kit/                   # @dash-electric/kit — installable UI atom bundle
 │   └── registry-schema/       # @dash/registry-schema — shared types
 ├── .github/workflows/         # CI, preview deploy, release
 ├── design.md                  # Global cross-repo Dash design contract for AI generation
@@ -104,8 +100,7 @@ dash-ds/
 - [`packages/cli/README.md`](./packages/cli/README.md) — `dashkit` CLI commands and flags
 - [`packages/mcp-server/README.md`](./packages/mcp-server/README.md) — MCP server setup for Claude Code / Cursor
 - [`packages/skill/README.md`](./packages/skill/README.md) — Claude Code skill manifest
-- [`packages/dash-build/README.md`](./packages/dash-build/README.md) — Dash Build daemon, auth, deployment
-- [`packages/dash-build/docs/gstack-adoption.md`](./packages/dash-build/docs/gstack-adoption.md) — gstack-inspired Dash Build planning workflow
+- [`packages/kit/README.md`](./packages/kit/README.md) — `@dash-electric/kit` install + consume the UI atoms as an npm dependency
 
 ## Common scripts (run from repo root)
 
@@ -121,10 +116,9 @@ dash-ds/
 Package-scoped commands use pnpm filters:
 
 ```bash
-pnpm --filter @dash-tech/dashkit test   # only CLI tests
-pnpm --filter @dash/docs build          # only Next build
-pnpm --filter @dash/build typecheck     # only Dash Build typecheck
-pnpm --filter @dash/build test          # only Dash Build tests (263)
+pnpm --filter @dash-electric/dashkit test   # only CLI tests
+pnpm --filter @dash/docs build              # only Next build
+pnpm --filter @dash-electric/kit build      # rebuild the UI atom bundle
 ```
 
 ## Contributing
@@ -142,7 +136,7 @@ The high-level flow:
 ## Status
 
 Wave 5 pilot active. 78+ commits shipped. 6 packages production-ready
-(cli, mcp-server, skill, worker, dash-build, registry-schema). Layered
+(cli, mcp-server, skill, worker, kit, registry-schema). Layered
 architecture live across Ride / Logistic / Travel / Marketplace.
 
 ## License

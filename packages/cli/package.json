@@ -1,16 +1,17 @@
 {
-  "name": "@dash-tech/dashkit",
+  "name": "@dash-electric/dashkit",
   "version": "0.4.1",
   "description": "Dash Design System CLI — install registry items into your project",
   "license": "UNLICENSED",
   "author": "Dash Tech (PT Dash Elektrik Indonesia)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dash-tech/dash-cli.git"
+    "url": "git+https://github.com/dash-electric/next-express-design-system.git",
+    "directory": "packages/cli"
   },
-  "homepage": "https://github.com/dash-tech/dash-cli#readme",
+  "homepage": "https://github.com/dash-electric/next-express-design-system/tree/main/packages/cli#readme",
   "bugs": {
-    "url": "https://github.com/dash-tech/dash-cli/issues"
+    "url": "https://github.com/dash-electric/next-express-design-system/issues"
   },
   "type": "module",
   "bin": {

@@ -276,8 +276,8 @@ If still failing → skip MCP narration in Act 4. Manually instruct Claude `"fir
 # health
 curl -s https://ds.dash.com/api/health | jq
 
-# install CLI (user laptop, one-time — requires ~/.npmrc with @dash-tech registry + PAT, see ONBOARDING-PLAYBOOK)
-pnpm i -g @dash-tech/dashkit
+# install CLI (user laptop, one-time — requires ~/.npmrc with @dash-electric registry + PAT, see ONBOARDING-PLAYBOOK)
+pnpm i -g @dash-electric/dashkit
 
 # new consumer repo
 dashkit init                              # interactive setup
