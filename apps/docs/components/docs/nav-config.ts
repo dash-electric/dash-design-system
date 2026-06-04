@@ -39,6 +39,7 @@ export const navSections: NavSection[] = [
           { title: "Introduction",   href: "/docs", status: "shipped" },
           { title: "Getting Started", href: "/docs/getting-started", status: "shipped", blurb: "Canonical 10-minute path — install CLI, init repo, ship first component." },
           { title: "Installation (reference)",   href: "/docs/installation", status: "shipped" },
+          { title: "Install as Package (npm)", href: "/docs/installation/package", status: "new", blurb: "Consume @dash-electric/kit as a versioned dependency via GitHub Packages." },
           { title: "Quick Start (8-step)",    href: "/docs/quick-start", status: "shipped" },
           { title: "Testing Locally (Wave 5)", href: "/docs/getting-started/testing-locally", status: "new" },
           { title: "User Onboarding (Wave 5)", href: "/docs/onboarding", status: "new" },

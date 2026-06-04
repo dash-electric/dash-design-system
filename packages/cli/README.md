@@ -13,17 +13,19 @@ Before this CLI, adding a Dash component meant: open `ds.dash.com`, find the ite
 ## Install
 
 ```bash
-pnpm dlx github:dash-tech/dash-cli@latest --help
+pnpm dlx @dash-electric/dashkit@latest --help
 ```
 
 Or install globally:
 
 ```bash
-pnpm i -g github:dash-tech/dash-cli
+pnpm i -g @dash-electric/dashkit
 dashkit --help
 ```
 
-> v1 ships from GitHub. v1.1 will publish to GitHub Packages once we settle the `@dash-tech` org scope. `pnpm dlx github:…` is the canonical path until then.
+> Published to **GitHub Packages**, org-restricted to `dash-electric`. Requires a
+> one-time `~/.npmrc` with a `read:packages` PAT — see the
+> [onboarding playbook](../../docs/pilot/ONBOARDING-PLAYBOOK.md#step-1--install-the-cli).
 
 ## Quickstart
 
@@ -284,7 +286,7 @@ The CLI is intentionally dependency-light: `commander`, `prompts`, `ora`, `kleur
 
 **v1.1**
 
-- Publish to GitHub Packages as `@dash-tech/dash-cli`.
+- Publish to GitHub Packages as `@dash-electric/dashkit`.
 - Vitest suite covering `add`, `diff`, dependency resolution.
 - AST-based CSS var merger (PostCSS).
 - `dash update <name>` — re-fetch and overwrite.

@@ -1,9 +1,17 @@
 {
-  "name": "@dash/kit",
+  "name": "@dash-electric/kit",
   "version": "0.0.2",
   "description": "Dash UI kit — curated, ban-gated @dash/ui atom source bundle for AI generation + Sandpack preview + consumer apps (dash-dashboard, dash-build).",
   "type": "module",
-  "private": true,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dash-electric/next-express-design-system.git",
+    "directory": "packages/kit"
+  },
   "files": [
     "*.tsx",
     "lib",
@@ -17,7 +25,8 @@
   },
   "scripts": {
     "build": "node ./build.mjs",
-    "prepare": "node ./build.mjs"
+    "prepare": "node ./build.mjs",
+    "prepublishOnly": "node ./build.mjs"
   },
   "peerDependencies": {
     "react": "^18.3.0 || ^19.0.0",
@@ -27,5 +36,5 @@
     "node": ">=20"
   },
   "author": "Dash Tech (PT Dash Elektrik Indonesia)",
-  "license": "MIT"
+  "license": "UNLICENSED"
 }

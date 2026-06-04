@@ -1,0 +1,54 @@
+name: Publish @dash-electric/kit
+
+# Publishes the @dash-electric/kit UI library to GitHub Packages (private,
+# restricted to the dash-electric org) when a v*.*.* tag is pushed.
+#
+# NOTE: v*.*.* tags also trigger .github/workflows/release.yml (GitHub release +
+# CLI publish). Both run as independent jobs on the same tag. The kit publishes
+# at whatever version is in packages/kit/package.json — keep that in sync with
+# the tag. To cut a release:
+#   1. bump "version" in packages/kit/package.json to match the tag
+#   2. git tag v0.0.3 && git push origin v0.0.3
+#
+# Auth uses the Actions-provided GITHUB_TOKEN — no PAT needed in CI. The token
+# has packages:write on this repo's org (dash-electric), which is the same org
+# the @dash-electric scope resolves to, so the publish is authorized.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  publish:
+    name: Build and publish to GitHub Packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@dash-electric"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build kit
+        run: pnpm --filter "@dash-electric/kit" build
+
+      - name: Publish @dash-electric/kit
+        run: pnpm --filter "@dash-electric/kit" publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

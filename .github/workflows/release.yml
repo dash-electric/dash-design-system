@@ -29,13 +29,16 @@ jobs:
           node-version: 20
           cache: pnpm
           registry-url: "https://npm.pkg.github.com"
-          scope: "@dash-tech"
+          scope: "@dash-electric"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build CLI
-        run: pnpm --filter "@dash-tech/dashkit" build
+      # The trailing "..." also builds the CLI's workspace dependencies
+      # (@dash/registry-schema) first — a plain --filter build would leave
+      # its dist/ missing and fail to resolve the import.
+      - name: Build CLI (with workspace deps)
+        run: pnpm --filter "@dash-electric/dashkit..." build
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
@@ -44,9 +47,11 @@ jobs:
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
 
-      # Publishes @dash-tech/dashkit to GitHub Packages, restricted to the
-      # @dash-tech org. Auth via GITHUB_TOKEN (provided by Actions).
-      - name: Publish @dash-tech/dashkit to GitHub Packages
-        run: pnpm --filter "@dash-tech/dashkit" publish --no-git-checks
+      # Publishes @dash-electric/dashkit to GitHub Packages, restricted to the
+      # dash-electric org. Auth via GITHUB_TOKEN (provided by Actions), which
+      # has packages:write on this repo's org — the same org the @dash-electric
+      # scope resolves to, so the publish is authorized.
+      - name: Publish @dash-electric/dashkit to GitHub Packages
+        run: pnpm --filter "@dash-electric/dashkit" publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

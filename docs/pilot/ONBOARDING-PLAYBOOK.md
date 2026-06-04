@@ -34,13 +34,13 @@ Companion docs:
 
 ### Step 1 — Install the CLI
 
-The CLI ships from **GitHub Packages**, org-restricted to `dash-tech`. You need a personal access token (PAT) with `read:packages` scope to install it.
+The CLI ships from **GitHub Packages**, org-restricted to `dash-electric`. You need a personal access token (PAT) with `read:packages` scope to install it.
 
 ```bash
-# One-time setup: configure pnpm to fetch @dash-tech/* from GH Packages.
+# One-time setup: configure pnpm to fetch @dash-electric/* from GH Packages.
 # Grab your PAT from 1Password → "GH Packages PAT (read-only)".
 cat >> ~/.npmrc <<'EOF'
-@dash-tech:registry=https://npm.pkg.github.com
+@dash-electric:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
 EOF
 
@@ -49,9 +49,9 @@ echo 'export GITHUB_PACKAGES_TOKEN=ghp_xxxxxx' >> ~/.zshrc  # or ~/.bashrc
 source ~/.zshrc
 
 # Install
-pnpm install -g @dash-tech/dashkit
+pnpm install -g @dash-electric/dashkit
 dashkit --version
-# → @dash-tech/dashkit@1.x.x
+# → @dash-electric/dashkit@0.4.x
 ```
 
 ### Step 2 — Get your Bearer token
@@ -79,9 +79,9 @@ All green? You're done with B.
 ### Common issues + fixes
 | Symptom | Fix |
 | --- | --- |
-| `EACCES` on `pnpm install -g @dash-tech/dashkit` | Global bin folder unwritable. Run `pnpm setup` and follow its instructions. Avoid `sudo`. |
+| `EACCES` on `pnpm install -g @dash-electric/dashkit` | Global bin folder unwritable. Run `pnpm setup` and follow its instructions. Avoid `sudo`. |
 | `401 Unauthorized` from `npm.pkg.github.com` | `GITHUB_PACKAGES_TOKEN` missing/expired/lacking `read:packages`. Regenerate at github.com → Settings → Developer settings → PATs (classic). |
-| `404 Not Found` for `@dash-tech/dashkit` | You're not yet a member of the `dash-tech` GitHub org. Ping **@Irfan** to be added. |
+| `404 Not Found` for `@dash-electric/dashkit` | You're not yet a member of the `dash-electric` GitHub org. Ping **@Irfan** to be added. |
 | `401 Unauthorized` on `dashkit login` | Bearer token paste picked up a leading/trailing space. Re-copy from 1Password. (Different token from the GH PAT — this one auths the *registry*, not the package install.) |
 | `dashkit doctor: MCP probe failed` | `npx` can't reach the registry — check VPN / corporate proxy. Retry; persisting → ping channel. |
 | `dashkit: command not found` | pnpm global bin not on PATH. Run `pnpm bin -g`, add that path to your shell rc. |
