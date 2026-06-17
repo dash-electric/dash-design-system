@@ -37,7 +37,7 @@ export const skills: SkillMeta[] = [
     "version": "0.7.0",
     "owner": "dash-electric",
     "rawPath": "/skills/dash-deck-design.md",
-    "bytes": 173419,
+    "bytes": 270018,
     "references": [
       {
         "label": "base-styles.css",

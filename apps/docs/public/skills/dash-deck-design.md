@@ -1343,6 +1343,1691 @@ Two speakers sharing one file (e.g. an intro talk + a deep-dive talk):
 
 ---
 
+## Reference — `examples/dash-core-problem-deck.html`
+
+```html
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<title>Dash Express — Core Problem & Direction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="deck-stage.js"></script>
+<script type="application/json" id="speaker-notes">
+[
+"Oke, selamat pagi semua. Gua Irfan, dari Product Design. Hari ini gua mau bawa ke kalian analisa core problem Dash Express dan direction solusi yang gua propose. Ini bukan status report — ini strategic thinking. Ujungnya gua butuh approval untuk 2 minggu knowledge capture phase. Tone slide ini sengaja serius — karena yang kita bicarain serius. Gua pelan-pelan aja setup konteks.",
+"Sebelum masuk data, gua mau kalian serap satu kalimat dulu. Dash Express sekarang adalah automated delivery service untuk 4 persen volume, dan manual delivery service untuk 96 persen volume. Yang 96 persen itu di-sustain oleh 2 sampai 3 manusia yang kerja 8 sampai 12 jam per hari, dengan allocation latency 89 menit per order. Completion rate 95 persen yang keliatan sehat di dashboard — itu berjalan di atas capacity ceiling yang bakal patah begitu volume tumbuh. Pause di sini sebentar. Biarin ini masuk.",
+"Sekarang angka-angkanya. Ini data satu bulan terakhir. Dua realitas paralel di satu bisnis. Kiri McD — benchmark. 8 ribu deliveries, automation 99.9 persen, allocation time 0.04 menit. Kanan, non-McD — 96 persen bisnis kita. Volume dua kali lipat, automation cuma 3.95 persen, allocation time 88.91 menit. 89 menit versus di bawah 1 menit di McD. Completion 95 persen keliatan bagus — tapi gua mau kalian liat angka allocation time itu dulu. Biarin itu sit di ruangan sebentar. Jangan buru-buru kita lanjut.",
+"Pertanyaan wajar: kenapa bisa segitu beda? Jawabannya satu baris. Algo allocation kita hanya punya satu dimensi — proximity. Dan proximity doang kebetulan cukup untuk McD, karena mitra camping di outlet. Di McD, terdekat otomatis juga motor fit, whitelist OK, zone match. Proximity sama dengan fit, by coincidence. Di non-McD, order tersebar seluruh kota, mitra ga bisa camping, terdekat tidak sama dengan fit. Algo miss, fallback ke manual, 89 menit. Pause setelah gua bilang 'algo kita hanya punya satu dimensi'. Ini aha moment pertama. McD itu exception, bukan norm.",
+"Sekarang yang dashboard tidak tunjukkan. Brand promise 'never reject' itu di-sustain oleh dua subsidi yang finite. Kiri: tenaga manusia. 2 sampai 3 floor monitor, 8 sampai 12 jam per hari. Tujuh ribu allocation per bulan per orang. Hard capacity ceiling — tidak bisa di-scale dengan hire. TikTok Shop tambahan 3000 orders per hari bakal break sistem ini. Kanan: allocation latency. 89 menit rata-rata. Cuma 5.3 persen hit SLA. 'Never reject' kita di-beli dengan 'never on-time'. Completion 95 persen itu bukan kemenangan sistem — itu kemenangan kerja rodi manusia yang nambal automation rusak.",
+"Ini counterintuitive insight yang penting. Stakeholder biasanya respon: 'tapi completion 95 persen, kok trust issue?' Jawabannya: trust mitra tidak hilang — tapi pindah channel. Mitra TIDAK distrust Dash. Mitra distrust algo. Mitra trust manual. Bukti: di algo channel, freelance acceptance cuma 10 persen. Fulltime lebih responsif saat dihubungi manusia dibanding assignment algo. Mitra treat algo assignment sebagai opsional. Di manual channel, completion 95 persen. Mitra accept, eksekusi, antar. Implikasinya: ini bukan problem mitra distrust Dash secara umum. Ini problem algo ga pernah earn trust karena ga pernah beneran allocate. Manual work — tapi capped.",
+"Dan ini yang bikin urgent. Pola ini bukan loop steady-state. Ini divergence. Algo di-design untuk satu pattern. 96 persen volume harus di-absorb manual. Mitra develop trust ke manual, abaikan algo. Algo makin irrelevant, makin ga di-iterate. Gap algo versus manual makin lebar. Manual capacity makin stretch. Floor monitor burnt out. Exception accumulate. Dan di ujungnya: scale wall. Ini trajectory menuju patah, bukan siklus. TikTok Shop 3000 orders per hari — itu detonator.",
+"Jadi apa core problem-nya. Framing lama: algo kita rusak, perlu di-fix. Framing itu salah. Framing yang benar: algo kita tidak pernah dibangun untuk 96 persen bisnis. Dan manusia yang nge-cover gap itu udah hit ceiling. Implikasinya empat. Satu, solusi bukan replace manual dengan algo. Dua, solusi adalah absorb mental model manual ke algo secara bertahap. Tiga, floor monitor bukan problem — mereka oracle yang harus di-leverage. Empat, trust mitra akan kembali otomatis kalau algo beneran deliver, tapi dengan lag — butuh bukti berulang.",
+"Sekarang direction. Ini yang kalian tunggu. Pause dulu. Ini bukan 12-minggu commitment. Bukan solusi lengkap. Tiga bets yang defensible dan gradually reversible. Bet 1, dua minggu, capture floor monitor mental model — log reason tag tiap manual allocation lewat 1-click bot di WA. Bet 2, dua minggu setelah Bet 1, shadow mode — algo compute score paralel dengan floor monitor, compare agreement. Gate: agreement 70 persen lanjut, di bawah 50 persen rethink. Bet 3, gradual handoff — auto-assign di high-confidence, geser rasio dari 3:97 ke 20:80 dulu, bukan langsung 80:20. Floor monitor tidak di-replace. Mereka geser dari hunter ke reviewer. Kalau ada yang challenge 'apakah algo akan inherit kelemahan RTFM yang kadang ignore motor range, parallel order mitra, atau future scheduled commitment?' — jawab pakai framing 3 lapis. Lapis 1, Bet 1 sampai 3: imitation. Algo minimal harus sama pinter dengan RTFM sekarang. Ini foundation. Lapis 2, next phase: hard constraints — motor range check, parallel order block, future commitment awareness, shift budget cap. Guardrail yang RTFM kadang miss karena human bandwidth limit, algo ga punya issue itu. Lapis 3, next phase: opportunity cost scoring — destination-to-reservation distance, next-slot demand projection, demand-aware positioning. Area dimana algo beda dari manusia bukan karena lebih pintar, tapi karena manusia ga bisa kalkulasi real-time. Tutup: Bet 1 sampai 3 fokus di baseline match RTFM dulu. Tapi tujuan long-term bukan niru — tujuan lampaui, terutama di hal yang manusia ga bisa compute cepat. ROI beyond cost savings.",
+"Dan ini kekuatan presentasi gua. Gua lebih prefer honest di depan daripada kaget di tengah jalan. Tiga open assumption. Satu, supply adequacy — apakah beneran ada mitra fit dalam radius saat order masuk? Sample 100 failed allocation, 1-2 hari query. Dua, ghost mitra — berapa mitra online tapi ga pernah dapat atau accept order? Kalau lebih dari 15 persen ghost, real supply pool kita lebih kecil dari yang kita kira. Tiga, never-reject — itu kontrak hukum atau brand aspiration? Kalau aspirasi, unlock design space untuk honest escalation. Stakeholder respect orang yang ngaku ga tau.",
+"Ini yang gua butuh dari kalian. Spesifik, bukan vague. Satu: approval 2 minggu untuk Bet 1. Low commitment, reversible. Dua: 1 sampai 2 engineer untuk setup logging infrastructure, parallel sama existing work, bukan dedicated. Tiga: decision dari Aditya dan BD — interrogate constraint 'never reject'. Legal atau aspirational? Ini unlock solution space. Empat: sponsor investigasi supply integrity, ghost mitra — bukan scope design gua, butuh owner dari Ops. Gua bisa drive koordinasi, tapi butuh commit ke ownership per workstream. Solo designer ga bisa solve cross-functional problem sendirian.",
+"Closing. Yang kita pertaruhkan. Kalau ga berubah: floor monitor burnout, latency tetap 89 menit, SLA tetap 5 persen, TikTok Shop jadi breaking point, trust client tergerus, ga ada jalur scale. Kalau kita eksekusi: floor monitor workload 8 sampai 12 jam ke di bawah 4 jam dalam 6 bulan. Latency 89 menit ke di bawah 3 menit. SLA 5 persen ke 50 persen plus. Headroom untuk TikTok Shop dan beyond. Algo yang beneran represent bisnis Dash. Ini bukan tentang bikin algo yang lebih pintar. Ini tentang bikin sistem yang akhirnya match dengan bisnis yang udah kita jalankan.",
+"Gua stop di sini. Terima kasih. Mari diskusikan."
+]
+</script>
+<style>
+  :root {
+    --ink: #1A1A1A;
+    --ink-2: #0E0E0E;
+    --paper: #F7F7F5;
+    --paper-2: #FFFFFF;
+    --mute: #6B6B68;
+    --rule: #E4E3DE;
+    --rule-dark: #2A2A2A;
+    --purple: #5E2AAC;
+    --purple-soft: #EEE5FB;
+    --danger: #A32D2D;
+    --success: #0F6E56;
+  }
+  html, body { margin: 0; padding: 0; background: #000; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+  deck-stage > section {
+    width: 1920px; height: 1080px;
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    color: var(--ink);
+    background: var(--paper);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .dark { background: var(--ink) !important; color: var(--paper) !important; }
+  .dark .mute { color: #9A9A96 !important; }
+
+  .pad { padding: 110px 140px; height: 100%; box-sizing: border-box; }
+  .pad-wide { padding: 110px 120px; height: 100%; box-sizing: border-box; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .eyebrow {
+    font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase;
+    font-weight: 600; color: var(--mute);
+  }
+  .eyebrow.purple { color: var(--purple); }
+  .slide-no {
+    position: absolute; bottom: 48px; right: 60px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--mute); letter-spacing: 0.1em;
+  }
+  .dark .slide-no { color: #6B6B68; }
+  .footer-line {
+    position: absolute; bottom: 48px; left: 60px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--mute); letter-spacing: 0.1em;
+  }
+  .dark .footer-line { color: #6B6B68; }
+
+  h1, h2, h3, p { margin: 0; }
+  .title-xxl { font-size: 108px; font-weight: 800; line-height: 0.98; letter-spacing: -0.035em; }
+  .title-xl { font-size: 76px; font-weight: 800; line-height: 1.02; letter-spacing: -0.03em; }
+  .title-lg { font-size: 60px; font-weight: 700; line-height: 1.05; letter-spacing: -0.025em; }
+  .title-md { font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  .lede { font-size: 28px; line-height: 1.4; font-weight: 400; color: var(--ink); }
+  .body { font-size: 20px; line-height: 1.55; font-weight: 400; color: var(--ink); }
+  .body-sm { font-size: 17px; line-height: 1.55; color: var(--mute); }
+  .stat-xxl { font-size: 140px; font-weight: 800; line-height: 0.9; letter-spacing: -0.04em; }
+  .stat-xl { font-size: 96px; font-weight: 800; line-height: 0.95; letter-spacing: -0.035em; }
+  .stat-lg { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+  .stat-label { font-size: 15px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); font-weight: 600; }
+  .num-red { color: var(--danger); }
+  .num-green { color: var(--success); }
+  .num-purple { color: var(--purple); }
+
+  /* ===== SLIDE 1 ===== */
+  .s1 .pad { display: grid; grid-template-rows: 1fr auto; }
+  .s1 h1 { max-width: 1500px; font-weight: 800; font-size: 116px; letter-spacing: -0.04em; line-height: 0.96; align-self: center; }
+  .s1 .pct { color: var(--purple); }
+  .s1 .meta { display: flex; justify-content: space-between; align-items: flex-end; }
+  .s1 .brand { font-size: 24px; letter-spacing: 0.25em; text-transform: uppercase; color: #9A9A96; font-weight: 600; }
+
+  /* ===== SLIDE 2 ===== */
+  .s2 .pad { display: grid; place-items: center; text-align: center; padding: 80px 160px; }
+  .s2 .wrap { max-width: 1500px; }
+  .s2 .label { font-size: 24px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--mute); margin-bottom: 64px; font-weight: 600; }
+  .s2 .quote { font-size: 58px; line-height: 1.22; font-weight: 500; letter-spacing: -0.02em; }
+  .s2 em { font-style: normal; color: var(--purple); font-weight: 700; }
+  .s2 .sub { font-size: 22px; color: var(--mute); margin-top: 72px; max-width: 1100px; margin-inline: auto; line-height: 1.5; }
+
+  /* ===== SLIDE 3 ===== */
+  .s3 .pad { display: grid; grid-template-rows: auto 1fr auto; gap: 48px; padding: 90px 120px; }
+  .s3 .head h1 { font-size: 64px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; max-width: 1400px; }
+  .s3 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .s3 .col { padding: 40px 48px; }
+  .s3 .col + .col { border-left: 1px solid var(--rule); }
+  .s3 .col-hdr { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 28px; }
+  .s3 .col-title { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+  .s3 .col-tag { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; }
+  .s3 .tag-green { color: var(--success); }
+  .s3 .tag-red { color: var(--danger); }
+  .s3 .row { display: grid; grid-template-columns: 1fr auto; align-items: end; padding: 18px 0; border-top: 1px dashed var(--rule); }
+  .s3 .row:first-of-type { border-top: none; }
+  .s3 .row .k { font-size: 15px; color: var(--mute); letter-spacing: 0.02em; padding-bottom: 8px; font-weight: 500; }
+  .s3 .row .v { font-size: 44px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .s3 .row .v.hero { font-size: 80px; font-weight: 800; }
+  .s3 .row .sub { font-size: 13px; color: var(--mute); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; margin-top: 6px; text-align: right; }
+  .s3 .foot { font-size: 15px; color: var(--mute); max-width: 1200px; line-height: 1.5; }
+
+  /* ===== SLIDE 4 ===== */
+  .s4 .pad { display: grid; grid-template-rows: auto auto 1fr auto; gap: 40px; padding: 90px 120px; }
+  .s4 h1 { font-size: 58px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; max-width: 1500px; }
+  .s4 .insight { font-size: 32px; line-height: 1.35; font-weight: 500; max-width: 1500px; letter-spacing: -0.01em; }
+  .s4 .insight b { font-weight: 700; color: var(--purple); }
+  .s4 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+  .s4 .col h3 { font-size: 18px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; margin-bottom: 24px; }
+  .s4 .col.mcd h3 { color: var(--success); }
+  .s4 .col.non h3 { color: var(--danger); }
+  .s4 .col ul { list-style: none; padding: 0; margin: 0; }
+  .s4 .col li { font-size: 22px; line-height: 1.5; padding: 12px 0; border-top: 1px solid var(--rule); color: var(--ink); }
+  .s4 .col li:first-child { border-top: none; }
+  .s4 .col li.eq { font-weight: 700; margin-top: 6px; padding-top: 20px; }
+  .s4 .col.mcd li.eq { color: var(--success); }
+  .s4 .col.non li.eq { color: var(--danger); }
+  .s4 .tagline { font-size: 24px; line-height: 1.45; font-weight: 500; border-top: 1px solid var(--rule); padding-top: 28px; max-width: 1600px; }
+  .s4 .tagline em { font-style: italic; color: var(--purple); font-weight: 600; }
+
+  /* ===== SLIDE 5 ===== */
+  .s5 .pad { display: grid; grid-template-rows: auto auto 1fr auto; gap: 44px; padding: 100px 120px; }
+  .s5 h1 { font-size: 62px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
+  .s5 .lede2 { font-size: 26px; line-height: 1.45; max-width: 1500px; color: var(--ink); }
+  .s5 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+  .s5 .col .icon { width: 72px; height: 72px; border: 2px solid var(--ink); border-radius: 50%; display: grid; place-items: center; margin-bottom: 28px; }
+  .s5 .col .icon svg { width: 36px; height: 36px; }
+  .s5 .col h3 { font-size: 16px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--mute); font-weight: 700; margin-bottom: 12px; }
+  .s5 .col h2 { font-size: 38px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 22px; }
+  .s5 .col ul { list-style: none; padding: 0; margin: 0; }
+  .s5 .col li { font-size: 22px; line-height: 1.55; padding: 12px 0; border-top: 1px solid var(--rule); }
+  .s5 .col li:first-child { border-top: none; }
+  .s5 .col li b { font-weight: 700; }
+  .s5 .tag { font-size: 24px; font-weight: 500; line-height: 1.5; font-style: italic; color: var(--ink); max-width: 1600px; border-top: 1px solid var(--rule); padding-top: 28px; }
+  .s5 .tag em { font-style: italic; color: var(--purple); font-weight: 600; }
+
+  /* ===== SLIDE 6 ===== */
+  .s6 .pad { display: grid; grid-template-rows: auto auto 1fr; gap: 36px; padding: 80px 120px; }
+  .s6 h1 { font-size: 56px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
+  .s6 .insight { font-size: 32px; line-height: 1.45; font-weight: 500; }
+  .s6 .insight .not { color: var(--danger); font-weight: 700; }
+  .s6 .insight .ok { color: var(--success); font-weight: 700; }
+  .s6 .insight .pur { color: var(--purple); font-weight: 700; }
+  .s6 .rows { display: grid; grid-template-rows: 1fr 1fr 1fr; border-top: 1px solid var(--rule); }
+  .s6 .row { display: grid; grid-template-columns: 300px 1fr 240px; gap: 48px; align-items: center; padding: 28px 0; border-bottom: 1px solid var(--rule); }
+  .s6 .row .ch { font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; }
+  .s6 .row .ch .num { font-family: 'JetBrains Mono', monospace; color: var(--mute); display: block; font-size: 14px; margin-bottom: 10px; letter-spacing: 0.15em; }
+  .s6 .row .ch .name { font-size: 24px; letter-spacing: -0.01em; text-transform: none; font-weight: 700; }
+  .s6 .row .desc { font-size: 24px; line-height: 1.5; color: var(--ink); }
+  .s6 .row .desc b { font-weight: 700; }
+  .s6 .row .stat { text-align: right; }
+  .s6 .row .stat .num { font-size: 72px; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; }
+  .s6 .row .stat .lbl { font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute); font-weight: 600; margin-top: 8px; }
+  .s6 .row.algo .num { color: var(--danger); }
+  .s6 .row.man .num { color: var(--success); }
+  .s6 .row.imp { grid-template-columns: 300px 1fr; }
+  .s6 .row.imp .desc { font-size: 24px; font-weight: 500; }
+  .s6 .row.imp .desc b { color: var(--purple); }
+
+  /* ===== SLIDE 7 ===== */
+  .s7 .pad { display: grid; grid-template-columns: 1.05fr 1fr; gap: 90px; padding: 90px 120px; }
+  .s7 .left { display: flex; flex-direction: column; justify-content: space-between; }
+  .s7 h1 { font-size: 58px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
+  .s7 .tag { font-size: 24px; line-height: 1.5; }
+  .s7 .tag .em { color: var(--danger); font-weight: 700; }
+  .s7 .tag .pur { color: var(--purple); font-weight: 700; }
+  .s7 .right { position: relative; }
+  .s7 .flow { display: flex; flex-direction: column; gap: 10px; }
+  .s7 .step { padding: 16px 24px; border: 1px solid var(--rule); background: var(--paper-2); font-size: 20px; line-height: 1.35; border-radius: 2px; color: var(--ink); }
+  .s7 .step.highlight { border-color: var(--purple); background: var(--purple-soft); color: var(--ink); }
+  .s7 .arrow { display: grid; place-items: center; color: var(--mute); font-size: 20px; line-height: 0.5; }
+  .s7 .wall { margin-top: 12px; background: var(--ink); color: var(--paper); border: none; padding: 28px 22px; text-align: center; border-radius: 2px; }
+  .s7 .wall .w1 { font-size: 15px; letter-spacing: 0.3em; color: #E8A0A0; font-weight: 700; text-transform: uppercase; }
+  .s7 .wall .w2 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin-top: 10px; }
+  .s7 .wall .w3 { font-size: 15px; color: #A8A8A4; margin-top: 10px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em; }
+
+  /* ===== SLIDE 8 ===== */
+  .s8 .pad { display: grid; grid-template-rows: auto 1fr; gap: 50px; padding: 100px 140px; }
+  .s8 h1 { font-size: 64px; font-weight: 700; letter-spacing: -0.025em; color: var(--paper); }
+  .s8 .grid { display: grid; grid-template-rows: auto auto 1fr; gap: 40px; }
+  .s8 .old {
+    font-size: 44px; font-weight: 600; color: #6B6B68;
+    text-decoration: line-through; text-decoration-color: #A32D2D;
+    text-decoration-thickness: 3px;
+    letter-spacing: -0.02em;
+  }
+  .s8 .old-label { font-size: 18px; letter-spacing: 0.3em; text-transform: uppercase; color: #9A9A96; margin-bottom: 14px; font-weight: 700; }
+  .s8 .new-label { font-size: 18px; letter-spacing: 0.3em; text-transform: uppercase; color: #B589F0; margin-bottom: 18px; font-weight: 700; }
+  .s8 .new { font-size: 56px; font-weight: 700; line-height: 1.12; letter-spacing: -0.025em; color: var(--paper); max-width: 1550px; }
+  .s8 .new b { color: #B589F0; font-weight: 800; }
+  .s8 .imp { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 10px; border-top: 1px solid #2A2A2A; padding-top: 36px; }
+  .s8 .imp .it { color: var(--paper); }
+  .s8 .imp .n { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #B589F0; letter-spacing: 0.1em; margin-bottom: 14px; font-weight: 700; }
+  .s8 .imp .t { font-size: 20px; line-height: 1.5; color: #D6D6D2; }
+  .s8 .imp .t b { color: var(--paper); font-weight: 700; }
+
+  /* ===== SLIDE 9 ===== */
+  .s9 .pad { display: grid; grid-template-rows: auto auto 1fr auto; gap: 36px; padding: 90px 100px; }
+  .s9 h1 { font-size: 60px; font-weight: 700; letter-spacing: -0.025em; }
+  .s9 .intro { font-size: 24px; color: var(--ink); line-height: 1.5; max-width: 1500px; }
+  .s9 .intro b { font-weight: 700; }
+  .s9 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; align-items: stretch; }
+  .s9 .card { border: 1px solid var(--rule); padding: 34px 32px; display: flex; flex-direction: column; gap: 16px; background: var(--paper-2); }
+  .s9 .card.c2 { background: #F1ECF9; border-color: #D9C8F4; }
+  .s9 .card.c3 { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .s9 .card .num { font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.22em; font-weight: 700; color: var(--mute); }
+  .s9 .card.c2 .num { color: var(--purple); }
+  .s9 .card.c3 .num { color: #B589F0; }
+  .s9 .card h3 { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; }
+  .s9 .card .kv { display: grid; grid-template-columns: 84px 1fr; gap: 10px 16px; font-size: 18px; line-height: 1.5; margin-top: 8px; }
+  .s9 .card .k { color: var(--mute); font-weight: 700; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; padding-top: 4px; }
+  .s9 .card.c3 .k { color: #B589F0; }
+  .s9 .card .v { color: var(--ink); }
+  .s9 .card.c3 .v { color: #D6D6D2; }
+  .s9 .card .v b { font-weight: 700; color: var(--ink); }
+  .s9 .card.c3 .v b { color: var(--paper); }
+  .s9 .foot { font-size: 22px; line-height: 1.5; border-top: 1px solid var(--rule); padding-top: 24px; max-width: 1600px; }
+  .s9 .foot b { color: var(--purple); font-weight: 700; }
+
+  /* ===== SLIDE 10 ===== */
+  .s10 .pad { display: grid; grid-template-rows: auto auto 1fr; gap: 40px; padding: 100px 120px; }
+  .s10 h1 { font-size: 58px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; color: #2A2A2A; }
+  .s10 .intro { font-size: 24px; color: var(--mute); line-height: 1.5; max-width: 1500px; }
+  .s10 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .s10 .card { border: 1px dashed #BFBDB4; padding: 36px 32px; background: #FBFBF9; display: flex; flex-direction: column; gap: 16px; }
+  .s10 .qmark { font-size: 48px; font-weight: 300; color: #BFBDB4; font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1; }
+  .s10 .ql { font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mute); font-weight: 700; }
+  .s10 .q { font-size: 26px; font-weight: 600; line-height: 1.3; color: var(--ink); letter-spacing: -0.01em; }
+  .s10 .kv { display: grid; grid-template-columns: 92px 1fr; gap: 10px 16px; font-size: 17px; line-height: 1.55; margin-top: 10px; color: var(--mute); }
+  .s10 .kv .k { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; padding-top: 4px; color: #7A7A76; }
+  .s10 .kv .v { color: #2A2A2A; }
+  .s10 .kv .v b { font-weight: 700; color: var(--ink); }
+
+  /* ===== SLIDE 11 ===== */
+  .s11 .pad { display: grid; grid-template-rows: auto 1fr auto; gap: 44px; padding: 100px 120px; }
+  .s11 h1 { font-size: 62px; font-weight: 700; letter-spacing: -0.025em; }
+  .s11 .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; align-items: stretch; }
+  .s11 .card { border: 1px solid var(--rule); padding: 36px 30px; display: flex; flex-direction: column; gap: 18px; background: var(--paper-2); }
+  .s11 .card .top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .s11 .card .n { font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.2em; color: var(--purple); font-weight: 700; }
+  .s11 .icon { width: 48px; height: 48px; display: grid; place-items: center; color: var(--purple); }
+  .s11 .icon svg { width: 36px; height: 36px; }
+  .s11 .card .l { font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute); font-weight: 700; margin-top: 12px; }
+  .s11 .card h3 { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.2; }
+  .s11 .card .d { font-size: 19px; line-height: 1.55; color: var(--ink); }
+  .s11 .card .tag { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--mute); letter-spacing: 0.04em; margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--rule); }
+  .s11 .foot { font-size: 22px; font-style: italic; color: var(--mute); line-height: 1.5; max-width: 1500px; border-top: 1px solid var(--rule); padding-top: 26px; }
+
+  /* ===== SLIDE 12 ===== */
+  .s12 .pad { display: grid; grid-template-rows: auto 1fr auto; gap: 40px; padding: 100px 120px; }
+  .s12 h1 { font-size: 62px; font-weight: 700; letter-spacing: -0.025em; color: var(--paper); }
+  .s12 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid #2A2A2A; border-bottom: 1px solid #2A2A2A; }
+  .s12 .col { padding: 40px 44px; }
+  .s12 .col + .col { border-left: 1px solid #2A2A2A; }
+  .s12 .col .h { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .s12 .col .tag { font-size: 14px; letter-spacing: 0.25em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+  .s12 .sq .tag { color: #9A9A96; }
+  .s12 .ex .tag { color: #B589F0; }
+  .s12 .col .t { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; }
+  .s12 .sq .t { color: #9A9A96; }
+  .s12 .ex .t { color: var(--paper); }
+  .s12 .col ul { list-style: none; padding: 0; margin: 0; }
+  .s12 .col li { font-size: 22px; line-height: 1.45; padding: 16px 0; border-top: 1px dashed #2A2A2A; display: flex; gap: 14px; align-items: baseline; }
+  .s12 .col li:first-child { border-top: none; }
+  .s12 .col li > span:last-child { flex: 1; }
+  .s12 .sq li { color: #8A8A84; }
+  .s12 .sq li .mk { color: #A32D2D; font-weight: 800; }
+  .s12 .ex li { color: #E4E3DE; }
+  .s12 .ex li .mk { color: #B589F0; font-weight: 800; }
+  .s12 .ex li b { color: var(--paper); font-weight: 700; }
+  .s12 .tagline { text-align: left; }
+  .s12 .tagline .t1 { font-size: 20px; letter-spacing: 0.28em; text-transform: uppercase; color: #B589F0; font-weight: 700; margin-bottom: 20px; }
+  .s12 .tagline .t2 { font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; color: var(--paper); max-width: 1600px; }
+  .s12 .tagline .t2 b { color: #B589F0; }
+
+  /* ===== SLIDE 13 ===== */
+  .s13 .pad { display: grid; grid-template-rows: 1fr auto; padding: 110px 140px; }
+  .s13 .center { display: flex; flex-direction: column; justify-content: center; gap: 30px; }
+  .s13 h1 { font-size: 240px; font-weight: 800; letter-spacing: -0.05em; line-height: 0.9; color: var(--paper); }
+  .s13 .sub { font-size: 32px; color: #9A9A96; max-width: 900px; line-height: 1.4; }
+  .s13 .meta { display: flex; justify-content: space-between; align-items: flex-end; }
+  .s13 .brand { font-size: 15px; letter-spacing: 0.25em; text-transform: uppercase; color: #6B6B68; font-weight: 600; }
+
+  /* dotted cluster for slide 4 */
+  .dotbox { width: 100%; height: 120px; border: 1px dashed var(--rule); border-radius: 2px; position: relative; margin-bottom: 20px; background: #FDFDFB; }
+  .dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
+  .dotbox .hub { width: 14px; height: 14px; background: var(--success); border-radius: 50%; left: 50%; top: 50%; transform: translate(-50%,-50%); position: absolute; }
+
+  /* brand mark */
+  .mark {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-size: 15px; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 700;
+  }
+  .mark .dot-mark { width: 10px; height: 10px; background: var(--purple); border-radius: 50%; }
+</style>
+</head>
+<body>
+<deck-stage>
+
+  <!-- SLIDE 1 -->
+  <section class="dark s1" data-screen-label="01 Cover">
+    <div class="pad">
+      <div style="display:grid;align-content:space-between;height:100%;">
+        <div class="mark" style="color:#9A9A96;"><span class="dot-mark"></span>Dash Express</div>
+        <h1>Mengapa <span class="pct">96%</span><br/>bisnis kita berjalan<br/>di atas manusia.</h1>
+        <div class="meta">
+          <div style="font-size:26px;color:#C9C9C5;max-width:720px;line-height:1.5;">
+            Core problem analysis &amp; proposed direction.<br/>
+            <span style="color:#7A7A76;font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.05em;">
+              Irfan Prima — Product Design · 23 April 2026
+            </span>
+          </div>
+          <div class="brand">Internal · Strategic</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 -->
+  <section class="s2" data-screen-label="02 One-liner">
+    <div class="pad">
+      <div class="wrap">
+        <div class="label">Satu kalimat</div>
+        <div class="quote">
+          Dash Express adalah <em>automated delivery service</em> untuk 4% volume,
+          dan <em>manual delivery service</em> untuk 96% volume —
+          di mana 96% itu di-sustain oleh <em>2&ndash;3 manusia</em> yang kerja
+          8–12 jam per hari dengan allocation latency <em>89 menit</em> per order.
+        </div>
+        <div class="sub">
+          Completion rate 95% yang terlihat sehat di dashboard berjalan di atas
+          <i>capacity ceiling</i> yang akan patah seiring volume tumbuh.
+        </div>
+      </div>
+    </div>
+    <div class="slide-no">02 / 13</div>
+  </section>
+
+  <!-- SLIDE 3 -->
+  <section class="s3" data-screen-label="03 Data">
+    <div class="pad">
+      <div class="head">
+        <div class="eyebrow purple" style="margin-bottom:18px;">Data · 1 bulan terakhir</div>
+        <h1>Dua realitas paralel<br/>di satu bisnis.</h1>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <div class="col-hdr">
+            <div class="col-title">McD <span style="color:var(--mute);font-weight:500;font-size:18px;">— Benchmark</span></div>
+            <div class="col-tag tag-green">● 4% Volume</div>
+          </div>
+          <div class="row"><div class="k">Volume</div><div><div class="v">8,290</div><div class="sub">deliveries</div></div></div>
+          <div class="row"><div class="k">Automation rate</div><div><div class="v hero num-green">99.90%</div></div></div>
+          <div class="row"><div class="k">Allocation time</div><div><div class="v num-green">0.04<span style="font-size:22px;color:var(--mute);font-weight:500;letter-spacing:0;"> min</span></div></div></div>
+          <div class="row"><div class="k">SLA met</div><div><div class="v" style="font-size:32px;">39.12%</div></div></div>
+          <div class="row"><div class="k">Completion</div><div><div class="v" style="font-size:32px;">92.61%</div></div></div>
+        </div>
+        <div class="col">
+          <div class="col-hdr">
+            <div class="col-title">Non-McD <span style="color:var(--mute);font-weight:500;font-size:18px;">— 96% Business</span></div>
+            <div class="col-tag tag-red">● 96% Volume</div>
+          </div>
+          <div class="row"><div class="k">Volume</div><div><div class="v">16,618</div><div class="sub">deliveries · 2× lipat</div></div></div>
+          <div class="row"><div class="k">Automation rate</div><div><div class="v hero num-red">3.95%</div></div></div>
+          <div class="row"><div class="k">Allocation time</div><div><div class="v num-red">88.91<span style="font-size:22px;color:var(--mute);font-weight:500;letter-spacing:0;"> min</span></div><div class="sub">89 min vs &lt;1 min di McD</div></div></div>
+          <div class="row"><div class="k">SLA met</div><div><div class="v num-red" style="font-size:32px;">5.30%</div></div></div>
+          <div class="row"><div class="k">Completion</div><div><div class="v" style="font-size:32px;">95.58%</div></div></div>
+        </div>
+      </div>
+      <div class="foot">
+        Non-McD mencakup Chagee, Jiwa+, Kopi Kenangan, Sayurbox, Lili, SPUN, Janji Jiwa &mdash; dalam 1 bulan terakhir.
+      </div>
+    </div>
+    <div class="slide-no">03 / 13</div>
+  </section>
+
+  <!-- SLIDE 4 -->
+  <section class="s4" data-screen-label="04 Root Cause">
+    <div class="pad">
+      <h1>Kenapa McD bisa 99.9%,<br/>non-McD cuma 3.95%?</h1>
+      <p class="insight">
+        Algo allocation kita hanya punya <b>1 dimensi: proximity.</b>
+        Dan proximity doang <i>kebetulan</i> cukup untuk McD — karena mitra camping di outlet.
+      </p>
+      <div class="cols">
+        <div class="col mcd">
+          <h3>● Di McD</h3>
+          <div class="dotbox">
+            <div class="hub"></div>
+            <div class="dot" style="left:48%;top:42%;"></div>
+            <div class="dot" style="left:52%;top:58%;"></div>
+            <div class="dot" style="left:46%;top:52%;"></div>
+            <div class="dot" style="left:51%;top:48%;"></div>
+            <div class="dot" style="left:53%;top:52%;"></div>
+            <div class="dot" style="left:49%;top:56%;"></div>
+          </div>
+          <ul>
+            <li>Mitra camping di outlet</li>
+            <li>"Terdekat" otomatis juga = motor fit, whitelist OK, zone match</li>
+            <li class="eq">Proximity = Fit (by coincidence)</li>
+          </ul>
+        </div>
+        <div class="col non">
+          <h3>● Di Non-McD</h3>
+          <div class="dotbox">
+            <div class="dot" style="left:8%;top:20%;"></div>
+            <div class="dot" style="left:18%;top:70%;"></div>
+            <div class="dot" style="left:32%;top:30%;"></div>
+            <div class="dot" style="left:40%;top:80%;"></div>
+            <div class="dot" style="left:54%;top:24%;"></div>
+            <div class="dot" style="left:62%;top:64%;"></div>
+            <div class="dot" style="left:72%;top:40%;"></div>
+            <div class="dot" style="left:84%;top:74%;"></div>
+            <div class="dot" style="left:90%;top:32%;"></div>
+            <div class="dot" style="left:24%;top:50%;"></div>
+            <div class="dot" style="left:48%;top:56%;"></div>
+            <div class="dot" style="left:66%;top:18%;"></div>
+          </div>
+          <ul>
+            <li>Order tersebar di seluruh kota</li>
+            <li>Mitra ga bisa camping (impossible)</li>
+            <li class="eq">"Terdekat" ≠ "Fit"</li>
+          </ul>
+        </div>
+      </div>
+      <p class="tagline">
+        system allocating kita tidak pernah dibangun untuk handle 96% skenario bisnis.
+        <em>McD adalah exception, bukan norm.</em>
+      </p>
+    </div>
+    <div class="slide-no">04 / 13</div>
+  </section>
+
+  <!-- SLIDE 5 -->
+  <section class="s5" data-screen-label="05 Hidden Cost">
+    <div class="pad">
+      <h1>Apa yang dashboard<br/>tidak tunjukkan.</h1>
+      <p class="lede2">
+        Brand promise <b>"never reject"</b> saat ini di-sustain oleh
+        <b>dua subsidi yang finite</b>.
+      </p>
+      <div class="cols">
+        <div class="col">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 3h14M5 21h14M6 3c0 6 12 6 12 9s-12 3-12 9M18 3c0 6-12 6-12 9s12 3 12 9"/>
+            </svg>
+          </div>
+          <h3>Subsidi 01</h3>
+          <h2>Tenaga manusia</h2>
+          <ul>
+            <li>2–3 floor monitor, <b>8–12 jam/hari</b></li>
+            <li>Rata-rata ~7,000 allocation/bulan per orang</li>
+            <li><b>Hard capacity ceiling</b> — tidak bisa di-scale dengan hire</li>
+            <li>TikTok Shop <b>+3,000 orders/day</b> akan break sistem ini</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="13" r="8"/>
+              <path d="M12 9v4l2.5 2.5M9 3h6M12 3v2"/>
+            </svg>
+          </div>
+          <h3>Subsidi 02</h3>
+          <h2>Allocation latency</h2>
+          <ul>
+            <li><b>89 menit</b> rata-rata per order</li>
+            <li>Hanya <b>5.3%</b> hit SLA</li>
+            <li>"Never reject" di-beli dengan <b>"never on-time"</b></li>
+            <li>Trust client turun diam-diam</li>
+          </ul>
+        </div>
+      </div>
+      <p class="tag">
+        Completion rate 95% bukan kemenangan sistem.
+        <em>Itu kemenangan kerja rodi manusia yang nambal automation yang rusak.</em>
+      </p>
+    </div>
+    <div class="slide-no">05 / 13</div>
+  </section>
+
+  <!-- SLIDE 6 -->
+  <section class="s6" data-screen-label="06 Trust Split">
+    <div class="pad">
+      <h1>Trust mitra tidak hilang —<br/>tapi pindah channel.</h1>
+      <p class="insight">
+        Mitra <span class="not">TIDAK</span> distrust Dash.
+        Mitra <span class="not">distrust System Allocating.</span>
+        Mitra <span class="ok">TRUST MANUAL.</span>
+      </p>
+      <div class="rows">
+        <div class="row algo">
+          <div class="ch">
+            <span class="num">CH 01 · ALGO</span>
+            <span class="name">Broadcast</span>
+          </div>
+          <div class="desc">
+            Freelance acceptance rendah. Fulltime lebih responsif saat dihubungi
+            manusia dibanding assignment algo. Mitra treat algo assignment sebagai <b>opsional</b>.
+          </div>
+          <div class="stat">
+            <div class="num">10%</div>
+            <div class="lbl">Acceptance</div>
+          </div>
+        </div>
+        <div class="row man">
+          <div class="ch">
+            <span class="num">CH 02 · MANUAL</span>
+            <span class="name">WA RTFM</span>
+          </div>
+          <div class="desc">
+            Mitra accept, eksekusi, antar. Mitra treat <b>"real allocation"</b>
+            = yang lewat chat manusia.
+          </div>
+          <div class="stat">
+            <div class="num">95%</div>
+            <div class="lbl">Completion</div>
+          </div>
+        </div>
+        <div class="row imp">
+          <div class="ch">
+            <span class="num">IMPLIKASI</span>
+            <span class="name">Bukan distrust,<br/>tapi absent</span>
+          </div>
+          <div class="desc">
+            Algo <b>ga pernah earn trust</b> karena ga pernah beneran allocate.
+            Manual channel work — tapi capacity capped.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no">06 / 13</div>
+  </section>
+
+  <!-- SLIDE 7 -->
+  <section class="s7" data-screen-label="07 Divergence">
+    <div class="pad">
+      <div class="left">
+        <div>
+          <div class="eyebrow purple" style="margin-bottom:18px;">Pattern · Divergence</div>
+          <h1>Gap antara algo<br/>dan volume<br/>terus melebar.</h1>
+        </div>
+        <p class="tag">
+          Ini <b>bukan siklus steady-state</b>.
+          <span class="pur">Ini trajectory menuju patah.</span><br/><br/>
+          TikTok Shop <span class="em">3,000 orders/day</span> = detonator.
+        </p>
+      </div>
+      <div class="right">
+        <div class="flow">
+          <div class="step">Algo di-design hanya untuk <b>1 pattern</b> (McD camping)</div>
+          <div class="arrow">↓</div>
+          <div class="step">96% volume harus di-absorb <b>manual</b></div>
+          <div class="arrow">↓</div>
+          <div class="step">Mitra develop trust ke manual, <b>abaikan algo broadcast</b></div>
+          <div class="arrow">↓</div>
+          <div class="step">Algo makin <b>irrelevant</b> → makin tidak di-iterate</div>
+          <div class="arrow">↓</div>
+          <div class="step">Gap antara algo vs manual <b>makin lebar</b></div>
+          <div class="arrow">↓</div>
+          <div class="step">Manual capacity makin <b>stretch</b></div>
+          <div class="arrow">↓</div>
+          <div class="step highlight">Floor monitor burnt out, <b>exception accumulate</b></div>
+          <div class="arrow">↓</div>
+          <div class="wall">
+            <div class="w1">⚠ Scale Wall</div>
+            <div class="w2">Patah saat volume tumbuh</div>
+            <div class="w3">bukan loop steady — detonasi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no">07 / 13</div>
+  </section>
+
+  <!-- SLIDE 8 -->
+  <section class="dark s8" data-screen-label="08 Reframe">
+    <div class="pad">
+      <h1>Jadi, apa core problem-nya?</h1>
+      <div class="grid">
+        <div>
+          <div class="old-label">Framing lama</div>
+          <div class="old">"Algo kita rusak, perlu di-fix."</div>
+        </div>
+        <div>
+          <div class="new-label">Framing yang benar</div>
+          <div class="new">
+            Algo kita <b>tidak pernah dibangun</b> untuk 96% bisnis.<br/>
+            Manusia yang nge-cover gap itu <b>sudah hit ceiling.</b>
+          </div>
+        </div>
+        <div class="imp">
+          <div class="it">
+            <div class="n">01 / IMPLIKASI</div>
+            <div class="t">Solusi <b>bukan</b> "replace manual dengan algo".</div>
+          </div>
+          <div class="it">
+            <div class="n">02 / IMPLIKASI</div>
+            <div class="t">Solusi adalah "<b>absorb mental model manual</b> ke algo, secara bertahap".</div>
+          </div>
+          <div class="it">
+            <div class="n">03 / IMPLIKASI</div>
+            <div class="t">Floor monitor bukan problem — mereka <b>oracle</b> yang harus di-leverage.</div>
+          </div>
+          <div class="it">
+            <div class="n">04 / IMPLIKASI</div>
+            <div class="t">Trust mitra akan kembali otomatis kalau algo beneran deliver — <b>tapi butuh bukti berulang</b>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no" style="color:#6B6B68;">08 / 13</div>
+  </section>
+
+  <!-- SLIDE 9 -->
+  <section class="s9" data-screen-label="09 Three Bets">
+    <div class="pad">
+      <div>
+        <div class="eyebrow purple" style="margin-bottom:18px;">Direction · 3 Bets</div>
+        <h1>Arah solusi — bukan roadmap.</h1>
+      </div>
+      <p class="intro">
+        <b>Bukan 12-minggu plan.</b> Bukan solusi lengkap.
+        3 langkah yang <b>defensible</b> dan <b>gradually reversible</b> kalau data bilang salah.
+      </p>
+      <div class="cards">
+        <div class="card c1">
+          <div class="num">BET 01</div>
+          <h3>Capture floor monitor mental model</h3>
+          <div class="kv">
+            <div class="k">Durasi</div><div class="v"><b>2 minggu</b></div>
+            <div class="k">Aksi</div><div class="v">Log <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">reason tag</code> tiap allocation manual. 1-click bot di WA RTFM.</div>
+            <div class="k">Output</div><div class="v">Data tentang dimensi real yang floor monitor pakai — bukan karangan whiteboard.</div>
+            <div class="k">Risk</div><div class="v">Compliance. Mitigasi: 1-click, mandatory, simple.</div>
+            <div class="k">Principle</div><div class="v">Micro-burden ~5 detik/allocation, justified — output = data dimensi real. Acceptable deviation dari zero-burden principle.</div>
+          </div>
+        </div>
+        <div class="card c2">
+          <div class="num">BET 02</div>
+          <h3>Shadow mode</h3>
+          <div class="kv">
+            <div class="k">Durasi</div><div class="v"><b>2 minggu</b> setelah Bet 1</div>
+            <div class="k">Aksi</div><div class="v">Algo compute score paralel dengan floor monitor decision. Compare agreement.</div>
+            <div class="k">Output</div><div class="v">Bukti apakah algo bisa replicate floor monitor thinking.</div>
+            <div class="k">Gate</div><div class="v">Agreement <b>≥70%</b> → lanjut. <b>&lt;50%</b> → rethink dimensi.</div>
+          </div>
+        </div>
+        <div class="card c3">
+          <div class="num">BET 03</div>
+          <h3>Gradual handoff</h3>
+          <div class="kv">
+            <div class="k">Durasi</div><div class="v">Setelah Bet 2 pass</div>
+            <div class="k">Aksi</div><div class="v">Auto-assign di kasus high-confidence. Manual tetap untuk sisanya.</div>
+            <div class="k">Target</div><div class="v">Geser ratio dari <b>3:97 → 20:80</b> dulu. Bukan langsung 80:20.</div>
+            <div class="k">Safety</div><div class="v">Floor monitor tetap monitor + override. <b>Bukan replace.</b></div>
+          </div>
+        </div>
+      </div>
+      <p class="foot">
+        Key principle: floor monitor tidak di-replace. Mereka geser dari <b>"hunter"</b> ke <b>"reviewer + exception handler".</b>
+        <br/><br/>
+        <span style="color:var(--mute);">Bets ini adalah <b style="color:var(--purple);">baseline</b> — foundation yang match RTFM performance. <b style="color:var(--ink);">Beyond-baseline optimization</b> (constraint-aware + opportunity cost scoring) = next phase setelah MVP validate.</span>
+      </p>
+    </div>
+    <div class="slide-no">09 / 13</div>
+  </section>
+
+  <!-- SLIDE 10 -->
+  <section class="s10" data-screen-label="10 Unknowns">
+    <div class="pad">
+      <div>
+        <div class="eyebrow" style="margin-bottom:18px;color:var(--mute);">Uncertainty zone</div>
+        <h1>Yang gua belum tau —<br/>perlu verifikasi.</h1>
+      </div>
+      <p class="intro">
+        Plan ini punya <b style="color:#3A3A3A;">3 open assumption</b> yang perlu di-verify sebelum commit penuh.
+        Gua lebih prefer honest di depan daripada kaget di tengah jalan.
+      </p>
+      <div class="cards">
+        <div class="card">
+          <div class="qmark">?</div>
+          <div class="ql">Q1 · Supply Adequacy</div>
+          <div class="q">"Apakah beneran ada mitra fit dalam radius saat order masuk?"</div>
+          <div class="kv">
+            <div class="k">Method</div><div class="v">Sample 100 failed allocation, check pool state.</div>
+            <div class="k">Effort</div><div class="v">1–2 hari data query.</div>
+            <div class="k">Stakes</div><div class="v">Kalau <b>&lt;70%</b> ada mitra fit → masalah <b>coverage</b>, bukan matching.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="qmark">?</div>
+          <div class="ql">Q2 · Ghost Mitra Pattern</div>
+          <div class="q">"Berapa mitra online tapi ga pernah dapat / accept order?"</div>
+          <div class="kv">
+            <div class="k">Trigger</div><div class="v">Observasi: mitra wandering seluruh kota, zero order.</div>
+            <div class="k">Method</div><div class="v">Query mitra online &gt;4 jam vs productive output.</div>
+            <div class="k">Stakes</div><div class="v">Kalau <b>&gt;15% ghost</b>, utilization 30% misleading. Real supply lebih kecil.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="qmark">?</div>
+          <div class="ql">Q3 · "Never Reject"</div>
+          <div class="q">"Legal contract atau brand aspiration?"</div>
+          <div class="kv">
+            <div class="k">Owner</div><div class="v">BD + Legal.</div>
+            <div class="k">Stakes</div><div class="v">Kalau aspirasi → unlock design space untuk <b>honest escalation</b>, bukan force-assign bad matches.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no">10 / 13</div>
+  </section>
+
+  <!-- SLIDE 11 -->
+  <section class="s11" data-screen-label="11 Asks">
+    <div class="pad">
+      <div>
+        <div class="eyebrow purple" style="margin-bottom:18px;">Asks · Actionable</div>
+        <h1>Yang gua butuh<br/>dari stakeholder.</h1>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="top">
+            <div class="n">ASK 01</div>
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12l4 4 10-10"/>
+              </svg>
+            </div>
+          </div>
+          <div class="l">Approval</div>
+          <h3>2 minggu untuk Bet 1.</h3>
+          <div class="d">Knowledge capture phase. <b>Low commitment, reversible.</b></div>
+          <div class="tag">owner · Head of Business</div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <div class="n">ASK 02</div>
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="8" cy="9" r="3.2"/><circle cx="16" cy="9" r="3.2"/>
+                <path d="M2 20c0-3.2 2.7-5 6-5s6 1.8 6 5M14 15c3.3 0 6 1.8 6 5"/>
+              </svg>
+            </div>
+          </div>
+          <div class="l">Resource</div>
+          <h3>1–2 engineer, part-time.</h3>
+          <div class="d">Setup logging infrastructure. Parallel dengan existing work, <b>bukan dedicated</b>.</div>
+          <div class="tag">owner · Eng Lead</div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <div class="n">ASK 03</div>
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v18M4 12h16"/><circle cx="12" cy="12" r="9"/>
+              </svg>
+            </div>
+          </div>
+          <div class="l">Decision</div>
+          <h3>Interrogate "never reject".</h3>
+          <div class="d">Legal contract atau aspiration? <b>Unlocks design space.</b></div>
+          <div class="tag">owner · Aditya + BD + Legal</div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <div class="n">ASK 04</div>
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"/><path d="M20 20l-4.5-4.5"/>
+              </svg>
+            </div>
+          </div>
+          <div class="l">Investigation</div>
+          <h3>Supply integrity probe.</h3>
+          <div class="d">Ghost mitra pattern. <b>Bukan scope design</b>, butuh owner Ops lead.</div>
+          <div class="tag">owner · Ops Lead</div>
+        </div>
+      </div>
+      <p class="foot">
+        Gua bisa drive coordination, tapi butuh commit ke <b>ownership per workstream</b>.
+        Solo designer ga bisa solve cross-functional problem sendirian.
+      </p>
+    </div>
+    <div class="slide-no">11 / 13</div>
+  </section>
+
+  <!-- SLIDE 12 -->
+  <section class="dark s12" data-screen-label="12 Closing">
+    <div class="pad">
+      <h1>Yang kita pertaruhkan.</h1>
+      <div class="cols">
+        <div class="col sq">
+          <div class="h">
+            <div class="tag">■ STATUS QUO</div>
+            <div class="t">Kalau ga berubah</div>
+          </div>
+          <ul>
+            <li><span class="mk">—</span><span>Floor monitor <b style="color:#A8A8A4;">burnout</b> (2–3 orang, 8–12 jam/hari)</span></li>
+            <li><span class="mk">—</span><span>Latency tetap <b style="color:#A8A8A4;">89 menit</b>, SLA tetap <b style="color:#A8A8A4;">5%</b></span></li>
+            <li><span class="mk">—</span><span>TikTok Shop 3,000/day = <b style="color:#A8A8A4;">breaking point</b></span></li>
+            <li><span class="mk">—</span><span>Trust client pelan-pelan <b style="color:#A8A8A4;">tergerus</b></span></li>
+            <li><span class="mk">—</span><span><b style="color:#A8A8A4;">Ga ada jalur</b> untuk scale</span></li>
+          </ul>
+        </div>
+        <div class="col ex">
+          <div class="h">
+            <div class="tag">● IF WE EXECUTE</div>
+            <div class="t">Kalau eksekusi 3 bets</div>
+          </div>
+          <ul>
+            <li><span class="mk">→</span><span>Floor monitor workload <b>8–12h → &lt;4h</b> dalam 6 bulan</span></li>
+            <li><span class="mk">→</span><span>Allocation latency <b>89 min → &lt;3 min</b></span></li>
+            <li><span class="mk">→</span><span>SLA met <b>5% → 50%+</b></span></li>
+            <li><span class="mk">→</span><span>Headroom untuk <b>TikTok Shop &amp; beyond</b></span></li>
+            <li><span class="mk">→</span><span>Algo yang <b>beneran represent</b> bisnis Dash</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="tagline">
+        <div class="t1">The real bet</div>
+        <div class="t2">
+          Ini bukan tentang bikin algo yang lebih pintar.<br/>
+          Ini tentang bikin sistem yang akhirnya <b>match dengan bisnis yang sudah kita jalankan.</b>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no" style="color:#6B6B68;">12 / 13</div>
+  </section>
+
+  <!-- SLIDE 13 -->
+  <section class="dark s13" data-screen-label="13 QA">
+    <div class="pad">
+      <div style="display:grid;align-content:space-between;height:100%;">
+        <div class="mark" style="color:#9A9A96;"><span class="dot-mark"></span>Dash Express</div>
+        <div class="center">
+          <h1>Q&amp;A</h1>
+          <p class="sub">Mari diskusikan.</p>
+        </div>
+        <div class="meta">
+          <div style="font-size:18px;color:#C9C9C5;line-height:1.5;">
+            Irfan Prima<br/>
+            <span style="color:#7A7A76;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.05em;">
+              Product Design · Dash Express
+            </span>
+          </div>
+          <div class="brand">Thank you</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</deck-stage>
+</body>
+</html>
+```
+
+---
+
+## Reference — `examples/mcd-2month-recap.html`
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dash Express × McDonald's — 2-Month Recap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1A1A1A; --ink-2: #0E0E0E;
+  --paper: #F7F7F5; --paper-2: #FFFFFF;
+  --mute: #6B6B68;
+  --rule: #E4E3DE; --rule-dark: #2A2A2A;
+  --purple: #5E2AAC; --purple-soft: #EEE5FB;
+  --purple-card: #F1ECF9; --purple-on-dark: #B589F0;
+  --danger: #A32D2D; --success: #0F6E56;
+  --mcd-yellow: #FFC72C;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #000; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+body { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 24px 0; }
+
+/* ===== PRINT / PDF EXPORT ===== */
+@page { size: 1920px 1080px; margin: 0; }
+@media print {
+  html, body { background: #FFFFFF; }
+  body { padding: 0; gap: 0; display: block; }
+  section.slide {
+    margin: 0;
+    page-break-after: always;
+    break-after: page;
+    box-shadow: none;
+  }
+  section.slide:last-child { page-break-after: auto; break-after: auto; }
+}
+
+section.slide {
+  width: 1920px; height: 1080px;
+  position: relative; overflow: hidden;
+  color: var(--ink); background: var(--paper);
+  letter-spacing: -0.005em;
+}
+section.slide.dark { background: var(--ink); color: var(--paper); }
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+h1, h2, h3, p { margin: 0; }
+
+.mcd {
+  color: var(--mcd-yellow);
+  font-weight: 800;
+  -webkit-text-stroke: 0.6px #1A1A1A;
+  paint-order: stroke fill;
+}
+section.slide.dark .mcd { color: var(--mcd-yellow); -webkit-text-stroke: 0; }
+
+.dash-mark { display: inline-block; line-height: 0; }
+.dash-mark svg { display: block; }
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-lockup .brand-text {
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.brand-lockup .brand-text strong { font-weight: 700; }
+
+.title-xxl  { font-size: 108px; font-weight: 800; line-height: 0.98; letter-spacing: -0.035em; }
+.title-xl   { font-size: 76px;  font-weight: 800; line-height: 1.02; letter-spacing: -0.03em; }
+.title-lg   { font-size: 60px;  font-weight: 700; line-height: 1.05; letter-spacing: -0.025em; }
+.title-md   { font-size: 44px;  font-weight: 700; line-height: 1.10; letter-spacing: -0.02em; }
+.lede       { font-size: 28px;  font-weight: 400; line-height: 1.40; }
+.body       { font-size: 20px;  font-weight: 400; line-height: 1.55; }
+.body-sm    { font-size: 17px;  font-weight: 400; line-height: 1.55; }
+.stat-xxl   { font-size: 140px; font-weight: 800; line-height: 0.90; letter-spacing: -0.04em; }
+.stat-xl    { font-size: 96px;  font-weight: 800; line-height: 0.95; letter-spacing: -0.035em; }
+.stat-lg    { font-size: 64px;  font-weight: 800; line-height: 1.0;  letter-spacing: -0.03em; }
+.stat-label { font-size: 15px;  font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); }
+.eyebrow    { font-size: 14px;  font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mute); }
+.eyebrow.purple { color: var(--purple); }
+section.slide.dark .eyebrow { color: #9A9A96; }
+section.slide.dark .eyebrow.purple { color: var(--purple-on-dark); }
+
+.slide-no {
+  position: absolute; bottom: 48px; right: 60px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  color: var(--mute); letter-spacing: 0.10em;
+}
+section.slide.dark .slide-no { color: #6B6B68; }
+
+/* ===== SLIDE 1 ===== */
+.s1 .pad {
+  height: 100%; padding: 110px 140px;
+  display: grid; grid-template-rows: auto 1fr auto; gap: 0;
+}
+.s1 .top-eyebrow { font-size: 14px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #9A9A96; }
+.s1 h1 {
+  align-self: center; max-width: 1500px;
+  font-size: 116px; font-weight: 800; line-height: 0.96; letter-spacing: -0.04em;
+  color: var(--paper);
+}
+.s1 h1 .accent { color: var(--purple-on-dark); }
+.s1 .meta-row { display: flex; justify-content: space-between; align-items: flex-end; }
+.s1 .brand-lockup { color: #DDDDD9; }
+.s1 .meta-right {
+  font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #9A9A96;
+  letter-spacing: 0.05em; text-align: right;
+}
+
+/* ===== SLIDE 2 ===== */
+.s2 .pad {
+  height: 100%; padding: 80px 160px;
+  display: grid; place-items: center; text-align: center;
+}
+.s2 .wrap { max-width: 1500px; }
+.s2 .eyebrow {
+  font-size: 24px; font-weight: 600; letter-spacing: 0.30em; text-transform: uppercase;
+  color: var(--mute); margin-bottom: 64px;
+}
+.s2 .quote {
+  font-size: 58px; font-weight: 500; line-height: 1.22; letter-spacing: -0.02em;
+}
+.s2 .quote strong { font-weight: 700; color: var(--ink); }
+.s2 .quote em { font-style: normal; font-weight: 700; color: var(--purple); }
+.s2 .sub {
+  font-size: 22px; color: var(--mute); margin-top: 72px;
+  max-width: 1100px; margin-inline: auto; line-height: 1.5;
+}
+
+/* ===== SLIDE 3 ===== */
+.s3 .pad {
+  height: 100%; padding: 90px 120px;
+  display: grid; grid-template-rows: auto auto 1fr auto; gap: 28px;
+}
+.s3 .head h1 {
+  font-size: 44px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.10;
+  max-width: 1400px; margin-top: 12px;
+}
+.s3 .cols {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  align-items: stretch;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.s3 .col { padding: 32px 48px; }
+.s3 .col + .col { border-left: 1px solid var(--rule); }
+.s3 .col-hdr {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 22px;
+}
+.s3 .col-title { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+.s3 .col-tag {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+}
+.s3 .tag-green { color: var(--success); }
+.s3 .row {
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: end;
+  padding: 16px 0;
+  border-top: 1px dashed var(--rule);
+}
+.s3 .row:first-of-type { border-top: none; padding-top: 6px; }
+.s3 .row .k {
+  font-size: 15px; font-weight: 500; color: var(--mute);
+  padding-bottom: 8px;
+}
+.s3 .row .v {
+  font-size: 44px; font-weight: 800; letter-spacing: -0.02em; line-height: 1;
+  text-align: right;
+}
+.s3 .row .v.hero { font-size: 76px; font-weight: 800; }
+.s3 .row .sub {
+  font-size: 13px; color: var(--mute);
+  font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
+  margin-top: 6px; text-align: right; grid-column: 1 / -1;
+}
+.s3 .foot {
+  font-size: 15px; color: var(--mute); max-width: 1400px;
+  line-height: 1.5;
+}
+
+/* ===== SLIDE 4 ===== */
+.s4 .pad {
+  height: 100%; padding: 90px 120px;
+  display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 16px;
+}
+.s4 h1 {
+  font-size: 44px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.12;
+  max-width: 1500px; margin-top: 6px;
+}
+.s4 .lede {
+  font-size: 22px; color: var(--ink); max-width: 1500px;
+  margin-bottom: 4px;
+}
+.s4 .chart-wrap { width: 100%; align-self: center; }
+.s4 .chart-wrap svg { display: block; width: 100%; height: auto; max-width: 1680px; }
+.s4 .stats-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  border-top: 1px solid var(--rule); padding-top: 22px;
+}
+.s4 .stat-block { display: flex; flex-direction: column; gap: 4px; }
+.s4 .stat-block .label {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.20em; text-transform: uppercase;
+  color: var(--purple);
+}
+.s4 .stat-block .val {
+  font-size: 44px; font-weight: 800; letter-spacing: -0.02em; line-height: 1;
+  margin-top: 4px;
+}
+.s4 .stat-block .desc {
+  font-size: 14px; color: var(--mute); line-height: 1.5; margin-top: 4px;
+}
+
+/* ===== SLIDE 5 ===== */
+.s5 .pad {
+  height: 100%; padding: 90px 120px;
+  display: grid; grid-template-rows: auto auto auto auto 1fr auto; gap: 16px;
+}
+.s5 h1 {
+  font-size: 44px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.10;
+  max-width: 1400px; margin-top: 8px;
+}
+.s5 .lede {
+  font-size: 22px; color: var(--ink); max-width: 1400px;
+  margin-bottom: 4px;
+}
+.s5 .chart-title {
+  font-size: 14px; font-weight: 600; color: var(--mute);
+  letter-spacing: 0.10em; text-transform: uppercase;
+}
+.s5 .chart-wrap { width: 100%; align-self: center; }
+.s5 .chart-wrap svg { display: block; width: 100%; height: auto; max-width: 1680px; }
+.s5 .foot {
+  font-size: 15px; color: var(--mute);
+  font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
+}
+
+/* ===== SLIDES 6-10 — PAIR LAYOUT (1 LANDSCAPE + 1 PORTRAIT) ===== */
+.pair .pad {
+  height: 100%; padding: 80px 80px;
+  display: grid; grid-template-rows: auto 1fr; gap: 28px;
+}
+.pair .header {
+  max-width: 1400px;
+}
+.pair .header h1 {
+  font-size: 40px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.10;
+  margin-top: 8px;
+}
+.pair .pair-row {
+  display: grid;
+  grid-template-columns: 1265px 350px;
+  gap: 28px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.pair .card {
+  background: var(--paper-2);
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 100%;
+}
+
+.pair .card .img-wrap {
+  width: 100%;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 14px;
+}
+.pair .card.landscape .img-wrap { aspect-ratio: 16 / 9; }
+.pair .card.portrait .img-wrap { aspect-ratio: 1 / 2; }
+
+.pair .card img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.pair .card .text-zone {
+  padding: 18px 28px 22px 28px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pair .card.portrait .text-zone {
+  padding: 14px 18px 18px 18px;
+  gap: 6px;
+}
+
+.pair .card .meta-row {
+  display: flex; align-items: baseline; gap: 10px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+}
+.pair .card .meta-row .num { font-weight: 700; color: var(--purple); }
+.pair .card .meta-row .sep { color: var(--rule); }
+.pair .card .meta-row .cat { font-weight: 600; color: var(--mute); }
+
+.pair .card.landscape h3 {
+  font-size: 22px; font-weight: 700; line-height: 1.18;
+  letter-spacing: -0.015em; color: var(--ink);
+}
+.pair .card.portrait h3 {
+  font-size: 17px; font-weight: 700; line-height: 1.20;
+  letter-spacing: -0.01em; color: var(--ink);
+}
+.pair .card.landscape p {
+  font-size: 15px; line-height: 1.50; color: var(--mute);
+}
+.pair .card.portrait p {
+  font-size: 12.5px; line-height: 1.50; color: var(--mute);
+}
+
+/* ===== SLIDE 11 — CLOSING (dark) ===== */
+.s11 .pad {
+  height: 100%; padding: 110px 140px;
+  display: grid; grid-template-rows: auto 1fr auto; gap: 24px;
+}
+.s11 .top-eyebrow {
+  font-size: 14px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--purple-on-dark);
+}
+.s11 .center { align-self: center; max-width: 1500px; }
+.s11 h1 {
+  font-size: 76px; font-weight: 800; line-height: 1.02; letter-spacing: -0.03em;
+  color: var(--paper);
+}
+.s11 h1 .accent { color: var(--purple-on-dark); }
+.s11 .sub {
+  font-size: 28px; line-height: 1.40; color: var(--paper);
+  margin-top: 28px; max-width: 1300px; opacity: 0.85;
+}
+.s11 .meta-row { display: flex; justify-content: space-between; align-items: flex-end; }
+.s11 .brand-lockup { color: #DDDDD9; }
+.s11 .meta-right { font-size: 16px; color: var(--paper); opacity: 0.7; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="dash-d" viewBox="0 0 40 39">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M10.1996 5.39684C10.0926 5.61513 10.005 5.8374 10.005 5.8909C10.005 5.94433 9.96177 6.05242 9.90897 6.131C9.85618 6.20966 9.76932 6.38822 9.71594 6.52777C9.66256 6.66733 9.55385 6.92831 9.47433 7.10774C9.39473 7.28717 9.23939 7.64602 9.129 7.90519C9.01869 8.16436 8.81535 8.6374 8.67715 8.95638C8.53887 9.27536 8.20568 10.0583 7.93668 10.6963C7.66761 11.3342 7.41837 11.8872 7.38272 11.9251C7.34706 11.963 7.31794 12.0377 7.31794 12.0912C7.31794 12.1447 7.22331 12.391 7.10762 12.6386C6.99193 12.8861 6.70987 13.529 6.48067 14.0673C6.25154 14.6056 5.95081 15.307 5.81239 15.626C5.67397 15.945 5.50207 16.3527 5.4304 16.5322C5.3065 16.8423 4.77548 18.072 4.63213 18.3808C4.59509 18.4606 4.51593 18.6482 4.45631 18.7977L4.34781 19.0695H7.38533H10.4229L10.5713 18.7252C10.7109 18.4013 10.9644 17.8592 11.7829 16.1334C11.972 15.7347 12.4956 14.6255 12.9463 13.6686C13.397 12.7117 13.9366 11.5698 14.1451 11.1312C14.7699 9.81784 15.1612 8.98059 15.1612 8.95725C15.1612 8.93775 15.8122 7.56903 16.5064 6.12905C16.641 5.84994 16.7847 5.5319 16.8258 5.42221C16.8669 5.3126 16.9341 5.22285 16.975 5.22285C17.0249 5.22285 17.0543 6.72387 17.0641 9.77196C17.0722 12.274 17.0857 14.4189 17.0942 14.5385C17.1026 14.6582 17.1123 15.7265 17.1158 16.9128L17.122 19.0695H20.531C23.015 19.0695 23.9539 19.0921 23.9914 19.1526C24.0197 19.1983 23.9741 19.3696 23.8901 19.5332C23.7189 19.8665 23.1112 21.1495 22.743 21.955C22.6098 22.2461 22.354 22.7844 22.1745 23.1512C21.9949 23.5179 21.696 24.1442 21.5102 24.5429C21.3243 24.9417 21.0083 25.6104 20.8077 26.0291C20.6071 26.4478 20.2481 27.1981 20.0098 27.6965C19.7715 28.1949 19.396 28.9779 19.1754 29.4364C18.9547 29.8949 18.5841 30.6833 18.352 31.1883C18.1198 31.6933 17.8967 32.1663 17.8562 32.2395C17.7235 32.4791 17.2529 33.4559 17.1841 33.6346L17.1168 33.8093L18.4448 33.7564C19.1751 33.7274 19.9035 33.6914 20.0632 33.6765C21.0551 33.5837 21.3689 33.541 21.9878 33.4144C22.3672 33.3368 22.792 33.2566 22.9318 33.2362C23.5154 33.151 25.5201 32.4647 26.4904 32.0178C29.1091 30.8118 31.2859 28.8905 33.029 26.2466C33.2354 25.9336 33.7488 24.9785 33.9842 24.4696C34.4577 23.4461 34.6241 23.0673 34.6241 23.0128C34.6241 22.9834 34.7028 22.7612 34.7991 22.5187C35.1652 21.5967 35.7056 19.4822 35.8937 18.2358C36.0326 17.3156 36.036 15.5188 35.9003 14.7495C35.6326 13.2309 35.2204 12.1055 34.4554 10.805C34.0822 10.1707 33.8441 9.88012 33.0268 9.06179C32.4374 8.4716 31.8287 7.93905 31.5013 7.72707C30.84 7.29869 29.6612 6.65761 29.0685 6.40395C28.2099 6.03654 26.5821 5.50384 25.6189 5.27512L24.6385 5.04234L17.5164 5.02117L10.3943 5L10.1996 5.39684ZM10.3057 19.6676C10.1865 19.9169 9.97041 20.398 9.82539 20.7369C9.68043 21.0758 9.53213 21.4077 9.4959 21.4742C9.45966 21.5408 9.24564 22.0139 9.02036 22.5254C8.79508 23.037 8.51854 23.6513 8.40583 23.8905C8.29312 24.1297 8.08251 24.6028 7.93784 24.9417C7.79318 25.2806 7.61278 25.6884 7.53704 25.8479C7.36754 26.2048 6.90311 27.2399 6.26839 28.6752C6.00397 29.2733 5.72539 29.8931 5.64935 30.0526C5.57332 30.2121 5.36482 30.6688 5.18602 31.0676C5.00715 31.4663 4.67599 32.2003 4.45013 32.6987C4.2242 33.1971 4.02188 33.6457 4.00052 33.6955C3.96966 33.7677 5.29096 33.7861 10.4693 33.7861H16.9768V26.5003V19.2145H13.7496H10.5224L10.3057 19.6676Z"/>
+  </symbol>
+</svg>
+
+<!-- ============ SLIDE 1 — TITLE ============ -->
+<section class="slide dark s1" data-slide="1">
+  <div class="pad">
+    <div class="top-eyebrow">DASH EXPRESS &nbsp;×&nbsp; <span class="mcd">McDONALD'S</span></div>
+    <h1><span class="accent">2 months</span> of delivering for <span class="mcd">McD</span>.</h1>
+    <div class="meta-row">
+      <div class="brand-lockup">
+        <span class="dash-mark"><svg width="32" height="31" fill="#FFFFFF"><use href="#dash-d"/></svg></span>
+        <span class="brand-text"><strong>DASH</strong> EXPRESS</span>
+      </div>
+      <div class="meta-right">Performance &amp; product recap &nbsp;·&nbsp; 10 Mar – 27 Apr 2026</div>
+    </div>
+  </div>
+  <div class="slide-no">01 / 11</div>
+</section>
+
+<!-- ============ SLIDE 2 — MANIFESTO ============ -->
+<section class="slide s2" data-slide="2">
+  <div class="pad">
+    <div class="wrap">
+      <div class="eyebrow">EIGHT WEEKS &nbsp;·&nbsp; ONE COMMITMENT</div>
+      <p class="quote">
+        <strong>10,897</strong> completed deliveries.<br>
+        <strong>98.4%</strong> completion rate.<br>
+        Availability <em>up 27.6 points</em>.
+      </p>
+      <p class="sub">Two months of partnership with <span class="mcd">McD</span>, measured in customers fed and orders delivered on time.</p>
+    </div>
+  </div>
+  <div class="slide-no">02 / 11</div>
+</section>
+
+<!-- ============ SLIDE 3 — DUAL COMPARISON ============ -->
+<section class="slide s3" data-slide="3">
+  <div class="pad">
+    <div class="head">
+      <div class="eyebrow purple">PERFORMANCE &nbsp;·&nbsp; WEEKS 1–8</div>
+      <h1>Two metrics that matter to <span class="mcd">McD</span>.</h1>
+    </div>
+    <div></div>
+    <div class="cols">
+      <div class="col">
+        <div class="col-hdr">
+          <div class="col-title">Scale</div>
+          <div class="col-tag tag-green">● VOLUME</div>
+        </div>
+        <div class="row">
+          <div class="k">Total deliveries</div>
+          <div class="v hero">10,897</div>
+          <div class="sub">8 weeks · McD on-demand</div>
+        </div>
+        <div class="row">
+          <div class="k">Peak week (W3)</div>
+          <div class="v">2,215</div>
+          <div class="sub">4.7× the W1 baseline</div>
+        </div>
+        <div class="row">
+          <div class="k">Volume growth</div>
+          <div class="v">3.7×</div>
+          <div class="sub">W1 472 → W7 1,743</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="col-hdr">
+          <div class="col-title">Service</div>
+          <div class="col-tag tag-green">● QUALITY</div>
+        </div>
+        <div class="row">
+          <div class="k">Completion rate</div>
+          <div class="v hero">98.4%</div>
+        </div>
+        <div class="row">
+          <div class="k">Avg delivery time</div>
+          <div class="v">15.8 min</div>
+          <div class="sub">Pickup → drop-off · McD outlet to customer</div>
+        </div>
+        <div class="row">
+          <div class="k">Total delivery fee</div>
+          <div class="v">Rp 154.1M</div>
+          <div class="sub">Service value across 8 weeks</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">Period: 10 March – 27 April 2026.</div>
+  </div>
+  <div class="slide-no">03 / 11</div>
+</section>
+
+<!-- ============ SLIDE 4 — AVAILABILITY ============ -->
+<section class="slide s4" data-slide="4">
+  <div class="pad">
+    <div class="eyebrow purple">AVAILABILITY &nbsp;·&nbsp; WEEKS 1–8</div>
+    <h1>When <span class="mcd">McD</span> customers searched, Dash was there <span style="color:var(--purple);">82%</span> of the time — up from <span style="color:var(--mute);">55%</span>.</h1>
+    <p class="lede">Across 8 weeks, the share of <span class="mcd">McD</span> customer searches where Dash had a driver available climbed steadily — and the share with no driver in range fell sharply.</p>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 1680 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Availability and Zero Rate trend, 8 weeks">
+        <defs>
+          <style>
+            .grid-l { stroke:#E4E3DE; stroke-width:1; }
+            .axis-base-l { stroke:#1A1A1A; stroke-width:1.5; }
+            .axis-label-l { font-family:'JetBrains Mono', monospace; font-size:13px; fill:#6B6B68; letter-spacing:0.05em; }
+            .x-week-l { font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; font-weight:700; fill:#1A1A1A; letter-spacing:0.04em; }
+            .x-date-l { font-family:'JetBrains Mono', monospace; font-size:12px; fill:#6B6B68; letter-spacing:0.04em; }
+            .line-avail { stroke:#5E2AAC; stroke-width:3.5; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+            .line-zero  { stroke:#9A9A96; stroke-width:2; fill:none; stroke-dasharray:6,5; stroke-linecap:round; }
+            .dot-avail { fill:#5E2AAC; }
+            .dot-zero  { fill:#9A9A96; }
+            .legend-text { font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; font-weight:600; letter-spacing:0.04em; }
+            .pt-label { font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; letter-spacing:0.04em; }
+          </style>
+        </defs>
+        <line class="grid-l" x1="100" y1="50"  x2="1620" y2="50"/>
+        <line class="grid-l" x1="100" y1="117.5" x2="1620" y2="117.5"/>
+        <line class="grid-l" x1="100" y1="185" x2="1620" y2="185"/>
+        <line class="grid-l" x1="100" y1="252.5" x2="1620" y2="252.5"/>
+        <line class="axis-base-l" x1="100" y1="320" x2="1620" y2="320"/>
+        <text class="axis-label-l" x="88" y="54"   text-anchor="end">100%</text>
+        <text class="axis-label-l" x="88" y="121"  text-anchor="end">75%</text>
+        <text class="axis-label-l" x="88" y="189"  text-anchor="end">50%</text>
+        <text class="axis-label-l" x="88" y="256"  text-anchor="end">25%</text>
+        <text class="axis-label-l" x="88" y="324"  text-anchor="end">0%</text>
+        <g transform="translate(1180, 22)">
+          <line x1="0" y1="6" x2="32" y2="6" stroke="#5E2AAC" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="16" cy="6" r="4" fill="#5E2AAC"/>
+          <text class="legend-text" x="40" y="11" fill="#1A1A1A">Availability Rate</text>
+          <line x1="220" y1="6" x2="252" y2="6" stroke="#9A9A96" stroke-width="2" stroke-dasharray="6,5"/>
+          <circle cx="236" cy="6" r="3.5" fill="#9A9A96"/>
+          <text class="legend-text" x="260" y="11" fill="#6B6B68">Zero Rate (no driver)</text>
+        </g>
+        <path class="line-avail" d="M195,172.15 L385,133.89 L575,177.01 L765,144.66 L955,121.52 L1145,103.92 L1335,95.09 L1525,97.49"/>
+        <path class="line-zero"  d="M195,178.79 L385,231.01 L575,186.75 L765,216.10 L955,241.67 L1145,261.57 L1335,271.26 L1525,267.27"/>
+        <circle class="dot-avail" cx="195"  cy="172.15" r="5"/>
+        <circle class="dot-avail" cx="385"  cy="133.89" r="5"/>
+        <circle class="dot-avail" cx="575"  cy="177.01" r="5"/>
+        <circle class="dot-avail" cx="765"  cy="144.66" r="5"/>
+        <circle class="dot-avail" cx="955"  cy="121.52" r="5"/>
+        <circle class="dot-avail" cx="1145" cy="103.92" r="5"/>
+        <circle class="dot-avail" cx="1335" cy="95.09"  r="6.5" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle class="dot-avail" cx="1525" cy="97.49"  r="6.5" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle class="dot-zero" cx="195"  cy="178.79" r="4"/>
+        <circle class="dot-zero" cx="385"  cy="231.01" r="4"/>
+        <circle class="dot-zero" cx="575"  cy="186.75" r="4"/>
+        <circle class="dot-zero" cx="765"  cy="216.10" r="4"/>
+        <circle class="dot-zero" cx="955"  cy="241.67" r="4"/>
+        <circle class="dot-zero" cx="1145" cy="261.57" r="4"/>
+        <circle class="dot-zero" cx="1335" cy="271.26" r="4"/>
+        <circle class="dot-zero" cx="1525" cy="267.27" r="4"/>
+        <text class="pt-label" x="180" y="160" text-anchor="end" fill="#5E2AAC">54.8%</text>
+        <text class="pt-label" x="180" y="194" text-anchor="end" fill="#6B6B68">52.3%</text>
+        <text class="pt-label" x="1540" y="89" text-anchor="start" fill="#5E2AAC" style="font-weight:700;">82.4%</text>
+        <text class="pt-label" x="1540" y="282" text-anchor="start" fill="#6B6B68">19.5%</text>
+        <text class="x-week-l" x="195"  y="346" text-anchor="middle">W1</text>
+        <text class="x-date-l" x="195"  y="364" text-anchor="middle">10 Mar</text>
+        <text class="x-week-l" x="385"  y="346" text-anchor="middle">W2</text>
+        <text class="x-date-l" x="385"  y="364" text-anchor="middle">16 Mar</text>
+        <text class="x-week-l" x="575"  y="346" text-anchor="middle">W3</text>
+        <text class="x-date-l" x="575"  y="364" text-anchor="middle">23 Mar</text>
+        <text class="x-week-l" x="765"  y="346" text-anchor="middle">W4</text>
+        <text class="x-date-l" x="765"  y="364" text-anchor="middle">30 Mar</text>
+        <text class="x-week-l" x="955"  y="346" text-anchor="middle">W5</text>
+        <text class="x-date-l" x="955"  y="364" text-anchor="middle">6 Apr</text>
+        <text class="x-week-l" x="1145" y="346" text-anchor="middle">W6</text>
+        <text class="x-date-l" x="1145" y="364" text-anchor="middle">13 Apr</text>
+        <text class="x-week-l" x="1335" y="346" text-anchor="middle">W7</text>
+        <text class="x-date-l" x="1335" y="364" text-anchor="middle">20 Apr</text>
+        <text class="x-week-l" x="1525" y="346" text-anchor="middle">W8</text>
+        <text class="x-date-l" x="1525" y="364" text-anchor="middle">27 Apr</text>
+      </svg>
+    </div>
+    <div class="stats-row">
+      <div class="stat-block">
+        <div class="label">TOTAL CUSTOMER SEARCHES</div>
+        <div class="val">20,133</div>
+        <div class="desc">McD app sessions where delivery options loaded · 8 weeks</div>
+      </div>
+      <div class="stat-block">
+        <div class="label">DASH AVAILABLE</div>
+        <div class="val">13,585</div>
+        <div class="desc">Times a Dash driver was in range and ready to deliver</div>
+      </div>
+      <div class="stat-block">
+        <div class="label">ZERO RATE — REDUCTION</div>
+        <div class="val" style="color:var(--purple);">−63%</div>
+        <div class="desc">Share with no driver fell from 52.3% (W1) to 19.5% (W8)</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">04 / 11</div>
+</section>
+
+<!-- ============ SLIDE 5 — VOLUME TREND ============ -->
+<section class="slide s5" data-slide="5">
+  <div class="pad">
+    <div class="eyebrow purple">TREND &nbsp;·&nbsp; WEEKLY VOLUME</div>
+    <h1>Eight weeks, scaling for <span class="mcd">McD</span> demand.</h1>
+    <p class="lede">Volume nearly 5× from W1 baseline before stabilising at the new operating level.</p>
+    <div class="chart-title">Weekly Completed Deliveries</div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 1680 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Weekly completed deliveries bar chart">
+        <defs>
+          <style>
+            .grid { stroke:#E4E3DE; stroke-width:1; }
+            .axis-base { stroke:#1A1A1A; stroke-width:1.5; }
+            .axis-label { font-family:'JetBrains Mono', monospace; font-size:13px; fill:#6B6B68; letter-spacing:0.05em; }
+            .x-week { font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; font-weight:700; fill:#1A1A1A; letter-spacing:0.04em; }
+            .x-date { font-family:'JetBrains Mono', monospace; font-size:12px; fill:#6B6B68; letter-spacing:0.04em; }
+            .x-partial { font-family:'JetBrains Mono', monospace; font-size:11px; font-style:italic; fill:#9A8DC0; letter-spacing:0.04em; }
+            .bar { fill:#5E2AAC; }
+            .bar-partial { fill:#5E2AAC; fill-opacity:0.45; }
+            .bar-value { font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:500; fill:#5E2AAC; letter-spacing:0.04em; }
+            .bar-value-peak { font-family:'JetBrains Mono', monospace; font-size:15px; font-weight:700; fill:#1A1A1A; letter-spacing:0.04em; }
+            .ann-pull { font-family:'Plus Jakarta Sans', sans-serif; font-size:16px; font-weight:600; fill:#1A1A1A; }
+            .ann-cap  { font-family:'JetBrains Mono', monospace; font-size:13px; fill:#6B6B68; letter-spacing:0.04em; }
+            .ann-line { stroke:#1A1A1A; stroke-width:1; }
+          </style>
+        </defs>
+        <line class="grid" x1="100" y1="76.5"  x2="1620" y2="76.5"/>
+        <line class="grid" x1="100" y1="198.3" x2="1620" y2="198.3"/>
+        <line class="axis-base" x1="100" y1="320" x2="1620" y2="320"/>
+        <text class="axis-label" x="88" y="80"  text-anchor="end">2,000</text>
+        <text class="axis-label" x="88" y="202" text-anchor="end">1,000</text>
+        <text class="axis-label" x="88" y="324" text-anchor="end">0</text>
+        <rect class="bar" x="155" y="262.6" width="80" height="57.4" data-week="W1" data-value="472"/>
+        <text class="bar-value" x="195" y="252" text-anchor="middle">472</text>
+        <rect class="bar" x="345" y="214.6" width="80" height="105.4" data-week="W2" data-value="866"/>
+        <text class="bar-value" x="385" y="204" text-anchor="middle">866</text>
+        <rect class="bar" x="535" y="50.5" width="80" height="269.5" data-week="W3" data-value="2215"/>
+        <text class="bar-value-peak" x="575" y="38" text-anchor="middle">2,215</text>
+        <rect class="bar" x="725" y="116.6" width="80" height="203.4" data-week="W4" data-value="1672"/>
+        <text class="bar-value" x="765" y="106" text-anchor="middle">1,672</text>
+        <rect class="bar" x="915" y="133.1" width="80" height="186.9" data-week="W5" data-value="1536"/>
+        <text class="bar-value" x="955" y="123" text-anchor="middle">1,536</text>
+        <rect class="bar" x="1105" y="133.0" width="80" height="187.0" data-week="W6" data-value="1537"/>
+        <text class="bar-value" x="1145" y="123" text-anchor="middle">1,537</text>
+        <rect class="bar" x="1295" y="107.9" width="80" height="212.1" data-week="W7" data-value="1743"/>
+        <text class="bar-value" x="1335" y="97" text-anchor="middle">1,743</text>
+        <rect class="bar-partial" x="1485" y="215.9" width="80" height="104.1" data-week="W8" data-value="856"/>
+        <text class="bar-value" x="1525" y="206" text-anchor="middle" style="fill:#9A8DC0;">856</text>
+        <line class="ann-line" x1="618" y1="50.5" x2="700" y2="50.5"/>
+        <text class="ann-pull" x="708" y="48" text-anchor="start">Peak — 2,215 deliveries</text>
+        <text class="ann-cap"  x="708" y="68" text-anchor="start">4.7× the W1 baseline</text>
+        <text class="x-week" x="195"  y="346" text-anchor="middle">W1</text>
+        <text class="x-date" x="195"  y="364" text-anchor="middle">10 Mar</text>
+        <text class="x-week" x="385"  y="346" text-anchor="middle">W2</text>
+        <text class="x-date" x="385"  y="364" text-anchor="middle">16 Mar</text>
+        <text class="x-week" x="575"  y="346" text-anchor="middle">W3</text>
+        <text class="x-date" x="575"  y="364" text-anchor="middle">23 Mar</text>
+        <text class="x-week" x="765"  y="346" text-anchor="middle">W4</text>
+        <text class="x-date" x="765"  y="364" text-anchor="middle">30 Mar</text>
+        <text class="x-week" x="955"  y="346" text-anchor="middle">W5</text>
+        <text class="x-date" x="955"  y="364" text-anchor="middle">6 Apr</text>
+        <text class="x-week" x="1145" y="346" text-anchor="middle">W6</text>
+        <text class="x-date" x="1145" y="364" text-anchor="middle">13 Apr</text>
+        <text class="x-week" x="1335" y="346" text-anchor="middle">W7</text>
+        <text class="x-date" x="1335" y="364" text-anchor="middle">20 Apr</text>
+        <text class="x-week" x="1525" y="346" text-anchor="middle" style="fill:#9A8DC0;">W8</text>
+        <text class="x-partial" x="1525" y="364" text-anchor="middle">27 Apr · partial</text>
+      </svg>
+    </div>
+    <div class="foot">Total: 10,897 completed deliveries across 8 weeks.</div>
+  </div>
+  <div class="slide-no">05 / 11</div>
+</section>
+
+<!-- ============ SLIDE 6 — PAIR 1: COMMUNICATION ============ -->
+<section class="slide pair s6" data-slide="6">
+  <div class="pad">
+    <div class="header">
+      <div class="eyebrow purple">WHAT WE BUILT &nbsp;·&nbsp; COMMUNICATION</div>
+      <h1>Real-time alerts where ops needs them.</h1>
+    </div>
+    <div class="pair-row">
+      <div class="card landscape">
+        <div class="img-wrap"><img src="feature-01-notification.png" alt="Notification — Next Portal" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:14px;letter-spacing:.05em;border-radius:2px'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">01</span><span class="sep">·</span><span class="cat">PORTAL</span></div>
+          <h3>Notification — Next Portal</h3>
+          <p>Real-time order alerts in the McD ops portal so the kitchen always knows what's in flight.</p>
+        </div>
+      </div>
+      <div class="card portrait">
+        <div class="img-wrap"><img src="feature-02-broadcast.png" alt="Broadcast — Mobile" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:.05em;border-radius:2px;text-align:center'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">02</span><span class="sep">·</span><span class="cat">MOBILE</span></div>
+          <h3>Broadcast — Mobile</h3>
+          <p>Faster info to drivers serving McD outlets at peak hours.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">06 / 11</div>
+</section>
+
+<!-- ============ SLIDE 7 — PAIR 2: CUSTOMER FLEXIBILITY ============ -->
+<section class="slide pair s7" data-slide="7">
+  <div class="pad">
+    <div class="header">
+      <div class="eyebrow purple">WHAT WE BUILT &nbsp;·&nbsp; CUSTOMER FLEXIBILITY</div>
+      <h1>More options for the end customer.</h1>
+    </div>
+    <div class="pair-row">
+      <div class="card landscape">
+        <div class="img-wrap"><img src="feature-03-cod.png" alt="COD" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:14px;letter-spacing:.05em;border-radius:2px'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">03</span><span class="sep">·</span><span class="cat">PAYMENT</span></div>
+          <h3>COD</h3>
+          <p>Cash-on-delivery option for end customers — payment flexibility unlocked.</p>
+        </div>
+      </div>
+      <div class="card portrait">
+        <div class="img-wrap"><img src="feature-07-reservation.png" alt="Reservation" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:.05em;border-radius:2px;text-align:center'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">05</span><span class="sep">·</span><span class="cat">MOBILE</span></div>
+          <h3>Reservation</h3>
+          <p>Advance scheduling for events and catering orders — peace of mind for customers.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">07 / 11</div>
+</section>
+
+<!-- ============ SLIDE 8 — PAIR 3: SMARTER DISPATCH ============ -->
+<section class="slide pair s8" data-slide="8">
+  <div class="pad">
+    <div class="header">
+      <div class="eyebrow purple">WHAT WE BUILT &nbsp;·&nbsp; SMARTER DISPATCH</div>
+      <h1>Visibility today, recovery when it matters.</h1>
+    </div>
+    <div class="pair-row">
+      <div class="card landscape">
+        <div class="img-wrap"><img src="feature-05-heatmap.png" alt="Heat Map — Tab Request" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:14px;letter-spacing:.05em;border-radius:2px'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">04</span><span class="sep">·</span><span class="cat">DASHBOARD</span></div>
+          <h3>Heat Map — Tab Request</h3>
+          <p>Demand visibility per outlet — drivers positioned proactively for McD peaks.</p>
+        </div>
+      </div>
+      <div class="card portrait">
+        <div class="img-wrap"><img src="feature-08-reallocate.png" alt="Re-allocate Delivery" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:.05em;border-radius:2px;text-align:center'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">06</span><span class="sep">·</span><span class="cat">DISPATCH</span></div>
+          <h3>Re-allocate Delivery</h3>
+          <p>System auto-reassigns failed orders to nearby drivers — fewer cancellations.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">08 / 11</div>
+</section>
+
+<!-- ============ SLIDE 9 — PAIR 4: DRIVER RELIABILITY ============ -->
+<section class="slide pair s9" data-slide="9">
+  <div class="pad">
+    <div class="header">
+      <div class="eyebrow purple">WHAT WE BUILT &nbsp;·&nbsp; DRIVER RELIABILITY</div>
+      <h1>Reliable drivers, predictable service.</h1>
+    </div>
+    <div class="pair-row">
+      <div class="card landscape">
+        <div class="img-wrap"><img src="feature-04-payroll.png" alt="Auto Payroll" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:14px;letter-spacing:.05em;border-radius:2px'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">07</span><span class="sep">·</span><span class="cat">MITRA OPS</span></div>
+          <h3>Auto Payroll</h3>
+          <p>Automated payroll → lower driver churn → more stable service for McD.</p>
+        </div>
+      </div>
+      <div class="card portrait">
+        <div class="img-wrap"><img src="feature-06-clockout.png" alt="Working Hour — Clock-Out Notif" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:.05em;border-radius:2px;text-align:center'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">08</span><span class="sep">·</span><span class="cat">MITRA</span></div>
+          <h3>Working Hour — Clock-Out</h3>
+          <p>Driver shift discipline — fewer mid-order drop-offs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">09 / 11</div>
+</section>
+
+<!-- ============ SLIDE 10 — PAIR 5: SCALING SUPPLY ============ -->
+<section class="slide pair s10" data-slide="10">
+  <div class="pad">
+    <div class="header">
+      <div class="eyebrow purple">WHAT WE BUILT &nbsp;·&nbsp; SCALING SUPPLY</div>
+      <h1>Built to grow with <span class="mcd">McD</span> demand.</h1>
+    </div>
+    <div class="pair-row">
+      <div class="card landscape">
+        <div class="img-wrap"><img src="feature-09-freelance.png" alt="Freelance Hiring Process" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:14px;letter-spacing:.05em;border-radius:2px'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">09</span><span class="sep">·</span><span class="cat">SUPPLY</span></div>
+          <h3>Freelance Hiring Process</h3>
+          <p>Faster supply expansion — more drivers available as McD volume grows.</p>
+        </div>
+      </div>
+      <div class="card portrait">
+        <div class="img-wrap"><img src="feature-10-dayoff.png" alt="Jadwal Day Off — Mitra Mobile" onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'['+this.src.split('/').pop()+']',style:'width:100%;height:100%;background:#EEE5FB;border:1px dashed #BFBDB4;display:grid;place-items:center;color:#6B6B68;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:.05em;border-radius:2px;text-align:center'}))"></div>
+        <div class="text-zone">
+          <div class="meta-row"><span class="num">10</span><span class="sep">·</span><span class="cat">MITRA</span></div>
+          <h3>Jadwal Day Off — Mobile</h3>
+          <p>Pre-schedule day-off in app — better roster predictability for peaks.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">10 / 11</div>
+</section>
+
+<!-- ============ SLIDE 11 — CLOSING (dark) ============ -->
+<section class="slide dark s11" data-slide="11">
+  <div class="pad">
+    <div class="top-eyebrow">DASH EXPRESS &nbsp;·&nbsp; MAY 2026 → BEYOND</div>
+    <div class="center">
+      <h1>Building delivery infrastructure for <span class="mcd">McD</span>.</h1>
+      <p class="sub">Next chapter: continued availability gains, supply scaling for peak periods, deeper portal integrations.</p>
+    </div>
+    <div class="meta-row">
+      <div class="brand-lockup">
+        <span class="dash-mark"><svg width="32" height="31" fill="#FFFFFF"><use href="#dash-d"/></svg></span>
+        <span class="brand-text"><strong>DASH</strong> EXPRESS</span>
+      </div>
+      <div class="meta-right">Thank you &nbsp;·&nbsp; Q&amp;A welcome</div>
+    </div>
+  </div>
+  <div class="slide-no">11 / 11</div>
+</section>
+
+</body>
+</html>
+```
+
+---
+
 ## Reference — `pattern-map.md`
 
 # Pattern Map — design-system §6 patterns → real example slides
@@ -1435,10 +3120,3 @@ These five patterns have **no slide in `references/examples/`**. Build them from
 
 4. **Tokens are clean.** All color tokens in both decks match §3 exactly; `base-styles.css`
    uses the verified set. No reconciliation needed there.
-
----
-
-## Additional references
-
-- `examples/dash-core-problem-deck.html` — /skills/dash-deck-design/references/examples/dash-core-problem-deck.html
-- `examples/mcd-2month-recap.html` — /skills/dash-deck-design/references/examples/mcd-2month-recap.html
