@@ -10,6 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "registry:build": "tsx scripts/build-registry.ts",
+    "skills:sync": "node scripts/sync-skills.mjs",
     "figma:pages": "tsx --env-file=.env.local scripts/figma-extract.ts pages",
     "figma:nodes": "tsx --env-file=.env.local scripts/figma-extract.ts nodes",
     "figma:variables": "tsx --env-file=.env.local scripts/figma-extract.ts variables",
