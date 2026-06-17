@@ -28,7 +28,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const REPO = path.resolve(__dirname, "../../..") // dash-ds root (express-design-system)
 const PUBLIC_SKILLS = path.join(REPO, "apps/docs/public/skills")
 const MANIFEST = path.join(REPO, "apps/docs/lib/skills-manifest.ts")
-const SITE_URL = "https://ds.dash.com"
 
 function arg(flag, dflt) {
   const i = process.argv.indexOf(flag)
@@ -159,7 +158,10 @@ async function main() {
     const linkedRefs = []
     for (const rel of refFiles) {
       const ext = path.extname(rel).slice(1).toLowerCase()
-      const refUrl = `${SITE_URL}/skills/${slug}/references/${rel.split(path.sep).join("/")}`
+      // Relative to the deployment origin so the bundle works on any host
+      // (staging vs prod). An assistant resolves these against the .md URL
+      // it was given.
+      const refUrl = `/skills/${slug}/references/${rel.split(path.sep).join("/")}`
       if (inlineExts.has(ext)) {
         const content = await readFile(path.join(refsDir, rel), "utf8")
         bundle.push("")
@@ -241,8 +243,9 @@ export type SkillMeta = {
   references: SkillReference[]
 }
 
-/** Absolute production origin for building copy-paste LLM links. */
-export const SKILLS_SITE_URL = ${JSON.stringify(SITE_URL)} as const
+// Note: the public origin (staging vs prod) is NOT baked in here — it is
+// resolved at runtime from env via lib/site-url.ts (getSiteUrl), so the same
+// build serves correct links on any deployment.
 
 export const skills: SkillMeta[] = ${JSON.stringify(manifest, null, 2)}
 

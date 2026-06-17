@@ -99,6 +99,7 @@ jobs:
           APP_VERSION: "${{ needs.build-image.outputs.commit_hash }}"
           NODE_ENV: "production"
           DASH_REGISTRY_TOKEN: "${{ secrets.DASH_REGISTRY_TOKEN }}"
+          SITE_URL: "${{ vars.STG_SITE_URL }}"
           EOF
 
       - name: Deploy to Cloud Run (Staging)
@@ -110,7 +111,7 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --min-instances 1 \
-            --memory 1Gi \
+            --memory 512Mi \
             --cpu 1 \
             --port 3000 \
             --env-vars-file env.yaml

@@ -24,8 +24,9 @@ export type SkillMeta = {
   references: SkillReference[]
 }
 
-/** Absolute production origin for building copy-paste LLM links. */
-export const SKILLS_SITE_URL = "https://ds.dash.com" as const
+// Note: the public origin (staging vs prod) is NOT baked in here — it is
+// resolved at runtime from env via lib/site-url.ts (getSiteUrl), so the same
+// build serves correct links on any deployment.
 
 export const skills: SkillMeta[] = [
   {
@@ -36,7 +37,7 @@ export const skills: SkillMeta[] = [
     "version": "0.7.0",
     "owner": "dash-electric",
     "rawPath": "/skills/dash-deck-design.md",
-    "bytes": 173457,
+    "bytes": 173419,
     "references": [
       {
         "label": "base-styles.css",
