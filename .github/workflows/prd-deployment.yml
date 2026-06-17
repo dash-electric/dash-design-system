@@ -104,6 +104,7 @@ jobs:
           APP_VERSION: "${{ needs.build-image.outputs.version }}"
           NODE_ENV: "production"
           DASH_REGISTRY_TOKEN: "${{ secrets.DASH_REGISTRY_TOKEN }}"
+          SITE_URL: "${{ vars.PRD_SITE_URL }}"
           EOF
 
       - name: Deploy to Cloud Run (Production)
@@ -114,8 +115,8 @@ jobs:
             --region ${{ env.REGION }} \
             --platform managed \
             --allow-unauthenticated \
-            --min-instances 1 \
-            --memory 1Gi \
+            --min-instances 0 \
+            --memory 256Mi \
             --cpu 1 \
             --port 3000 \
             --env-vars-file env.yaml

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { RiSparkling2Line as Sparkle, RiRobot2Line as Robot } from "@remixicon/react"
 import { DocsPageShell, DocsHeader } from "@/components/docs/page-shell"
 import { skills } from "@/lib/skills-manifest"
+import { getSiteHost } from "@/lib/site-url"
 
 export const metadata = {
   title: "Skills — Dash Design System",
@@ -10,6 +11,7 @@ export const metadata = {
 }
 
 export default function SkillsOverviewPage() {
+  const host = getSiteHost()
   return (
     <DocsPageShell className="max-w-5xl">
       <DocsHeader
@@ -76,7 +78,7 @@ export default function SkillsOverviewPage() {
                     {skill.description}
                   </p>
                   <div className="text-[11px] text-text-soft-400 mt-2 font-mono truncate">
-                    ds.dash.com{skill.rawPath}
+                    {host}{skill.rawPath}
                   </div>
                 </div>
               </div>

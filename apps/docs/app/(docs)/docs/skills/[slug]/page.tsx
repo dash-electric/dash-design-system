@@ -8,7 +8,8 @@ import {
 import { DocsPageShell, DocsHeader, DocsSection } from "@/components/docs/page-shell"
 import { DocsCode } from "@/components/docs/code-block"
 import { CopySkillLink } from "@/components/docs/skill-link"
-import { skills, skillBySlug, SKILLS_SITE_URL } from "@/lib/skills-manifest"
+import { skills, skillBySlug } from "@/lib/skills-manifest"
+import { getSiteUrl } from "@/lib/site-url"
 
 export function generateStaticParams() {
   return skills.map((s) => ({ slug: s.slug }))
@@ -56,7 +57,7 @@ export default async function SkillDetailPage({
     body = "(skill content unavailable — re-run `node apps/docs/scripts/sync-skills.mjs`)"
   }
 
-  const url = `${SKILLS_SITE_URL}${skill.rawPath}`
+  const url = `${getSiteUrl()}${skill.rawPath}`
   const prompt = `Read this skill and follow it for the rest of our conversation: ${url}`
   const sizeKb = (skill.bytes / 1024).toFixed(0)
 

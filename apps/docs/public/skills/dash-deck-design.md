@@ -1440,5 +1440,5 @@ These five patterns have **no slide in `references/examples/`**. Build them from
 
 ## Additional references
 
-- `examples/dash-core-problem-deck.html` — https://ds.dash.com/skills/dash-deck-design/references/examples/dash-core-problem-deck.html
-- `examples/mcd-2month-recap.html` — https://ds.dash.com/skills/dash-deck-design/references/examples/mcd-2month-recap.html
+- `examples/dash-core-problem-deck.html` — /skills/dash-deck-design/references/examples/dash-core-problem-deck.html
+- `examples/mcd-2month-recap.html` — /skills/dash-deck-design/references/examples/mcd-2month-recap.html
