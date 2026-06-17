@@ -10,6 +10,13 @@ export const metadata = {
     "Public AI skills from Dash Electric. Paste one markdown link into Claude, ChatGPT, or Gemini and the assistant works the Dash way — no install, no login.",
 }
 
+/**
+ * Render at request time, not build time. getSiteHost() reads SITE_URL, which
+ * only exists in the Cloud Run runtime — not during `next build`. Static
+ * prerender would bake in the ds.dash.com fallback for the per-card link hint.
+ */
+export const dynamic = "force-dynamic"
+
 export default function SkillsOverviewPage() {
   const host = getSiteHost()
   return (

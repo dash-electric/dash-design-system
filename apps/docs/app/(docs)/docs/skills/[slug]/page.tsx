@@ -15,6 +15,14 @@ export function generateStaticParams() {
   return skills.map((s) => ({ slug: s.slug }))
 }
 
+/**
+ * Render at request time, not build time. The public link is built from
+ * getSiteUrl(), which reads SITE_URL — only present in the Cloud Run runtime,
+ * NOT during `next build` in the Docker image. Static prerender would bake in
+ * the ds.dash.com fallback and ignore the per-environment runtime origin.
+ */
+export const dynamic = "force-dynamic"
+
 export async function generateMetadata({
   params,
 }: {
