@@ -124,6 +124,7 @@ export const navSections: NavSection[] = [
           { title: "Blocks",     href: "/docs/blocks", status: "shipped", blurb: "22 production sections — auth, tables, lists, dashboard, settings." },
           { title: "Templates",  href: "/docs/templates", status: "shipped", blurb: "Page-level shells — generic + verticalized (Finance / HR / Marketing) + Dash-specific." },
           { title: "Patterns",   href: "/docs/patterns/tables", status: "shipped", blurb: "Composition recipes — common UI situations resolved end-to-end." },
+          { title: "Skills",     href: "/docs/skills", status: "new", blurb: "Public AI skills — paste one markdown link into Claude, ChatGPT, or Gemini and the assistant works the Dash way." },
         ],
       },
     ],

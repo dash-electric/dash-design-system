@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<title>Dash Express — Core Problem & Direction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="deck-stage.js"></script>
+<script type="application/json" id="speaker-notes">
+[
+"Oke, selamat pagi semua. Gua Irfan, dari Product Design. Hari ini gua mau bawa ke kalian analisa core problem Dash Express dan direction solusi yang gua propose. Ini bukan status report — ini strategic thinking. Ujungnya gua butuh approval untuk 2 minggu knowledge capture phase. Tone slide ini sengaja serius — karena yang kita bicarain serius. Gua pelan-pelan aja setup konteks.",
+"Sebelum masuk data, gua mau kalian serap satu kalimat dulu. Dash Express sekarang adalah automated delivery service untuk 4 persen volume, dan manual delivery service untuk 96 persen volume. Yang 96 persen itu di-sustain oleh 2 sampai 3 manusia yang kerja 8 sampai 12 jam per hari, dengan allocation latency 89 menit per order. Completion rate 95 persen yang keliatan sehat di dashboard — itu berjalan di atas capacity ceiling yang bakal patah begitu volume tumbuh. Pause di sini sebentar. Biarin ini masuk.",
+"Sekarang angka-angkanya. Ini data satu bulan terakhir. Dua realitas paralel di satu bisnis. Kiri McD — benchmark. 8 ribu deliveries, automation 99.9 persen, allocation time 0.04 menit. Kanan, non-McD — 96 persen bisnis kita. Volume dua kali lipat, automation cuma 3.95 persen, allocation time 88.91 menit. 89 menit versus di bawah 1 menit di McD. Completion 95 persen keliatan bagus — tapi gua mau kalian liat angka allocation time itu dulu. Biarin itu sit di ruangan sebentar. Jangan buru-buru kita lanjut.",
+"Pertanyaan wajar: kenapa bisa segitu beda? Jawabannya satu baris. Algo allocation kita hanya punya satu dimensi — proximity. Dan proximity doang kebetulan cukup untuk McD, karena mitra camping di outlet. Di McD, terdekat otomatis juga motor fit, whitelist OK, zone match. Proximity sama dengan fit, by coincidence. Di non-McD, order tersebar seluruh kota, mitra ga bisa camping, terdekat tidak sama dengan fit. Algo miss, fallback ke manual, 89 menit. Pause setelah gua bilang 'algo kita hanya punya satu dimensi'. Ini aha moment pertama. McD itu exception, bukan norm.",
+"Sekarang yang dashboard tidak tunjukkan. Brand promise 'never reject' itu di-sustain oleh dua subsidi yang finite. Kiri: tenaga manusia. 2 sampai 3 floor monitor, 8 sampai 12 jam per hari. Tujuh ribu allocation per bulan per orang. Hard capacity ceiling — tidak bisa di-scale dengan hire. TikTok Shop tambahan 3000 orders per hari bakal break sistem ini. Kanan: allocation latency. 89 menit rata-rata. Cuma 5.3 persen hit SLA. 'Never reject' kita di-beli dengan 'never on-time'. Completion 95 persen itu bukan kemenangan sistem — itu kemenangan kerja rodi manusia yang nambal automation rusak.",
+"Ini counterintuitive insight yang penting. Stakeholder biasanya respon: 'tapi completion 95 persen, kok trust issue?' Jawabannya: trust mitra tidak hilang — tapi pindah channel. Mitra TIDAK distrust Dash. Mitra distrust algo. Mitra trust manual. Bukti: di algo channel, freelance acceptance cuma 10 persen. Fulltime lebih responsif saat dihubungi manusia dibanding assignment algo. Mitra treat algo assignment sebagai opsional. Di manual channel, completion 95 persen. Mitra accept, eksekusi, antar. Implikasinya: ini bukan problem mitra distrust Dash secara umum. Ini problem algo ga pernah earn trust karena ga pernah beneran allocate. Manual work — tapi capped.",
+"Dan ini yang bikin urgent. Pola ini bukan loop steady-state. Ini divergence. Algo di-design untuk satu pattern. 96 persen volume harus di-absorb manual. Mitra develop trust ke manual, abaikan algo. Algo makin irrelevant, makin ga di-iterate. Gap algo versus manual makin lebar. Manual capacity makin stretch. Floor monitor burnt out. Exception accumulate. Dan di ujungnya: scale wall. Ini trajectory menuju patah, bukan siklus. TikTok Shop 3000 orders per hari — itu detonator.",
+"Jadi apa core problem-nya. Framing lama: algo kita rusak, perlu di-fix. Framing itu salah. Framing yang benar: algo kita tidak pernah dibangun untuk 96 persen bisnis. Dan manusia yang nge-cover gap itu udah hit ceiling. Implikasinya empat. Satu, solusi bukan replace manual dengan algo. Dua, solusi adalah absorb mental model manual ke algo secara bertahap. Tiga, floor monitor bukan problem — mereka oracle yang harus di-leverage. Empat, trust mitra akan kembali otomatis kalau algo beneran deliver, tapi dengan lag — butuh bukti berulang.",
+"Sekarang direction. Ini yang kalian tunggu. Pause dulu. Ini bukan 12-minggu commitment. Bukan solusi lengkap. Tiga bets yang defensible dan gradually reversible. Bet 1, dua minggu, capture floor monitor mental model — log reason tag tiap manual allocation lewat 1-click bot di WA. Bet 2, dua minggu setelah Bet 1, shadow mode — algo compute score paralel dengan floor monitor, compare agreement. Gate: agreement 70 persen lanjut, di bawah 50 persen rethink. Bet 3, gradual handoff — auto-assign di high-confidence, geser rasio dari 3:97 ke 20:80 dulu, bukan langsung 80:20. Floor monitor tidak di-replace. Mereka geser dari hunter ke reviewer. Kalau ada yang challenge 'apakah algo akan inherit kelemahan RTFM yang kadang ignore motor range, parallel order mitra, atau future scheduled commitment?' — jawab pakai framing 3 lapis. Lapis 1, Bet 1 sampai 3: imitation. Algo minimal harus sama pinter dengan RTFM sekarang. Ini foundation. Lapis 2, next phase: hard constraints — motor range check, parallel order block, future commitment awareness, shift budget cap. Guardrail yang RTFM kadang miss karena human bandwidth limit, algo ga punya issue itu. Lapis 3, next phase: opportunity cost scoring — destination-to-reservation distance, next-slot demand projection, demand-aware positioning. Area dimana algo beda dari manusia bukan karena lebih pintar, tapi karena manusia ga bisa kalkulasi real-time. Tutup: Bet 1 sampai 3 fokus di baseline match RTFM dulu. Tapi tujuan long-term bukan niru — tujuan lampaui, terutama di hal yang manusia ga bisa compute cepat. ROI beyond cost savings.",
+"Dan ini kekuatan presentasi gua. Gua lebih prefer honest di depan daripada kaget di tengah jalan. Tiga open assumption. Satu, supply adequacy — apakah beneran ada mitra fit dalam radius saat order masuk? Sample 100 failed allocation, 1-2 hari query. Dua, ghost mitra — berapa mitra online tapi ga pernah dapat atau accept order? Kalau lebih dari 15 persen ghost, real supply pool kita lebih kecil dari yang kita kira. Tiga, never-reject — itu kontrak hukum atau brand aspiration? Kalau aspirasi, unlock design space untuk honest escalation. Stakeholder respect orang yang ngaku ga tau.",
+"Ini yang gua butuh dari kalian. Spesifik, bukan vague. Satu: approval 2 minggu untuk Bet 1. Low commitment, reversible. Dua: 1 sampai 2 engineer untuk setup logging infrastructure, parallel sama existing work, bukan dedicated. Tiga: decision dari Aditya dan BD — interrogate constraint 'never reject'. Legal atau aspirational? Ini unlock solution space. Empat: sponsor investigasi supply integrity, ghost mitra — bukan scope design gua, butuh owner dari Ops. Gua bisa drive koordinasi, tapi butuh commit ke ownership per workstream. Solo designer ga bisa solve cross-functional problem sendirian.",
+"Closing. Yang kita pertaruhkan. Kalau ga berubah: floor monitor burnout, latency tetap 89 menit, SLA tetap 5 persen, TikTok Shop jadi breaking point, trust client tergerus, ga ada jalur scale. Kalau kita eksekusi: floor monitor workload 8 sampai 12 jam ke di bawah 4 jam dalam 6 bulan. Latency 89 menit ke di bawah 3 menit. SLA 5 persen ke 50 persen plus. Headroom untuk TikTok Shop dan beyond. Algo yang beneran represent bisnis Dash. Ini bukan tentang bikin algo yang lebih pintar. Ini tentang bikin sistem yang akhirnya match dengan bisnis yang udah kita jalankan.",
+"Gua stop di sini. Terima kasih. Mari diskusikan."
+]
+</script>
+<style>
+  :root {
+    --ink: #1A1A1A;
+    --ink-2: #0E0E0E;
+    --paper: #F7F7F5;
+    --paper-2: #FFFFFF;
+    --mute: #6B6B68;
+    --rule: #E4E3DE;
+    --rule-dark: #2A2A2A;
+    --purple: #5E2AAC;
+    --purple-soft: #EEE5FB;
+    --danger: #A32D2D;
+    --success: #0F6E56;
+  }
+  html, body { margin: 0; padding: 0; background: #000; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+  deck-stage > section {
+    width: 1920px; height: 1080px;
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    color: var(--ink);
+    background: var(--paper);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .dark { background: var(--ink) !important; color: var(--paper) !important; }
+  .dark .mute { color: #9A9A96 !important; }
+
+  .pad { padding: 110px 140px; height: 100%; box-sizing: border-box; }
+  .pad-wide { padding: 110px 120px; height: 100%; box-sizing: border-box; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .eyebrow {
+    font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase;
+    font-weight: 600; color: var(--mute);
+  }
+  .eyebrow.purple { color: var(--purple); }
+  .slide-no {
+    position: absolute; bottom: 48px; right: 60px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--mute); letter-spacing: 0.1em;
+  }
+  .dark .slide-no { color: #6B6B68; }
+  .footer-line {
+    position: absolute; bottom: 48px; left: 60px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--mute); letter-spacing: 0.1em;
+  }
+  .dark .footer-line { color: #6B6B68; }
+
+  h1, h2, h3, p { margin: 0; }
+  .title-xxl { font-size: 108px; font-weight: 800; line-height: 0.98; letter-spacing: -0.035em; }
+  .title-xl { font-size: 76px; font-weight: 800; line-height: 1.02; letter-spacing: -0.03em; }
+  .title-lg { font-size: 60px; font-weight: 700; line-height: 1.05; letter-spacing: -0.025em; }
+  .title-md { font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  .lede { font-size: 28px; line-height: 1.4; font-weight: 400; color: var(--ink); }
+  .body { font-size: 20px; line-height: 1.55; font-weight: 400; color: var(--ink); }
+  .body-sm { font-size: 17px; line-height: 1.55; color: var(--mute); }
+  .stat-xxl { font-size: 140px; font-weight: 800; line-height: 0.9; letter-spacing: -0.04em; }
+  .stat-xl { font-size: 96px; font-weight: 800; line-height: 0.95; letter-spacing: -0.035em; }
+  .stat-lg { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+  .stat-label { font-size: 15px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); font-weight: 600; }
+  .num-red { color: var(--danger); }
+  .num-green { color: var(--success); }
+  .num-purple { color: var(--purple); }
+
+  /* ===== SLIDE 1 ===== */
+  .s1 .pad { display: grid; grid-template-rows: 1fr auto; }
+  .s1 h1 { max-width: 1500px; font-weight: 800; font-size: 116px; letter-spacing: -0.04em; line-height: 0.96; align-self: center; }
+  .s1 .pct { color: var(--purple); }
+  .s1 .meta { display: flex; justify-content: space-between; align-items: flex-end; }
+  .s1 .brand { font-size: 24px; letter-spacing: 0.25em; text-transform: uppercase; color: #9A9A96; font-weight: 600; }
+
+  /* ===== SLIDE 2 ===== */
+  .s2 .pad { display: grid; place-items: center; text-align: center; padding: 80px 160px; }
+  .s2 .wrap { max-width: 1500px; }
+  .s2 .label { font-size: 24px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--mute); margin-bottom: 64px; font-weight: 600; }
+  .s2 .quote { font-size: 58px; line-height: 1.22; font-weight: 500; letter-spacing: -0.02em; }
+  .s2 em { font-style: normal; color: var(--purple); font-weight: 700; }
+  .s2 .sub { font-size: 22px; color: var(--mute); margin-top: 72px; max-width: 1100px; margin-inline: auto; line-height: 1.5; }
+
+  /* ===== SLIDE 3 ===== */
+  .s3 .pad { display: grid; grid-template-rows: auto 1fr auto; gap: 48px; padding: 90px 120px; }
+  .s3 .head h1 { font-size: 64px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; max-width: 1400px; }
+  .s3 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .s3 .col { padding: 40px 48px; }
+  .s3 .col + .col { border-left: 1px solid var(--rule); }
+  .s3 .col-hdr { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 28px; }
+  .s3 .col-title { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+  .s3 .col-tag { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; }
+  .s3 .tag-green { color: var(--success); }
+  .s3 .tag-red { color: var(--danger); }
+  .s3 .row { display: grid; grid-template-columns: 1fr auto; align-items: end; padding: 18px 0; border-top: 1px dashed var(--rule); }
+  .s3 .row:first-of-type { border-top: none; }
+  .s3 .row .k { font-size: 15px; color: var(--mute); letter-spacing: 0.02em; padding-bottom: 8px; font-weight: 500; }
+  .s3 .row .v { font-size: 44px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .s3 .row .v.hero { font-size: 80px; font-weight: 800; }
+  .s3 .row .sub { font-size: 13px; color: var(--mute); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; margin-top: 6px; text-align: right; }
+  .s3 .foot { font-size: 15px; color: var(--mute); max-width: 1200px; line-height: 1.5; }
+
+  /* ===== SLIDE 4 ===== */
+  .s4 .pad { display: grid; grid-template-rows: auto auto 1fr auto; gap: 40px; padding: 90px 120px; }
+  .s4 h1 { font-size: 58px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; max-width: 1500px; }
+  .s4 .insight { font-size: 32px; line-height: 1.35; font-weight: 500; max-width: 1500px; letter-spacing: -0.01em; }
+  .s4 .insight b { font-weight: 700; color: var(--purple); }
+  .s4 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+  .s4 .col h3 { font-size: 18px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; margin-bottom: 24px; }
+  .s4 .col.mcd h3 { color: var(--success); }
+  .s4 .col.non h3 { color: var(--danger); }
+  .s4 .col ul { list-style: none; padding: 0; margin: 0; }
+  .s4 .col li { font-size: 22px; line-height: 1.5; padding: 12px 0; border-top: 1px solid var(--rule); color: var(--ink); }
+  .s4 .col li:first-child { border-top: none; }
+  .s4 .col li.eq { font-weight: 700; margin-top: 6px; padding-top: 20px; }
+  .s4 .col.mcd li.eq { color: var(--success); }
+  .s4 .col.non li.eq { color: var(--danger); }
+  .s4 .tagline { font-size: 24px; line-height: 1.45; font-weight: 500; border-top: 1px solid var(--rule); padding-top: 28px; max-width: 1600px; }
+  .s4 .tagline em { font-style: italic; color: var(--purple); font-weight: 600; }
+
+  /* ===== SLIDE 5 ===== */
+  .s5 .pad { display: grid; grid-template-rows: auto auto 1fr auto; gap: 44px; padding: 100px 120px; }
+  .s5 h1 { font-size: 62px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
+  .s5 .lede2 { font-size: 26px; line-height: 1.45; max-width: 1500px; color: var(--ink); }
+  .s5 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+  .s5 .col .icon { width: 72px; height: 72px; border: 2px solid var(--ink); border-radius: 50%; display: grid; place-items: center; margin-bottom: 28px; }
+  .s5 .col .icon svg { width: 36px; height: 36px; }
+  .s5 .col h3 { font-size: 16px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--mute); font-weight: 700; margin-bottom: 12px; }
+  .s5 .col h2 { font-size: 38px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 22px; }
+  .s5 .col ul { list-style: none; padding: 0; margin: 0; }
+  .s5 .col li { font-size: 22px; line-height: 1.55; padding: 12px 0; border-top: 1px solid var(--rule); }
+  .s5 .col li:first-child { border-top: none; }
+  .s5 .col li b { font-weight: 700; }
+  .s5 .tag { font-size: 24px; font-weight: 500; line-height: 1.5; font-style: italic; color: var(--ink); max-width: 1600px; border-top: 1px solid var(--rule); padding-top: 28px; }
+  .s5 .tag em { font-style: italic; color: var(--purple); font-weight: 600; }
+
+  /* ===== SLIDE 6 ===== */
+  .s6 .pad { display: grid; grid-template-rows: auto auto 1fr; gap: 36px; padding: 80px 120px; }
+  .s6 h1 { font-size: 56px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
+  .s6 .insight { font-size: 32px; line-height: 1.45; font-weight: 500; }
+  .s6 .insight .not { color: var(--danger); font-weight: 700; }
+  .s6 .insight .ok { color: var(--success); font-weight: 700; }
+  .s6 .insight .pur { color: var(--purple); font-weight: 700; }
+  .s6 .rows { display: grid; grid-template-rows: 1fr 1fr 1fr; border-top: 1px solid var(--rule); }
+  .s6 .row { display: grid; grid-template-columns: 300px 1fr 240px; gap: 48px; align-items: center; padding: 28px 0; border-bottom: 1px solid var(--rule); }
+  .s6 .row .ch { font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; }
+  .s6 .row .ch .num { font-family: 'JetBrains Mono', monospace; color: var(--mute); display: block; font-size: 14px; margin-bottom: 10px; letter-spacing: 0.15em; }
+  .s6 .row .ch .name { font-size: 24px; letter-spacing: -0.01em; text-transform: none; font-weight: 700; }
+  .s6 .row .desc { font-size: 24px; line-height: 1.5; color: var(--ink); }
+  .s6 .row .desc b { font-weight: 700; }
+  .s6 .row .stat { text-align: right; }
+  .s6 .row .stat .num { font-size: 72px; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; }
+  .s6 .row .stat .lbl { font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute); font-weight: 600; margin-top: 8px; }
+  .s6 .row.algo .num { color: var(--danger); }
+  .s6 .row.man .num { color: var(--success); }
+  .s6 .row.imp { grid-template-columns: 300px 1fr; }
+  .s6 .row.imp .desc { font-size: 24px; font-weight: 500; }
+  .s6 .row.imp .desc b { color: var(--purple); }
+
+  /* ===== SLIDE 7 ===== */
+  .s7 .pad { display: grid; grid-template-columns: 1.05fr 1fr; gap: 90px; padding: 90px 120px; }
+  .s7 .left { display: flex; flex-direction: column; justify-content: space-between; }
+  .s7 h1 { font-size: 58px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
+  .s7 .tag { font-size: 24px; line-height: 1.5; }
+  .s7 .tag .em { color: var(--danger); font-weight: 700; }
+  .s7 .tag .pur { color: var(--purple); font-weight: 700; }
+  .s7 .right { position: relative; }
+  .s7 .flow { display: flex; flex-direction: column; gap: 10px; }
+  .s7 .step { padding: 16px 24px; border: 1px solid var(--rule); background: var(--paper-2); font-size: 20px; line-height: 1.35; border-radius: 2px; color: var(--ink); }
+  .s7 .step.highlight { border-color: var(--purple); background: var(--purple-soft); color: var(--ink); }
+  .s7 .arrow { display: grid; place-items: center; color: var(--mute); font-size: 20px; line-height: 0.5; }
+  .s7 .wall { margin-top: 12px; background: var(--ink); color: var(--paper); border: none; padding: 28px 22px; text-align: center; border-radius: 2px; }
+  .s7 .wall .w1 { font-size: 15px; letter-spacing: 0.3em; color: #E8A0A0; font-weight: 700; text-transform: uppercase; }
+  .s7 .wall .w2 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin-top: 10px; }
+  .s7 .wall .w3 { font-size: 15px; color: #A8A8A4; margin-top: 10px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em; }
+
+  /* ===== SLIDE 8 ===== */
+  .s8 .pad { display: grid; grid-template-rows: auto 1fr; gap: 50px; padding: 100px 140px; }
+  .s8 h1 { font-size: 64px; font-weight: 700; letter-spacing: -0.025em; color: var(--paper); }
+  .s8 .grid { display: grid; grid-template-rows: auto auto 1fr; gap: 40px; }
+  .s8 .old {
+    font-size: 44px; font-weight: 600; color: #6B6B68;
+    text-decoration: line-through; text-decoration-color: #A32D2D;
+    text-decoration-thickness: 3px;
+    letter-spacing: -0.02em;
+  }
+  .s8 .old-label { font-size: 18px; letter-spacing: 0.3em; text-transform: uppercase; color: #9A9A96; margin-bottom: 14px; font-weight: 700; }
+  .s8 .new-label { font-size: 18px; letter-spacing: 0.3em; text-transform: uppercase; color: #B589F0; margin-bottom: 18px; font-weight: 700; }
+  .s8 .new { font-size: 56px; font-weight: 700; line-height: 1.12; letter-spacing: -0.025em; color: var(--paper); max-width: 1550px; }
+  .s8 .new b { color: #B589F0; font-weight: 800; }
+  .s8 .imp { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 10px; border-top: 1px solid #2A2A2A; padding-top: 36px; }
+  .s8 .imp .it { color: var(--paper); }
+  .s8 .imp .n { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #B589F0; letter-spacing: 0.1em; margin-bottom: 14px; font-weight: 700; }
+  .s8 .imp .t { font-size: 20px; line-height: 1.5; color: #D6D6D2; }
+  .s8 .imp .t b { color: var(--paper); font-weight: 700; }
+
+  /* ===== SLIDE 9 ===== */
+  .s9 .pad { display: grid; grid-template-rows: auto auto 1fr auto; gap: 36px; padding: 90px 100px; }
+  .s9 h1 { font-size: 60px; font-weight: 700; letter-spacing: -0.025em; }
+  .s9 .intro { font-size: 24px; color: var(--ink); line-height: 1.5; max-width: 1500px; }
+  .s9 .intro b { font-weight: 700; }
+  .s9 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; align-items: stretch; }
+  .s9 .card { border: 1px solid var(--rule); padding: 34px 32px; display: flex; flex-direction: column; gap: 16px; background: var(--paper-2); }
+  .s9 .card.c2 { background: #F1ECF9; border-color: #D9C8F4; }
+  .s9 .card.c3 { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .s9 .card .num { font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.22em; font-weight: 700; color: var(--mute); }
+  .s9 .card.c2 .num { color: var(--purple); }
+  .s9 .card.c3 .num { color: #B589F0; }
+  .s9 .card h3 { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; }
+  .s9 .card .kv { display: grid; grid-template-columns: 84px 1fr; gap: 10px 16px; font-size: 18px; line-height: 1.5; margin-top: 8px; }
+  .s9 .card .k { color: var(--mute); font-weight: 700; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; padding-top: 4px; }
+  .s9 .card.c3 .k { color: #B589F0; }
+  .s9 .card .v { color: var(--ink); }
+  .s9 .card.c3 .v { color: #D6D6D2; }
+  .s9 .card .v b { font-weight: 700; color: var(--ink); }
+  .s9 .card.c3 .v b { color: var(--paper); }
+  .s9 .foot { font-size: 22px; line-height: 1.5; border-top: 1px solid var(--rule); padding-top: 24px; max-width: 1600px; }
+  .s9 .foot b { color: var(--purple); font-weight: 700; }
+
+  /* ===== SLIDE 10 ===== */
+  .s10 .pad { display: grid; grid-template-rows: auto auto 1fr; gap: 40px; padding: 100px 120px; }
+  .s10 h1 { font-size: 58px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; color: #2A2A2A; }
+  .s10 .intro { font-size: 24px; color: var(--mute); line-height: 1.5; max-width: 1500px; }
+  .s10 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .s10 .card { border: 1px dashed #BFBDB4; padding: 36px 32px; background: #FBFBF9; display: flex; flex-direction: column; gap: 16px; }
+  .s10 .qmark { font-size: 48px; font-weight: 300; color: #BFBDB4; font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1; }
+  .s10 .ql { font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mute); font-weight: 700; }
+  .s10 .q { font-size: 26px; font-weight: 600; line-height: 1.3; color: var(--ink); letter-spacing: -0.01em; }
+  .s10 .kv { display: grid; grid-template-columns: 92px 1fr; gap: 10px 16px; font-size: 17px; line-height: 1.55; margin-top: 10px; color: var(--mute); }
+  .s10 .kv .k { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; padding-top: 4px; color: #7A7A76; }
+  .s10 .kv .v { color: #2A2A2A; }
+  .s10 .kv .v b { font-weight: 700; color: var(--ink); }
+
+  /* ===== SLIDE 11 ===== */
+  .s11 .pad { display: grid; grid-template-rows: auto 1fr auto; gap: 44px; padding: 100px 120px; }
+  .s11 h1 { font-size: 62px; font-weight: 700; letter-spacing: -0.025em; }
+  .s11 .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; align-items: stretch; }
+  .s11 .card { border: 1px solid var(--rule); padding: 36px 30px; display: flex; flex-direction: column; gap: 18px; background: var(--paper-2); }
+  .s11 .card .top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .s11 .card .n { font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.2em; color: var(--purple); font-weight: 700; }
+  .s11 .icon { width: 48px; height: 48px; display: grid; place-items: center; color: var(--purple); }
+  .s11 .icon svg { width: 36px; height: 36px; }
+  .s11 .card .l { font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute); font-weight: 700; margin-top: 12px; }
+  .s11 .card h3 { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.2; }
+  .s11 .card .d { font-size: 19px; line-height: 1.55; color: var(--ink); }
+  .s11 .card .tag { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--mute); letter-spacing: 0.04em; margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--rule); }
+  .s11 .foot { font-size: 22px; font-style: italic; color: var(--mute); line-height: 1.5; max-width: 1500px; border-top: 1px solid var(--rule); padding-top: 26px; }
+
+  /* ===== SLIDE 12 ===== */
+  .s12 .pad { display: grid; grid-template-rows: auto 1fr auto; gap: 40px; padding: 100px 120px; }
+  .s12 h1 { font-size: 62px; font-weight: 700; letter-spacing: -0.025em; color: var(--paper); }
+  .s12 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid #2A2A2A; border-bottom: 1px solid #2A2A2A; }
+  .s12 .col { padding: 40px 44px; }
+  .s12 .col + .col { border-left: 1px solid #2A2A2A; }
+  .s12 .col .h { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .s12 .col .tag { font-size: 14px; letter-spacing: 0.25em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+  .s12 .sq .tag { color: #9A9A96; }
+  .s12 .ex .tag { color: #B589F0; }
+  .s12 .col .t { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; }
+  .s12 .sq .t { color: #9A9A96; }
+  .s12 .ex .t { color: var(--paper); }
+  .s12 .col ul { list-style: none; padding: 0; margin: 0; }
+  .s12 .col li { font-size: 22px; line-height: 1.45; padding: 16px 0; border-top: 1px dashed #2A2A2A; display: flex; gap: 14px; align-items: baseline; }
+  .s12 .col li:first-child { border-top: none; }
+  .s12 .col li > span:last-child { flex: 1; }
+  .s12 .sq li { color: #8A8A84; }
+  .s12 .sq li .mk { color: #A32D2D; font-weight: 800; }
+  .s12 .ex li { color: #E4E3DE; }
+  .s12 .ex li .mk { color: #B589F0; font-weight: 800; }
+  .s12 .ex li b { color: var(--paper); font-weight: 700; }
+  .s12 .tagline { text-align: left; }
+  .s12 .tagline .t1 { font-size: 20px; letter-spacing: 0.28em; text-transform: uppercase; color: #B589F0; font-weight: 700; margin-bottom: 20px; }
+  .s12 .tagline .t2 { font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; color: var(--paper); max-width: 1600px; }
+  .s12 .tagline .t2 b { color: #B589F0; }
+
+  /* ===== SLIDE 13 ===== */
+  .s13 .pad { display: grid; grid-template-rows: 1fr auto; padding: 110px 140px; }
+  .s13 .center { display: flex; flex-direction: column; justify-content: center; gap: 30px; }
+  .s13 h1 { font-size: 240px; font-weight: 800; letter-spacing: -0.05em; line-height: 0.9; color: var(--paper); }
+  .s13 .sub { font-size: 32px; color: #9A9A96; max-width: 900px; line-height: 1.4; }
+  .s13 .meta { display: flex; justify-content: space-between; align-items: flex-end; }
+  .s13 .brand { font-size: 15px; letter-spacing: 0.25em; text-transform: uppercase; color: #6B6B68; font-weight: 600; }
+
+  /* dotted cluster for slide 4 */
+  .dotbox { width: 100%; height: 120px; border: 1px dashed var(--rule); border-radius: 2px; position: relative; margin-bottom: 20px; background: #FDFDFB; }
+  .dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
+  .dotbox .hub { width: 14px; height: 14px; background: var(--success); border-radius: 50%; left: 50%; top: 50%; transform: translate(-50%,-50%); position: absolute; }
+
+  /* brand mark */
+  .mark {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-size: 15px; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 700;
+  }
+  .mark .dot-mark { width: 10px; height: 10px; background: var(--purple); border-radius: 50%; }
+</style>
+</head>
+<body>
+<deck-stage>
+
+  <!-- SLIDE 1 -->
+  <section class="dark s1" data-screen-label="01 Cover">
+    <div class="pad">
+      <div style="display:grid;align-content:space-between;height:100%;">
+        <div class="mark" style="color:#9A9A96;"><span class="dot-mark"></span>Dash Express</div>
+        <h1>Mengapa <span class="pct">96%</span><br/>bisnis kita berjalan<br/>di atas manusia.</h1>
+        <div class="meta">
+          <div style="font-size:26px;color:#C9C9C5;max-width:720px;line-height:1.5;">
+            Core problem analysis &amp; proposed direction.<br/>
+            <span style="color:#7A7A76;font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.05em;">
+              Irfan Prima — Product Design · 23 April 2026
+            </span>
+          </div>
+          <div class="brand">Internal · Strategic</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 -->
+  <section class="s2" data-screen-label="02 One-liner">
+    <div class="pad">
+      <div class="wrap">
+        <div class="label">Satu kalimat</div>
+        <div class="quote">
+          Dash Express adalah <em>automated delivery service</em> untuk 4% volume,
+          dan <em>manual delivery service</em> untuk 96% volume —
+          di mana 96% itu di-sustain oleh <em>2&ndash;3 manusia</em> yang kerja
+          8–12 jam per hari dengan allocation latency <em>89 menit</em> per order.
+        </div>
+        <div class="sub">
+          Completion rate 95% yang terlihat sehat di dashboard berjalan di atas
+          <i>capacity ceiling</i> yang akan patah seiring volume tumbuh.
+        </div>
+      </div>
+    </div>
+    <div class="slide-no">02 / 13</div>
+  </section>
+
+  <!-- SLIDE 3 -->
+  <section class="s3" data-screen-label="03 Data">
+    <div class="pad">
+      <div class="head">
+        <div class="eyebrow purple" style="margin-bottom:18px;">Data · 1 bulan terakhir</div>
+        <h1>Dua realitas paralel<br/>di satu bisnis.</h1>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <div class="col-hdr">
+            <div class="col-title">McD <span style="color:var(--mute);font-weight:500;font-size:18px;">— Benchmark</span></div>
+            <div class="col-tag tag-green">● 4% Volume</div>
+          </div>
+          <div class="row"><div class="k">Volume</div><div><div class="v">8,290</div><div class="sub">deliveries</div></div></div>
+          <div class="row"><div class="k">Automation rate</div><div><div class="v hero num-green">99.90%</div></div></div>
+          <div class="row"><div class="k">Allocation time</div><div><div class="v num-green">0.04<span style="font-size:22px;color:var(--mute);font-weight:500;letter-spacing:0;"> min</span></div></div></div>
+          <div class="row"><div class="k">SLA met</div><div><div class="v" style="font-size:32px;">39.12%</div></div></div>
+          <div class="row"><div class="k">Completion</div><div><div class="v" style="font-size:32px;">92.61%</div></div></div>
+        </div>
+        <div class="col">
+          <div class="col-hdr">
+            <div class="col-title">Non-McD <span style="color:var(--mute);font-weight:500;font-size:18px;">— 96% Business</span></div>
+            <div class="col-tag tag-red">● 96% Volume</div>
+          </div>
+          <div class="row"><div class="k">Volume</div><div><div class="v">16,618</div><div class="sub">deliveries · 2× lipat</div></div></div>
+          <div class="row"><div class="k">Automation rate</div><div><div class="v hero num-red">3.95%</div></div></div>
+          <div class="row"><div class="k">Allocation time</div><div><div class="v num-red">88.91<span style="font-size:22px;color:var(--mute);font-weight:500;letter-spacing:0;"> min</span></div><div class="sub">89 min vs &lt;1 min di McD</div></div></div>
+          <div class="row"><div class="k">SLA met</div><div><div class="v num-red" style="font-size:32px;">5.30%</div></div></div>
+          <div class="row"><div class="k">Completion</div><div><div class="v" style="font-size:32px;">95.58%</div></div></div>
+        </div>
+      </div>
+      <div class="foot">
+        Non-McD mencakup Chagee, Jiwa+, Kopi Kenangan, Sayurbox, Lili, SPUN, Janji Jiwa &mdash; dalam 1 bulan terakhir.
+      </div>
+    </div>
+    <div class="slide-no">03 / 13</div>
+  </section>
+
+  <!-- SLIDE 4 -->
+  <section class="s4" data-screen-label="04 Root Cause">
+    <div class="pad">
+      <h1>Kenapa McD bisa 99.9%,<br/>non-McD cuma 3.95%?</h1>
+      <p class="insight">
+        Algo allocation kita hanya punya <b>1 dimensi: proximity.</b>
+        Dan proximity doang <i>kebetulan</i> cukup untuk McD — karena mitra camping di outlet.
+      </p>
+      <div class="cols">
+        <div class="col mcd">
+          <h3>● Di McD</h3>
+          <div class="dotbox">
+            <div class="hub"></div>
+            <div class="dot" style="left:48%;top:42%;"></div>
+            <div class="dot" style="left:52%;top:58%;"></div>
+            <div class="dot" style="left:46%;top:52%;"></div>
+            <div class="dot" style="left:51%;top:48%;"></div>
+            <div class="dot" style="left:53%;top:52%;"></div>
+            <div class="dot" style="left:49%;top:56%;"></div>
+          </div>
+          <ul>
+            <li>Mitra camping di outlet</li>
+            <li>"Terdekat" otomatis juga = motor fit, whitelist OK, zone match</li>
+            <li class="eq">Proximity = Fit (by coincidence)</li>
+          </ul>
+        </div>
+        <div class="col non">
+          <h3>● Di Non-McD</h3>
+          <div class="dotbox">
+            <div class="dot" style="left:8%;top:20%;"></div>
+            <div class="dot" style="left:18%;top:70%;"></div>
+            <div class="dot" style="left:32%;top:30%;"></div>
+            <div class="dot" style="left:40%;top:80%;"></div>
+            <div class="dot" style="left:54%;top:24%;"></div>
+            <div class="dot" style="left:62%;top:64%;"></div>
+            <div class="dot" style="left:72%;top:40%;"></div>
+            <div class="dot" style="left:84%;top:74%;"></div>
+            <div class="dot" style="left:90%;top:32%;"></div>
+            <div class="dot" style="left:24%;top:50%;"></div>
+            <div class="dot" style="left:48%;top:56%;"></div>
+            <div class="dot" style="left:66%;top:18%;"></div>
+          </div>
+          <ul>
+            <li>Order tersebar di seluruh kota</li>
+            <li>Mitra ga bisa camping (impossible)</li>
+            <li class="eq">"Terdekat" ≠ "Fit"</li>
+          </ul>
+        </div>
+      </div>
+      <p class="tagline">
+        system allocating kita tidak pernah dibangun untuk handle 96% skenario bisnis.
+        <em>McD adalah exception, bukan norm.</em>
+      </p>
+    </div>
+    <div class="slide-no">04 / 13</div>
+  </section>
+
+  <!-- SLIDE 5 -->
+  <section class="s5" data-screen-label="05 Hidden Cost">
+    <div class="pad">
+      <h1>Apa yang dashboard<br/>tidak tunjukkan.</h1>
+      <p class="lede2">
+        Brand promise <b>"never reject"</b> saat ini di-sustain oleh
+        <b>dua subsidi yang finite</b>.
+      </p>
+      <div class="cols">
+        <div class="col">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 3h14M5 21h14M6 3c0 6 12 6 12 9s-12 3-12 9M18 3c0 6-12 6-12 9s12 3 12 9"/>
+            </svg>
+          </div>
+          <h3>Subsidi 01</h3>
+          <h2>Tenaga manusia</h2>
+          <ul>
+            <li>2–3 floor monitor, <b>8–12 jam/hari</b></li>
+            <li>Rata-rata ~7,000 allocation/bulan per orang</li>
+            <li><b>Hard capacity ceiling</b> — tidak bisa di-scale dengan hire</li>
+            <li>TikTok Shop <b>+3,000 orders/day</b> akan break sistem ini</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="13" r="8"/>
+              <path d="M12 9v4l2.5 2.5M9 3h6M12 3v2"/>
+            </svg>
+          </div>
+          <h3>Subsidi 02</h3>
+          <h2>Allocation latency</h2>
+          <ul>
+            <li><b>89 menit</b> rata-rata per order</li>
+            <li>Hanya <b>5.3%</b> hit SLA</li>
+            <li>"Never reject" di-beli dengan <b>"never on-time"</b></li>
+            <li>Trust client turun diam-diam</li>
+          </ul>
+        </div>
+      </div>
+      <p class="tag">
+        Completion rate 95% bukan kemenangan sistem.
+        <em>Itu kemenangan kerja rodi manusia yang nambal automation yang rusak.</em>
+      </p>
+    </div>
+    <div class="slide-no">05 / 13</div>
+  </section>
+
+  <!-- SLIDE 6 -->
+  <section class="s6" data-screen-label="06 Trust Split">
+    <div class="pad">
+      <h1>Trust mitra tidak hilang —<br/>tapi pindah channel.</h1>
+      <p class="insight">
+        Mitra <span class="not">TIDAK</span> distrust Dash.
+        Mitra <span class="not">distrust System Allocating.</span>
+        Mitra <span class="ok">TRUST MANUAL.</span>
+      </p>
+      <div class="rows">
+        <div class="row algo">
+          <div class="ch">
+            <span class="num">CH 01 · ALGO</span>
+            <span class="name">Broadcast</span>
+          </div>
+          <div class="desc">
+            Freelance acceptance rendah. Fulltime lebih responsif saat dihubungi
+            manusia dibanding assignment algo. Mitra treat algo assignment sebagai <b>opsional</b>.
+          </div>
+          <div class="stat">
+            <div class="num">10%</div>
+            <div class="lbl">Acceptance</div>
+          </div>
+        </div>
+        <div class="row man">
+          <div class="ch">
+            <span class="num">CH 02 · MANUAL</span>
+            <span class="name">WA RTFM</span>
+          </div>
+          <div class="desc">
+            Mitra accept, eksekusi, antar. Mitra treat <b>"real allocation"</b>
+            = yang lewat chat manusia.
+          </div>
+          <div class="stat">
+            <div class="num">95%</div>
+            <div class="lbl">Completion</div>
+          </div>
+        </div>
+        <div class="row imp">
+          <div class="ch">
+            <span class="num">IMPLIKASI</span>
+            <span class="name">Bukan distrust,<br/>tapi absent</span>
+          </div>
+          <div class="desc">
+            Algo <b>ga pernah earn trust</b> karena ga pernah beneran allocate.
+            Manual channel work — tapi capacity capped.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no">06 / 13</div>
+  </section>
+
+  <!-- SLIDE 7 -->
+  <section class="s7" data-screen-label="07 Divergence">
+    <div class="pad">
+      <div class="left">
+        <div>
+          <div class="eyebrow purple" style="margin-bottom:18px;">Pattern · Divergence</div>
+          <h1>Gap antara algo<br/>dan volume<br/>terus melebar.</h1>
+        </div>
+        <p class="tag">
+          Ini <b>bukan siklus steady-state</b>.
+          <span class="pur">Ini trajectory menuju patah.</span><br/><br/>
+          TikTok Shop <span class="em">3,000 orders/day</span> = detonator.
+        </p>
+      </div>
+      <div class="right">
+        <div class="flow">
+          <div class="step">Algo di-design hanya untuk <b>1 pattern</b> (McD camping)</div>
+          <div class="arrow">↓</div>
+          <div class="step">96% volume harus di-absorb <b>manual</b></div>
+          <div class="arrow">↓</div>
+          <div class="step">Mitra develop trust ke manual, <b>abaikan algo broadcast</b></div>
+          <div class="arrow">↓</div>
+          <div class="step">Algo makin <b>irrelevant</b> → makin tidak di-iterate</div>
+          <div class="arrow">↓</div>
+          <div class="step">Gap antara algo vs manual <b>makin lebar</b></div>
+          <div class="arrow">↓</div>
+          <div class="step">Manual capacity makin <b>stretch</b></div>
+          <div class="arrow">↓</div>
+          <div class="step highlight">Floor monitor burnt out, <b>exception accumulate</b></div>
+          <div class="arrow">↓</div>
+          <div class="wall">
+            <div class="w1">⚠ Scale Wall</div>
+            <div class="w2">Patah saat volume tumbuh</div>
+            <div class="w3">bukan loop steady — detonasi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no">07 / 13</div>
+  </section>
+
+  <!-- SLIDE 8 -->
+  <section class="dark s8" data-screen-label="08 Reframe">
+    <div class="pad">
+      <h1>Jadi, apa core problem-nya?</h1>
+      <div class="grid">
+        <div>
+          <div class="old-label">Framing lama</div>
+          <div class="old">"Algo kita rusak, perlu di-fix."</div>
+        </div>
+        <div>
+          <div class="new-label">Framing yang benar</div>
+          <div class="new">
+            Algo kita <b>tidak pernah dibangun</b> untuk 96% bisnis.<br/>
+            Manusia yang nge-cover gap itu <b>sudah hit ceiling.</b>
+          </div>
+        </div>
+        <div class="imp">
+          <div class="it">
+            <div class="n">01 / IMPLIKASI</div>
+            <div class="t">Solusi <b>bukan</b> "replace manual dengan algo".</div>
+          </div>
+          <div class="it">
+            <div class="n">02 / IMPLIKASI</div>
+            <div class="t">Solusi adalah "<b>absorb mental model manual</b> ke algo, secara bertahap".</div>
+          </div>
+          <div class="it">
+            <div class="n">03 / IMPLIKASI</div>
+            <div class="t">Floor monitor bukan problem — mereka <b>oracle</b> yang harus di-leverage.</div>
+          </div>
+          <div class="it">
+            <div class="n">04 / IMPLIKASI</div>
+            <div class="t">Trust mitra akan kembali otomatis kalau algo beneran deliver — <b>tapi butuh bukti berulang</b>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no" style="color:#6B6B68;">08 / 13</div>
+  </section>
+
+  <!-- SLIDE 9 -->
+  <section class="s9" data-screen-label="09 Three Bets">
+    <div class="pad">
+      <div>
+        <div class="eyebrow purple" style="margin-bottom:18px;">Direction · 3 Bets</div>
+        <h1>Arah solusi — bukan roadmap.</h1>
+      </div>
+      <p class="intro">
+        <b>Bukan 12-minggu plan.</b> Bukan solusi lengkap.
+        3 langkah yang <b>defensible</b> dan <b>gradually reversible</b> kalau data bilang salah.
+      </p>
+      <div class="cards">
+        <div class="card c1">
+          <div class="num">BET 01</div>
+          <h3>Capture floor monitor mental model</h3>
+          <div class="kv">
+            <div class="k">Durasi</div><div class="v"><b>2 minggu</b></div>
+            <div class="k">Aksi</div><div class="v">Log <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">reason tag</code> tiap allocation manual. 1-click bot di WA RTFM.</div>
+            <div class="k">Output</div><div class="v">Data tentang dimensi real yang floor monitor pakai — bukan karangan whiteboard.</div>
+            <div class="k">Risk</div><div class="v">Compliance. Mitigasi: 1-click, mandatory, simple.</div>
+            <div class="k">Principle</div><div class="v">Micro-burden ~5 detik/allocation, justified — output = data dimensi real. Acceptable deviation dari zero-burden principle.</div>
+          </div>
+        </div>
+        <div class="card c2">
+          <div class="num">BET 02</div>
+          <h3>Shadow mode</h3>
+          <div class="kv">
+            <div class="k">Durasi</div><div class="v"><b>2 minggu</b> setelah Bet 1</div>
+            <div class="k">Aksi</div><div class="v">Algo compute score paralel dengan floor monitor decision. Compare agreement.</div>
+            <div class="k">Output</div><div class="v">Bukti apakah algo bisa replicate floor monitor thinking.</div>
+            <div class="k">Gate</div><div class="v">Agreement <b>≥70%</b> → lanjut. <b>&lt;50%</b> → rethink dimensi.</div>
+          </div>
+        </div>
+        <div class="card c3">
+          <div class="num">BET 03</div>
+          <h3>Gradual handoff</h3>
+          <div class="kv">
+            <div class="k">Durasi</div><div class="v">Setelah Bet 2 pass</div>
+            <div class="k">Aksi</div><div class="v">Auto-assign di kasus high-confidence. Manual tetap untuk sisanya.</div>
+            <div class="k">Target</div><div class="v">Geser ratio dari <b>3:97 → 20:80</b> dulu. Bukan langsung 80:20.</div>
+            <div class="k">Safety</div><div class="v">Floor monitor tetap monitor + override. <b>Bukan replace.</b></div>
+          </div>
+        </div>
+      </div>
+      <p class="foot">
+        Key principle: floor monitor tidak di-replace. Mereka geser dari <b>"hunter"</b> ke <b>"reviewer + exception handler".</b>
+        <br/><br/>
+        <span style="color:var(--mute);">Bets ini adalah <b style="color:var(--purple);">baseline</b> — foundation yang match RTFM performance. <b style="color:var(--ink);">Beyond-baseline optimization</b> (constraint-aware + opportunity cost scoring) = next phase setelah MVP validate.</span>
+      </p>
+    </div>
+    <div class="slide-no">09 / 13</div>
+  </section>
+
+  <!-- SLIDE 10 -->
+  <section class="s10" data-screen-label="10 Unknowns">
+    <div class="pad">
+      <div>
+        <div class="eyebrow" style="margin-bottom:18px;color:var(--mute);">Uncertainty zone</div>
+        <h1>Yang gua belum tau —<br/>perlu verifikasi.</h1>
+      </div>
+      <p class="intro">
+        Plan ini punya <b style="color:#3A3A3A;">3 open assumption</b> yang perlu di-verify sebelum commit penuh.
+        Gua lebih prefer honest di depan daripada kaget di tengah jalan.
+      </p>
+      <div class="cards">
+        <div class="card">
+          <div class="qmark">?</div>
+          <div class="ql">Q1 · Supply Adequacy</div>
+          <div class="q">"Apakah beneran ada mitra fit dalam radius saat order masuk?"</div>
+          <div class="kv">
+            <div class="k">Method</div><div class="v">Sample 100 failed allocation, check pool state.</div>
+            <div class="k">Effort</div><div class="v">1–2 hari data query.</div>
+            <div class="k">Stakes</div><div class="v">Kalau <b>&lt;70%</b> ada mitra fit → masalah <b>coverage</b>, bukan matching.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="qmark">?</div>
+          <div class="ql">Q2 · Ghost Mitra Pattern</div>
+          <div class="q">"Berapa mitra online tapi ga pernah dapat / accept order?"</div>
+          <div class="kv">
+            <div class="k">Trigger</div><div class="v">Observasi: mitra wandering seluruh kota, zero order.</div>
+            <div class="k">Method</div><div class="v">Query mitra online &gt;4 jam vs productive output.</div>
+            <div class="k">Stakes</div><div class="v">Kalau <b>&gt;15% ghost</b>, utilization 30% misleading. Real supply lebih kecil.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="qmark">?</div>
+          <div class="ql">Q3 · "Never Reject"</div>
+          <div class="q">"Legal contract atau brand aspiration?"</div>
+          <div class="kv">
+            <div class="k">Owner</div><div class="v">BD + Legal.</div>
+            <div class="k">Stakes</div><div class="v">Kalau aspirasi → unlock design space untuk <b>honest escalation</b>, bukan force-assign bad matches.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no">10 / 13</div>
+  </section>
+
+  <!-- SLIDE 11 -->
+  <section class="s11" data-screen-label="11 Asks">
+    <div class="pad">
+      <div>
+        <div class="eyebrow purple" style="margin-bottom:18px;">Asks · Actionable</div>
+        <h1>Yang gua butuh<br/>dari stakeholder.</h1>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="top">
+            <div class="n">ASK 01</div>
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12l4 4 10-10"/>
+              </svg>
+            </div>
+          </div>
+          <div class="l">Approval</div>
+          <h3>2 minggu untuk Bet 1.</h3>
+          <div class="d">Knowledge capture phase. <b>Low commitment, reversible.</b></div>
+          <div class="tag">owner · Head of Business</div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <div class="n">ASK 02</div>
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="8" cy="9" r="3.2"/><circle cx="16" cy="9" r="3.2"/>
+                <path d="M2 20c0-3.2 2.7-5 6-5s6 1.8 6 5M14 15c3.3 0 6 1.8 6 5"/>
+              </svg>
+            </div>
+          </div>
+          <div class="l">Resource</div>
+          <h3>1–2 engineer, part-time.</h3>
+          <div class="d">Setup logging infrastructure. Parallel dengan existing work, <b>bukan dedicated</b>.</div>
+          <div class="tag">owner · Eng Lead</div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <div class="n">ASK 03</div>
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v18M4 12h16"/><circle cx="12" cy="12" r="9"/>
+              </svg>
+            </div>
+          </div>
+          <div class="l">Decision</div>
+          <h3>Interrogate "never reject".</h3>
+          <div class="d">Legal contract atau aspiration? <b>Unlocks design space.</b></div>
+          <div class="tag">owner · Aditya + BD + Legal</div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <div class="n">ASK 04</div>
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"/><path d="M20 20l-4.5-4.5"/>
+              </svg>
+            </div>
+          </div>
+          <div class="l">Investigation</div>
+          <h3>Supply integrity probe.</h3>
+          <div class="d">Ghost mitra pattern. <b>Bukan scope design</b>, butuh owner Ops lead.</div>
+          <div class="tag">owner · Ops Lead</div>
+        </div>
+      </div>
+      <p class="foot">
+        Gua bisa drive coordination, tapi butuh commit ke <b>ownership per workstream</b>.
+        Solo designer ga bisa solve cross-functional problem sendirian.
+      </p>
+    </div>
+    <div class="slide-no">11 / 13</div>
+  </section>
+
+  <!-- SLIDE 12 -->
+  <section class="dark s12" data-screen-label="12 Closing">
+    <div class="pad">
+      <h1>Yang kita pertaruhkan.</h1>
+      <div class="cols">
+        <div class="col sq">
+          <div class="h">
+            <div class="tag">■ STATUS QUO</div>
+            <div class="t">Kalau ga berubah</div>
+          </div>
+          <ul>
+            <li><span class="mk">—</span><span>Floor monitor <b style="color:#A8A8A4;">burnout</b> (2–3 orang, 8–12 jam/hari)</span></li>
+            <li><span class="mk">—</span><span>Latency tetap <b style="color:#A8A8A4;">89 menit</b>, SLA tetap <b style="color:#A8A8A4;">5%</b></span></li>
+            <li><span class="mk">—</span><span>TikTok Shop 3,000/day = <b style="color:#A8A8A4;">breaking point</b></span></li>
+            <li><span class="mk">—</span><span>Trust client pelan-pelan <b style="color:#A8A8A4;">tergerus</b></span></li>
+            <li><span class="mk">—</span><span><b style="color:#A8A8A4;">Ga ada jalur</b> untuk scale</span></li>
+          </ul>
+        </div>
+        <div class="col ex">
+          <div class="h">
+            <div class="tag">● IF WE EXECUTE</div>
+            <div class="t">Kalau eksekusi 3 bets</div>
+          </div>
+          <ul>
+            <li><span class="mk">→</span><span>Floor monitor workload <b>8–12h → &lt;4h</b> dalam 6 bulan</span></li>
+            <li><span class="mk">→</span><span>Allocation latency <b>89 min → &lt;3 min</b></span></li>
+            <li><span class="mk">→</span><span>SLA met <b>5% → 50%+</b></span></li>
+            <li><span class="mk">→</span><span>Headroom untuk <b>TikTok Shop &amp; beyond</b></span></li>
+            <li><span class="mk">→</span><span>Algo yang <b>beneran represent</b> bisnis Dash</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="tagline">
+        <div class="t1">The real bet</div>
+        <div class="t2">
+          Ini bukan tentang bikin algo yang lebih pintar.<br/>
+          Ini tentang bikin sistem yang akhirnya <b>match dengan bisnis yang sudah kita jalankan.</b>
+        </div>
+      </div>
+    </div>
+    <div class="slide-no" style="color:#6B6B68;">12 / 13</div>
+  </section>
+
+  <!-- SLIDE 13 -->
+  <section class="dark s13" data-screen-label="13 QA">
+    <div class="pad">
+      <div style="display:grid;align-content:space-between;height:100%;">
+        <div class="mark" style="color:#9A9A96;"><span class="dot-mark"></span>Dash Express</div>
+        <div class="center">
+          <h1>Q&amp;A</h1>
+          <p class="sub">Mari diskusikan.</p>
+        </div>
+        <div class="meta">
+          <div style="font-size:18px;color:#C9C9C5;line-height:1.5;">
+            Irfan Prima<br/>
+            <span style="color:#7A7A76;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.05em;">
+              Product Design · Dash Express
+            </span>
+          </div>
+          <div class="brand">Thank you</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</deck-stage>
+</body>
+</html>
