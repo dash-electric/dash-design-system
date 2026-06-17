@@ -126,11 +126,14 @@ async function main() {
       await copyFileText(path.join(refsDir, rel), dest)
     }
 
-    // --- build the self-contained bundle (the LLM link) -------------------
-    // Inline text references (md/css) so a single URL is fully usable. Large
-    // binary-ish examples (html) are linked, not inlined, to keep the bundle
-    // fetch-friendly for assistants that truncate huge pages.
-    const inlineExts = new Set(["md", "css"])
+    // --- build the self-contained bundle (download / paste artifact) -------
+    // Inline ALL text references (md/css/html/json/ts/js) so a single file is
+    // 100% self-contained. The primary delivery is download-and-upload (or
+    // copy-and-paste) into an assistant, not a live fetch — uploaded files
+    // aren't truncated the way fetched pages are, so the old "keep it small for
+    // fetchers" reason no longer applies. Anything not inlined (e.g. binary
+    // assets) still falls back to a link under "Additional references".
+    const inlineExts = new Set(["md", "css", "html", "htm", "json", "ts", "tsx", "js", "mjs"])
     const bundle = []
     bundle.push(`# Dash Skill — ${meta.name ?? titleize(slug)}`)
     bundle.push("")

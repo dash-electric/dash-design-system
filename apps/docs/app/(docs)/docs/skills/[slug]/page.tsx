@@ -66,7 +66,7 @@ export default async function SkillDetailPage({
   }
 
   const url = `${getSiteUrl()}${skill.rawPath}`
-  const prompt = `Read this skill and follow it for the rest of our conversation: ${url}`
+  const filename = `${skill.slug}.md`
   const sizeKb = (skill.bytes / 1024).toFixed(0)
 
   return (
@@ -77,26 +77,34 @@ export default async function SkillDetailPage({
         description={skill.description}
       />
 
-      {/* Primary call to action — the public LLM link */}
+      {/* Primary call to action — hand the assistant the skill content */}
       <section className="rounded-2xl border border-(--dash-purple-200) bg-(--dash-purple-50)/40 p-5 sm:p-6 mb-10">
         <p className="text-sm text-text-strong-950 font-medium mb-1">
           Use this skill in any AI assistant
         </p>
         <p className="text-sm text-text-sub-600 leading-relaxed mb-4">
-          Copy the prompt and paste it into Claude, ChatGPT, or Gemini. The
-          assistant reads the skill from the link and follows it — no install,
-          no login, no CLI.
+          No install, no login, no CLI. Give the assistant the skill, then ask
+          for what you need:
         </p>
-        <CopySkillLink url={url} prompt={prompt} />
-        <div className="mt-4 rounded-lg bg-bg-white-0 border border-stroke-soft-200 px-3.5 py-2.5">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-text-soft-400 mb-1">
-            Public link
-          </p>
-          <code className="text-xs text-text-strong-950 break-all">{url}</code>
-        </div>
-        <p className="text-[11px] text-text-soft-400 mt-3">
-          Self-contained markdown · {sizeKb} KB · works with any web-capable AI.
-          {skill.version ? ` Version ${skill.version}.` : ""}
+        <ol className="space-y-1.5 text-sm text-text-sub-600 leading-relaxed mb-4">
+          <li>
+            <strong className="text-text-strong-950 font-medium">1.</strong>{" "}
+            <strong className="text-text-strong-950 font-medium">Download skill</strong> (or{" "}
+            <strong className="text-text-strong-950 font-medium">Copy full skill</strong>).
+          </li>
+          <li>
+            <strong className="text-text-strong-950 font-medium">2.</strong>{" "}
+            Upload the file to ChatGPT, Claude, or Gemini — or paste it in.
+          </li>
+          <li>
+            <strong className="text-text-strong-950 font-medium">3.</strong>{" "}
+            Tell it: <span className="italic">“Follow this skill.”</span> Then ask away.
+          </li>
+        </ol>
+        <CopySkillLink url={url} filename={filename} />
+        <p className="text-[11px] text-text-soft-400 mt-4">
+          Self-contained markdown · {sizeKb} KB · everything the assistant needs
+          is in this one file.{skill.version ? ` Version ${skill.version}.` : ""}
         </p>
       </section>
 

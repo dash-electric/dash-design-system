@@ -40,15 +40,15 @@ export default function SkillsOverviewPage() {
         <ol className="space-y-2.5 text-sm text-text-sub-600 leading-relaxed">
           <li className="flex gap-3">
             <span className="shrink-0 size-5 rounded-full bg-bg-white-0 border border-stroke-soft-200 text-[11px] font-semibold text-text-strong-950 flex items-center justify-center">1</span>
-            <span>Open a skill below and press <strong className="text-text-strong-950 font-medium">Copy AI prompt</strong>.</span>
+            <span>Open a skill below and press <strong className="text-text-strong-950 font-medium">Download skill</strong> (or <strong className="text-text-strong-950 font-medium">Copy full skill</strong>).</span>
           </li>
           <li className="flex gap-3">
             <span className="shrink-0 size-5 rounded-full bg-bg-white-0 border border-stroke-soft-200 text-[11px] font-semibold text-text-strong-950 flex items-center justify-center">2</span>
-            <span>Paste it into Claude, ChatGPT, or Gemini and send.</span>
+            <span>Upload the file to Claude, ChatGPT, or Gemini — or paste it straight into the chat.</span>
           </li>
           <li className="flex gap-3">
             <span className="shrink-0 size-5 rounded-full bg-bg-white-0 border border-stroke-soft-200 text-[11px] font-semibold text-text-strong-950 flex items-center justify-center">3</span>
-            <span>The assistant reads the skill from the link and follows it for the rest of your chat. Then just ask for what you need.</span>
+            <span>Tell it <strong className="text-text-strong-950 font-medium">“Follow this skill”</strong> — then just ask for what you need.</span>
           </li>
         </ol>
       </section>
